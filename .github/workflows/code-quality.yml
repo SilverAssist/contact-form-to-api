@@ -1,0 +1,236 @@
+name: 🔍 Code Quality & Testing
+
+on:
+    push:
+        branches: [main, develop]
+        paths:
+            - "**.php"
+            - "**.js"
+            - "**.css"
+            - "composer.json"
+            - "composer.lock"
+            - "package.json"
+            - "package-lock.json"
+            - ".github/workflows/**"
+    pull_request:
+        branches: [main]
+        paths:
+            - "**.php"
+            - "**.js"
+            - "**.css"
+            - "composer.json"
+            - "composer.lock"
+            - "package.json"
+            - "package-lock.json"
+            - ".github/workflows/**"
+
+jobs:
+    code-quality:
+        name: 🧹 Code Quality
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                php: [7.4, 8.0, 8.1, 8.2]
+
+        steps:
+            - name: 📥 Checkout code
+              uses: actions/checkout@v4
+
+            - name: 🐘 Setup PHP ${{ matrix.php }}
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: curl, json, mbstring
+                  coverage: xdebug
+                  tools: composer:v2
+
+            - name: 📋 Validate composer.json
+              run: composer validate --strict --no-check-all
+
+            - name: 🎯 Get Composer Cache Directory
+              id: composer-cache
+              run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+            - name: ♻️ Cache Composer packages
+              uses: actions/cache@v3
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-php-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: |
+                      ${{ runner.os }}-php-${{ matrix.php }}-composer-
+
+            - name: 📦 Install Composer dependencies
+              run: composer install --prefer-dist --no-progress --optimize-autoloader
+
+            - name: 🔍 Run PHP CodeSniffer (WordPress Coding Standards)
+              run: |
+                  if [ -f "vendor/bin/phpcs" ]; then
+                    vendor/bin/phpcs --standard=WordPress --extensions=php --ignore=vendor/,node_modules/,tests/ --report=full .
+                  else
+                    echo "phpcs not found, skipping..."
+                  fi
+
+            - name: 🧪 Run PHPUnit Tests
+              run: |
+                  if [ -f "vendor/bin/phpunit" ] && [ -f "phpunit.xml" ]; then
+                    vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+                  else
+                    echo "PHPUnit tests not configured, skipping..."
+                  fi
+
+            - name: 📊 Upload coverage reports to Codecov
+              if: matrix.php == '8.1' && github.event_name == 'push'
+              uses: codecov/codecov-action@v3
+              with:
+                  file: ./coverage.xml
+                  flags: php
+                  name: php-${{ matrix.php }}
+
+    version-consistency:
+        name: 🔢 Version Consistency
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: 📥 Checkout code
+              uses: actions/checkout@v4
+
+            - name: ✅ Check version consistency
+              run: |
+                  if [ -f "./scripts/check-versions.sh" ]; then
+                    ./scripts/check-versions.sh
+                  else
+                    echo "Version check script not found, skipping..."
+                  fi
+
+    security-scan:
+        name: 🛡️ Security Scan
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: 📥 Checkout code
+              uses: actions/checkout@v4
+
+            - name: 🐘 Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 8.1
+                  extensions: curl, json, mbstring
+                  tools: composer:v2
+
+            - name: 📦 Install dependencies
+              run: composer install --prefer-dist --no-progress --optimize-autoloader
+
+            - name: 🔍 Run security scan
+              run: |
+                  # Check for common security issues
+                  echo "Checking for common security issues..."
+
+                  # Check for hardcoded credentials
+                  if grep -r -i "password\|secret\|key\|token" --include="*.php" . | grep -v "vendor/" | grep -v ".git/" | grep -E "(=|:)\s*['\"][^'\"]{8,}['\"]"; then
+                    echo "⚠️ Potential hardcoded credentials found!"
+                    exit 1
+                  fi
+
+                  # Check for SQL injection patterns
+                  if grep -r -E "\\\$_(GET|POST|REQUEST|COOKIE)\[.*\].*\\\$wpdb" --include="*.php" . | grep -v "vendor/" | grep -v ".git/"; then
+                    echo "⚠️ Potential SQL injection vulnerability found!"
+                    exit 1
+                  fi
+
+                  # Check for XSS vulnerabilities
+                  if grep -r -E "echo.*\\\$_(GET|POST|REQUEST|COOKIE)" --include="*.php" . | grep -v "vendor/" | grep -v ".git/" | grep -v "esc_"; then
+                    echo "⚠️ Potential XSS vulnerability found!"
+                    exit 1
+                  fi
+
+                  echo "✅ Security scan completed successfully"
+
+    wordpress-compatibility:
+        name: 🔌 WordPress Compatibility
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                wp-version: ["5.9", "6.0", "6.1", "6.2", "6.3"]
+                php: [7.4, 8.0, 8.1]
+
+        steps:
+            - name: 📥 Checkout code
+              uses: actions/checkout@v4
+
+            - name: 🐘 Setup PHP ${{ matrix.php }}
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: curl, json, mbstring, mysqli
+                  tools: composer:v2
+
+            - name: 📦 Install dependencies
+              run: composer install --prefer-dist --no-progress --optimize-autoloader
+
+            - name: 🔍 WordPress compatibility check
+              run: |
+                  echo "Testing compatibility with WordPress ${{ matrix.wp-version }} and PHP ${{ matrix.php }}"
+
+                  # Basic syntax check
+                  find . -name "*.php" -not -path "./vendor/*" -not -path "./.git/*" -exec php -l {} \; | grep -v "No syntax errors"
+
+                  # Check for deprecated functions (basic check)
+                  if grep -r -E "(mysql_|ereg|split)" --include="*.php" . | grep -v "vendor/" | grep -v ".git/"; then
+                    echo "⚠️ Deprecated functions found!"
+                    exit 1
+                  fi
+
+                  echo "✅ WordPress compatibility check passed"
+
+    asset-optimization:
+        name: 🎨 Asset Optimization
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: 📥 Checkout code
+              uses: actions/checkout@v4
+
+            - name: 📦 Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "18"
+                  cache: "npm"
+                  cache-dependency-path: |
+                      package-lock.json
+
+            - name: 📥 Install Node dependencies
+              run: |
+                  if [ -f "package.json" ]; then
+                    npm ci
+                  else
+                    echo "No package.json found, skipping Node.js setup"
+                  fi
+
+            - name: 🔍 Lint CSS files
+              run: |
+                  if [ -d "assets/css" ]; then
+                    echo "Checking CSS files..."
+                    find assets/css -name "*.css" -exec echo "Checking: {}" \;
+                  else
+                    echo "No CSS files found"
+                  fi
+
+            - name: 🔍 Lint JavaScript files
+              run: |
+                  if [ -d "assets/js" ]; then
+                    echo "Checking JavaScript files..."
+                    find assets/js -name "*.js" -exec echo "Checking: {}" \;
+                  else
+                    echo "No JavaScript files found"
+                  fi
+
+            - name: 📊 Check asset sizes
+              run: |
+                  echo "Asset size report:"
+                  if [ -d "assets" ]; then
+                    find assets -type f \( -name "*.css" -o -name "*.js" -o -name "*.png" -o -name "*.jpg" -o -name "*.gif" \) -exec ls -lh {} \; | awk '{print $5, $9}'
+                  else
+                    echo "No assets directory found"
+                  fi

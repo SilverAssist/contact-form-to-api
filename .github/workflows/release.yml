@@ -1,0 +1,262 @@
+name: 🚀 Release
+
+on:
+    push:
+        tags:
+            - "v*"
+    workflow_dispatch:
+        inputs:
+            version:
+                description: "Version to release (e.g., 1.0.1)"
+                required: true
+                type: string
+
+jobs:
+    validate-release:
+        name: 🔍 Validate Release
+        runs-on: ubuntu-latest
+
+        outputs:
+            version: ${{ steps.version.outputs.version }}
+            tag_name: ${{ steps.version.outputs.tag_name }}
+
+        steps:
+            - name: 📥 Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
+
+            - name: 🔢 Determine version
+              id: version
+              run: |
+                  if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+                    VERSION="${{ inputs.version }}"
+                    TAG_NAME="v${VERSION}"
+                    echo "Manual release triggered for version: $VERSION"
+                  else
+                    TAG_NAME="${{ github.ref_name }}"
+                    VERSION="${TAG_NAME#v}"
+                    echo "Tag-triggered release for version: $VERSION"
+                  fi
+
+                  # Validate version format
+                  if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                    echo "❌ Invalid version format: $VERSION"
+                    exit 1
+                  fi
+
+                  echo "version=$VERSION" >> $GITHUB_OUTPUT
+                  echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+
+            - name: ✅ Check version consistency
+              run: |
+                  chmod +x ./scripts/check-versions.sh
+                  ./scripts/check-versions.sh
+
+            - name: 🧪 Validate plugin structure
+              run: |
+                  # Check required files
+                  required_files=("contact-form-to-api.php" "README.md" "CHANGELOG.md" "composer.json")
+
+                  for file in "${required_files[@]}"; do
+                    if [ ! -f "$file" ]; then
+                      echo "❌ Required file missing: $file"
+                      exit 1
+                    fi
+                    echo "✅ Found: $file"
+                  done
+
+                  # Check main plugin file
+                  if ! grep -q "Version: ${{ steps.version.outputs.version }}" contact-form-to-api.php; then
+                    echo "❌ Version mismatch in main plugin file"
+                    exit 1
+                  fi
+
+                  echo "✅ Plugin structure validation passed"
+
+    build-release:
+        name: 🔨 Build Release
+        runs-on: ubuntu-latest
+        needs: validate-release
+
+        steps:
+            - name: 📥 Checkout code
+              uses: actions/checkout@v4
+
+            - name: 🐘 Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "8.1"
+                  extensions: curl, json, mbstring
+                  tools: composer:v2
+
+            - name: 📦 Install Composer dependencies
+              run: composer install --no-dev --optimize-autoloader --prefer-dist --no-progress
+
+            - name: 🔨 Build release package
+              run: |
+                  chmod +x ./scripts/build-release.sh
+                  ./scripts/build-release.sh ${{ needs.validate-release.outputs.version }}
+
+            - name: 📋 Generate release notes
+              id: release_notes
+              run: |
+                  VERSION="${{ needs.validate-release.outputs.version }}"
+
+                  # Extract changelog for this version
+                  if [ -f "CHANGELOG.md" ]; then
+                    # Try to extract the section for this version
+                    CHANGELOG_CONTENT=$(sed -n "/## \[${VERSION}\]/,/## \[/p" CHANGELOG.md | sed '$d' | tail -n +2)
+                    
+                    if [ -n "$CHANGELOG_CONTENT" ]; then
+                      echo "Found changelog content for version $VERSION"
+                      # Save to file for GitHub release
+                      echo "$CHANGELOG_CONTENT" > release-notes.md
+                    else
+                      echo "No specific changelog found for version $VERSION, using generic notes"
+                      echo "Release version $VERSION" > release-notes.md
+                      echo "" >> release-notes.md
+                      echo "See [CHANGELOG.md](https://github.com/SilverAssist/contact-form-to-api/blob/main/CHANGELOG.md) for detailed changes." >> release-notes.md
+                    fi
+                  else
+                    echo "Release version $VERSION" > release-notes.md
+                  fi
+
+            - name: 📤 Upload build artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: contact-form-to-api-${{ needs.validate-release.outputs.version }}
+                  path: |
+                      build/contact-form-to-api-${{ needs.validate-release.outputs.version }}.zip
+                      build/contact-form-to-api-${{ needs.validate-release.outputs.version }}.zip.md5
+                      build/contact-form-to-api-${{ needs.validate-release.outputs.version }}.zip.sha256
+                      build/build-info.txt
+                  retention-days: 90
+
+            - name: 🏷️ Create/Update Git Tag
+              if: github.event_name == 'workflow_dispatch'
+              run: |
+                  git config --local user.email "action@github.com"
+                  git config --local user.name "GitHub Action"
+
+                  TAG_NAME="${{ needs.validate-release.outputs.tag_name }}"
+
+                  # Delete tag if it exists
+                  if git rev-parse "$TAG_NAME" >/dev/null 2>&1; then
+                    git tag -d "$TAG_NAME"
+                    git push origin --delete "$TAG_NAME" || true
+                  fi
+
+                  # Create new tag
+                  git tag -a "$TAG_NAME" -m "Release ${{ needs.validate-release.outputs.version }}"
+                  git push origin "$TAG_NAME"
+
+            - name: 🎉 Create GitHub Release
+              uses: softprops/action-gh-release@v1
+              with:
+                  tag_name: ${{ needs.validate-release.outputs.tag_name }}
+                  name: "Contact Form 7 to API v${{ needs.validate-release.outputs.version }}"
+                  body_path: release-notes.md
+                  draft: false
+                  prerelease: false
+                  files: |
+                      build/contact-form-to-api-${{ needs.validate-release.outputs.version }}.zip
+                      build/contact-form-to-api-${{ needs.validate-release.outputs.version }}.zip.md5
+                      build/contact-form-to-api-${{ needs.validate-release.outputs.version }}.zip.sha256
+                      build/build-info.txt
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    test-release:
+        name: 🧪 Test Release Package
+        runs-on: ubuntu-latest
+        needs: [validate-release, build-release]
+
+        strategy:
+            matrix:
+                php: [7.4, 8.0, 8.1, 8.2]
+                wp: [5.9, 6.0, 6.1, 6.2, 6.3]
+
+        steps:
+            - name: 📥 Download release package
+              uses: actions/download-artifact@v4
+              with:
+                  name: contact-form-to-api-${{ needs.validate-release.outputs.version }}
+                  path: ./release
+
+            - name: 🐘 Setup PHP ${{ matrix.php }}
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: curl, json, mbstring, mysqli
+
+            - name: 🔧 Setup WordPress ${{ matrix.wp }}
+              run: |
+                  # Download WordPress
+                  curl -O https://wordpress.org/wordpress-${{ matrix.wp }}.tar.gz
+                  tar -xzf wordpress-${{ matrix.wp }}.tar.gz
+
+                  echo "WordPress ${{ matrix.wp }} downloaded"
+
+            - name: 🧪 Test plugin installation
+              run: |
+                  cd release
+
+                  # Extract the plugin
+                  unzip -q contact-form-to-api-${{ needs.validate-release.outputs.version }}.zip
+
+                  # Basic PHP syntax check
+                  find contact-form-to-api -name "*.php" -exec php -l {} \; | grep -v "No syntax errors detected"
+
+                  # Check if main plugin file is valid
+                  php -l contact-form-to-api/contact-form-to-api.php
+
+                  # Verify plugin header
+                  if grep -q "Plugin Name: Contact Form 7 to API" contact-form-to-api/contact-form-to-api.php; then
+                    echo "✅ Plugin header validation passed"
+                  else
+                    echo "❌ Plugin header validation failed"
+                    exit 1
+                  fi
+
+                  # Verify version
+                  if grep -q "Version: ${{ needs.validate-release.outputs.version }}" contact-form-to-api/contact-form-to-api.php; then
+                    echo "✅ Version validation passed"
+                  else
+                    echo "❌ Version validation failed"
+                    exit 1
+                  fi
+
+                  echo "✅ Plugin installation test completed successfully"
+
+    notify-success:
+        name: 📢 Notify Success
+        runs-on: ubuntu-latest
+        needs: [validate-release, build-release, test-release]
+        if: success()
+
+        steps:
+            - name: 🎉 Success notification
+              run: |
+                  echo "🎉 Release v${{ needs.validate-release.outputs.version }} completed successfully!"
+                  echo ""
+                  echo "📦 Artifacts:"
+                  echo "- Release package: contact-form-to-api-${{ needs.validate-release.outputs.version }}.zip"
+                  echo "- Checksums: MD5 and SHA256"
+                  echo "- Build info: build-info.txt"
+                  echo ""
+                  echo "🔗 Release URL: https://github.com/${{ github.repository }}/releases/tag/${{ needs.validate-release.outputs.tag_name }}"
+
+    notify-failure:
+        name: 💥 Notify Failure
+        runs-on: ubuntu-latest
+        needs: [validate-release, build-release, test-release]
+        if: failure()
+
+        steps:
+            - name: 💥 Failure notification
+              run: |
+                  echo "💥 Release process failed!"
+                  echo ""
+                  echo "Please check the workflow logs for details:"
+                  echo "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"

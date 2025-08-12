@@ -1,0 +1,824 @@
+/**
+ * Contact Form 7 to API - Admin Styles
+ *
+ * Styles for the Contact Form 7 API integration admin interface
+ * Migrated from legacy plugin with modern CSS standards
+ *
+ * @package ContactFormToAPI
+ * @since 1.0.0
+ * @author Silver Assist
+ * @version 1.0.0
+ * @license GPL-2.0+
+ */
+
+/* CF7 API Integration Panel */
+.cf7_row {
+  margin-bottom: 15px;
+  padding: 10px 0;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.cf7_row:last-child {
+  border-bottom: none;
+}
+
+.cf7_row label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.cf7_row input[type="text"],
+.cf7_row input[type="url"],
+.cf7_row textarea,
+.cf7_row select {
+  width: 100%;
+  max-width: 600px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.cf7_row textarea {
+  resize: vertical;
+  min-height: 100px;
+  font-family: monospace;
+}
+
+.cf7_row select {
+  height: auto;
+  min-height: 36px;
+}
+
+/* Checkbox styling */
+.cf7_row input[type="checkbox"] {
+  margin-right: 8px;
+  transform: scale(1.2);
+}
+
+/* Label styling for inline elements */
+.cf7-label-in {
+  display: inline-block;
+  min-width: 120px;
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+/* Field mapping table */
+.cf7_row table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.cf7_row table th,
+.cf7_row table td {
+  padding: 12px;
+  border: 1px solid #e1e1e1;
+  text-align: left;
+}
+
+.cf7_row table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #555;
+}
+
+.cf7_row table td input {
+  width: 100%;
+  margin: 0;
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+}
+
+/* Mail tags display */
+.xml_mailtag.mailtag.code {
+  display: inline-block;
+  background: #f1f1f1;
+  padding: 4px 8px;
+  margin: 2px 4px 2px 0;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 12px;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.xml_mailtag.mailtag.code:hover {
+  background: #e1e1e1;
+  border-color: #999;
+}
+
+/* Template textarea styling */
+fieldset[data-cf7index] textarea {
+  font-family: "Courier New", Courier, monospace;
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 15px;
+  line-height: 1.4;
+}
+
+/* Show/hide sections based on input type */
+fieldset[data-cf7index="params"] {
+  display: block;
+}
+
+fieldset[data-cf7index="xml"],
+fieldset[data-cf7index="json"] {
+  display: none;
+}
+
+/* When XML is selected */
+body.cf7-input-type-xml fieldset[data-cf7index="params"],
+body.cf7-input-type-xml fieldset[data-cf7index="json"] {
+  display: none;
+}
+
+body.cf7-input-type-xml fieldset[data-cf7index="xml"] {
+  display: block;
+}
+
+body.cf7-input-type-xml .cf7_row[data-cf7index="params"] {
+  display: none;
+}
+
+/* When JSON is selected */
+body.cf7-input-type-json fieldset[data-cf7index="params"],
+body.cf7-input-type-json fieldset[data-cf7index="xml"] {
+  display: none;
+}
+
+body.cf7-input-type-json fieldset[data-cf7index="json"] {
+  display: block;
+}
+
+body.cf7-input-type-json .cf7_row[data-cf7index="params"] {
+  display: block;
+}
+
+/* Debug log styling */
+.debug-log-trigger {
+  display: block;
+  width: 100%;
+  padding: 12px 15px;
+  background: #0073aa;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.debug-log-trigger:hover {
+  background: #005177;
+  color: white;
+  text-decoration: none;
+}
+
+.debug-log-wrap {
+  display: none;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.debug-log-wrap.active {
+  display: block;
+}
+
+.debug_log_title {
+  margin: 0 0 15px 0;
+  padding: 0;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.debug_log h4 {
+  margin: 15px 0 5px 0;
+  color: #555;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.debug_log textarea {
+  width: 100%;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  background: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 3px;
+  resize: vertical;
+}
+
+/* Responsive design */
+@media (max-width: 782px) {
+
+  .cf7_row input[type="text"],
+  .cf7_row input[type="url"],
+  .cf7_row textarea,
+  .cf7_row select {
+    max-width: 100%;
+  }
+
+  .cf7-label-in {
+    display: block;
+    margin-bottom: 5px;
+    min-width: auto;
+  }
+
+  .cf7_row table,
+  .cf7_row table thead,
+  .cf7_row table tbody,
+  .cf7_row table th,
+  .cf7_row table td,
+  .cf7_row table tr {
+    display: block;
+  }
+
+  .cf7_row table th {
+    display: none;
+  }
+
+  .cf7_row table td {
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+  }
+
+  .cf7_row table td:before {
+    content: attr(data-label);
+    position: absolute;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+}
+
+/* Success/Error messages */
+.cf7-api-notice {
+  padding: 12px 15px;
+  margin: 15px 0;
+  border-left: 4px solid #00a0d2;
+  background: #f7fcfe;
+  border-radius: 0 4px 4px 0;
+}
+
+.cf7-api-notice.error {
+  border-left-color: #d63638;
+  background: #fef7f7;
+}
+
+.cf7-api-notice.success {
+  border-left-color: #00a32a;
+  background: #f7fff7;
+}
+
+.cf7-api-notice.warning {
+  border-left-color: #dba617;
+  background: #fffbf0;
+}
+
+/* Loading states */
+.cf7-api-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.cf7-api-loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #ccc;
+  border-top-color: #0073aa;
+  border-radius: 50%;
+  animation: cf7-api-spin 1s infinite linear;
+}
+
+@keyframes cf7-api-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Additional form styling */
+#cf7-api-integration fieldset {
+  margin-bottom: 25px;
+  padding: 20px;
+  border: 1px solid #e1e1e1;
+  border-radius: 4px;
+  background: #fff;
+}
+
+#cf7-api-integration fieldset legend {
+  padding: 0 10px;
+  font-weight: 600;
+  color: #555;
+}
+
+#cf7-api-integration h2 {
+  margin: 0 0 15px 0;
+  padding: 0;
+  font-size: 18px;
+  color: #333;
+  border-bottom: 1px solid #e1e1e1;
+  padding-bottom: 10px;
+}
+
+/* Improved accessibility */
+.cf7_row label:focus,
+.cf7_row input:focus,
+.cf7_row select:focus,
+.cf7_row textarea:focus {
+  outline: 2px solid #0073aa;
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+
+  .debug-log-wrap,
+  .debug-log-trigger {
+    display: none !important;
+  }
+}
+
+/* Admin Panel Styles */
+.cf7-api-admin-container {
+  max-width: 1200px;
+  margin: 20px 0;
+}
+
+.cf7-api-admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.cf7-api-admin-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1d2327;
+}
+
+.cf7-api-admin-subtitle {
+  margin: 5px 0 0 0;
+  font-size: 14px;
+  color: #646970;
+}
+
+/* Integration Cards */
+.cf7-api-integrations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.cf7-api-integration-card {
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  border-radius: 4px;
+  padding: 20px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.3s ease;
+}
+
+.cf7-api-integration-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cf7-api-integration-card.active {
+  border-left: 4px solid #00a32a;
+}
+
+.cf7-api-integration-card.inactive {
+  border-left: 4px solid #ddd;
+  opacity: 0.7;
+}
+
+.cf7-api-integration-card.error {
+  border-left: 4px solid #d63638;
+}
+
+.cf7-api-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.cf7-api-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #1d2327;
+}
+
+.cf7-api-status-badge {
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.cf7-api-status-badge.active {
+  background-color: #d7f5d7;
+  color: #00a32a;
+}
+
+.cf7-api-status-badge.inactive {
+  background-color: #f0f0f1;
+  color: #646970;
+}
+
+.cf7-api-status-badge.error {
+  background-color: #ffd6d6;
+  color: #d63638;
+}
+
+.cf7-api-card-content {
+  margin-bottom: 15px;
+}
+
+.cf7-api-card-meta {
+  font-size: 13px;
+  color: #646970;
+  line-height: 1.4;
+}
+
+.cf7-api-card-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Buttons */
+.cf7-api-button {
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 3px;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.cf7-api-button.primary {
+  background-color: #0073aa;
+  color: #fff;
+  border-color: #0073aa;
+}
+
+.cf7-api-button.primary:hover {
+  background-color: #005a87;
+  border-color: #005a87;
+}
+
+.cf7-api-button.secondary {
+  background-color: #fff;
+  color: #0073aa;
+  border-color: #0073aa;
+}
+
+.cf7-api-button.secondary:hover {
+  background-color: #f6f7f7;
+}
+
+.cf7-api-button.danger {
+  background-color: #d63638;
+  color: #fff;
+  border-color: #d63638;
+}
+
+.cf7-api-button.danger:hover {
+  background-color: #b32d2e;
+  border-color: #b32d2e;
+}
+
+/* Forms */
+.cf7-api-form-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+.cf7-api-form-table th {
+  text-align: left;
+  padding: 15px 10px 15px 0;
+  vertical-align: top;
+  width: 200px;
+  font-weight: 600;
+}
+
+.cf7-api-form-table td {
+  padding: 15px 10px 15px 0;
+  vertical-align: top;
+}
+
+.cf7-api-form-table input[type="text"],
+.cf7-api-form-table input[type="url"],
+.cf7-api-form-table input[type="password"],
+.cf7-api-form-table textarea,
+.cf7-api-form-table select {
+  width: 100%;
+  max-width: 400px;
+  padding: 8px 12px;
+  border: 1px solid #8c8f94;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.cf7-api-form-table textarea {
+  height: 80px;
+  resize: vertical;
+}
+
+.cf7-api-form-table .description {
+  margin-top: 5px;
+  font-size: 13px;
+  color: #646970;
+  font-style: italic;
+}
+
+/* Field Mapping */
+.cf7-api-field-mapping {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.cf7-api-field-mapping-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.cf7-api-field-mapping-row {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+.cf7-api-field-mapping-row:last-child {
+  margin-bottom: 0;
+}
+
+.cf7-api-field-mapping-row select,
+.cf7-api-field-mapping-row input {
+  flex: 1;
+  min-width: 150px;
+}
+
+.cf7-api-field-mapping-remove {
+  background: #d63638;
+  color: #fff;
+  border: none;
+  padding: 6px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.cf7-api-field-mapping-remove:hover {
+  background: #b32d2e;
+}
+
+/* Testing Interface */
+.cf7-api-test-panel {
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  border-radius: 4px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.cf7-api-test-result {
+  margin: 15px 0;
+  padding: 15px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+
+.cf7-api-test-result.success {
+  background: #d7f5d7;
+  border: 1px solid #00a32a;
+  color: #00a32a;
+}
+
+.cf7-api-test-result.error {
+  background: #ffd6d6;
+  border: 1px solid #d63638;
+  color: #d63638;
+}
+
+/* Activity Log */
+.cf7-api-log-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid #c3c4c7;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cf7-api-log-table th {
+  background: #f6f7f7;
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 1px solid #c3c4c7;
+}
+
+.cf7-api-log-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #f0f0f1;
+  vertical-align: top;
+}
+
+.cf7-api-log-table tr:last-child td {
+  border-bottom: none;
+}
+
+.cf7-api-log-table tr:hover {
+  background: #f9f9f9;
+}
+
+.cf7-api-log-status {
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.cf7-api-log-status.success {
+  background-color: #d7f5d7;
+  color: #00a32a;
+}
+
+.cf7-api-log-status.error {
+  background-color: #ffd6d6;
+  color: #d63638;
+}
+
+.cf7-api-log-status.pending {
+  background-color: #fff2c7;
+  color: #b47500;
+}
+
+/* Responsive Design */
+@media (max-width: 782px) {
+  .cf7-api-integrations-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cf7-api-admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .cf7-api-form-table {
+    display: block;
+  }
+
+  .cf7-api-form-table tbody,
+  .cf7-api-form-table tr,
+  .cf7-api-form-table th,
+  .cf7-api-form-table td {
+    display: block;
+    width: auto;
+  }
+
+  .cf7-api-form-table th {
+    padding-bottom: 5px;
+    width: auto;
+  }
+
+  .cf7-api-form-table td {
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f0f0f1;
+  }
+
+  .cf7-api-field-mapping-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cf7-api-field-mapping-row select,
+  .cf7-api-field-mapping-row input {
+    min-width: auto;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .cf7-api-admin-container {
+    color: #f0f0f1;
+  }
+
+  .cf7-api-integration-card {
+    background: #1d2327;
+    border-color: #3c434a;
+  }
+
+  .cf7-api-form-table input[type="text"],
+  .cf7-api-form-table input[type="url"],
+  .cf7-api-form-table input[type="password"],
+  .cf7-api-form-table textarea,
+  .cf7-api-form-table select {
+    background: #1d2327;
+    border-color: #3c434a;
+    color: #f0f0f1;
+  }
+
+  .cf7-api-field-mapping {
+    background: #1d2327;
+    border-color: #3c434a;
+  }
+
+  .cf7-api-field-mapping-row {
+    background: #2c3338;
+    border-color: #3c434a;
+  }
+}
+
+/* Animation Utilities */
+.cf7-api-fade-in {
+  animation: cf7ApiFadeIn 0.3s ease-in-out;
+}
+
+@keyframes cf7ApiFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cf7-api-loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.cf7-api-loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  margin: -10px 0 0 -10px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #0073aa;
+  border-radius: 50%;
+  animation: cf7ApiSpin 1s linear infinite;
+}
+
+@keyframes cf7ApiSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
