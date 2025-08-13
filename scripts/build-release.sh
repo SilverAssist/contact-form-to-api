@@ -269,12 +269,42 @@ rm -f "${PACKAGE_DIR}/HEADER-STANDARDS.md"
 
 # Remove vendor development files if present
 if [ -d "${PACKAGE_DIR}/vendor" ]; then
+    # Remove common development files
     find "${PACKAGE_DIR}/vendor" -name "*.md" -delete
     find "${PACKAGE_DIR}/vendor" -name "*.txt" -delete
     find "${PACKAGE_DIR}/vendor" -name ".git*" -delete
     find "${PACKAGE_DIR}/vendor" -name "tests" -type d -exec rm -rf {} + 2>/dev/null || true
     find "${PACKAGE_DIR}/vendor" -name "test" -type d -exec rm -rf {} + 2>/dev/null || true
     find "${PACKAGE_DIR}/vendor" -name "docs" -type d -exec rm -rf {} + 2>/dev/null || true
+    
+    # Clean up GitHub updater package - keep only essential PHP files
+    UPDATER_DIR="${PACKAGE_DIR}/vendor/silverassist/wp-github-updater"
+    if [ -d "$UPDATER_DIR" ]; then
+        print_status "  • Cleaning GitHub updater package..."
+        
+        # Remove git directory
+        rm -rf "$UPDATER_DIR/.git"
+        rm -rf "$UPDATER_DIR/.github"
+        
+        # Remove development files
+        rm -f "$UPDATER_DIR"/*.md 2>/dev/null || true
+        rm -f "$UPDATER_DIR"/*.txt 2>/dev/null || true
+        rm -f "$UPDATER_DIR"/*.xml 2>/dev/null || true
+        rm -f "$UPDATER_DIR"/*.neon 2>/dev/null || true
+        rm -f "$UPDATER_DIR"/.* 2>/dev/null || true
+        
+        # Remove examples and other non-essential directories
+        rm -rf "$UPDATER_DIR/examples" 2>/dev/null || true
+        rm -rf "$UPDATER_DIR/tests" 2>/dev/null || true
+        rm -rf "$UPDATER_DIR/docs" 2>/dev/null || true
+        
+        # Keep only src/ directory and composer.json
+        if [ -d "$UPDATER_DIR/src" ] && [ -f "$UPDATER_DIR/composer.json" ]; then
+            print_success "    ✓ GitHub updater cleaned (kept only src/ and composer.json)"
+        else
+            print_warning "    ⚠ GitHub updater structure unexpected"
+        fi
+    fi
 fi
 
 print_status "  ✓ Development files removed"
@@ -300,6 +330,14 @@ if [ ! -f "${PACKAGE_DIR}/vendor/autoload.php" ]; then
     print_error "Composer autoloader missing from package"
     print_error "The plugin requires 'vendor/autoload.php' to function properly"
     exit 1
+fi
+
+# Check if GitHub updater package is included
+if [ ! -d "${PACKAGE_DIR}/vendor/silverassist/wp-github-updater" ]; then
+    print_warning "GitHub updater package not found in vendor directory"
+    print_warning "Automatic updates may not work properly"
+else
+    print_success "  ✓ GitHub updater package included"
 fi
 
 # Check if required directories exist

@@ -39,6 +39,14 @@ class Plugin
     private string $version = CONTACT_FORM_TO_API_VERSION;
 
   /**
+   * Plugin main file path
+   *
+   * @since 1.0.0
+   * @var string
+   */
+    private string $plugin_file = CONTACT_FORM_TO_API_PLUGIN_FILE;
+
+  /**
    * Plugin URL
    *
    * @since 1.0.0
@@ -69,6 +77,14 @@ class Plugin
    * @var Integration|null
    */
     private $cf7_integration;
+
+  /**
+   * GitHub updater instance
+   *
+   * @since 1.0.0
+   * @var Updater|null
+   */
+    private $updater;
 
   /**
    * Get plugin instance (singleton)
@@ -123,6 +139,9 @@ class Plugin
     {
       // Initialize Contact Form 7 Integration
         $this->cf7_integration = new Integration($this);
+
+      // Initialize GitHub updater if not in development mode
+        $this->init_updater();
     }
 
   /**
@@ -226,6 +245,39 @@ class Plugin
     public function get_textdomain(): string
     {
         return $this->textdomain;
+    }
+
+  /**
+   * Get plugin main file path
+   *
+   * @since 1.0.0
+   * @return string
+   */
+    public function get_plugin_file(): string
+    {
+        return $this->plugin_file;
+    }
+
+  /**
+   * Initialize GitHub updater
+   *
+   * @since 1.0.0
+   * @return void
+   */
+    private function init_updater(): void
+    {
+        try {
+            // Check if updater class exists (composer package available)
+            if (\class_exists("\\ContactFormToAPI\\Core\\Updater")) {
+                $this->updater = new Updater(
+                    $this->plugin_file,
+                    "SilverAssist/contact-form-to-api"
+                );
+            }
+        } catch (\Exception $e) {
+            // Fail silently if updater package is not available
+            \error_log("Contact Form to API: GitHub updater not available - " . $e->getMessage());
+        }
     }
 }
 
