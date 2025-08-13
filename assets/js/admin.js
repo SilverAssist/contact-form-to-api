@@ -54,41 +54,39 @@
      * @return {void}
      */
     bindEvents() {
-      // Input type change handler
-      $(document).on("change", "#wpcf7-api-input-type", (e) => {
-        this.handleInputTypeChange(e.target.value);
+      // Input type change handler - corrected selector
+      $(document).on("change", "#wpcf7-sf-input-type", (e) => {
+        this.handleInputTypeChange($(e.target).val());
       });
 
-      // Debug log toggle handler  
-      $(document).on("click", ".debug-log-trigger", (e) => {
-        e.preventDefault();
+      // Method change handler - corrected selector
+      $(document).on("change", "#wpcf7-sf-method", (e) => {
+        this.handleMethodChange($(e.target).val());
+      });
+
+      // Mail tag insertion
+      $(document).on("click", ".xml_mailtag", (e) => {
+        this.insertMailTag($(e.target));
+      });
+
+      // Debug log toggle
+      $(document).on("click", ".debug-log-trigger", () => {
         this.toggleDebugLog();
       });
 
-      // Mail tag insertion handlers
-      $(document).on("click", ".xml_mailtag", (e) => {
-        this.insertMailTag(e.target, "template");
+      // API URL validation - corrected selector
+      $(document).on("blur", "#wpcf7-sf-base-url", (e) => {
+        this.validateUrl($(e.target).val());
       });
 
-      $(document).on("click", ".json_mailtag", (e) => {
-        this.insertMailTag(e.target, "json_template");
+      // Test API connection
+      $(document).on("click", "#test-api-connection", () => {
+        this.testApiConnection();
       });
 
-      // Form validation handlers
-      $(document).on("blur", "#wpcf7-api-base-url", (e) => {
-        this.validateUrl(e.target);
-      });
-
-      // Send to API checkbox handler
-      $(document).on("change", "#wpcf7-api-send-to-api", (e) => {
-        this.toggleApiSectionVisibility(e.target.checked);
-      });
-
-      // Auto-save functionality
-      $(document).on("change", "input, select, textarea", (e) => {
-        if ($(e.target).closest("#cf7-api-integration").length) {
-          this.markFormAsChanged();
-        }
+      // Send to API checkbox toggle
+      $(document).on("change", "#wpcf7-sf-send-to-api", (e) => {
+        this.toggleApiSectionVisibility($(e.target).is(":checked"));
       });
     }
 
@@ -99,7 +97,7 @@
      * @return {void}
      */
     setupInputTypeToggle() {
-      const inputType = $("#wpcf7-api-input-type").val();
+      const inputType = $("#wpcf7-sf-input-type").val();
       if (inputType) {
         this.handleInputTypeChange(inputType);
       }
@@ -119,21 +117,33 @@
       // Add new body class
       $("body").addClass(`cf7-input-type-${selectedType}`);
 
-      // Show/hide relevant sections
+      // Show/hide relevant sections - corrected selector
       $("fieldset[data-cf7index]").hide();
       $(`fieldset[data-cf7index="${selectedType}"]`).show();
 
-      // Show/hide method selection for applicable types
+      // Show/hide method selection for applicable types - corrected selector
       const $methodRow = $(".cf7_row[data-cf7index]");
       if (selectedType === "xml") {
         $methodRow.hide();
-        $("#wpcf7-api-method").val("POST");
+        $("#wpcf7-sf-method").val("POST");
       } else {
         $methodRow.show();
       }
 
       // Update placeholder text based on type
       this.updatePlaceholders(selectedType);
+    }
+
+    /**
+     * Handle method change
+     *
+     * @since 1.0.0
+     * @param {string} method The selected method
+     * @return {void}
+     */
+    handleMethodChange(method) {
+      // Add any specific handling for method changes
+      console.log("Method changed to:", method);
     }
 
     /**
@@ -144,7 +154,7 @@
      * @return {void}
      */
     updatePlaceholders(type) {
-      const $baseUrl = $("#wpcf7-api-base-url");
+      const $baseUrl = $("#wpcf7-sf-base-url");
 
       switch (type) {
         case "params":
@@ -204,16 +214,25 @@
      * Insert mail tag into template
      *
      * @since 1.0.0
-     * @param {HTMLElement} element The clicked mail tag element
-     * @param {string} targetField The target textarea field name
+     * @param {jQuery} $element The clicked mail tag element
      * @return {void}
      */
-    insertMailTag(element, targetField) {
-      const $element = $(element);
+    insertMailTag($element) {
       const tagText = $element.text();
-      const $textarea = $(`textarea[name="${targetField}"]`);
+      
+      // Find the currently active textarea
+      let $textarea = null;
+      
+      // Check which fieldset is currently visible
+      const currentInputType = $("#wpcf7-sf-input-type").val();
+      
+      if (currentInputType === "xml") {
+        $textarea = $('textarea[name="template"]');
+      } else if (currentInputType === "json") {
+        $textarea = $('textarea[name="json_template"]');
+      }
 
-      if ($textarea.length === 0) {
+      if (!$textarea || $textarea.length === 0) {
         return;
       }
 
@@ -250,9 +269,9 @@
      * @return {void}
      */
     validateApiUrl() {
-      const $baseUrl = $("#wpcf7-api-base-url");
+      const $baseUrl = $("#wpcf7-sf-base-url");
       if ($baseUrl.length && $baseUrl.val()) {
-        this.validateUrl($baseUrl[0]);
+        this.validateUrl($baseUrl.val());
       }
     }
 
@@ -260,27 +279,26 @@
      * Validate URL format
      *
      * @since 1.0.0
-     * @param {HTMLElement} input The URL input element
+     * @param {string} url The URL to validate
      * @return {void}
      */
-    validateUrl(input) {
-      const $input = $(input);
-      const url = $input.val().trim();
-
+    validateUrl(url) {
+      const $input = $("#wpcf7-sf-base-url");
+      
       // Remove existing validation classes
       $input.removeClass("valid invalid");
 
-      if (!url) {
+      if (!url.trim()) {
         return;
       }
 
       try {
         new URL(url);
         $input.addClass("valid");
-        this.showValidationMessage(input, "Valid URL format", "success");
+        this.showValidationMessage($input[0], "Valid URL format", "success");
       } catch (e) {
         $input.addClass("invalid");
-        this.showValidationMessage(input, "Invalid URL format", "error");
+        this.showValidationMessage($input[0], "Invalid URL format", "error");
       }
     }
 
@@ -327,6 +345,8 @@
       if (isChecked) {
         $apiSections.slideDown(300);
         $fieldsets.slideDown(300);
+        // Also trigger the input type change to show the correct section
+        this.handleInputTypeChange($("#wpcf7-sf-input-type").val());
       } else {
         $apiSections.slideUp(300);
         $fieldsets.slideUp(300);
@@ -334,58 +354,35 @@
     }
 
     /**
-     * Mark form as changed
-     *
-     * @since 1.0.0
-     * @return {void}
-     */
-    markFormAsChanged() {
-      if (!window.cf7ApiFormChanged) {
-        window.cf7ApiFormChanged = true;
-
-        // Add visual indicator
-        const $saveButton = $("#publishing-action .button-primary");
-        if ($saveButton.length) {
-          $saveButton.addClass("cf7-api-needs-save");
-        }
-      }
-    }
-
-    /**
      * Test API connection
      *
      * @since 1.0.0
-     * @param {string} url The API URL to test
-     * @param {object} settings The API settings
      * @return {Promise} Test result promise
      */
-    async testApiConnection(url, settings) {
-      const $testButton = $(".cf7-api-test-connection");
+    async testApiConnection() {
+      const $testButton = $("#test-api-connection");
       const originalText = $testButton.text();
+      const url = $("#wpcf7-sf-base-url").val();
+
+      if (!url.trim()) {
+        this.showApiTestResult("Please enter an API URL first", "error");
+        return;
+      }
 
       try {
         // Show loading state
         $testButton.prop("disabled", true).text("Testing...");
 
-        const response = await $.ajax({
-          url: cf7_api_admin.ajax_url,
-          method: "POST",
-          data: {
-            action: "cf7_api_test_connection",
-            nonce: cf7_api_admin.nonce,
-            api_url: url,
-            settings: settings
-          }
+        // Simple test - just check if URL is reachable
+        const response = await fetch(url, {
+          method: "HEAD",
+          mode: "no-cors"
         });
 
-        if (response.success) {
-          this.showApiTestResult("Connection successful!", "success");
-        } else {
-          this.showApiTestResult(response.data.message || "Connection failed", "error");
-        }
+        this.showApiTestResult("URL appears to be reachable", "success");
 
       } catch (error) {
-        this.showApiTestResult("Connection test failed: " + error.responseText, "error");
+        this.showApiTestResult("Could not reach the URL: " + error.message, "error");
       } finally {
         // Restore button state
         $testButton.prop("disabled", false).text(originalText);
@@ -408,7 +405,7 @@
       const $result = $(`<div class="cf7-api-test-result cf7-api-notice ${type}">${message}</div>`);
 
       // Insert after test button
-      $(".cf7-api-test-connection").after($result);
+      $("#test-api-connection").after($result);
 
       // Auto-hide after 5 seconds
       setTimeout(() => {
@@ -423,12 +420,12 @@
      *
      * @since 1.0.0
      * @param {Event} e The form submit event
-     * @return {void}
+     * @return {boolean} Whether to allow submission
      */
     handleFormSubmission(e) {
       // Basic validation before submission
-      const $baseUrl = $("#wpcf7-api-base-url");
-      const $sendToApi = $("#wpcf7-api-send-to-api");
+      const $baseUrl = $("#wpcf7-sf-base-url");
+      const $sendToApi = $("#wpcf7-sf-send-to-api");
 
       if ($sendToApi.is(":checked") && !$baseUrl.val().trim()) {
         e.preventDefault();
@@ -448,7 +445,7 @@
    */
   $(document).ready(() => {
     // Only initialize on CF7 admin pages
-    if ($(".wpcf7-form-table").length || $("#cf7-api-integration").length) {
+    if ($(".wpcf7-form-table").length || $("#wpcf7-sf-input-type").length) {
       new CF7ApiAdmin();
     }
   });
@@ -460,62 +457,58 @@
    */
   $(() => {
     const validationCSS = `
-            <style>
-                .cf7_row input.valid {
-                    border-color: #00a32a;
-                }
-                .cf7_row input.invalid {
-                    border-color: #d63638;
-                }
-                .validation-message {
-                    display: block;
-                    margin-top: 5px;
-                    padding: 8px 12px;
-                    border-radius: 4px;
-                    font-size: 13px;
-                }
-                .validation-message.success {
-                    background: #d1f2eb;
-                    color: #155724;
-                    border: 1px solid #00a32a;
-                }
-                .validation-message.error {
-                    background: #f8d7da;
-                    color: #721c24;
-                    border: 1px solid #d63638;
-                }
-                .validation-message.warning {
-                    background: #fff3cd;
-                    color: #856404;
-                    border: 1px solid #dba617;
-                }
-                .xml_mailtag.inserted, .json_mailtag.inserted {
-                    background: #00a32a !important;
-                    color: white !important;
-                    transform: scale(1.05);
-                    transition: all 0.3s ease;
-                }
-                .cf7-api-needs-save {
-                    background: #dba617 !important;
-                    border-color: #dba617 !important;
-                }
-                .cf7-api-test-result {
-                    margin-top: 10px;
-                    padding: 8px 12px;
-                    border-radius: 4px;
-                }
-                .cf7-api-test-result.success {
-                    background: #d1f2eb;
-                    color: #155724;
-                    border: 1px solid #00a32a;
-                }
-                .cf7-api-test-result.error {
-                    background: #f8d7da;
-                    color: #721c24;
-                    border: 1px solid #d63638;
-                }
-            </style>
-        `;
+      <style>
+        .cf7_row input.valid {
+          border-color: #00a32a;
+        }
+        .cf7_row input.invalid {
+          border-color: #d63638;
+        }
+        .validation-message {
+          display: block;
+          margin-top: 5px;
+          padding: 8px 12px;
+          border-radius: 4px;
+          font-size: 13px;
+        }
+        .validation-message.success {
+          background: #d1f2eb;
+          color: #155724;
+          border: 1px solid #00a32a;
+        }
+        .validation-message.error {
+          background: #f8d7da;
+          color: #721c24;
+          border: 1px solid #d63638;
+        }
+        .validation-message.warning {
+          background: #fff3cd;
+          color: #856404;
+          border: 1px solid #dba617;
+        }
+        .xml_mailtag.inserted, .json_mailtag.inserted {
+          background: #00a32a !important;
+          color: white !important;
+          transform: scale(1.05);
+          transition: all 0.3s ease;
+        }
+        .cf7-api-test-result {
+          margin-top: 10px;
+          padding: 8px 12px;
+          border-radius: 4px;
+        }
+        .cf7-api-test-result.success {
+          background: #d1f2eb;
+          color: #155724;
+          border: 1px solid #00a32a;
+        }
+        .cf7-api-test-result.error {
+          background: #f8d7da;
+          color: #721c24;
+          border: 1px solid #d63638;
+        }
+      </style>
+    `;
     $("head").append(validationCSS);
   });
 

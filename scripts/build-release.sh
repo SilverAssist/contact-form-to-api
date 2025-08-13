@@ -111,29 +111,48 @@ print_status "Installing production dependencies..."
 if [ -f "${PROJECT_ROOT}/composer.json" ]; then
     cd "${PROJECT_ROOT}"
     
-    # Create temporary composer.json without dev dependencies
-    TEMP_COMPOSER=$(mktemp)
-    cat composer.json > "$TEMP_COMPOSER"
-    
-    # Install production dependencies in build directory
+    # Install production dependencies
     if command -v composer >/dev/null 2>&1; then
-        composer install --no-dev --optimize-autoloader --no-interaction 2>/dev/null
+        print_status "  • Installing production dependencies with Composer..."
         
-        if [ -d "${PROJECT_ROOT}/vendor" ]; then
-            cp -r "${PROJECT_ROOT}/vendor" "$PACKAGE_DIR/"
-            print_status "  ✓ Composer dependencies installed"
+        # Save current composer.lock for restoration
+        if [ -f "composer.lock" ]; then
+            cp "composer.lock" "composer.lock.backup"
+        fi
+        
+        # Install production-only dependencies
+        if composer install --no-dev --optimize-autoloader --no-interaction; then
+            if [ -d "${PROJECT_ROOT}/vendor" ]; then
+                cp -r "${PROJECT_ROOT}/vendor" "$PACKAGE_DIR/"
+                print_success "  ✓ Composer dependencies installed successfully"
+            else
+                print_error "Vendor directory not created after composer install"
+                exit 1
+            fi
             
-            # Restore dev dependencies
+            # Restore development dependencies for local development
+            print_status "  • Restoring development dependencies..."
+            if [ -f "composer.lock.backup" ]; then
+                mv "composer.lock.backup" "composer.lock"
+            fi
             composer install --optimize-autoloader --no-interaction >/dev/null 2>&1
+        else
+            print_error "Failed to install Composer dependencies"
+            exit 1
         fi
     else
-        print_warning "Composer not found. Skipping dependency installation."
+        print_error "Composer not found. This plugin requires Composer dependencies."
+        print_error "Please install Composer: https://getcomposer.org/download/"
+        exit 1
     fi
     
-    # Copy composer files
+    # Copy composer files to package
     cp "${PROJECT_ROOT}/composer.json" "$PACKAGE_DIR/"
     
     cd "${PROJECT_ROOT}"
+else
+    print_error "composer.json not found"
+    exit 1
 fi
 
 # Create readme.txt for WordPress.org
@@ -276,6 +295,23 @@ if [ "$PACKAGE_VERSION" != "$VERSION" ]; then
     exit 1
 fi
 
+# Check if Composer autoloader exists
+if [ ! -f "${PACKAGE_DIR}/vendor/autoload.php" ]; then
+    print_error "Composer autoloader missing from package"
+    print_error "The plugin requires 'vendor/autoload.php' to function properly"
+    exit 1
+fi
+
+# Check if required directories exist
+required_dirs=("src" "assets" "languages")
+for dir in "${required_dirs[@]}"; do
+    if [ ! -d "${PACKAGE_DIR}/${dir}" ]; then
+        print_warning "Directory missing from package: ${dir}"
+    else
+        print_status "  ✓ ${dir}/ directory included"
+    fi
+done
+
 print_success "  ✓ Package validation passed"
 
 # Create ZIP archive
@@ -305,9 +341,9 @@ fi
 
 cd "${PROJECT_ROOT}"
 
-# Generate checksums
+# Generate checksums (for CI/CD)
 if [ -f "$ZIP_PATH" ]; then
-    print_status "Generating checksums..."
+    print_status "Generating checksums for CI/CD..."
     
     cd "$(dirname "$ZIP_PATH")"
     ZIP_FILENAME=$(basename "$ZIP_PATH")
@@ -333,8 +369,8 @@ if [ -f "$ZIP_PATH" ]; then
     cd "${PROJECT_ROOT}"
 fi
 
-# Generate build info
-print_status "Generating build information..."
+# Generate build info (for CI/CD)
+print_status "Generating build information for CI/CD..."
 
 BUILD_INFO="${BUILD_DIR}/build-info.txt"
 cat > "$BUILD_INFO" << EOF
@@ -357,7 +393,36 @@ Directories: $(find "${PACKAGE_DIR}" -type d | wc -l | tr -d ' ')
 Size: $(du -sh "${PACKAGE_DIR}" | cut -f1)
 EOF
 
-print_success "  ✓ Build information generated"
+print_success "  ✓ Build information generated (for CI/CD)"
+
+# Clean up for local development (move CI/CD files)
+if [ -z "$GITHUB_ACTIONS" ]; then
+    print_status "Cleaning up for local development..."
+    
+    # Create CI folder for non-essential files
+    CI_DIR="${BUILD_DIR}/ci-artifacts"
+    mkdir -p "$CI_DIR"
+    
+    # Move CI/CD artifacts to separate folder
+    if [ -f "${BUILD_DIR}/contact-form-to-api-${VERSION}.zip.md5" ]; then
+        mv "${BUILD_DIR}/contact-form-to-api-${VERSION}.zip.md5" "$CI_DIR/"
+    fi
+    if [ -f "${BUILD_DIR}/contact-form-to-api-${VERSION}.zip.sha256" ]; then
+        mv "${BUILD_DIR}/contact-form-to-api-${VERSION}.zip.sha256" "$CI_DIR/"
+    fi
+    if [ -f "$BUILD_INFO" ]; then
+        mv "$BUILD_INFO" "$CI_DIR/"
+    fi
+    
+    # Move release folder to CI artifacts too (it's just an unpacked version)
+    if [ -d "$RELEASE_DIR" ]; then
+        mv "$RELEASE_DIR" "$CI_DIR/"
+    fi
+    
+    print_success "  ✓ CI/CD artifacts moved to ci-artifacts/ folder"
+    print_status "  📁 Main build folder now contains only: contact-form-to-api-${VERSION}.zip"
+    print_status "  📁 CI/CD files available in: ci-artifacts/"
+fi
 
 # Summary
 echo ""
@@ -366,31 +431,56 @@ echo "BUILD COMPLETED SUCCESSFULLY"
 echo "=================================================="
 echo "Version: $VERSION"
 echo "Build directory: $BUILD_DIR"
-echo "Package directory: $PACKAGE_DIR"
 
-if [ -f "$ZIP_PATH" ]; then
-    echo "ZIP archive: $ZIP_PATH"
+if [ -z "$GITHUB_ACTIONS" ]; then
+    echo ""
+    print_success "📦 MAIN OUTPUT:"
+    echo "  🎯 Ready to use: ${BUILD_DIR}/contact-form-to-api-${VERSION}.zip"
+    echo ""
+    print_status "📁 CI/CD ARTIFACTS (moved to ci-artifacts/):"
+    echo "  📋 Build info, checksums, and release folder"
+else
+    echo "Package directory: $PACKAGE_DIR"
+    if [ -f "$ZIP_PATH" ]; then
+        echo "ZIP archive: $ZIP_PATH"
+    fi
+    echo "Build info: $BUILD_INFO"
 fi
-
-echo "Build info: $BUILD_INFO"
 echo ""
 print_success "🎉 Release package ready for distribution!"
 echo ""
 
 print_status "Next steps:"
-echo "  1. Test the package in a clean WordPress installation"
-echo "  2. Upload to WordPress.org SVN repository (if applicable)"
-echo "  3. Create GitHub release with the ZIP file"
-echo "  4. Update any distribution channels"
+if [ -z "$GITHUB_ACTIONS" ]; then
+    echo "  1. Test the package: build/contact-form-to-api-${VERSION}.zip"
+    echo "  2. Install in a clean WordPress installation"
+    echo "  3. Upload to WordPress.org (if applicable)"
+    echo "  4. Create GitHub release (CI/CD will handle this automatically)"
+else
+    echo "  1. Test the package in a clean WordPress installation"
+    echo "  2. Upload to WordPress.org SVN repository (if applicable)"
+    echo "  3. Create GitHub release with the ZIP file"
+    echo "  4. Update any distribution channels"
+fi
 echo ""
 
 print_warning "Remember to test the package before distributing!"
 
 # Final file listing
-echo "Package contents:"
-find "${PACKAGE_DIR}" -type f | sed "s|${PACKAGE_DIR}/|  - |" | head -20
-if [ $(find "${PACKAGE_DIR}" -type f | wc -l) -gt 20 ]; then
-    echo "  ... and $(($(find "${PACKAGE_DIR}" -type f | wc -l) - 20)) more files"
+if [ -z "$GITHUB_ACTIONS" ]; then
+    echo ""
+    print_success "🎯 Ready to distribute: build/contact-form-to-api-${VERSION}.zip"
+    
+    if [ -f "${BUILD_DIR}/contact-form-to-api-${VERSION}.zip" ]; then
+        ZIP_SIZE=$(du -h "${BUILD_DIR}/contact-form-to-api-${VERSION}.zip" | cut -f1)
+        echo "   Size: ${ZIP_SIZE}"
+    fi
+else
+    echo "Package contents:"
+    find "${PACKAGE_DIR}" -type f | sed "s|${PACKAGE_DIR}/|  - |" | head -20
+    if [ $(find "${PACKAGE_DIR}" -type f | wc -l) -gt 20 ]; then
+        echo "  ... and $(($(find "${PACKAGE_DIR}" -type f | wc -l) - 20)) more files"
+    fi
 fi
 
 exit 0

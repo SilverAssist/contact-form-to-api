@@ -164,7 +164,6 @@ body.cf7-input-type-json .cf7_row[data-cf7index="params"] {
 /* Debug log styling */
 .debug-log-trigger {
   display: block;
-  width: 100%;
   padding: 12px 15px;
   background: #0073aa;
   color: white;

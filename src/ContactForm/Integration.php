@@ -15,6 +15,7 @@
 
 namespace ContactFormToAPI\ContactForm;
 
+use ContactFormToAPI\Core\Plugin;
 use WPCF7_ContactForm;
 use WPCF7_Submission;
 
@@ -43,20 +44,12 @@ class Integration
     private const CHECKBOX_YES_NO = ["1", "0"];
 
   /**
-   * Text domain for translations
+   * Plugin instance for accessing shared methods
    *
    * @since 1.0.0
-   * @var string
+   * @var Plugin
    */
-    private string $textdomain = CONTACT_FORM_TO_API_TEXT_DOMAIN;
-
-  /**
-   * Plugin version
-   *
-   * @since 1.0.0
-   * @var string
-   */
-    private string $version = CONTACT_FORM_TO_API_VERSION;
+    private Plugin $plugin;
 
   /**
    * Current form object for processing
@@ -78,9 +71,11 @@ class Integration
    * Constructor
    *
    * @since 1.0.0
+   * @param Plugin $plugin Plugin instance for accessing shared methods
    */
-    public function __construct()
+    public function __construct(Plugin $plugin)
     {
+        $this->plugin = $plugin;
         $this->init();
     }
 
@@ -136,7 +131,7 @@ class Integration
     public function add_integrations_tab(array $panels): array
     {
         $panels["cf7-api-integration"] = [
-        "title" => \__("API Integration", $this->textdomain),
+        "title" => \__("API Integration", $this->plugin->get_textdomain()),
         "callback" => [$this, "render_integration_panel"]
         ];
 
@@ -184,17 +179,25 @@ class Integration
    */
     public function render_integration_panel(WPCF7_ContactForm $post): void
     {
-      // Get form data for CF7 5.7+ compatibility
+      // Get form data using the SAME METHOD as old plugin for compatibility
         $wpcf7 = WPCF7_ContactForm::get_current();
         $form_id = $wpcf7->id();
-        $wpcf7_api_data = \get_post_meta($form_id, "_wpcf7_api_data", true) ?: [];
-        $wpcf7_api_data_map = \get_post_meta($form_id, "_wpcf7_api_data_map", true) ?: [];
-        $wpcf7_api_data_template = \get_post_meta($form_id, "_template", true) ?: "";
-        $wpcf7_api_json_data_template = \get_post_meta($form_id, "_json_template", true) ?: "";
+
+      // Use the SAME approach as the old plugin - get from properties first, fallback to post_meta
+        $wpcf7_api_data = $wpcf7->prop("wpcf7_api_data") ?: \get_post_meta($form_id, "_wpcf7_api_data", true);
+        $wpcf7_api_data_map = $wpcf7->prop("wpcf7_api_data_map") ?: \get_post_meta($form_id, "_wpcf7_api_data_map", true);
+        $wpcf7_api_data_template = $wpcf7->prop("template") ?: \get_post_meta($form_id, "_template", true);
+        $wpcf7_api_json_data_template = stripslashes($wpcf7->prop("json_template") ?: \get_post_meta($form_id, "_json_template", true));
+
+        \trigger_error("CF7 API Integration - Rendering form {$form_id}", E_USER_NOTICE);
+        \trigger_error("CF7 API Integration - Retrieved wpcf7_api_data: " . print_r($wpcf7_api_data, true), E_USER_NOTICE);
 
         $mail_tags = $this->get_mail_tags($post, []);
 
-      // Set defaults
+      // Set defaults - same as old plugin
+        if (!is_array($wpcf7_api_data)) {
+            $wpcf7_api_data = [];
+        }
         $wpcf7_api_data["base_url"] ??= "";
         $wpcf7_api_data["send_to_api"] ??= "";
         $wpcf7_api_data["input_type"] ??= "params";
@@ -219,166 +222,168 @@ class Integration
             </fields>
         </report>
     </reports>
-</update>", $this->textdomain);
+</update>", $this->plugin->get_textdomain());
 
         $json_placeholder = \__("*** THIS IS AN EXAMPLE ** USE YOUR JSON ACCORDING TO YOUR API DOCUMENTATION **
-{ \"name\":\"[fullname]\", \"age\":30, \"car\":null }", $this->textdomain);
+{ \"name\":\"[fullname]\", \"age\":30, \"car\":null }", $this->plugin->get_textdomain());
 
         ?>
-    <h2><?php \esc_html_e("API Integration", $this->textdomain); ?></h2>
+    <div id="cf7-api-integration">
+      <h2><?php \esc_html_e("API Integration", $this->plugin->get_textdomain()); ?></h2>
 
-    <fieldset>
+      <fieldset>
         <?php \do_action("cf7_api_before_base_fields", $post); ?>
 
-      <div class="cf7_row">
-        <label for="wpcf7-api-send-to-api">
-          <input type="checkbox" id="wpcf7-api-send-to-api" name="wpcf7-api[send_to_api]" <?php \checked($wpcf7_api_data["send_to_api"], "on"); ?> />
-          <?php \esc_html_e("Send to API?", $this->textdomain); ?>
-        </label>
-      </div>
+        <div class="cf7_row">
+          <label for="wpcf7-sf-send-to-api">
+            <input type="checkbox" id="wpcf7-sf-send-to-api" name="wpcf7-sf[send_to_api]" <?php \checked($wpcf7_api_data["send_to_api"], "on"); ?> />
+            <?php \esc_html_e("Send to API?", $this->plugin->get_textdomain()); ?>
+          </label>
+        </div>
 
-      <div class="cf7_row">
-        <label for="wpcf7-api-base-url">
-          <?php \esc_html_e("Base URL", $this->textdomain); ?>
-          <input type="text" id="wpcf7-api-base-url" name="wpcf7-api[base_url]" class="large-text"
-            value="<?php echo \esc_attr($wpcf7_api_data["base_url"]); ?>" />
-        </label>
-      </div>
+        <div class="cf7_row">
+          <label for="wpcf7-sf-base-url">
+            <?php \esc_html_e("Base URL", $this->plugin->get_textdomain()); ?>
+            <input type="text" id="wpcf7-sf-base-url" name="wpcf7-sf[base_url]" class="large-text"
+              value="<?php echo \esc_attr($wpcf7_api_data["base_url"]); ?>" />
+          </label>
+        </div>
 
-      <hr>
+        <hr>
 
-      <div class="cf7_row">
-        <label for="wpcf7-api-input-type">
-          <span class="cf7-label-in"><?php \esc_html_e("Input type", $this->textdomain); ?></span>
-          <select id="wpcf7-api-input-type" name="wpcf7-api[input_type]">
-            <option value="params" <?php \selected($wpcf7_api_data["input_type"], "params"); ?>>
-              <?php \esc_html_e("Parameters - GET/POST", $this->textdomain); ?>
-            </option>
-            <option value="xml" <?php \selected($wpcf7_api_data["input_type"], "xml"); ?>>
-              <?php \esc_html_e("XML", $this->textdomain); ?>
-            </option>
-            <option value="json" <?php \selected($wpcf7_api_data["input_type"], "json"); ?>>
-              <?php \esc_html_e("JSON", $this->textdomain); ?>
-            </option>
-          </select>
-        </label>
-      </div>
+        <div class="cf7_row">
+          <label for="wpcf7-sf-input-type">
+            <span class="cf7-label-in"><?php \esc_html_e("Input type", $this->plugin->get_textdomain()); ?></span>
+            <select id="wpcf7-sf-input-type" name="wpcf7-sf[input_type]">
+              <option value="params" <?php \selected($wpcf7_api_data["input_type"], "params"); ?>>
+                <?php \esc_html_e("Parameters - GET/POST", $this->plugin->get_textdomain()); ?>
+              </option>
+              <option value="xml" <?php \selected($wpcf7_api_data["input_type"], "xml"); ?>>
+                <?php \esc_html_e("XML", $this->plugin->get_textdomain()); ?>
+              </option>
+              <option value="json" <?php \selected($wpcf7_api_data["input_type"], "json"); ?>>
+                <?php \esc_html_e("JSON", $this->plugin->get_textdomain()); ?>
+              </option>
+            </select>
+          </label>
+        </div>
 
-      <div class="cf7_row" data-cf7index="params,json">
-        <label for="wpcf7-api-method">
-          <span class="cf7-label-in"><?php \esc_html_e("Method", $this->textdomain); ?></span>
-          <select id="wpcf7-api-method" name="wpcf7-api[method]">
-            <option value="GET" <?php \selected($wpcf7_api_data["method"], "GET"); ?>>GET</option>
-            <option value="POST" <?php \selected($wpcf7_api_data["method"], "POST"); ?>>POST</option>
-          </select>
-        </label>
-      </div>
+        <div class="cf7_row" data-cf7index="params,json">
+          <label for="wpcf7-sf-method">
+            <span class="cf7-label-in"><?php \esc_html_e("Method", $this->plugin->get_textdomain()); ?></span>
+            <select id="wpcf7-sf-method" name="wpcf7-sf[method]">
+              <option value="GET" <?php \selected($wpcf7_api_data["method"], "GET"); ?>>GET</option>
+              <option value="POST" <?php \selected($wpcf7_api_data["method"], "POST"); ?>>POST</option>
+            </select>
+          </label>
+        </div>
 
         <?php \do_action("cf7_api_after_base_fields", $post); ?>
-    </fieldset>
+      </fieldset>
 
-    <!-- Parameters Mapping Section -->
-    <fieldset data-cf7index="params">
-      <div class="cf7_row">
-        <h2><?php \esc_html_e("Form fields", $this->textdomain); ?></h2>
+      <!-- Parameters Mapping Section -->
+      <fieldset data-cf7index="params">
+        <div class="cf7_row">
+          <h2><?php \esc_html_e("Form fields", $this->plugin->get_textdomain()); ?></h2>
 
-        <table>
-          <tr>
-            <th><?php \esc_html_e("Form fields", $this->textdomain); ?></th>
-            <th><?php \esc_html_e("API Key", $this->textdomain); ?></th>
-            <th></th>
-          </tr>
-          <?php foreach ($mail_tags as $mail_tag) : ?>
+          <table>
+            <tr>
+              <th><?php \esc_html_e("Form fields", $this->plugin->get_textdomain()); ?></th>
+              <th><?php \esc_html_e("API Key", $this->plugin->get_textdomain()); ?></th>
+              <th></th>
+            </tr>
+            <?php foreach ($mail_tags as $mail_tag) : ?>
                 <?php if ($mail_tag->type === "checkbox") : ?>
                     <?php foreach ($mail_tag->values as $checkbox_row) : ?>
-                <tr>
+                  <tr>
                     <th style="text-align:left;"><?php echo \esc_html("{$mail_tag->name} ({$checkbox_row})"); ?></th>
+                    <td>
+                      <input type="text"
+                        name="qs_wpcf7_api_map[<?php echo \esc_attr($mail_tag->name); ?>][<?php echo \esc_attr($checkbox_row); ?>]"
+                        class="large-text"
+                        value="<?php echo \esc_attr($wpcf7_api_data_map[$mail_tag->name][$checkbox_row] ?? ""); ?>" />
+                    </td>
+                  </tr>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                <tr>
+                  <th style="text-align:left;"><?php echo \esc_html($mail_tag->name); ?></th>
                   <td>
-                    <input type="text"
-                      name="cf7_api_map[<?php echo \esc_attr($mail_tag->name); ?>][<?php echo \esc_attr($checkbox_row); ?>]"
-                      class="large-text"
-                      value="<?php echo \esc_attr($wpcf7_api_data_map[$mail_tag->name][$checkbox_row] ?? ""); ?>" />
+                    <input type="text" name="qs_wpcf7_api_map[<?php echo \esc_attr($mail_tag->name); ?>]" class="large-text"
+                      value="<?php echo \esc_attr($wpcf7_api_data_map[$mail_tag->name] ?? ""); ?>" />
                   </td>
                 </tr>
-                    <?php endforeach; ?>
-                <?php else : ?>
-              <tr>
-                <th style="text-align:left;"><?php echo \esc_html($mail_tag->name); ?></th>
-                <td>
-                  <input type="text" name="cf7_api_map[<?php echo \esc_attr($mail_tag->name); ?>]" class="large-text"
-                    value="<?php echo \esc_attr($wpcf7_api_data_map[$mail_tag->name] ?? ""); ?>" />
-                </td>
-              </tr>
                 <?php endif; ?>
-          <?php endforeach; ?>
-        </table>
-      </div>
-    </fieldset>
-
-    <!-- XML Template Section -->
-    <fieldset data-cf7index="xml">
-      <div class="cf7_row">
-        <h2><?php \esc_html_e("XML Template", $this->textdomain); ?></h2>
-
-        <legend>
-          <?php foreach ($mail_tags as $mail_tag) : ?>
-            <span class="xml_mailtag mailtag code">[<?php echo \esc_html($mail_tag->name); ?>]</span>
-          <?php endforeach; ?>
-        </legend>
-
-        <textarea name="template" rows="12" dir="ltr"
-          placeholder="<?php echo \esc_attr($xml_placeholder); ?>"><?php echo \esc_textarea($wpcf7_api_data_template); ?></textarea>
-      </div>
-    </fieldset>
-
-    <!-- JSON Template Section -->
-    <fieldset data-cf7index="json">
-      <div class="cf7_row">
-        <h2><?php \esc_html_e("JSON Template", $this->textdomain); ?></h2>
-
-        <legend>
-          <?php foreach ($mail_tags as $mail_tag) : ?>
-                <?php if ($mail_tag->type === "checkbox") : ?>
-                    <?php foreach ($mail_tag->values as $checkbox_row) : ?>
-                <span class="xml_mailtag mailtag code">[<?php echo \esc_html("{$mail_tag->name}-{$checkbox_row}"); ?>]</span>
-                    <?php endforeach; ?>
-                <?php else : ?>
-              <span class="xml_mailtag mailtag code">[<?php echo \esc_html($mail_tag->name); ?>]</span>
-                <?php endif; ?>
-          <?php endforeach; ?>
-        </legend>
-
-        <textarea name="json_template" rows="12" dir="ltr"
-          placeholder="<?php echo \esc_attr($json_placeholder); ?>"><?php echo \esc_textarea($wpcf7_api_json_data_template); ?></textarea>
-      </div>
-    </fieldset>
-
-    <!-- Debug Log Section -->
-        <?php if ($wpcf7_api_data["debug_log"]) : ?>
-      <fieldset>
-        <div class="cf7_row">
-          <label class="debug-log-trigger">
-            + <?php \esc_html_e("DEBUG LOG (View last transmission attempt)", $this->textdomain); ?>
-          </label>
-          <div class="debug-log-wrap">
-            <h3 class="debug_log_title"><?php \esc_html_e("LAST API CALL", $this->textdomain); ?></h3>
-            <div class="debug_log">
-              <h4><?php \esc_html_e("Called URL", $this->textdomain); ?>:</h4>
-              <textarea rows="1"><?php echo \esc_textarea(trim($debug_url)); ?></textarea>
-
-              <h4><?php \esc_html_e("Params", $this->textdomain); ?>:</h4>
-              <textarea rows="10"><?php print_r($debug_params); ?></textarea>
-
-              <h4><?php \esc_html_e("Remote server result", $this->textdomain); ?>:</h4>
-              <textarea rows="10"><?php print_r($debug_result); ?></textarea>
-
-              <h4><?php \esc_html_e("Error logs", $this->textdomain); ?>:</h4>
-              <textarea rows="10"><?php print_r($error_logs); ?></textarea>
-            </div>
-          </div>
+            <?php endforeach; ?>
+          </table>
         </div>
       </fieldset>
+
+      <!-- XML Template Section -->
+      <fieldset data-cf7index="xml">
+        <div class="cf7_row">
+          <h2><?php \esc_html_e("XML Template", $this->plugin->get_textdomain()); ?></h2>
+
+          <legend>
+            <?php foreach ($mail_tags as $mail_tag) : ?>
+              <span class="xml_mailtag mailtag code">[<?php echo \esc_html($mail_tag->name); ?>]</span>
+            <?php endforeach; ?>
+          </legend>
+
+          <textarea name="template" rows="12" dir="ltr"
+            placeholder="<?php echo \esc_attr($xml_placeholder); ?>"><?php echo \esc_textarea($wpcf7_api_data_template); ?></textarea>
+        </div>
+      </fieldset>
+
+      <!-- JSON Template Section -->
+      <fieldset data-cf7index="json">
+        <div class="cf7_row">
+          <h2><?php \esc_html_e("JSON Template", $this->plugin->get_textdomain()); ?></h2>
+
+          <legend>
+            <?php foreach ($mail_tags as $mail_tag) : ?>
+                <?php if ($mail_tag->type === "checkbox") : ?>
+                    <?php foreach ($mail_tag->values as $checkbox_row) : ?>
+                  <span class="xml_mailtag mailtag code">[<?php echo \esc_html("{$mail_tag->name}-{$checkbox_row}"); ?>]</span>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                <span class="xml_mailtag mailtag code">[<?php echo \esc_html($mail_tag->name); ?>]</span>
+                <?php endif; ?>
+            <?php endforeach; ?>
+          </legend>
+
+          <textarea name="json_template" rows="12" dir="ltr"
+            placeholder="<?php echo \esc_attr($json_placeholder); ?>"><?php echo \esc_textarea($wpcf7_api_json_data_template); ?></textarea>
+        </div>
+      </fieldset>
+
+      <!-- Debug Log Section -->
+        <?php if ($wpcf7_api_data["debug_log"]) : ?>
+        <fieldset>
+          <div class="cf7_row">
+            <label class="debug-log-trigger">
+              + <?php \esc_html_e("DEBUG LOG (View last transmission attempt)", $this->plugin->get_textdomain()); ?>
+            </label>
+            <div class="debug-log-wrap">
+              <h3 class="debug_log_title"><?php \esc_html_e("LAST API CALL", $this->plugin->get_textdomain()); ?></h3>
+              <div class="debug_log">
+                <h4><?php \esc_html_e("Called URL", $this->plugin->get_textdomain()); ?>:</h4>
+                <textarea rows="1"><?php echo \esc_textarea(trim($debug_url)); ?></textarea>
+
+                <h4><?php \esc_html_e("Params", $this->plugin->get_textdomain()); ?>:</h4>
+                <textarea rows="10"><?php print_r($debug_params); ?></textarea>
+
+                <h4><?php \esc_html_e("Remote server result", $this->plugin->get_textdomain()); ?>:</h4>
+                <textarea rows="10"><?php print_r($debug_result); ?></textarea>
+
+                <h4><?php \esc_html_e("Error logs", $this->plugin->get_textdomain()); ?>:</h4>
+                <textarea rows="10"><?php print_r($error_logs); ?></textarea>
+              </div>
+            </div>
+          </div>
+        </fieldset>
         <?php endif; ?>
+    </div>
         <?php
     }
 
@@ -391,23 +396,35 @@ class Integration
    */
     public function save_contact_form_details(WPCF7_ContactForm $contact_form): void
     {
+        $form_id = $contact_form->id();
+
+      // Debug: Log what we received in $_POST
+        \trigger_error("CF7 API Integration - Saving form {$form_id}", E_USER_NOTICE);
+        \trigger_error("CF7 API Integration - POST data keys: " . implode(", ", array_keys($_POST)), E_USER_NOTICE);
+
+      // Use the same approach as the old plugin and Paubox - ONLY properties, no post_meta
         $properties = $contact_form->get_properties();
 
-        $properties["wpcf7_api_data"] = $_POST["wpcf7-api"] ?? "";
-        $properties["wpcf7_api_data_map"] = $_POST["cf7_api_map"] ?? "";
+      // Use the same POST field names as the old plugin for backward compatibility
+        $properties["wpcf7_api_data"] = $_POST["wpcf7-sf"] ?? [];
+        $properties["wpcf7_api_data_map"] = $_POST["qs_wpcf7_api_map"] ?? [];
         $properties["template"] = $_POST["template"] ?? "";
         $properties["json_template"] = stripslashes($_POST["json_template"] ?? "");
 
+      // Set properties using CF7's native method (same as old plugin and Paubox)
         $contact_form->set_properties($properties);
-    }
 
-  /**
-   * Send form data to API
-   *
-   * @since 1.0.0
-   * @param WPCF7_ContactForm $contact_form Contact form object (CF7)
-   * @return void
-   */
+        \trigger_error("CF7 API Integration - Properties set via CF7 native method", E_USER_NOTICE);
+        \trigger_error("CF7 API Integration - Saved wpcf7_api_data: " . print_r($properties["wpcf7_api_data"], true), E_USER_NOTICE);
+
+        \trigger_error("CF7 API Integration - Save complete for form {$form_id}", E_USER_NOTICE);
+    }  /**
+     * Send form data to API
+     *
+     * @since 1.0.0
+     * @param WPCF7_ContactForm $contact_form Contact form object (CF7)
+     * @return void
+     */
     public function send_data_to_api(WPCF7_ContactForm $contact_form): void
     {
         $this->clear_error_log($contact_form->id());
@@ -420,16 +437,16 @@ class Integration
 
         $form_id = $contact_form->id();
 
-      // Get form configuration
-        $api_data = \get_post_meta($form_id, "_wpcf7_api_data", true) ?: [];
-        $api_data_map = \get_post_meta($form_id, "_wpcf7_api_data_map", true) ?: [];
-        $api_data_template = \get_post_meta($form_id, "_template", true) ?: "";
-        $api_json_template = \get_post_meta($form_id, "_json_template", true) ?: "";
+      // Use the same approach as old plugin - try properties first, fallback to post_meta
+        $api_data = $contact_form->prop("wpcf7_api_data") ?: \get_post_meta($form_id, "_wpcf7_api_data", true);
+        $api_data_map = $contact_form->prop("wpcf7_api_data_map") ?: \get_post_meta($form_id, "_wpcf7_api_data_map", true);
+        $api_data_template = $contact_form->prop("template") ?: \get_post_meta($form_id, "_template", true);
+        $api_json_template = stripslashes($contact_form->prop("json_template") ?: \get_post_meta($form_id, "_json_template", true));
 
-      // Always enable debug logging
+      // Always enable debug logging (same as old plugin)
         $api_data["debug_log"] = true;
 
-      // Check if form should be sent to API
+      // Check if form should be sent to API (same logic as old plugin)
         if (empty($api_data["send_to_api"]) || $api_data["send_to_api"] !== "on") {
             return;
         }
@@ -657,14 +674,14 @@ class Integration
     private function get_xml(string $lead)
     {
         if (!function_exists("simplexml_load_string")) {
-            return new \WP_Error("xml-error", \__("XML functions not available", $this->textdomain));
+            return new \WP_Error("xml-error", \__("XML functions not available", $this->plugin->get_textdomain()));
         }
 
         libxml_use_internal_errors(true);
         $xml = simplexml_load_string($lead);
 
         if ($xml === false) {
-            return new \WP_Error("xml-error", \__("XML Structure is incorrect", $this->textdomain));
+            return new \WP_Error("xml-error", \__("XML Structure is incorrect", $this->plugin->get_textdomain()));
         }
 
         return $xml;
@@ -730,20 +747,20 @@ class Integration
             return;
         }
 
-        $plugin_url = \plugin_dir_url("{dirname(__DIR__, 2)}/contact-form-to-api.php");
+        $plugin_url = $this->plugin->get_plugin_url();
 
         \wp_enqueue_style(
             "cf7-api-admin",
             "{$plugin_url}assets/css/admin.css",
             [],
-            $this->version
+            $this->plugin->get_version()
         );
 
         \wp_enqueue_script(
             "cf7-api-admin",
             "{$plugin_url}assets/js/admin.js",
             ["jquery"],
-            $this->version,
+            $this->plugin->get_version(),
             true
         );
     }

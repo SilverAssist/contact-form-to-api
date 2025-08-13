@@ -122,7 +122,7 @@ class Plugin
     private function init_components(): void
     {
       // Initialize Contact Form 7 Integration
-        $this->cf7_integration = new Integration();
+        $this->cf7_integration = new Integration($this);
     }
 
   /**
@@ -195,15 +195,37 @@ class Plugin
    * @since 1.0.0
    * @return string
    */
-    private function get_plugin_url(): string
+    public function get_plugin_url(): string
     {
         if ($this->plugin_url === null) {
             $this->plugin_url = defined("CONTACT_FORM_TO_API_PLUGIN_URL")
               ? CONTACT_FORM_TO_API_PLUGIN_URL
-              : plugin_dir_url(dirname(dirname(__DIR__)) . "/contact-form-to-api.php");
+              : \plugin_dir_url(dirname(dirname(__DIR__)) . "/contact-form-to-api.php");
         }
 
         return $this->plugin_url;
+    }
+
+  /**
+   * Get plugin version
+   *
+   * @since 1.0.0
+   * @return string
+   */
+    public function get_version(): string
+    {
+        return $this->version;
+    }
+
+  /**
+   * Get plugin text domain
+   *
+   * @since 1.0.0
+   * @return string
+   */
+    public function get_textdomain(): string
+    {
+        return $this->textdomain;
     }
 }
 
