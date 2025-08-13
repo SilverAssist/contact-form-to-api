@@ -406,7 +406,9 @@ class Integration
 
       // Set properties using CF7's native method (same as old plugin and Paubox)
         $contact_form->set_properties($properties);
-    }  /**
+    }
+
+    /**
      * Send form data to API
      *
      * @since 1.0.0
