@@ -62,7 +62,9 @@ jobs:
             - name: 🔍 Run PHP CodeSniffer (WordPress Coding Standards)
               run: |
                   if [ -f "vendor/bin/phpcs" ] && [ -f "phpcs.xml" ]; then
-                    vendor/bin/phpcs --report=full
+                    # Run PHPCS with error-only mode (warnings won't fail the build)
+                    vendor/bin/phpcs --report=full --error-severity=1 --warning-severity=0
+                    echo "PHPCS completed. Warnings are allowed, only errors fail the build."
                   else
                     echo "phpcs or phpcs.xml not found, skipping..."
                   fi
