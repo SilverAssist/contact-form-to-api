@@ -197,12 +197,27 @@ jobs:
                   echo "Testing compatibility with WordPress ${{ matrix.wp-version }} and PHP ${{ matrix.php }}"
 
                   # Basic syntax check
-                  find . -name "*.php" -not -path "./vendor/*" -not -path "./.git/*" -exec php -l {} \; | grep -v "No syntax errors"
+                  echo "Running PHP syntax check..."
+                  syntax_errors=$(find . -name "*.php" -not -path "./vendor/*" -not -path "./.git/*" -exec php -l {} \; | grep -v "No syntax errors" || true)
+
+                  if [ -n "$syntax_errors" ]; then
+                    echo "❌ PHP syntax errors found:"
+                    echo "$syntax_errors"
+                    exit 1
+                  else
+                    echo "✅ PHP syntax check passed"
+                  fi
 
                   # Check for deprecated functions (basic check)
-                  if grep -r -E "(mysql_|ereg|split)" --include="*.php" . | grep -v "vendor/" | grep -v ".git/"; then
-                    echo "⚠️ Deprecated functions found!"
+                  echo "Checking for deprecated functions..."
+                  deprecated=$(grep -r -E "(mysql_|ereg|split)" --include="*.php" . 2>/dev/null | grep -v "vendor/" | grep -v ".git/" || true)
+
+                  if [ -n "$deprecated" ]; then
+                    echo "⚠️ Deprecated functions found:"
+                    echo "$deprecated"
                     exit 1
+                  else
+                    echo "✅ No deprecated functions found"
                   fi
 
                   echo "✅ WordPress compatibility check passed"
