@@ -189,9 +189,6 @@ class Integration
         $wpcf7_api_data_template = $wpcf7->prop("template") ?: \get_post_meta($form_id, "_template", true);
         $wpcf7_api_json_data_template = stripslashes($wpcf7->prop("json_template") ?: \get_post_meta($form_id, "_json_template", true));
 
-        \trigger_error("CF7 API Integration - Rendering form {$form_id}", E_USER_NOTICE);
-        \trigger_error("CF7 API Integration - Retrieved wpcf7_api_data: " . print_r($wpcf7_api_data, true), E_USER_NOTICE);
-
         $mail_tags = $this->get_mail_tags($post, []);
 
       // Set defaults - same as old plugin
@@ -398,10 +395,6 @@ class Integration
     {
         $form_id = $contact_form->id();
 
-      // Debug: Log what we received in $_POST
-        \trigger_error("CF7 API Integration - Saving form {$form_id}", E_USER_NOTICE);
-        \trigger_error("CF7 API Integration - POST data keys: " . implode(", ", array_keys($_POST)), E_USER_NOTICE);
-
       // Use the same approach as the old plugin and Paubox - ONLY properties, no post_meta
         $properties = $contact_form->get_properties();
 
@@ -413,11 +406,6 @@ class Integration
 
       // Set properties using CF7's native method (same as old plugin and Paubox)
         $contact_form->set_properties($properties);
-
-        \trigger_error("CF7 API Integration - Properties set via CF7 native method", E_USER_NOTICE);
-        \trigger_error("CF7 API Integration - Saved wpcf7_api_data: " . print_r($properties["wpcf7_api_data"], true), E_USER_NOTICE);
-
-        \trigger_error("CF7 API Integration - Save complete for form {$form_id}", E_USER_NOTICE);
     }  /**
      * Send form data to API
      *
