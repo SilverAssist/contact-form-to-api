@@ -46,7 +46,8 @@ class Updater extends GitHubUpdater
             $github_repo,
             [
                 "plugin_name" => "Contact Form 7 to API",
-                "plugin_description" => "WordPress plugin that integrates Contact Form 7 with external APIs, allowing form submissions to be sent to custom API endpoints with advanced configuration options.",
+                "plugin_description" => "WordPress plugin that integrates Contact Form 7 with external APIs, " .
+                    "allowing form submissions to be sent to custom API endpoints with advanced configuration options.",
                 "plugin_author" => "Silver Assist",
                 "plugin_homepage" => "https://github.com/{$github_repo}",
                 "requires_wordpress" => CONTACT_FORM_TO_API_MIN_WP_VERSION,
