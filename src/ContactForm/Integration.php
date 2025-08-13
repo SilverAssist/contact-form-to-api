@@ -38,9 +38,9 @@ class Integration
    *
    * @since 1.0.0
    */
-    private const array CHECKBOX_VALUES = ["TRUE", "FALSE", "1", "0", "true", "false", 1, 0, true, false];
-    private const array CHECKED_VALUES = ["TRUE", "1", "true", 1, true];
-    private const array CHECKBOX_YES_NO = ["1", "0"];
+    private const CHECKBOX_VALUES = ["TRUE", "FALSE", "1", "0", "true", "false", 1, 0, true, false];
+    private const CHECKED_VALUES = ["TRUE", "1", "true", 1, true];
+    private const CHECKBOX_YES_NO = ["1", "0"];
 
   /**
    * Text domain for translations
