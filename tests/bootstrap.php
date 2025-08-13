@@ -19,6 +19,91 @@ if (!defined("ABSPATH")) {
     define("ABSPATH", dirname(__DIR__) . "/");
 }
 
+// Mock WordPress functions FIRST (in global namespace)
+if (!function_exists("__")) {
+    function __($text, $domain = "default")
+    {
+        return $text;
+    }
+}
+
+if (!function_exists("esc_html__")) {
+    function esc_html__($text, $domain = "default")
+    {
+        return htmlspecialchars($text, ENT_QUOTES, "UTF-8");
+    }
+}
+
+if (!function_exists("add_action")) {
+    function add_action($hook, $callback, $priority = 10, $accepted_args = 1)
+    {
+        return true;
+    }
+}
+
+if (!function_exists("add_filter")) {
+    function add_filter($hook, $callback, $priority = 10, $accepted_args = 1)
+    {
+        return true;
+    }
+}
+
+if (!function_exists("do_action")) {
+    function do_action($hook, ...$args)
+    {
+        return true;
+    }
+}
+
+if (!function_exists("is_admin")) {
+    function is_admin()
+    {
+        return false;
+    }
+}
+
+if (!function_exists("wp_enqueue_style")) {
+    function wp_enqueue_style($handle, $src = "", $deps = [], $ver = false, $media = "all")
+    {
+        return true;
+    }
+}
+
+if (!function_exists("wp_enqueue_script")) {
+    function wp_enqueue_script($handle, $src = "", $deps = [], $ver = false, $in_footer = false)
+    {
+        return true;
+    }
+}
+
+if (!function_exists("wp_localize_script")) {
+    function wp_localize_script($handle, $object_name, $data)
+    {
+        return true;
+    }
+}
+
+if (!function_exists("admin_url")) {
+    function admin_url($path = "", $scheme = "admin")
+    {
+        return "http://example.com/wp-admin/" . $path;
+    }
+}
+
+if (!function_exists("wp_create_nonce")) {
+    function wp_create_nonce($action = -1)
+    {
+        return "test_nonce_" . $action;
+    }
+}
+
+if (!function_exists("plugin_dir_url")) {
+    function plugin_dir_url($file)
+    {
+        return "http://example.com/wp-content/plugins/" . basename(dirname($file)) . "/";
+    }
+}
+
 // Define testing constants
 if (!defined("CONTACT_FORM_TO_API_TESTING")) {
     define("CONTACT_FORM_TO_API_TESTING", true);
@@ -113,35 +198,6 @@ if ($wp_tests_dir && file_exists($wp_tests_dir . "/includes/functions.php")) {
 } else {
     // Minimal setup if WordPress test suite is not available
     echo "Warning: WordPress test suite not found. Running tests in isolation mode.\n";
-
-    // Mock WordPress functions for isolated testing
-    if (!function_exists("__")) {
-        function __($text, $domain = "default")
-        {
-            return $text;
-        }
-    }
-
-    if (!function_exists("esc_html__")) {
-        function esc_html__($text, $domain = "default")
-        {
-            return htmlspecialchars($text, ENT_QUOTES, "UTF-8");
-        }
-    }
-
-    if (!function_exists("add_action")) {
-        function add_action($hook, $callback, $priority = 10, $accepted_args = 1)
-        {
-            return true;
-        }
-    }
-
-    if (!function_exists("add_filter")) {
-        function add_filter($hook, $callback, $priority = 10, $accepted_args = 1)
-        {
-            return true;
-        }
-    }
 }
 
 // Load test helpers
