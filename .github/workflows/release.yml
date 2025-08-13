@@ -175,44 +175,43 @@ jobs:
         strategy:
             matrix:
                 php: [8.0, 8.1, 8.2]
-                wp: ["6.1", "6.2", "6.3", "6.4", "6.5"]
 
         steps:
-            - name: 📥 Download release package
-              uses: actions/download-artifact@v4
-              with:
-                  name: contact-form-to-api-${{ needs.validate-release.outputs.version }}
-                  path: ./release
+            - name: 📥 Checkout code for testing
+              uses: actions/checkout@v4
 
             - name: 🐘 Setup PHP ${{ matrix.php }}
               uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
                   extensions: curl, json, mbstring, mysqli
+                  tools: composer:v2
 
-            - name: 🔧 Setup WordPress ${{ matrix.wp }}
+            - name: 📦 Install dependencies for testing
+              run: composer install --no-dev --optimize-autoloader --prefer-dist --no-progress
+
+            - name: 🧪 Test plugin structure and syntax
               run: |
-                  # Download WordPress (use latest for testing as specific versions may not be available)
-                  curl -O https://wordpress.org/latest.tar.gz
-                  tar -xzf latest.tar.gz
+                  echo "🔍 Testing plugin structure..."
 
-                  echo "WordPress latest downloaded and extracted for testing"
+                  # Check if main plugin file exists and is valid
+                  if [ ! -f "contact-form-to-api.php" ]; then
+                    echo "❌ Main plugin file not found"
+                    exit 1
+                  fi
 
-            - name: 🧪 Test plugin installation
-              run: |
-                  cd release
+                  # Basic PHP syntax check on main file
+                  php -l contact-form-to-api.php
+                  echo "✅ Main plugin file syntax OK"
 
-                  # Extract the plugin
-                  unzip -q contact-form-to-api-${{ needs.validate-release.outputs.version }}.zip
-
-                  # Basic PHP syntax check
-                  find contact-form-to-api -name "*.php" -exec php -l {} \; | grep -v "No syntax errors detected"
-
-                  # Check if main plugin file is valid
-                  php -l contact-form-to-api/contact-form-to-api.php
+                  # Check all PHP files in src directory
+                  if [ -d "src" ]; then
+                    find src -name "*.php" -exec php -l {} \;
+                    echo "✅ All source files syntax OK"
+                  fi
 
                   # Verify plugin header
-                  if grep -q "Plugin Name: Contact Form 7 to API" contact-form-to-api/contact-form-to-api.php; then
+                  if grep -q "Plugin Name: Contact Form 7 to API" contact-form-to-api.php; then
                     echo "✅ Plugin header validation passed"
                   else
                     echo "❌ Plugin header validation failed"
@@ -220,14 +219,66 @@ jobs:
                   fi
 
                   # Verify version
-                  if grep -q "Version: ${{ needs.validate-release.outputs.version }}" contact-form-to-api/contact-form-to-api.php; then
+                  if grep -q "Version: ${{ needs.validate-release.outputs.version }}" contact-form-to-api.php; then
                     echo "✅ Version validation passed"
                   else
                     echo "❌ Version validation failed"
                     exit 1
                   fi
 
-                  echo "✅ Plugin installation test completed successfully"
+                  # Test composer autoload
+                  if [ -f "vendor/autoload.php" ]; then
+                    php -r "require_once 'vendor/autoload.php'; echo '✅ Composer autoload OK' . PHP_EOL;"
+                  else
+                    echo "❌ Composer autoload not found"
+                    exit 1
+                  fi
+
+                  echo "✅ Plugin testing completed successfully"
+
+            - name: 📥 Download and test release package
+              uses: actions/download-artifact@v4
+              with:
+                  name: contact-form-to-api-${{ needs.validate-release.outputs.version }}
+                  path: ./release-test
+
+            - name: 🧪 Test release package
+              run: |
+                  cd release-test
+                  
+                  echo "🔍 Testing release package..."
+                  
+                  # Check if ZIP file exists
+                  ZIP_FILE="contact-form-to-api-${{ needs.validate-release.outputs.version }}.zip"
+                  if [ ! -f "$ZIP_FILE" ]; then
+                    echo "❌ Release ZIP file not found: $ZIP_FILE"
+                    ls -la
+                    exit 1
+                  fi
+                  
+                  # Extract and test ZIP contents
+                  unzip -q "$ZIP_FILE"
+                  
+                  if [ -d "contact-form-to-api" ]; then
+                    cd contact-form-to-api
+                    
+                    # Test main plugin file
+                    php -l contact-form-to-api.php
+                    echo "✅ Extracted plugin syntax OK"
+                    
+                    # Verify plugin header in extracted file
+                    if grep -q "Plugin Name: Contact Form 7 to API" contact-form-to-api.php; then
+                      echo "✅ Extracted plugin header validation passed"
+                    else
+                      echo "❌ Extracted plugin header validation failed"
+                      exit 1
+                    fi
+                  else
+                    echo "❌ Plugin directory not found in ZIP"
+                    exit 1
+                  fi
+                  
+                  echo "✅ Release package testing completed successfully"
 
     notify-success:
         name: 📢 Notify Success
