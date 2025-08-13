@@ -67,9 +67,17 @@ Thumbs.db
 
 # Testing
 /tests/vendor/
-coverage/
-phpunit.xml
+/tests/coverage/
+/tests/logs/
+/tests/.phpunit.cache/
 .phpunit.result.cache
+phpunit.xml.bak
+
+# Code Quality Tools
+.phpcs-cache
+.phpstan-cache/
+phpstan.neon.bak
+phpcs.xml.bak
 
 # Environment variables
 .env

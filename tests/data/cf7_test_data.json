@@ -1,0 +1,93 @@
+{
+  "cf7_forms": [
+    {
+      "id": 123,
+      "title": "Contact Form Test",
+      "form_fields": [
+        {
+          "name": "your-name",
+          "type": "text",
+          "required": true,
+          "label": "Your Name"
+        },
+        {
+          "name": "your-email",
+          "type": "email",
+          "required": true,
+          "label": "Your Email"
+        },
+        {
+          "name": "your-subject",
+          "type": "text",
+          "required": false,
+          "label": "Subject"
+        },
+        {
+          "name": "your-message",
+          "type": "textarea",
+          "required": false,
+          "label": "Your Message"
+        }
+      ]
+    }
+  ],
+  "sample_submissions": [
+    {
+      "your-name": "John Doe",
+      "your-email": "john.doe@example.com",
+      "your-subject": "Test Inquiry",
+      "your-message": "This is a test message from the contact form."
+    },
+    {
+      "your-name": "Jane Smith",
+      "your-email": "jane.smith@example.com",
+      "your-subject": "Product Question",
+      "your-message": "I have a question about your services."
+    }
+  ],
+  "api_configurations": [
+    {
+      "name": "default_json",
+      "api_url": "https://httpbin.org/post",
+      "api_method": "POST",
+      "api_format": "json",
+      "field_mapping": {
+        "your-name": "name",
+        "your-email": "email",
+        "your-subject": "subject",
+        "your-message": "message"
+      }
+    },
+    {
+      "name": "webhook_xml",
+      "api_url": "https://webhook.site/test",
+      "api_method": "POST",
+      "api_format": "xml",
+      "field_mapping": {
+        "your-name": "customer_name",
+        "your-email": "customer_email",
+        "your-message": "inquiry_text"
+      }
+    }
+  ],
+  "expected_api_responses": [
+    {
+      "scenario": "successful_submission",
+      "status_code": 200,
+      "response_body": {
+        "success": true,
+        "message": "Data received successfully",
+        "id": "12345"
+      }
+    },
+    {
+      "scenario": "api_error",
+      "status_code": 400,
+      "response_body": {
+        "success": false,
+        "error": "Invalid data format",
+        "code": "INVALID_FORMAT"
+      }
+    }
+  ]
+}

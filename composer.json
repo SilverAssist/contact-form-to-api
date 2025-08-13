@@ -1,15 +1,14 @@
 {
   "name": "silverassist/contact-form-to-api",
   "description": "WordPress plugin to integrate Contact Form 7 with external APIs",
-  "type": "wordpress-plugin",
-  "license": "GPL-2.0+",
   "version": "1.0.0",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
   "authors": [
     {
       "name": "Silver Assist",
-      "email": "dev@silverassist.com",
-      "homepage": "https://silverassist.com",
-      "role": "Developer"
+      "email": "info@silverassist.com",
+      "homepage": "https://silverassist.com"
     }
   ],
   "keywords": [
@@ -31,15 +30,17 @@
   "minimum-stability": "stable",
   "prefer-stable": true,
   "require": {
-    "php": ">=8.3",
+    "php": ">=8.0",
     "composer/installers": "^1.12 || ^2.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.5",
-    "wp-coding-standards/wpcs": "^2.3",
+    "phpunit/phpunit": "^9.6",
+    "wp-coding-standards/wpcs": "^3.0",
     "squizlabs/php_codesniffer": "^3.7",
+    "phpstan/phpstan": "^1.10",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
-    "phpcompatibility/phpcompatibility-wp": "^2.1"
+    "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "slevomat/coding-standard": "^8.0"
   },
   "autoload": {
     "psr-4": {
@@ -59,11 +60,19 @@
     "lint:fix": [
       "phpcbf --standard=WordPress --extensions=php --ignore=vendor/,node_modules/,tests/ ."
     ],
+    "phpcs": "phpcs",
+    "phpcbf": "phpcbf",
+    "phpstan": "phpstan analyse src/ --level=8",
     "test": [
       "phpunit"
     ],
     "test:coverage": [
       "phpunit --coverage-html coverage"
+    ],
+    "check": [
+      "@phpcs",
+      "@phpstan",
+      "@test"
     ],
     "validate": [
       "composer validate --strict --no-check-all"
@@ -78,8 +87,12 @@
   "scripts-descriptions": {
     "lint": "Run PHP CodeSniffer with WordPress coding standards",
     "lint:fix": "Fix PHP CodeSniffer issues automatically",
+    "phpcs": "Run PHP CodeSniffer",
+    "phpcbf": "Fix PHP CodeSniffer issues automatically",
+    "phpstan": "Run PHPStan static analysis",
     "test": "Run PHPUnit tests",
     "test:coverage": "Run PHPUnit tests with coverage report",
+    "check": "Run all quality checks (phpcs, phpstan, test)",
     "validate": "Validate composer.json",
     "install:dev": "Install dependencies for development",
     "install:prod": "Install dependencies for production"
@@ -92,7 +105,7 @@
     "optimize-autoloader": true,
     "sort-packages": true,
     "platform": {
-      "php": "7.4"
+      "php": "8.0"
     }
   },
   "extra": {

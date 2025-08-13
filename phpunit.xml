@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.6/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         backupGlobals="false"
+         colors="true"
+         processIsolation="false"
+         stopOnFailure="false"
+         cacheResultFile="./tests/.phpunit.cache/test-results"
+         failOnRisky="true"
+         failOnWarning="true">
+    
+    <!-- Test Suites Configuration -->
+    <testsuites>
+        <testsuite name="Contact Form 7 to API Test Suite">
+            <directory>tests/Unit</directory>
+            <directory>tests/Integration</directory>
+            <directory>tests/ContactForm</directory>
+        </testsuite>
+        <testsuite name="Unit Tests">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Integration Tests">
+            <directory>tests/Integration</directory>
+        </testsuite>
+        <testsuite name="Contact Form Tests">
+            <directory>tests/ContactForm</directory>
+        </testsuite>
+    </testsuites>
+
+    <!-- Source Code Coverage -->
+    <coverage>
+        <include>
+            <directory suffix=".php">./src</directory>
+            <file>./contact-form-to-api.php</file>
+        </include>
+        <exclude>
+            <directory>./src/Templates</directory>
+            <directory>./vendor</directory>
+        </exclude>
+    </coverage>
+
+    <!-- Code Coverage Reports -->
+    <logging>
+        <log type="coverage-html" target="./tests/coverage/html"/>
+        <log type="coverage-text" target="./tests/coverage/coverage.txt"/>
+        <log type="coverage-xml" target="./tests/coverage/xml"/>
+        <log type="junit" target="./tests/logs/junit.xml"/>
+        <log type="testdox-html" target="./tests/logs/testdox.html"/>
+        <log type="testdox-text" target="./tests/logs/testdox.txt"/>
+    </logging>
+
+    <!-- PHP Configuration -->
+    <php>
+        <!-- WordPress Test Environment -->
+        <const name="WP_TESTS_DOMAIN" value="example.org"/>
+        <const name="WP_TESTS_EMAIL" value="admin@example.org"/>
+        <const name="WP_TESTS_TITLE" value="Test Blog"/>
+        <const name="WP_PHP_BINARY" value="php"/>
+        <const name="WP_TESTS_FORCE_KNOWN_BUGS" value="false"/>
+        
+        <!-- Plugin Specific Constants -->
+        <const name="CONTACT_FORM_TO_API_TESTING" value="true"/>
+        <const name="CONTACT_FORM_TO_API_TEST_MODE" value="true"/>
+        
+        <!-- Contact Form 7 Testing -->
+        <const name="CF7_TESTING" value="true"/>
+        
+        <!-- Database Configuration for Tests -->
+        <server name="DB_NAME" value="cf7_api_test"/>
+        <server name="DB_USER" value="root"/>
+        <server name="DB_PASSWORD" value=""/>
+        <server name="DB_HOST" value="localhost"/>
+        
+        <!-- Environment Variables -->
+        <env name="WP_ENVIRONMENT_TYPE" value="test"/>
+        <env name="WP_DEBUG" value="true"/>
+        <env name="WP_DEBUG_LOG" value="false"/>
+        <env name="WP_DEBUG_DISPLAY" value="false"/>
+    </php>
+</phpunit>
