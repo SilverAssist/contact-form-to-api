@@ -17,12 +17,6 @@ vendor/
 !vendor/autoload.php
 !vendor/composer/
 
-# Node.js (if used)
-package-lock.json
-yarn.lock
-.npm/
-.yarn/
-
 # Composer
 composer.phar
 composer.lock

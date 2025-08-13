@@ -60,21 +60,6 @@ Thumbs.db
 # Logs
 logs/
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Node.js (if used)
-node_modules/
-package.json
-package-lock.json
-yarn.lock
-
-# Sass/CSS Development
-.sass-cache/
-*.css.map
-*.sass.map
-*.scss.map
 
 # Translation Development Files
 *.pot~

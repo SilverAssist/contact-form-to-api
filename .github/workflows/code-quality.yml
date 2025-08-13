@@ -9,8 +9,6 @@ on:
             - "**.css"
             - "composer.json"
             - "composer.lock"
-            - "package.json"
-            - "package-lock.json"
             - ".github/workflows/**"
     pull_request:
         branches: [main]
@@ -20,8 +18,6 @@ on:
             - "**.css"
             - "composer.json"
             - "composer.lock"
-            - "package.json"
-            - "package-lock.json"
             - ".github/workflows/**"
 
 jobs:
@@ -197,45 +193,3 @@ jobs:
                   fi
 
                   echo "✅ WordPress compatibility check passed"
-
-    asset-optimization:
-        name: 🎨 Asset Optimization
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: 📥 Checkout code
-              uses: actions/checkout@v4
-
-            - name: 📦 Setup Node.js
-              uses: actions/setup-node@v4
-              if: hashFiles('package.json') != ''
-              with:
-                  node-version: "18"
-                  cache: "npm"
-                  cache-dependency-path: |
-                      package-lock.json
-
-            - name: 📥 Install Node dependencies
-              if: hashFiles('package.json') != ''
-              run: npm ci
-
-            - name: 🔍 Lint CSS files
-              if: hashFiles('assets/css/*.css') != ''
-              run: |
-                  echo "Checking CSS files..."
-                  find assets/css -name "*.css" -exec echo "Checking: {}" \;
-
-            - name: 🔍 Lint JavaScript files  
-              if: hashFiles('assets/js/*.js') != ''
-              run: |
-                  echo "Checking JavaScript files..."
-                  find assets/js -name "*.js" -exec echo "Checking: {}" \;
-
-            - name: 📊 Check asset sizes
-              run: |
-                  echo "Asset size report:"
-                  if [ -d "assets" ]; then
-                    find assets -type f \( -name "*.css" -o -name "*.js" -o -name "*.png" -o -name "*.jpg" -o -name "*.gif" \) -exec ls -lh {} \; | awk '{print $5, $9}'
-                  else
-                    echo "No assets directory found"
-                  fi
