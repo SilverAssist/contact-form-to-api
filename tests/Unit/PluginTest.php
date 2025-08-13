@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Unit Tests for Core Plugin Class
  *
@@ -41,11 +42,11 @@ class PluginTest extends TestCase
     public function testPluginVersionFormat(): void
     {
         $version = CONTACT_FORM_TO_API_VERSION;
-        
+
         $this->assertIsString($version, "Plugin version should be a string");
         $this->assertMatchesRegularExpression(
-            "/^\d+\.\d+\.\d+$/", 
-            $version, 
+            "/^\d+\.\d+\.\d+$/",
+            $version,
             "Plugin version should follow semantic versioning (x.y.z)"
         );
     }
@@ -58,7 +59,7 @@ class PluginTest extends TestCase
     public function testTextDomainConstant(): void
     {
         $this->assertEquals(
-            "contact-form-to-api", 
+            "contact-form-to-api",
             CONTACT_FORM_TO_API_TEXT_DOMAIN,
             "Text domain should be 'contact-form-to-api'"
         );
@@ -105,10 +106,10 @@ class PluginTest extends TestCase
             if (method_exists("ContactFormToAPI\\Core\\Plugin", "getInstance")) {
                 $instance1 = Plugin::getInstance();
                 $instance2 = Plugin::getInstance();
-                
+
                 $this->assertSame(
-                    $instance1, 
-                    $instance2, 
+                    $instance1,
+                    $instance2,
                     "Plugin should follow singleton pattern"
                 );
             } else {
@@ -130,7 +131,7 @@ class PluginTest extends TestCase
             defined("CONTACT_FORM_TO_API_TESTING") && CONTACT_FORM_TO_API_TESTING,
             "Plugin should be running in testing mode"
         );
-        
+
         $this->assertTrue(
             defined("CONTACT_FORM_TO_API_TEST_MODE") && CONTACT_FORM_TO_API_TEST_MODE,
             "Plugin test mode should be enabled"
@@ -148,7 +149,7 @@ class PluginTest extends TestCase
         $core_classes = [
             "ContactFormToAPI\\Core\\Plugin"
         ];
-        
+
         foreach ($core_classes as $class_name) {
             $this->assertTrue(
                 class_exists($class_name) || interface_exists($class_name) || trait_exists($class_name),
@@ -170,7 +171,7 @@ class PluginTest extends TestCase
             PHP_VERSION,
             "PHP version should be 8.0 or higher"
         );
-        
+
         // Test required PHP extensions
         $required_extensions = ["json", "curl"];
         foreach ($required_extensions as $extension) {
@@ -192,11 +193,11 @@ class PluginTest extends TestCase
         if (!function_exists("__")) {
             $this->mockWordPressFunction("__", "mocked_translation");
         }
-        
+
         if (!function_exists("esc_html__")) {
             $this->mockWordPressFunction("esc_html__", "mocked_escaped_translation");
         }
-        
+
         // Test that text domain constant exists and has correct value
         $this->assertEquals(
             "contact-form-to-api",
@@ -214,14 +215,14 @@ class PluginTest extends TestCase
     {
         if (defined("CONTACT_FORM_TO_API_PLUGIN_DIR")) {
             $plugin_dir = CONTACT_FORM_TO_API_PLUGIN_DIR;
-            
+
             // Test essential directories exist
             $required_dirs = [
                 "src",
                 "assets",
                 "languages"
             ];
-            
+
             foreach ($required_dirs as $dir) {
                 $dir_path = $plugin_dir . $dir;
                 $this->assertDirectoryExists(
@@ -229,13 +230,13 @@ class PluginTest extends TestCase
                     "Required directory should exist: " . $dir
                 );
             }
-            
+
             // Test essential files exist
             $required_files = [
                 "composer.json",
                 "README.md"
             ];
-            
+
             foreach ($required_files as $file) {
                 $file_path = $plugin_dir . $file;
                 $this->assertFileExists(

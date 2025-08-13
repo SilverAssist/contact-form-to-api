@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Integration Tests for Contact Form 7
  *
@@ -28,7 +29,7 @@ class IntegrationTest extends CF7TestCase
     public function testCF7FormMockCreation(): void
     {
         $form = $this->createMockCF7Form();
-        
+
         $this->assertIsObject($form, "Mock CF7 form should be an object");
         $this->assertEquals(123, $form->id, "Form should have correct ID");
         $this->assertEquals("Test Contact Form", $form->title, "Form should have correct title");
@@ -43,7 +44,7 @@ class IntegrationTest extends CF7TestCase
     public function testFormSubmissionDataCreation(): void
     {
         $submission_data = $this->createMockSubmissionData();
-        
+
         $this->assertIsArray($submission_data, "Submission data should be an array");
         $this->assertArrayHasKey("your-name", $submission_data, "Should have name field");
         $this->assertArrayHasKey("your-email", $submission_data, "Should have email field");
@@ -58,7 +59,7 @@ class IntegrationTest extends CF7TestCase
     public function testCF7SubmissionMockCreation(): void
     {
         $submission = $this->createMockCF7Submission();
-        
+
         $this->assertIsObject($submission, "Mock submission should be an object");
         $this->assertIsArray($submission->posted_data, "Posted data should be an array");
         $this->assertEquals("mail_sent", $submission->status, "Status should be 'mail_sent'");
@@ -73,7 +74,7 @@ class IntegrationTest extends CF7TestCase
     public function testApiConfigurationCreation(): void
     {
         $config = $this->createTestApiConfig();
-        
+
         $this->assertIsArray($config, "API config should be an array");
         $this->assertTrue($config["enable_api"], "API should be enabled");
         $this->assertEquals("POST", $config["api_method"], "Should use POST method");
@@ -90,7 +91,7 @@ class IntegrationTest extends CF7TestCase
     {
         $config = $this->createTestApiConfig();
         $submission_data = $this->createMockSubmissionData();
-        
+
         // Simulate field mapping transformation
         $mapped_data = [];
         foreach ($config["field_mapping"] as $cf7_field => $api_field) {
@@ -98,7 +99,7 @@ class IntegrationTest extends CF7TestCase
                 $mapped_data[$api_field] = $submission_data[$cf7_field];
             }
         }
-        
+
         $this->assertArrayHasKey("name", $mapped_data, "Should have mapped name field");
         $this->assertArrayHasKey("email", $mapped_data, "Should have mapped email field");
         $this->assertEquals($submission_data["your-name"], $mapped_data["name"], "Name mapping should be correct");
@@ -114,9 +115,9 @@ class IntegrationTest extends CF7TestCase
     {
         $submission_data = $this->createMockSubmissionData();
         $json_data = json_encode($submission_data);
-        
+
         $this->assertJsonString($json_data, "Should produce valid JSON");
-        
+
         $decoded = json_decode($json_data, true);
         $this->assertIsArray($decoded, "JSON should decode to array");
         $this->assertEquals($submission_data, $decoded, "Decoded data should match original");
@@ -130,7 +131,7 @@ class IntegrationTest extends CF7TestCase
     public function testXmlFormatProcessing(): void
     {
         $submission_data = $this->createMockSubmissionData();
-        
+
         // Simulate XML conversion
         $xml = "<contact>\n";
         foreach ($submission_data as $key => $value) {
@@ -139,7 +140,7 @@ class IntegrationTest extends CF7TestCase
             $xml .= "  <{$safe_key}>{$safe_value}</{$safe_key}>\n";
         }
         $xml .= "</contact>";
-        
+
         $this->assertStringContainsString("<contact>", $xml, "Should contain root element");
         $this->assertStringContainsString("<your_name>", $xml, "Should contain name field");
         $this->assertStringContainsString("John Doe", $xml, "Should contain actual name value");
@@ -159,9 +160,9 @@ class IntegrationTest extends CF7TestCase
                 "User-Agent" => "CF7-API-Plugin/1.0.0"
             ]
         ]);
-        
+
         $headers = $config["api_headers"];
-        
+
         $this->assertArrayHasKey("Authorization", $headers, "Should have Authorization header");
         $this->assertArrayHasKey("Content-Type", $headers, "Should have Content-Type header");
         $this->assertEquals("Bearer test-token", $headers["Authorization"], "Authorization should be correct");
@@ -179,10 +180,10 @@ class IntegrationTest extends CF7TestCase
             "lead_id" => "12345",
             "status" => "processed"
         ]);
-        
+
         $this->assertEquals(200, $response["response"]["code"], "Should have 200 status code");
         $this->assertJsonString($response["body"], "Response body should be valid JSON");
-        
+
         $body = json_decode($response["body"], true);
         $this->assertTrue($body["success"], "Response should indicate success");
         $this->assertEquals("12345", $body["lead_id"], "Should have correct lead ID");
@@ -196,10 +197,10 @@ class IntegrationTest extends CF7TestCase
     public function testFailedApiResponse(): void
     {
         $response = $this->mockFailedApiResponse("Invalid email format", 422);
-        
+
         $this->assertEquals(422, $response["response"]["code"], "Should have 422 status code");
         $this->assertJsonString($response["body"], "Response body should be valid JSON");
-        
+
         $body = json_decode($response["body"], true);
         $this->assertFalse($body["success"], "Response should indicate failure");
         $this->assertEquals("Invalid email format", $body["error"], "Should have correct error message");
@@ -214,13 +215,13 @@ class IntegrationTest extends CF7TestCase
     {
         $template = "Hello [your-name], your email [your-email] was received.";
         $form_data = $this->createMockSubmissionData();
-        
+
         // Simulate mail tag replacement
         $processed = $template;
         foreach ($form_data as $field => $value) {
             $processed = str_replace("[{$field}]", $value, $processed);
         }
-        
+
         $this->assertCF7MailTagsProcessed($template, $processed, $form_data);
         $this->assertStringContainsString("Hello John Doe", $processed, "Should contain processed name");
         $this->assertStringContainsString("john.doe@example.com", $processed, "Should contain processed email");
@@ -234,7 +235,7 @@ class IntegrationTest extends CF7TestCase
     public function testApiTimeoutConfiguration(): void
     {
         $config = $this->createTestApiConfig(["timeout" => 60]);
-        
+
         $this->assertEquals(60, $config["timeout"], "Timeout should be configurable");
         $this->assertIsInt($config["timeout"], "Timeout should be an integer");
         $this->assertGreaterThan(0, $config["timeout"], "Timeout should be positive");
@@ -248,7 +249,7 @@ class IntegrationTest extends CF7TestCase
     public function testRetryMechanismConfiguration(): void
     {
         $config = $this->createTestApiConfig(["retry_attempts" => 5]);
-        
+
         $this->assertEquals(5, $config["retry_attempts"], "Retry attempts should be configurable");
         $this->assertIsInt($config["retry_attempts"], "Retry attempts should be an integer");
         $this->assertGreaterThanOrEqual(0, $config["retry_attempts"], "Retry attempts should be non-negative");
@@ -262,9 +263,9 @@ class IntegrationTest extends CF7TestCase
     public function testDebugModeFeatures(): void
     {
         $config = $this->createTestApiConfig(["debug_mode" => true]);
-        
+
         $this->assertTrue($config["debug_mode"], "Debug mode should be enabled");
-        
+
         // Test debug logging would be captured
         if ($config["debug_mode"]) {
             $debug_data = [
@@ -273,7 +274,7 @@ class IntegrationTest extends CF7TestCase
                 "request_method" => $config["api_method"],
                 "form_data" => $this->createMockSubmissionData()
             ];
-            
+
             $this->assertIsArray($debug_data, "Debug data should be an array");
             $this->assertArrayHasKey("timestamp", $debug_data, "Debug should include timestamp");
             $this->assertArrayHasKey("form_data", $debug_data, "Debug should include form data");

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PHPUnit Bootstrap for Contact Form 7 to API Plugin Tests
  *
@@ -78,7 +79,7 @@ if (!$wp_tests_dir) {
         dirname(__DIR__) . "/vendor/wordpress/wordpress-develop/tests/phpunit",
         "/usr/local/src/wordpress-tests-lib"
     ];
-    
+
     foreach ($possible_locations as $location) {
         if (file_exists($location . "/includes/functions.php")) {
             $wp_tests_dir = $location;
@@ -90,49 +91,54 @@ if (!$wp_tests_dir) {
 // Load WordPress test functions
 if ($wp_tests_dir && file_exists($wp_tests_dir . "/includes/functions.php")) {
     require_once $wp_tests_dir . "/includes/functions.php";
-    
+
     /**
      * Manually load the plugin being tested
      */
-    function _manually_load_plugin() {
+    function _manually_load_plugin()
+    {
         // Load Contact Form 7 first (dependency)
         if (defined("WP_PLUGIN_DIR") && file_exists(WP_PLUGIN_DIR . "/contact-form-7/wp-contact-form-7.php")) {
             require_once WP_PLUGIN_DIR . "/contact-form-7/wp-contact-form-7.php";
         }
-        
+
         // Load our plugin
         require_once dirname(__DIR__) . "/contact-form-to-api.php";
     }
-    
+
     \tests_add_filter("muplugins_loaded", "_manually_load_plugin");
-    
+
     // Start up the WP testing environment
     require_once $wp_tests_dir . "/includes/bootstrap.php";
 } else {
     // Minimal setup if WordPress test suite is not available
     echo "Warning: WordPress test suite not found. Running tests in isolation mode.\n";
-    
+
     // Mock WordPress functions for isolated testing
     if (!function_exists("__")) {
-        function __($text, $domain = "default") {
+        function __($text, $domain = "default")
+        {
             return $text;
         }
     }
-    
+
     if (!function_exists("esc_html__")) {
-        function esc_html__($text, $domain = "default") {
+        function esc_html__($text, $domain = "default")
+        {
             return htmlspecialchars($text, ENT_QUOTES, "UTF-8");
         }
     }
-    
+
     if (!function_exists("add_action")) {
-        function add_action($hook, $callback, $priority = 10, $accepted_args = 1) {
+        function add_action($hook, $callback, $priority = 10, $accepted_args = 1)
+        {
             return true;
         }
     }
-    
+
     if (!function_exists("add_filter")) {
-        function add_filter($hook, $callback, $priority = 10, $accepted_args = 1) {
+        function add_filter($hook, $callback, $priority = 10, $accepted_args = 1)
+        {
             return true;
         }
     }

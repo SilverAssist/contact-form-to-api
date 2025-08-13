@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Core Class
  *
@@ -17,7 +18,7 @@ use ContactFormToAPI\ContactForm\Integration;
 
 // Prevent direct access
 if (!defined("ABSPATH")) {
-  exit;
+    exit;
 }
 
 /**
@@ -29,22 +30,21 @@ if (!defined("ABSPATH")) {
  */
 class Plugin
 {
-
   /**
    * Plugin version
    *
    * @since 1.0.0
    * @var string
    */
-  private string $version = CONTACT_FORM_TO_API_VERSION;
+    private string $version = CONTACT_FORM_TO_API_VERSION;
 
   /**
    * Plugin URL
    *
    * @since 1.0.0
-   * @var string
+   * @var string|null
    */
-  private string $plugin_url = CONTACT_FORM_TO_API_PLUGIN_URL;
+    private ?string $plugin_url = null;
 
   /**
    * Text domain for translations
@@ -52,7 +52,7 @@ class Plugin
    * @since 1.0.0
    * @var string
    */
-  private string $textdomain = CONTACT_FORM_TO_API_TEXT_DOMAIN;
+    private string $textdomain = CONTACT_FORM_TO_API_TEXT_DOMAIN;
 
   /**
    * Plugin singleton instance
@@ -60,7 +60,7 @@ class Plugin
    * @since 1.0.0
    * @var Plugin|null
    */
-  private static $instance = null;
+    private static $instance = null;
 
   /**
    * Contact Form 7 integration instance
@@ -68,7 +68,7 @@ class Plugin
    * @since 1.0.0
    * @var Integration|null
    */
-  private $cf7_integration;
+    private $cf7_integration;
 
   /**
    * Get plugin instance (singleton)
@@ -76,24 +76,24 @@ class Plugin
    * @since 1.0.0
    * @return Plugin
    */
-  public static function get_instance(): Plugin
-  {
-    if (self::$instance === null) {
-      self::$instance = new self();
-    }
+    public static function get_instance(): Plugin
+    {
+        if (self::$instance === null) {
+            self::$instance = new self();
+        }
 
-    return self::$instance;
-  }
+        return self::$instance;
+    }
 
   /**
    * Private constructor to prevent direct instantiation
    *
    * @since 1.0.0
    */
-  private function __construct()
-  {
-    $this->init();
-  }
+    private function __construct()
+    {
+        $this->init();
+    }
 
   /**
    * Initialize the plugin
@@ -101,17 +101,17 @@ class Plugin
    * @since 1.0.0
    * @return void
    */
-  private function init(): void
-  {
-    // Initialize components
-    $this->init_components();
+    private function init(): void
+    {
+      // Initialize components
+        $this->init_components();
 
-    // Register hooks
-    $this->register_hooks();
+      // Register hooks
+        $this->register_hooks();
 
-    // Plugin is ready
-    \do_action("cf7_api_loaded");
-  }
+      // Plugin is ready
+        \do_action("cf7_api_loaded");
+    }
 
   /**
    * Initialize plugin components
@@ -119,11 +119,11 @@ class Plugin
    * @since 1.0.0
    * @return void
    */
-  private function init_components(): void
-  {
-    // Initialize Contact Form 7 Integration
-    $this->cf7_integration = new Integration();
-  }
+    private function init_components(): void
+    {
+      // Initialize Contact Form 7 Integration
+        $this->cf7_integration = new Integration();
+    }
 
   /**
    * Register WordPress hooks
@@ -131,13 +131,13 @@ class Plugin
    * @since 1.0.0
    * @return void
    */
-  private function register_hooks(): void
-  {
-    // Admin hooks
-    if (\is_admin()) {
-      \add_action("admin_enqueue_scripts", [$this, "admin_enqueue_scripts"]);
+    private function register_hooks(): void
+    {
+      // Admin hooks
+        if (\is_admin()) {
+            \add_action("admin_enqueue_scripts", [$this, "admin_enqueue_scripts"]);
+        }
     }
-  }
 
   /**
    * Enqueue admin scripts and styles
@@ -146,35 +146,35 @@ class Plugin
    * @param string $hook Current admin page hook
    * @return void
    */
-  public function admin_enqueue_scripts(string $hook): void
-  {
-    // Only load on Contact Form 7 pages
-    if (strpos($hook, "wpcf7") === false) {
-      return;
-    }
+    public function admin_enqueue_scripts(string $hook): void
+    {
+      // Only load on Contact Form 7 pages
+        if (strpos($hook, "wpcf7") === false) {
+            return;
+        }
 
-    // Enqueue admin CSS
-    \wp_enqueue_style(
-      "cf7-api-admin",
-      "{$this->plugin_url}assets/css/admin.css",
-      [],
-      $this->version
-    );
+      // Enqueue admin CSS
+        \wp_enqueue_style(
+            "cf7-api-admin",
+            "{$this->get_plugin_url()}assets/css/admin.css",
+            [],
+            $this->version
+        );
 
-    // Enqueue admin JavaScript
-    \wp_enqueue_script(
-      "cf7-api-admin",
-      "{$this->plugin_url}assets/js/admin.js",
-      ["jquery"],
-      $this->version,
-      true
-    );
+      // Enqueue admin JavaScript
+        \wp_enqueue_script(
+            "cf7-api-admin",
+            "{$this->get_plugin_url()}assets/js/admin.js",
+            ["jquery"],
+            $this->version,
+            true
+        );
 
-    // Localize script
-    \wp_localize_script("cf7-api-admin", "cf7_api_admin_vars", [
-      "ajax_url" => \admin_url("admin-ajax.php"),
-      "nonce" => \wp_create_nonce("cf7_api_admin_nonce"),
-      "translations" => [
+      // Localize script
+        \wp_localize_script("cf7-api-admin", "cf7_api_admin_vars", [
+        "ajax_url" => \admin_url("admin-ajax.php"),
+        "nonce" => \wp_create_nonce("cf7_api_admin_nonce"),
+        "translations" => [
         "testing" => \__("Testing...", $this->textdomain),
         "test_connection" => \__("Test Connection", $this->textdomain),
         "connection_failed" => \__("Connection failed", $this->textdomain),
@@ -185,9 +185,26 @@ class Plugin
         "saving" => \__("Saving...", $this->textdomain),
         "saved" => \__("Saved successfully", $this->textdomain),
         "save_error" => \__("Error saving settings", $this->textdomain),
-      ],
-    ]);
-  }
+        ],
+        ]);
+    }
+
+  /**
+   * Get plugin URL
+   *
+   * @since 1.0.0
+   * @return string
+   */
+    private function get_plugin_url(): string
+    {
+        if ($this->plugin_url === null) {
+            $this->plugin_url = defined("CONTACT_FORM_TO_API_PLUGIN_URL")
+              ? CONTACT_FORM_TO_API_PLUGIN_URL
+              : plugin_dir_url(dirname(dirname(__DIR__)) . "/contact-form-to-api.php");
+        }
+
+        return $this->plugin_url;
+    }
 }
 
 // Initialize the plugin

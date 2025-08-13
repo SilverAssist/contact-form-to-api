@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Base Test Case for Contact Form 7 to API Plugin
  *
@@ -42,9 +43,9 @@ abstract class TestCase extends PHPUnitTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->test_data_dir = dirname(__DIR__) . "/data";
-        
+
         // Initialize plugin for testing if WordPress is available
         if (function_exists("\\get_option")) {
             $this->initializePlugin();
@@ -60,7 +61,7 @@ abstract class TestCase extends PHPUnitTestCase
     {
         // Clean up any test data
         $this->cleanupTestData();
-        
+
         parent::tearDown();
     }
 
@@ -107,14 +108,14 @@ abstract class TestCase extends PHPUnitTestCase
     protected function loadTestData(string $filename): ?array
     {
         $file_path = $this->test_data_dir . "/" . $filename . ".json";
-        
+
         if (!file_exists($file_path)) {
             return null;
         }
-        
+
         $json_content = file_get_contents($file_path);
         $data = json_decode($json_content, true);
-        
+
         return is_array($data) ? $data : null;
     }
 
@@ -155,7 +156,7 @@ abstract class TestCase extends PHPUnitTestCase
             404 => "Not Found",
             500 => "Internal Server Error"
         ];
-        
+
         return $messages[$status_code] ?? "Unknown Status";
     }
 
@@ -184,8 +185,8 @@ abstract class TestCase extends PHPUnitTestCase
     {
         foreach ($expected_keys as $key) {
             $this->assertArrayHasKey(
-                $key, 
-                $actual_array, 
+                $key,
+                $actual_array,
                 $message ?: "Array is missing expected key: " . $key
             );
         }
@@ -202,13 +203,13 @@ abstract class TestCase extends PHPUnitTestCase
     {
         $temp_file = tempnam(sys_get_temp_dir(), "cf7api_test_") . "." . $extension;
         file_put_contents($temp_file, $content);
-        
+
         // Store for cleanup
         if (!isset($this->temp_files)) {
             $this->temp_files = [];
         }
         $this->temp_files[] = $temp_file;
-        
+
         return $temp_file;
     }
 

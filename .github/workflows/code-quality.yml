@@ -61,10 +61,10 @@ jobs:
 
             - name: 🔍 Run PHP CodeSniffer (WordPress Coding Standards)
               run: |
-                  if [ -f "vendor/bin/phpcs" ]; then
-                    vendor/bin/phpcs --standard=WordPress --extensions=php --ignore=vendor/,node_modules/,tests/ --report=full .
+                  if [ -f "vendor/bin/phpcs" ] && [ -f "phpcs.xml" ]; then
+                    vendor/bin/phpcs --report=full
                   else
-                    echo "phpcs not found, skipping..."
+                    echo "phpcs or phpcs.xml not found, skipping..."
                   fi
 
             - name: 🧪 Run PHPUnit Tests

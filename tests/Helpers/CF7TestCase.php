@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Contact Form 7 Specific Test Case
  *
@@ -42,7 +43,7 @@ abstract class CF7TestCase extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         $this->initializeCF7Mocks();
     }
 
@@ -61,7 +62,7 @@ abstract class CF7TestCase extends TestCase
             "phone" => "+1234567890",
             "company" => "Test Company Ltd."
         ];
-        
+
         $this->mock_cf7_form = $this->createMockCF7Form();
     }
 
@@ -90,9 +91,9 @@ abstract class CF7TestCase extends TestCase
                 "api_format" => "json"
             ]
         ];
-        
+
         $config = array_merge($default_config, $form_config);
-        
+
         return (object) $config;
     }
 
@@ -144,7 +145,7 @@ abstract class CF7TestCase extends TestCase
     protected function createMockCF7Submission(array $submission_data = []): object
     {
         $data = empty($submission_data) ? $this->mock_form_data : $submission_data;
-        
+
         return (object) [
             "posted_data" => $data,
             "uploaded_files" => [],
@@ -166,11 +167,11 @@ abstract class CF7TestCase extends TestCase
     {
         foreach ($expected_mapping as $cf7_field => $api_field) {
             $this->assertArrayHasKey(
-                $api_field, 
-                $actual_api_data, 
+                $api_field,
+                $actual_api_data,
                 $message ?: "API data missing field: " . $api_field . " (mapped from CF7 field: " . $cf7_field . ")"
             );
-            
+
             if (isset($this->mock_form_data[$cf7_field])) {
                 $this->assertEquals(
                     $this->mock_form_data[$cf7_field],
@@ -210,7 +211,7 @@ abstract class CF7TestCase extends TestCase
             "retry_attempts" => 3,
             "timeout" => 30
         ];
-        
+
         return array_merge($default_config, $config_override);
     }
 
@@ -226,23 +227,23 @@ abstract class CF7TestCase extends TestCase
     {
         // Check that mail tags have been replaced
         $this->assertStringNotContainsString(
-            "[your-name]", 
-            $processed_content, 
+            "[your-name]",
+            $processed_content,
             "Mail tag [your-name] was not processed"
         );
-        
+
         $this->assertStringNotContainsString(
-            "[your-email]", 
-            $processed_content, 
+            "[your-email]",
+            $processed_content,
             "Mail tag [your-email] was not processed"
         );
-        
+
         // Check that actual values are present
         foreach ($form_data as $value) {
             if (!empty($value) && is_string($value)) {
                 $this->assertStringContainsString(
-                    $value, 
-                    $processed_content, 
+                    $value,
+                    $processed_content,
                     "Form data value '{$value}' not found in processed content"
                 );
             }
@@ -263,9 +264,9 @@ abstract class CF7TestCase extends TestCase
             "id" => "test_" . uniqid(),
             "timestamp" => date("Y-m-d H:i:s")
         ];
-        
+
         return $this->createMockHttpResponse(
-            array_merge($default_response, $response_data), 
+            array_merge($default_response, $response_data),
             200
         );
     }
