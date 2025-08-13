@@ -24,7 +24,7 @@ use SilverAssist\WpGithubUpdater\UpdaterConfig;
 
 /**
  * Class Updater
- * 
+ *
  * Extends the reusable GitHub updater package with Contact Form to API specific configuration.
  * This approach reduces code duplication and centralizes update logic maintenance.
  *
@@ -36,8 +36,8 @@ class Updater extends GitHubUpdater
      * Initialize the Contact Form to API updater with specific configuration
      *
      * @since 1.0.0
-     * @param string $plugin_file   Path to main plugin file
-     * @param string $github_repo   GitHub repository (username/repository)
+     * @param string $plugin_file Path to main plugin file
+     * @param string $github_repo GitHub repository (username/repository)
      */
     public function __construct(string $plugin_file, string $github_repo)
     {
