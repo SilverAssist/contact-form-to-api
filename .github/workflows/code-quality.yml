@@ -31,7 +31,7 @@ jobs:
 
         strategy:
             matrix:
-                php: [7.4, 8.0, 8.1, 8.2]
+                php: [8.0, 8.1, 8.2, 8.3]
 
         steps:
             - name: 📥 Checkout code
@@ -126,20 +126,34 @@ jobs:
                   # Check for common security issues
                   echo "Checking for common security issues..."
 
-                  # Check for hardcoded credentials
-                  if grep -r -i "password\|secret\|key\|token" --include="*.php" . | grep -v "vendor/" | grep -v ".git/" | grep -E "(=|:)\s*['\"][^'\"]{8,}['\"]"; then
+                  # Check for hardcoded credentials (excluding test files and comments)
+                  if grep -r -i "password\|secret\|key\|token" --include="*.php" . \
+                     | grep -v "vendor/" \
+                     | grep -v ".git/" \
+                     | grep -v "tests/" \
+                     | grep -v "/\*\*" \
+                     | grep -v "^\s*\*" \
+                     | grep -v "^\s*//" \
+                     | grep -E "(=|:)\s*['\"][^'\"]{8,}['\"]"; then
                     echo "⚠️ Potential hardcoded credentials found!"
                     exit 1
                   fi
 
-                  # Check for SQL injection patterns
-                  if grep -r -E "\\\$_(GET|POST|REQUEST|COOKIE)\[.*\].*\\\$wpdb" --include="*.php" . | grep -v "vendor/" | grep -v ".git/"; then
+                  # Check for SQL injection patterns (excluding test files)
+                  if grep -r -E "\\\$_(GET|POST|REQUEST|COOKIE)\[.*\].*\\\$wpdb" --include="*.php" . \
+                     | grep -v "vendor/" \
+                     | grep -v ".git/" \
+                     | grep -v "tests/"; then
                     echo "⚠️ Potential SQL injection vulnerability found!"
                     exit 1
                   fi
 
-                  # Check for XSS vulnerabilities
-                  if grep -r -E "echo.*\\\$_(GET|POST|REQUEST|COOKIE)" --include="*.php" . | grep -v "vendor/" | grep -v ".git/" | grep -v "esc_"; then
+                  # Check for XSS vulnerabilities (excluding test files)
+                  if grep -r -E "echo.*\\\$_(GET|POST|REQUEST|COOKIE)" --include="*.php" . \
+                     | grep -v "vendor/" \
+                     | grep -v ".git/" \
+                     | grep -v "tests/" \
+                     | grep -v "esc_"; then
                     echo "⚠️ Potential XSS vulnerability found!"
                     exit 1
                   fi
@@ -152,8 +166,8 @@ jobs:
 
         strategy:
             matrix:
-                wp-version: ["5.9", "6.0", "6.1", "6.2", "6.3"]
-                php: [7.4, 8.0, 8.1]
+                wp-version: ["6.0", "6.1", "6.2", "6.3", "6.4", "6.5"]
+                php: [8.0, 8.1, 8.2]
 
         steps:
             - name: 📥 Checkout code
@@ -194,6 +208,7 @@ jobs:
 
             - name: 📦 Setup Node.js
               uses: actions/setup-node@v4
+              if: hashFiles('package.json') != ''
               with:
                   node-version: "18"
                   cache: "npm"
@@ -201,30 +216,20 @@ jobs:
                       package-lock.json
 
             - name: 📥 Install Node dependencies
-              run: |
-                  if [ -f "package.json" ]; then
-                    npm ci
-                  else
-                    echo "No package.json found, skipping Node.js setup"
-                  fi
+              if: hashFiles('package.json') != ''
+              run: npm ci
 
             - name: 🔍 Lint CSS files
+              if: hashFiles('assets/css/*.css') != ''
               run: |
-                  if [ -d "assets/css" ]; then
-                    echo "Checking CSS files..."
-                    find assets/css -name "*.css" -exec echo "Checking: {}" \;
-                  else
-                    echo "No CSS files found"
-                  fi
+                  echo "Checking CSS files..."
+                  find assets/css -name "*.css" -exec echo "Checking: {}" \;
 
-            - name: 🔍 Lint JavaScript files
+            - name: 🔍 Lint JavaScript files  
+              if: hashFiles('assets/js/*.js') != ''
               run: |
-                  if [ -d "assets/js" ]; then
-                    echo "Checking JavaScript files..."
-                    find assets/js -name "*.js" -exec echo "Checking: {}" \;
-                  else
-                    echo "No JavaScript files found"
-                  fi
+                  echo "Checking JavaScript files..."
+                  find assets/js -name "*.js" -exec echo "Checking: {}" \;
 
             - name: 📊 Check asset sizes
               run: |

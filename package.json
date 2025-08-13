@@ -1,0 +1,30 @@
+{
+  "name": "contact-form-to-api",
+  "version": "1.0.0",
+  "description": "WordPress plugin to integrate Contact Form 7 with external APIs",
+  "private": true,
+  "scripts": {
+    "build": "echo 'No build process needed for this plugin'",
+    "watch": "echo 'No watch process configured'",
+    "lint:css": "echo 'CSS linting not configured'",
+    "lint:js": "echo 'JavaScript linting not configured'"
+  },
+  "keywords": [
+    "wordpress",
+    "plugin", 
+    "contact-form-7",
+    "api",
+    "integration"
+  ],
+  "author": "Silver Assist",
+  "license": "GPL-2.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SilverAssist/contact-form-to-api.git"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  }
+}

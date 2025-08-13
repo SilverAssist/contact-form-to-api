@@ -1,7 +1,6 @@
 {
   "name": "silverassist/contact-form-to-api",
   "description": "WordPress plugin to integrate Contact Form 7 with external APIs",
-  "version": "1.0.0",
   "type": "wordpress-plugin",
   "license": "GPL-2.0-or-later",
   "authors": [
@@ -74,7 +73,7 @@
       "@phpstan",
       "@test"
     ],
-    "validate": [
+    "composer-validate": [
       "composer validate --strict --no-check-all"
     ],
     "install:dev": [
@@ -93,7 +92,7 @@
     "test": "Run PHPUnit tests",
     "test:coverage": "Run PHPUnit tests with coverage report",
     "check": "Run all quality checks (phpcs, phpstan, test)",
-    "validate": "Validate composer.json",
+    "composer-validate": "Validate composer.json",
     "install:dev": "Install dependencies for development",
     "install:prod": "Install dependencies for production"
   },

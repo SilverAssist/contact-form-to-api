@@ -66,6 +66,7 @@ yarn-error.log*
 
 # Node.js (if used)
 node_modules/
+package.json
 package-lock.json
 yarn.lock
 
