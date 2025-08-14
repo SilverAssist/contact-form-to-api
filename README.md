@@ -356,9 +356,16 @@ After setting up your first integration:
 
 ---
 
-## 📄 License & Credits
+## 📄 License Notice
 
-**License**: GPL-2.0+ - You're free to use, modify, and distribute this plugin.
+This project is licensed under the **Polyform Noncommercial License 1.0.0**.
+
+You are free to **use, modify, and share** this code **for noncommercial purposes only**.  
+Commercial use of any kind is **not permitted** without explicit permission from the author.  
+
+See the [LICENSE](LICENSE) file for the full license text.
+
+##📄Credits
 
 **Created by**: [Silver Assist](https://silverassist.com) - WordPress development experts.
 
