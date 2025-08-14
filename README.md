@@ -365,7 +365,7 @@ Commercial use of any kind is **not permitted** without explicit permission from
 
 See the [LICENSE](LICENSE) file for the full license text.
 
-##📄Credits
+## 📄Credits
 
 **Created by**: [Silver Assist](https://silverassist.com) - WordPress development experts.
 
