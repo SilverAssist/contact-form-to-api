@@ -27,7 +27,7 @@ The main plugin file (`contact-form-to-api.php`) must include both the WordPress
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  *
  * @wordpress-plugin
  * Plugin Name: Contact Form 7 to API
@@ -38,8 +38,8 @@ The main plugin file (`contact-form-to-api.php`) must include both the WordPress
  * Requires PHP: 7.4
  * Author: Silver Assist
  * Author URI: https://silverassist.com
- * License: GPL-2.0+
- * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * License: Polyform-Noncommercial-1.0.0
+ * License URI: https://polyformproject.org/licenses/1.0.0/
  * Text Domain: contact-form-to-api
  * Domain Path: /languages
  * Requires Plugins: contact-form-7
@@ -68,7 +68,7 @@ All PHP files containing classes must use this header format:
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  */
 
 // Prevent direct access
@@ -91,7 +91,7 @@ if (!defined('ABSPATH')) {
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  */
 ```
 
@@ -107,7 +107,7 @@ if (!defined('ABSPATH')) {
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  */
 ```
 
@@ -125,7 +125,7 @@ All CSS files must include this header:
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  */
 ```
 
@@ -141,7 +141,7 @@ All CSS files must include this header:
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  */
 ```
 
@@ -155,7 +155,7 @@ All CSS files must include this header:
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  */
 ```
 
@@ -173,7 +173,7 @@ All JavaScript files must include this header:
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  */
 ```
 
@@ -189,7 +189,7 @@ All JavaScript files must include this header:
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  */
 ```
 
@@ -203,7 +203,7 @@ All JavaScript files must include this header:
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  */
 ```
 
@@ -278,7 +278,7 @@ All files must include these fields:
 ### Optional Fields
 
 - **@subpackage**: Used for organizing related files (Admin, API, Core, etc.)
-- **@license**: GPL-2.0+ for all files
+- **@license**: Polyform-Noncommercial-1.0.0 for all files
 - **@copyright**: Can be added for specific files if needed
 
 ### Version Tags Usage
@@ -307,12 +307,12 @@ All files must include these fields:
 - **Plugin Name**: Contact Form 7 to API
 - **Package Name**: ContactFormToAPI
 - **Text Domain**: contact-form-to-api
-- **License**: GPL-2.0+
+- **License**: Polyform-Noncommercial-1.0.0
 
 ### URLs and Links
 - **Plugin URI**: https://github.com/SilverAssist/contact-form-to-api
 - **Author URI**: https://silverassist.com
-- **License URI**: http://www.gnu.org/licenses/gpl-2.0.txt
+- **License URI**: https://polyformproject.org/licenses/noncommercial/1.0.0/
 
 ## File Organization by Package
 
@@ -377,7 +377,7 @@ The build process includes automated validation of:
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  */
 
 // Prevent direct access
@@ -412,7 +412,7 @@ class EndpointManager
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  */
 
 /* Admin interface styles */
@@ -434,7 +434,7 @@ class EndpointManager
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  */
 
 (function($) {

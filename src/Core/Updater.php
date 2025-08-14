@@ -10,6 +10,7 @@
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
+ * @license Polyform-Noncommercial-1.0.0
  */
 
 namespace ContactFormToAPI\Core;

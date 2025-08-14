@@ -2,7 +2,7 @@
   "name": "silverassist/contact-form-to-api",
   "description": "WordPress plugin to integrate Contact Form 7 with external APIs",
   "type": "wordpress-plugin",
-  "license": "GPL-2.0-or-later",
+  "license": "Polyform-Noncommercial-1.0.0",
   "authors": [
     {
       "name": "Silver Assist",

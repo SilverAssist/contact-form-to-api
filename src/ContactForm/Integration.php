@@ -6,11 +6,11 @@
  * Handles integration with Contact Form 7 forms and submission processing
  * Migrated from the legacy CF7 API plugin with modern standards
  *
- * @package ContactFormToAPI
+ * @package ContactFormToAPI\ContactForm
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  */
 
 namespace ContactFormToAPI\ContactForm;

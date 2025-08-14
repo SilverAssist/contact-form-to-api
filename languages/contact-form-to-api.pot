@@ -1,5 +1,5 @@
-# Copyright (C) 2025 Silver Assist
-# This file is distributed under the GPL-2.0+.
+# Copyright (C) 2024 Silver Assist
+# This file is distributed under the Polyform-Noncommercial-1.0.0.
 msgid ""
 msgstr ""
 "Project-Id-Version: Contact Form 7 to API 1.0.0\n"

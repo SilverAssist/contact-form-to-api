@@ -7,7 +7,7 @@ Transform your WordPress contact forms into powerful data collection tools that 
 [![WordPress](https://img.shields.io/badge/WordPress-6.5%2B-blue)](https://wordpress.org)
 [![Contact Form 7](https://img.shields.io/badge/Contact%20Form%207-Required-green)](https://wordpress.org/plugins/contact-form-7/)
 [![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple)](https://php.net)
-[![License](https://img.shields.io/badge/license-GPL--2.0%2B-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-Polyform--Noncommercial--1.0.0-blue.svg)](LICENSE)
 
 ---
 
@@ -310,7 +310,7 @@ Enable detailed logging to troubleshoot issues:
 
 ### 🚀 **Advanced Tips**
 - **Multiple APIs**: Send the same form to multiple services
-- **Conditional Logic**: Send to different APIs based on form values  
+- **Conditional Logic**: Send to different APIs based on form values
 - **Custom Fields**: Map static values and computed fields
 - **Error Handling**: Set up fallback actions for failed API calls
 
@@ -338,7 +338,7 @@ After setting up your first integration:
 
 ### ✅ **Reliable**
 - Automatic retries on failures
-- Comprehensive error logging  
+- Comprehensive error logging
 - Performance monitoring
 - Secure data handling
 
@@ -351,7 +351,7 @@ After setting up your first integration:
 ### ✅ **Supported**
 - Regular updates
 - Community support
-- Detailed documentation  
+- Detailed documentation
 - Open source
 
 ---
@@ -364,10 +364,6 @@ You are free to **use, modify, and share** this code **for noncommercial purpose
 Commercial use of any kind is **not permitted** without explicit permission from the author.  
 
 See the [LICENSE](LICENSE) file for the full license text.
-
-## 📄Credits
-
-**Created by**: [Silver Assist](https://silverassist.com) - WordPress development experts.
 
 ---
 

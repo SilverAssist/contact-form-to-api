@@ -161,12 +161,12 @@ cat > "${PACKAGE_DIR}/readme.txt" << EOF
 === Contact Form 7 to API ===
 Contributors: silverassist
 Tags: contact-form-7, api, webhook, integration, forms
-Requires at least: 5.0
-Tested up to: 6.3
-Requires PHP: 7.4
+Requires at least: 6.5
+Tested up to: 6.6
+Requires PHP: 8.0
 Stable tag: ${VERSION}
-License: GPL-2.0+
-License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+License: Polyform-Noncommercial-1.0.0
+License URI: https://github.com/SilverAssist/contact-form-to-api/blob/main/LICENSE
 
 Integrate Contact Form 7 with external APIs. Send form submissions to custom API endpoints with advanced configuration options.
 
@@ -379,60 +379,6 @@ fi
 
 cd "${PROJECT_ROOT}"
 
-# Generate checksums (for CI/CD)
-if [ -f "$ZIP_PATH" ]; then
-    print_status "Generating checksums for CI/CD..."
-    
-    cd "$(dirname "$ZIP_PATH")"
-    ZIP_FILENAME=$(basename "$ZIP_PATH")
-    
-    # MD5
-    if command -v md5sum >/dev/null 2>&1; then
-        md5sum "$ZIP_FILENAME" > "${ZIP_FILENAME}.md5"
-        print_status "  ✓ MD5 checksum generated"
-    elif command -v md5 >/dev/null 2>&1; then
-        md5 "$ZIP_FILENAME" > "${ZIP_FILENAME}.md5"
-        print_status "  ✓ MD5 checksum generated"
-    fi
-    
-    # SHA256
-    if command -v sha256sum >/dev/null 2>&1; then
-        sha256sum "$ZIP_FILENAME" > "${ZIP_FILENAME}.sha256"
-        print_status "  ✓ SHA256 checksum generated"
-    elif command -v shasum >/dev/null 2>&1; then
-        shasum -a 256 "$ZIP_FILENAME" > "${ZIP_FILENAME}.sha256"
-        print_status "  ✓ SHA256 checksum generated"
-    fi
-    
-    cd "${PROJECT_ROOT}"
-fi
-
-# Generate build info (for CI/CD)
-print_status "Generating build information for CI/CD..."
-
-BUILD_INFO="${BUILD_DIR}/build-info.txt"
-cat > "$BUILD_INFO" << EOF
-Contact Form 7 to API - Build Information
-========================================
-
-Version: ${VERSION}
-Build Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-Build Host: $(hostname)
-Build User: $(whoami)
-Git Commit: $(git rev-parse HEAD 2>/dev/null || echo "N/A")
-Git Branch: $(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "N/A")
-
-Package Contents:
-$(find "${PACKAGE_DIR}" -type f | sed "s|${PACKAGE_DIR}/||" | sort)
-
-Package Statistics:
-Files: $(find "${PACKAGE_DIR}" -type f | wc -l | tr -d ' ')
-Directories: $(find "${PACKAGE_DIR}" -type d | wc -l | tr -d ' ')
-Size: $(du -sh "${PACKAGE_DIR}" | cut -f1)
-EOF
-
-print_success "  ✓ Build information generated (for CI/CD)"
-
 # Clean up for local development (move CI/CD files)
 if [ -z "$GITHUB_ACTIONS" ]; then
     print_status "Cleaning up for local development..."
@@ -441,25 +387,13 @@ if [ -z "$GITHUB_ACTIONS" ]; then
     CI_DIR="${BUILD_DIR}/ci-artifacts"
     mkdir -p "$CI_DIR"
     
-    # Move CI/CD artifacts to separate folder
-    if [ -f "${BUILD_DIR}/contact-form-to-api-${VERSION}.zip.md5" ]; then
-        mv "${BUILD_DIR}/contact-form-to-api-${VERSION}.zip.md5" "$CI_DIR/"
-    fi
-    if [ -f "${BUILD_DIR}/contact-form-to-api-${VERSION}.zip.sha256" ]; then
-        mv "${BUILD_DIR}/contact-form-to-api-${VERSION}.zip.sha256" "$CI_DIR/"
-    fi
-    if [ -f "$BUILD_INFO" ]; then
-        mv "$BUILD_INFO" "$CI_DIR/"
-    fi
-    
-    # Move release folder to CI artifacts too (it's just an unpacked version)
+    # Move release folder to CI artifacts (it's just an unpacked version)
     if [ -d "$RELEASE_DIR" ]; then
         mv "$RELEASE_DIR" "$CI_DIR/"
     fi
     
     print_success "  ✓ CI/CD artifacts moved to ci-artifacts/ folder"
     print_status "  📁 Main build folder now contains only: contact-form-to-api-${VERSION}.zip"
-    print_status "  📁 CI/CD files available in: ci-artifacts/"
 fi
 
 # Summary
@@ -476,13 +410,12 @@ if [ -z "$GITHUB_ACTIONS" ]; then
     echo "  🎯 Ready to use: ${BUILD_DIR}/contact-form-to-api-${VERSION}.zip"
     echo ""
     print_status "📁 CI/CD ARTIFACTS (moved to ci-artifacts/):"
-    echo "  📋 Build info, checksums, and release folder"
+    echo "  📋 Release folder (unpacked version)"
 else
     echo "Package directory: $PACKAGE_DIR"
     if [ -f "$ZIP_PATH" ]; then
         echo "ZIP archive: $ZIP_PATH"
     fi
-    echo "Build info: $BUILD_INFO"
 fi
 echo ""
 print_success "🎉 Release package ready for distribution!"

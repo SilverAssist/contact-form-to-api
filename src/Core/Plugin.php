@@ -1,15 +1,15 @@
 <?php
 
 /**
- * Plugin Core Class
+ * Contact Form 7 to API - Plugin Core Class
  *
  * Main plugin class that handles initialization, hooks, and core functionality
  *
- * @package ContactFormToAPI
+ * @package ContactFormToAPI\Core
  * @since 1.0.0
  * @author Silver Assist
  * @version 1.0.0
- * @license GPL-2.0+
+ * @license Polyform-Noncommercial-1.0.0
  */
 
 namespace ContactFormToAPI\Core;
