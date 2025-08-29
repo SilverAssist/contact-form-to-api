@@ -6,14 +6,14 @@
  * @package ContactFormToAPI
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.0
+ * @version 1.0.1
  * @license Polyform-Noncommercial-1.0.0
  *
  * @wordpress-plugin
  * Plugin Name: Contact Form 7 to API
  * Plugin URI: https://github.com/SilverAssist/contact-form-to-api
  * Description: Integrate Contact Form 7 with external APIs. Send form submissions to custom API endpoints with advanced configuration options.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Requires at least: 6.5
  * Requires PHP: 8.0
  * Author: Silver Assist
@@ -48,7 +48,7 @@ define("CONTACT_FORM_TO_API_MIN_WP_VERSION", "6.5");
  *
  * @package ContactFormToAPI
  * @since 1.0.0
- * @version 1.0.0
+ * @version 1.0.1
  */
 final class ContactFormToAPI
 {
@@ -134,7 +134,7 @@ final class ContactFormToAPI
    * Constructor
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     private function __construct()
     {
@@ -146,7 +146,7 @@ final class ContactFormToAPI
    * Check minimum requirements
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    * @return boolean
    */
     private function check_requirements()
@@ -176,7 +176,7 @@ final class ContactFormToAPI
    * Initialize plugin hooks
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     private function init_hooks()
     {
@@ -196,7 +196,7 @@ final class ContactFormToAPI
    * Load plugin dependencies
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     private function load_dependencies()
     {
@@ -213,7 +213,7 @@ final class ContactFormToAPI
    * Initialize plugin
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     public function init()
     {
@@ -227,7 +227,7 @@ final class ContactFormToAPI
    * Load plugin text domain
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     public function load_textdomain()
     {
@@ -242,7 +242,7 @@ final class ContactFormToAPI
    * Plugin activation
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     public function activate()
     {
@@ -262,7 +262,7 @@ final class ContactFormToAPI
    * Plugin deactivation
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     public function deactivate()
     {
@@ -274,7 +274,7 @@ final class ContactFormToAPI
    * Create plugin data on activation
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     private function create_plugin_data()
     {
@@ -302,7 +302,7 @@ final class ContactFormToAPI
    * Create database tables
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     private function create_database_tables()
     {
@@ -339,7 +339,7 @@ final class ContactFormToAPI
    * Check if Contact Form 7 is active
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    * @return boolean
    */
     private function is_contact_form_7_active()
@@ -352,7 +352,7 @@ final class ContactFormToAPI
    * PHP version notice
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     public function php_version_notice()
     {
@@ -370,7 +370,7 @@ final class ContactFormToAPI
    * WordPress version notice
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     public function wp_version_notice()
     {
@@ -388,7 +388,7 @@ final class ContactFormToAPI
    * Contact Form 7 dependency notice
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     public function cf7_dependency_notice()
     {
@@ -400,7 +400,7 @@ final class ContactFormToAPI
    * Dependencies notice
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     public function dependencies_notice()
     {
@@ -412,7 +412,7 @@ final class ContactFormToAPI
    * Prevent cloning
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     private function __clone()
     {
@@ -422,7 +422,7 @@ final class ContactFormToAPI
    * Prevent unserialization
    *
    * @since 1.0.0
-   * @version 1.0.0
+   * @version 1.0.1
    */
     public function __wakeup()
     {
