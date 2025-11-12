@@ -1,4 +1,6 @@
 name: 🔍 Code Quality & Testing
+permissions:
+    contents: read
 
 on:
     push:
