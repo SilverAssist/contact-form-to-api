@@ -1,0 +1,63 @@
+# Dependabot configuration for automated dependency updates
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # GitHub Actions dependency updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/Mexico_City"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "automated"
+    open-pull-requests-limit: 10
+    
+    # Group all GitHub Actions updates together
+    groups:
+      github-actions-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    
+    # Ignore major updates for critical actions (manual review required)
+    ignore:
+      - dependency-name: "actions/checkout"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "shivammathur/setup-php"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "actions/cache"
+        update-types: ["version-update:semver-major"]
+
+  # Composer dependency updates
+  - package-ecosystem: "composer"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+      timezone: "America/Mexico_City"
+    labels:
+      - "dependencies"
+      - "php"
+      - "automated"
+    open-pull-requests-limit: 5
+    
+    # Group composer updates by type
+    groups:
+      composer-dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+      composer-production-dependencies:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
