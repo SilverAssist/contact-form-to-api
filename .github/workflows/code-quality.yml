@@ -51,7 +51,7 @@ jobs:
               run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
             - name: ♻️ Cache Composer packages
-              uses: actions/cache@v4
+              uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.2.0
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: ${{ runner.os }}-php-${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
