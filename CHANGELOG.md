@@ -138,7 +138,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### System Requirements
 - **WordPress**: Version 5.0 or higher
-- **PHP**: Version 7.4 or higher (PHP 8.0+ recommended)
+- **PHP**: Version 8.2 or higher
 - **Contact Form 7**: Latest stable version required
 - **PHP Extensions**: cURL, JSON, OpenSSL (for HTTPS)
 - **Database**: MySQL 5.6+ or MariaDB 10.1+ (same as WordPress requirements)

@@ -290,7 +290,7 @@ define("CONTACT_FORM_TO_API_PLUGIN_BASENAME", plugin_basename(__FILE__));
 define("CONTACT_FORM_TO_API_TEXT_DOMAIN", "contact-form-to-api");
 
 // System requirements
-define("CONTACT_FORM_TO_API_MIN_PHP_VERSION", "8.0");
+define("CONTACT_FORM_TO_API_MIN_PHP_VERSION", "8.2");
 define("CONTACT_FORM_TO_API_MIN_WP_VERSION", "6.5");
 ```
 

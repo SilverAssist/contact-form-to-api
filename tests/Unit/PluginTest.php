@@ -166,10 +166,10 @@ class PluginTest extends TestCase
     public function testMinimumRequirements(): void
     {
         // Test PHP version
-        $this->assertGreaterThanOrEqual(
-            "8.0",
-            PHP_VERSION,
-            "PHP version should be 8.0 or higher"
+        $this->assertEquals(
+            "8.2",
+            CONTACT_FORM_TO_API_MIN_PHP_VERSION,
+            "PHP version should be 8.2 or higher"
         );
 
         // Test required PHP extensions

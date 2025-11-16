@@ -6,7 +6,7 @@ Transform your WordPress contact forms into powerful data collection tools that 
 
 [![WordPress](https://img.shields.io/badge/WordPress-6.5%2B-blue)](https://wordpress.org)
 [![Contact Form 7](https://img.shields.io/badge/Contact%20Form%207-Required-green)](https://wordpress.org/plugins/contact-form-7/)
-[![PHP](https://img.shields.io/badge/PHP-8.0%2B-purple)](https://php.net)
+[![PHP](https://img.shields.io/badge/PHP-8.2%2B-purple)](https://php.net)
 [![License](https://img.shields.io/badge/license-Polyform--Noncommercial--1.0.0-blue.svg)](LICENSE)
 
 ---
@@ -142,7 +142,7 @@ Static: "New contact form submission" → text
 ## 📋 Requirements
 
 - **WordPress**: 6.5 or higher
-- **PHP**: 8.0 or higher  
+- **PHP**: 8.2 or higher  
 - **Contact Form 7**: Latest version
 - **SSL/HTTPS**: Recommended for secure API communications
 

@@ -147,6 +147,14 @@ if (!defined("CONTACT_FORM_TO_API_TEXT_DOMAIN")) {
     define("CONTACT_FORM_TO_API_TEXT_DOMAIN", "contact-form-to-api");
 }
 
+if (!defined("CONTACT_FORM_TO_API_MIN_PHP_VERSION")) {
+    define("CONTACT_FORM_TO_API_MIN_PHP_VERSION", "8.2");
+}
+
+if (!defined("CONTACT_FORM_TO_API_MIN_WP_VERSION")) {
+    define("CONTACT_FORM_TO_API_MIN_WP_VERSION", "6.5");
+}
+
 // Load Composer autoloader
 $composer_autoload = dirname(__DIR__) . "/vendor/autoload.php";
 if (file_exists($composer_autoload)) {

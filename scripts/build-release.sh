@@ -163,7 +163,7 @@ Contributors: silverassist
 Tags: contact-form-7, api, webhook, integration, forms
 Requires at least: 6.5
 Tested up to: 6.6
-Requires PHP: 8.0
+Requires PHP: 8.2
 Stable tag: ${VERSION}
 License: Polyform-Noncommercial-1.0.0
 License URI: https://github.com/SilverAssist/contact-form-to-api/blob/main/LICENSE

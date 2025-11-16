@@ -15,7 +15,7 @@
  * Description: Integrate Contact Form 7 with external APIs. Send form submissions to custom API endpoints with advanced configuration options.
  * Version: 1.0.1
  * Requires at least: 6.5
- * Requires PHP: 8.0
+ * Requires PHP: 8.2
  * Author: Silver Assist
  * Author URI: https://silverassist.com
  * License: Polyform-Noncommercial-1.0.0
@@ -40,7 +40,7 @@ define("CONTACT_FORM_TO_API_PLUGIN_BASENAME", plugin_basename(__FILE__));
 define("CONTACT_FORM_TO_API_TEXT_DOMAIN", "contact-form-to-api");
 
 // Minimum requirements.
-define("CONTACT_FORM_TO_API_MIN_PHP_VERSION", "8.0");
+define("CONTACT_FORM_TO_API_MIN_PHP_VERSION", "8.2");
 define("CONTACT_FORM_TO_API_MIN_WP_VERSION", "6.5");
 
 /**
