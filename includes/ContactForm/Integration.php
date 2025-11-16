@@ -164,7 +164,7 @@ class Integration implements LoadableInterface {
 	 * @return array Array of WPCF7_FormTag objects for use in templates
 	 */
 	private function get_mail_tags( WPCF7_ContactForm $form, array $args ): array {
-		/** @var WPCF7_FormTag[] $tags */
+		/** @var array<array{type: string, name: string}> $tags */
 		$tags = apply_filters( 'paubox_cf7_collect_mail_tags', $form->scan_form_tags() );
 
 		foreach ( (array) $tags as $tag ) {
@@ -195,7 +195,10 @@ class Integration implements LoadableInterface {
 	 */
 	public function render_integration_panel( WPCF7_ContactForm $post ): void {
 		// Get form data using the SAME METHOD as old plugin for compatibility
-		$wpcf7   = WPCF7_ContactForm::get_current();
+		$wpcf7 = WPCF7_ContactForm::get_current();
+		if ( null === $wpcf7 ) {
+			return;
+		}
 		$form_id = $wpcf7->id();
 
 		// Use the SAME approach as the old plugin - get from properties first, fallback to post_meta
@@ -504,7 +507,11 @@ class Integration implements LoadableInterface {
 
 				if ( is_array( $api_form_key ) ) {
 					// Handle checkbox arrays
-					foreach ( $submitted_data[ $form_key ] as $value ) {
+					$field_value = $submitted_data[ $form_key ] ?? null;
+					if ( ! is_array( $field_value ) ) {
+						continue;
+					}
+					foreach ( $field_value as $value ) {
 						if ( $value ) {
 								$record['fields'][ $api_form_key[ $value ] ] = \apply_filters( 'cf7_api_set_record_value', $value, $api_form_key );
 						}
@@ -524,7 +531,11 @@ class Integration implements LoadableInterface {
 			foreach ( $data_map as $form_key => $api_form_key ) {
 				if ( is_array( $api_form_key ) ) {
 					// Handle checkbox arrays
-					foreach ( $submitted_data[ $form_key ] as $value ) {
+					$field_value = $submitted_data[ $form_key ] ?? null;
+					if ( ! is_array( $field_value ) ) {
+						continue;
+					}
+					foreach ( $field_value as $value ) {
 						if ( $value ) {
 								$value    = \apply_filters( 'cf7_api_set_record_value', $value, $api_form_key );
 								$template = str_replace( "[{$form_key}-{$value}]", $value, $template );
@@ -657,11 +668,11 @@ class Integration implements LoadableInterface {
 	 * Parse JSON string
 	 *
 	 * @since 1.0.0
-	 * @param string $string JSON string
+	 * @param string $json_string JSON string
 	 * @return string|\WP_Error Parsed JSON or error
 	 */
-	private function parse_json( string $string ) {
-		$json = json_decode( $string );
+	private function parse_json( string $json_string ) {
+		$json = json_decode( $json_string );
 
 		if ( json_last_error() === JSON_ERROR_NONE ) {
 			return json_encode( $json );

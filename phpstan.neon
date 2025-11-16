@@ -4,8 +4,8 @@ parameters:
         - includes
     bootstrapFiles:
         - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+        - vendor/miguelcolmenares/contact-form-7-stubs/contact-form-7-stubs.php
     ignoreErrors:
-        - '#WPCF7#'
         - '#Variable \$mailtags might not be defined#'
         - '#If condition is always true#'
         - '#Constant CONTACT_FORM_TO_API_#'
