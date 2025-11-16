@@ -1,121 +1,218 @@
 # Contact Form 7 to API - Copilot Instructions
 
-## Project Overview
-This is a WordPress plugin that integrates Contact Form 7 with external APIs, allowing form submissions to be sent to custom API endpoints with advanced configuration options. The plugin follows a **form-specific configuration approach** with no global admin panels - all settings are configured directly in each CF7 form via custom editor tabs.
+## 📋 Project Overview
+This is a WordPress plugin that integrates Contact Form 7 with external APIs, allowing form submissions to be sent to custom API endpoints with advanced configuration options. The plugin follows **SilverAssist WordPress Plugin Development Standards** and uses a **form-specific configuration approach** with no global admin panels.
 
-## Architecture Overview
-- **Approach**: Direct CF7 form integration with per-form API configuration
-- **No Global Admin**: All configuration happens at the form level via CF7 editor tabs  
-- **Streamlined Structure**: Three-layer architecture with clear separation of concerns
-- **Main Plugin File**: Handles all dependency verification, lifecycle, and plugin setup
-- **Core Plugin Class**: Lightweight coordinator for components and admin assets
-- **Integration Class**: Complete CF7 functionality with all original plugin features preserved
-- **Plugin Constants**: Centralized configuration via constants defined in main plugin file
+## 🏗️ SilverAssist Architecture Standards
 
-## Development Standards
+This plugin follows the comprehensive [SilverAssist WordPress Plugin Development Standards](https://gist.github.com/miguelcolmenares/227180b8983df6ad4ec3ced113677853).
 
-### Code Style & Quality
-- Follow WordPress Coding Standards (WPCS)
-- Use PSR-4 autoloading for namespaced classes
-- Maintain consistent DocBlock formatting across all files
-- All PHP files must have proper headers with @package, @since, @author, @version tags
-- Use semantic versioning (semver.org)
-- Maintain backward compatibility when possible
+### Key Standards
+- **Namespace**: `SilverAssist\ContactFormToAPI\`
+- **Directory**: `includes/` (PSR-4 autoloading)
+- **PHP Version**: 8.2+ (modern PHP features required)
+- **WordPress Version**: 6.5+ minimum
+- **Code Quality**: PHPCS (WordPress-Extra), PHPStan Level 8, PHPUnit
+- **Testing**: WordPress Test Suite with `WP_UnitTestCase`
+- **Patterns**: LoadableInterface, Singleton, Component Loaders
+- **CI/CD**: GitHub Actions with reusable workflows
 
-### Optimized File Structure
+### Required SilverAssist Packages
+- `silverassist/wp-github-updater ^1.2` - Automatic updates from GitHub releases
+- `silverassist/wp-settings-hub ^1.1` - Unified settings interface
+
+## 🎯 Plugin-Specific Approach
+- **Direct CF7 Integration**: All configuration happens at the form level via CF7 editor tabs
+- **No Global Admin Panel**: Settings are form-specific, not plugin-wide
+- **LoadableInterface Pattern**: All components implement priority-based loading
+- **Singleton Pattern**: Main classes use singleton with `instance()` method
+- **Plugin Constants**: All configuration via `CONTACT_FORM_TO_API_*` constants
+
+### File Structure
 ```
 contact-form-to-api/
 ├── .github/
-│   ├── workflows/          # GitHub Actions workflows
+│   ├── workflows/              # GitHub Actions workflows
+│   │   ├── quality-checks.yml # Reusable quality workflow
+│   │   ├── ci.yml            # PR validation
+│   │   ├── release.yml       # Automated releases
+│   │   └── dependency-updates.yml
 │   └── copilot-instructions.md
 ├── assets/
-│   ├── css/admin.css      # CF7 admin styles (modern)
-│   └── js/admin.js        # CF7 admin scripts (ES6+)
-├── languages/             # Translation files (empty, ready for i18n)
-├── scripts/               # Development and build scripts
+│   ├── css/admin.css          # CF7 admin styles
+│   └── js/admin.js            # CF7 admin scripts (ES6+)
+├── docs/                      # Documentation
+│   ├── WORKFLOWS.md
+│   ├── RELEASE_PROCESS.md
+│   └── API_REFERENCE.md
+├── includes/                  # Source code (PSR-4)
+│   ├── Core/
+│   │   ├── Interfaces/
+│   │   │   └── LoadableInterface.php
+│   │   ├── Activator.php     # Lifecycle management
+│   │   ├── Plugin.php        # Main plugin controller
+│   │   └── Updater.php       # GitHub updater integration
+│   └── ContactForm/
+│       └── Integration.php   # CF7 integration
+├── languages/                 # Translation files
+├── scripts/                   # Build and quality scripts
+│   ├── run-quality-checks.sh
 │   ├── build-release.sh
-│   ├── check-versions.sh
-│   └── update-version-simple.sh
-├── src/                   # Streamlined source code (PSR-4)
-│   ├── Core/Plugin.php    # Main plugin initialization
-│   └── ContactForm/Integration.php # Complete CF7 integration
-├── contact-form-to-api.php # Main plugin file
-├── composer.json         # Dependencies and PSR-4 autoloading
-├── CHANGELOG.md          # Version history
-├── MIGRATION-SUMMARY.md  # Migration documentation
-├── README.md             # Project documentation
-└── HEADER-STANDARDS.md   # Header formatting standards
+│   └── update-version.sh
+├── tests/                     # WordPress Test Suite
+│   ├── bootstrap.php
+│   ├── Helpers/
+│   │   ├── TestCase.php
+│   │   └── CF7TestCase.php
+│   ├── Unit/
+│   │   └── PluginTest.php
+│   ├── Integration/
+│   └── ContactForm/
+│       └── IntegrationTest.php
+├── contact-form-to-api.php   # Main plugin file
+├── composer.json             # Dependencies
+├── phpcs.xml                 # PHPCS configuration
+├── phpstan.neon              # PHPStan configuration
+├── phpunit.xml.dist          # PHPUnit configuration
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+└── README.md
 ```
 
 ## Core Components Architecture
 
-### contact-form-to-api.php - Main Plugin File  
+### contact-form-to-api.php - Main Plugin File
 **Purpose**: Plugin entry point with dependency verification and lifecycle management
-**Pattern**: Singleton with comprehensive requirement checking
-**Key Responsibilities**:
-- Plugin constants definition (VERSION, TEXT_DOMAIN, paths, requirements)
-- WordPress/PHP/CF7 dependency verification with admin notices
-- Plugin activation/deactivation lifecycle management
-- Database table creation and plugin options setup
-- Textdomain loading for i18n
-- Composer dependency verification
-- Core Plugin class initialization
+**Pattern**: SilverAssist main file pattern with prefixed globals and Update URI
 
-**Core Methods**:
-- `check_requirements()`: Comprehensive dependency verification
-- `activate()/deactivate()`: Complete plugin lifecycle management  
-- `create_database_tables()`: API logs table creation
-- `load_textdomain()`: i18n initialization
-- `php_version_notice()/wp_version_notice()/cf7_dependency_notice()`: Admin notices
-- `is_contact_form_7_active()`: CF7 detection using multiple methods
+**Required Elements**:
+- **Update URI header**: `Update URI: https://github.com/SilverAssist/contact-form-to-api` (for GitHub updater)
+- **Plugin constants**: All configuration via `CONTACT_FORM_TO_API_*` prefixed constants
+- **Prefixed globals**: `$GLOBALS["contact_form_to_api_autoloader_loaded"]` to prevent duplicate loading
+- **Autoloader validation**: Secure autoloader path validation with `realpath()` and `strpos()`
+- **Dependency checks**: WordPress/PHP version, Contact Form 7 availability
+- **Admin notices**: User-friendly error messages for missing requirements
+- **Lifecycle hooks**: Activation, deactivation via `Activator` class
+- **Plugin initialization**: `Plugin::instance()->init()` on `plugins_loaded` hook
 
-### src/Core/Plugin.php - Component Coordinator
-**Purpose**: Lightweight component coordinator and asset manager
-**Size**: ~180 lines - Focused on coordination and admin assets
-**Pattern**: Singleton focusing on component orchestration
+**Core Constants**:
+```php
+define("CONTACT_FORM_TO_API_VERSION", "1.0.0");
+define("CONTACT_FORM_TO_API_PLUGIN_FILE", __FILE__);
+define("CONTACT_FORM_TO_API_PLUGIN_DIR", plugin_dir_path(__FILE__));
+define("CONTACT_FORM_TO_API_PLUGIN_URL", plugin_dir_url(__FILE__));
+define("CONTACT_FORM_TO_API_PLUGIN_BASENAME", plugin_basename(__FILE__));
+define("CONTACT_FORM_TO_API_TEXT_DOMAIN", "contact-form-to-api");
+define("CONTACT_FORM_TO_API_MIN_PHP_VERSION", "8.2");
+define("CONTACT_FORM_TO_API_MIN_WP_VERSION", "6.5");
+```
 
-**Core Responsibilities**:
-- ContactForm Integration initialization
-- Admin asset management (CSS/JS loading)
-- Component coordination between modules
-- Admin scripts localization for CF7 pages
+### src/Core/Interfaces/LoadableInterface.php - Component Contract
+**Purpose**: Define contract for all loadable components with priority-based loading
+**Pattern**: Interface with three required methods
+
+**Required Methods**:
+- `init(): void` - Initialize the component (register hooks, set up functionality)
+- `get_priority(): int` - Return component priority (10=Core, 20=Services, 30=Admin, 40=Utils)
+- `should_load(): bool` - Determine if component should load (conditional loading logic)
+
+**Priority System**:
+- **10**: Core components (Plugin, Activator)
+- **20**: Services (API handlers, data processors)
+- **30**: Admin components (settings pages, metaboxes)
+- **40**: Utility components (helpers, formatters)
+
+### src/Core/Activator.php - Lifecycle Management
+**Purpose**: Handle plugin activation, deactivation, and uninstallation
+**Pattern**: Static methods for WordPress lifecycle hooks
 
 **Key Methods**:
-- `init_components()`: Initialize CF7 Integration component
-- `register_hooks()`: Admin-only hook registration
-- `admin_enqueue_scripts()`: CF7-specific asset loading with localization
-- Uses plugin constants from main file for version and paths
+- `activate(): void` - Plugin activation
+  * Check requirements (PHP, WordPress, dependencies)
+  * Create database tables via `create_tables()`
+  * Initialize default settings
+  * Set plugin version option
+  * Trigger setup actions
 
-### src/ContactForm/Integration.php - Complete CF7 Integration
+- `deactivate(): void` - Plugin deactivation
+  * Clear WordPress caches
+  * Cleanup scheduled events
+  * Flush rewrite rules
+  * Do NOT delete data (preserve user settings)
+
+- `uninstall(): void` - Plugin uninstallation (called from uninstall.php)
+  * Check uninstall permission
+  * Remove plugin options (if user configured)
+  * Drop database tables (if user configured)
+  * Cleanup transients and caches
+
+- `create_tables(): void` - **PUBLIC STATIC** for test reuse
+  * Use `dbDelta()` for schema changes
+  * Proper SQL formatting with double spaces after PRIMARY KEY
+  * Set charset/collation from `$wpdb`
+  * Error handling for table creation failures
+
+**Testing Pattern**:
+```php
+// In wpSetUpBeforeClass() - BEFORE data insertion
+Activator::create_tables();
+// This avoids MySQL implicit COMMIT issues
+```
+
+### src/Core/Plugin.php - Main Controller
+**Purpose**: Central plugin coordinator implementing LoadableInterface
+**Pattern**: Singleton with LoadableInterface implementation
+
+**Implements**: `LoadableInterface`
+**Singleton**: `instance()` method, private constructor
+
+**Key Methods**:
+- `instance(): self` - Get singleton instance
+- `init(): void` - Initialize plugin
+  * Load components via `load_components()`
+  * Initialize hooks via `init_hooks()`
+  * Load textdomain for i18n
+  * Initialize GitHub updater via `init_updater()`
+
+- `load_components(): void` - Load all plugin components
+  * Iterate through component array
+  * Check `should_load()` before initialization
+  * Sort by priority using `get_priority()`
+  * Call `init()` on each loadable component
+
+- `init_updater(): void` - Configure GitHub updater
+  * Use `UpdaterConfig` pattern for settings
+  * Configure repository: `SilverAssist/contact-form-to-api`
+  * Set up automatic updates from GitHub releases
+
+- `get_priority(): int` - Return 10 (Core priority)
+- `should_load(): bool` - Check WordPress version and dependencies
+
+### src/ContactForm/Integration.php - CF7 Integration
 **Purpose**: Complete Contact Form 7 to API integration functionality
-**Size**: ~700 lines - All original plugin features preserved  
-**Integration Method**: Direct CF7 hooks and filters
+**Pattern**: Singleton implementing LoadableInterface
+**Integration**: Direct CF7 hooks via `wpcf7_editor_panels` and `wpcf7_before_send_mail`
 
-**Core Functionality**:
-- **CF7 Editor Integration**: Adds "API Integration" tab via `wpcf7_editor_panels`
-- **Form Processing**: Hooks into `wpcf7_before_send_mail` for API calls
-- **Field Mapping**: Dynamic mapping between CF7 fields and API parameters
-- **Multiple Formats**: Support for GET/POST params, JSON, and XML payloads
-- **Debug Logging**: Comprehensive error tracking and debugging
-- **Mail Tag System**: Custom mail tags for dynamic content
+**Implements**: `LoadableInterface`
+**Singleton**: `instance()` method, private constructor
 
 **Key Methods**:
-- `add_integrations_tab()`: Adds CF7 editor tab
-- `render_integration_panel()`: Renders form configuration UI
-- `send_data_to_api()`: Main API communication handler  
-- `get_record()`: Data transformation and mapping
-- `send_lead()`: HTTP request execution with retry logic
-- `parse_json()/get_xml()`: Format-specific processors
-- `log_error()`: Error logging and debugging
-- `get_mail_tags()`: Available form fields extraction
+- `init(): void` - Register CF7 hooks
+  * `wpcf7_editor_panels` - Add "API Integration" tab
+  * `wpcf7_before_send_mail` - Process form submissions
+  * Admin enqueue scripts/styles
 
-**Supported Features**:
-- GET, POST, PUT, PATCH HTTP methods
-- JSON and XML payload formats
-- Custom headers and authentication
-- Field validation and transformation
-- Error handling with retry mechanisms
-- Debug mode with detailed logging
+- `get_priority(): int` - Return 30 (Admin priority)
+- `should_load(): bool` - Return `is_admin()` (admin-only functionality)
+
+**CF7 Integration Features**:
+- **Editor Tab**: Adds custom "API Integration" tab to CF7 form editor
+- **Field Mapping**: Dynamic mapping between CF7 fields and API parameters
+- **Multiple Formats**: GET/POST params, JSON, XML payloads
+- **HTTP Methods**: GET, POST, PUT, PATCH support
+- **Authentication**: Bearer tokens, Basic Auth, API keys, custom headers
+- **Error Handling**: Comprehensive logging and retry mechanisms
+- **Debug Mode**: Detailed logging for troubleshooting
 
 ## Asset Architecture
 
@@ -131,74 +228,13 @@ contact-form-to-api/
 ### assets/js/admin.js - ES6+ Admin Functionality  
 **Purpose**: Interactive functionality for CF7 integration
 **Architecture**: ES6 Class-based with jQuery integration
-**Size**: ~500 lines of modern JavaScript
 
-**Core Class: CF7ApiAdmin**
-**Key Methods**:
-- `handleInputTypeChange()`: Dynamic UI for params/XML/JSON modes
-- `insertMailTag()`: Smart mail tag insertion with cursor positioning
-- `validateUrl()`: Real-time API URL validation
-- `testApiConnection()`: Async API endpoint testing
-- `toggleDebugLog()`: Debug information display control
-- `showValidationMessage()`: User feedback system
-
-## Plugin-Specific Architecture Standards
-
-### Contact Form 7 Integration Approach
-- **Direct Form Integration**: All configuration happens directly in CF7 form edit pages via custom tab
-- **No General Admin Panel**: Plugin has no global settings page - all configuration is form-specific
-- **Tab Integration**: Use CF7's `wpcf7_editor_panels` filter to add custom "API Integration" tab
-- **Form Data Processing**: Hook into `wpcf7_before_send_mail` for form submission processing
-- **Field Mapping**: Support dynamic field mapping between CF7 fields and API parameters
-- **Multiple Formats**: Support GET/POST parameters, JSON, and XML payload formats
-
-### API Integration Standards
-- **Multiple Methods**: Support GET, POST, PUT, PATCH requests
-- **Flexible Authentication**: Support Bearer tokens, Basic Auth, API keys, and custom headers
-- **Error Handling**: Comprehensive error logging and retry mechanisms
-- **Debug Logging**: Store last API call details for troubleshooting
-- **Field Transformation**: Support data transformation during field mapping
-- **Conditional Processing**: Support conditional API calls based on form data
-
-### Version Management Standards
-- Version numbers are managed centrally and updated via scripts
-- Use update-version-simple.sh for version updates
-- All @version tags across files must remain synchronized
-- Version consistency is verified via check-versions.sh
-
-### Header Standards
-- All files must include consistent headers with project information
-- Use @since tag for when functionality was introduced
-- Use @version tag for current version (updated with releases)
-- Follow the format specified in HEADER-STANDARDS.md
-
-## Development Commands
-
-### Version Management
-- `./scripts/update-version-simple.sh X.Y.Z` - Update version across all files
-- `./scripts/check-versions.sh` - Verify version consistency
-- `./scripts/build-release.sh` - Create release package
-
-### Quality Assurance
-- `composer install` - Install dependencies
-- `composer validate` - Validate composer.json
-- Run WordPress coding standards checks
-- Execute unit test suite
-
-## Release Process
-1. Update version using update-version-simple.sh
-2. Update CHANGELOG.md with release notes
-3. Verify all tests pass
-4. Create release commit and tag
-5. Build release package
-6. Deploy to WordPress.org (if applicable)
-
-## Support & Maintenance
-- Maintain compatibility with latest WordPress versions
-- Support latest Contact Form 7 versions
-- Regular security audits
-- Performance optimization
-- Community support and documentation
+**Core Functionality**:
+- **Mail Tag Insertion**: Smart insertion with cursor positioning
+- **URL Validation**: Real-time API endpoint validation
+- **API Testing**: Async endpoint connectivity testing
+- **Debug Controls**: Toggle debug information display
+- **Validation Feedback**: User-friendly error messages
 
 ## 🚨 CRITICAL CODING STANDARDS - MANDATORY COMPLIANCE
 
@@ -230,50 +266,264 @@ contact-form-to-api/
 - **Multiple placeholders**: Use positional numbering for clarity: `%1\$d` for first, `%2\$s` for second, etc.
 - **Escaping requirement**: In double-quoted strings, escape `$` in placeholders to prevent variable interpretation
 
-## Modern PHP 8+ Conventions
+## Modern PHP 8.2+ Conventions
 
 ### PHP Coding Standards
-- **Double quotes for all strings**: `"string"` not `'string'` - MANDATORY for both PHP and JavaScript
-- **String interpolation**: Use `"prefix_{$variable}"` instead of `"prefix_" . $variable` when concatenating variables into strings
+- **PHP Version**: 8.2+ required for modern features
+- **Double quotes for all strings**: `"string"` not `'string'` - MANDATORY
+- **String interpolation**: Use `"prefix_{$variable}"` instead of concatenation
 - **Short array syntax**: `[]` not `array()`
-- **Namespaces**: Use descriptive namespaces like `ContactFormToAPI\ComponentType`
-- **Singleton pattern**: `Class_Name::getInstance()` method pattern
-- **WordPress hooks**: `\add_action("init", [$this, "method"])` with array callbacks
-- **PHP 8+ Features**: Match expressions, array spread operator, typed properties
-- **Match over Switch**: Use `match` expressions instead of `switch` statements when possible for cleaner, more concise code
-- **Global function calls**: Use `\` prefix **ONLY for WordPress functions** in namespaced context (e.g., `\add_action()`, `\get_option()`, `\is_ssl()`). PHP native functions like `array_key_exists()`, `explode()`, `trim()`, `sprintf()` do NOT need the `\` prefix.
-- **WordPress Function Rule**: ALL WordPress core functions, WordPress API functions, and plugin functions MUST use the `\` prefix when called from within namespaced classes
-- **PHP Native Function Rule**: PHP built-in functions (string, array, math, etc.) should NOT use the `\` prefix as they are automatically resolved
-- **WordPress i18n**: All user-facing strings MUST use WordPress i18n functions (`\__()`, `\esc_html__()`, `\esc_attr__()`, `\_e()`, `\esc_html_e()`) with text domain `"contact-form-to-api"`
+- **Typed properties**: Use property type declarations
+- **Return types**: Declare return types for all methods
+- **Constructor property promotion**: Use when appropriate
+- **Match expressions**: Prefer `match` over `switch` for cleaner code
+- **Null coalescing**: Use `??` operator for null checks
+- **Named arguments**: Use for clarity in complex function calls
 
-### PHP `use` Statement Standards - MANDATORY COMPLIANCE
+### Namespace and Use Statement Standards
+- **Namespace**: `SilverAssist\ContactFormToAPI\` - MANDATORY prefix
+- **PSR-4 Autoloading**: `includes/` directory mapped to namespace
+- **Import Organization**: All `use` statements at top after namespace
+- **Alphabetical Ordering**: ALWAYS sort `use` statements alphabetically
+- **No In-Method Imports**: NEVER use fully qualified names in methods
+- **Same Namespace Rule**: NEVER import classes from same namespace
+- **WordPress Functions**: Use `\` prefix for ALL WordPress functions in namespaced classes
+  * Examples: `\add_action()`, `\get_option()`, `\is_ssl()`, `\wp_enqueue_script()`
+- **PHP Native Functions**: NO `\` prefix for built-in functions
+  * Examples: `array_key_exists()`, `explode()`, `trim()`, `sprintf()`
 
-#### **Import Organization & Ordering**
-- **MANDATORY**: All `use` statements MUST be placed at the top of the file, immediately after the namespace declaration
-- **Alphabetical Ordering**: ALWAYS sort `use` statements alphabetically for consistent organization
-- **No In-Method Imports**: NEVER use fully qualified class names within methods - use `use` statements instead
-- **Same Namespace Rule**: NEVER import classes that are in the same namespace as the current file
+### WordPress Integration Standards
+- **Hooks**: Use `\add_action("init", [$this, "method"])` with array callbacks
+- **i18n**: All user-facing strings use `\__()`, `\esc_html__()`, `\_e()`, `\esc_html_e()`
+- **Text Domain**: `CONTACT_FORM_TO_API_TEXT_DOMAIN` constant (value: `"contact-form-to-api"`)
+- **Sanitization**: Use `\sanitize_text_field()`, `\sanitize_email()`, etc.
+- **Escaping**: Use `\esc_html()`, `\esc_attr()`, `\esc_url()` for output
+- **Nonces**: Verify with `\wp_verify_nonce()` for forms
+- **Capabilities**: Check with `\current_user_can()` for permissions
 
-## Coding Guidelines Specific to This Project
-- Namespace: `ContactFormToAPI`
-- Text domain: `"contact-form-to-api"`
-- Minimum WordPress version: 5.0
-- Minimum PHP version: 7.4
-- Contact Form 7 dependency required
-- Follow WordPress plugin development best practices
+## Testing Standards (WordPress Test Suite)
 
-When working on this project:
-1. Always maintain the established file structure
-2. Follow the header standards exactly
-3. Update version numbers using the provided scripts
-4. Test all API integrations thoroughly
-5. Document any new functionality
-6. Maintain security best practices
-7. Ensure WordPress and Contact Form 7 compatibility
-8. Use double quotes for ALL strings - NO EXCEPTIONS
-9. Implement form-specific configuration via CF7 editor tabs
-10. No global admin panels - all settings are per-form
-11. **ALWAYS use plugin constants** instead of hardcoded values - see Plugin Constants section below
+### Test Environment Setup
+- **Framework**: WordPress Test Suite + PHPUnit 9.6+
+- **Base Class**: Extend `WP_UnitTestCase` for integration tests
+- **Test Directory**: `tests/` with namespaced structure
+- **Bootstrap**: `tests/bootstrap.php` loads WordPress test environment
+
+### Test File Organization
+```
+tests/
+├── bootstrap.php                    # WordPress test environment
+├── Helpers/
+│   ├── TestCase.php                # Base test case with helpers
+│   └── CF7TestCase.php             # CF7-specific test helpers
+├── Unit/                           # Unit tests (isolated)
+│   └── PluginTest.php
+├── Integration/                    # Integration tests (WordPress)
+│   └── WordPressIntegrationTest.php
+└── ContactForm/
+    └── IntegrationTest.php         # CF7 integration tests
+```
+
+### Critical Testing Patterns
+
+#### Database Schema Creation Pattern
+**CRITICAL**: Use `wpSetUpBeforeClass()` for `CREATE TABLE` statements to avoid MySQL implicit COMMIT issues.
+
+```php
+/**
+ * Set up before class - runs ONCE before any tests
+ * CRITICAL: Use this for CREATE TABLE to avoid MySQL implicit COMMIT
+ */
+public static function wpSetUpBeforeClass(): void {
+    parent::wpSetUpBeforeClass();
+    
+    // Create tables BEFORE inserting any test data
+    Activator::create_tables();
+    
+    // This prevents MySQL's implicit COMMIT from breaking transactions
+}
+```
+
+**Why This Matters**:
+- MySQL implicitly commits on `CREATE TABLE`
+- This breaks PHPUnit's transaction rollback
+- Creates orphaned test data in database
+- Causes test pollution and failures
+
+#### Factory Pattern for Test Data
+```php
+use function Tests\Helpers\create_test_form;
+use function Tests\Helpers\create_test_submission;
+
+public function test_form_submission(): void {
+    $form_id = static::factory()->post->create([
+        "post_type" => "wpcf7_contact_form",
+        "post_status" => "publish",
+    ]);
+    
+    // Test implementation
+}
+```
+
+### Test Method Naming
+- **Pattern**: `test_<method_name>_<scenario>_<expected_result>()`
+- **Examples**: 
+  * `test_activate_creates_database_tables()`
+  * `test_form_submission_sends_to_api_successfully()`
+  * `test_integration_should_not_load_on_frontend()`
+
+### Assertions Best Practices
+- Use specific assertions: `assertSame()` over `assertEquals()` for type safety
+- Test both success and failure scenarios
+- Verify WordPress integration (options, transients, hooks)
+- Check database state changes
+- Validate API responses and error handling
+
+## Quality Tools Configuration
+
+### PHPCS (WordPress Coding Standards)
+**Configuration**: `phpcs.xml`
+```xml
+<rule ref="WordPress-Extra">
+    <exclude name="WordPress.Files.FileName"/>
+</rule>
+<config name="minimum_wp_version" value="6.5"/>
+<config name="prefixes" value="contact_form_to_api"/>
+```
+
+**Key Rules**:
+- WordPress-Extra ruleset
+- File naming exceptions for PSR-4
+- Prefix validation for global functions
+- Minimum WordPress version checks
+
+### PHPStan (Static Analysis)
+**Configuration**: `phpstan.neon`
+```neon
+parameters:
+    level: 8
+    paths:
+        - includes/
+    bootstrapFiles:
+        - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+    ignoreErrors:
+        - '#Function (add_action|add_filter|get_option) not found#'
+```
+
+**Requirements**:
+- Level 8 (strictest)
+- WordPress stubs for core functions
+- Analyze `includes/` directory
+- Type safety enforcement
+
+### PHPUnit (Testing Framework)
+**Configuration**: `phpunit.xml.dist`
+```xml
+<phpunit bootstrap="tests/bootstrap.php">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
+            <directory>tests/ContactForm</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
+```
+
+### Quality Check Script
+**File**: `scripts/run-quality-checks.sh`
+**Purpose**: Run all quality checks with proper exit codes for CI/CD
+
+**Checks**:
+1. Composer validation
+2. PHPCS coding standards
+3. PHPStan static analysis
+4. PHPUnit test suite
+
+**Exit Codes**: Non-zero on any failure (CI/CD compatible)
+
+## CI/CD Workflows (GitHub Actions)
+
+### Workflow Architecture
+- **Reusable Workflow**: `.github/workflows/quality-checks.yml`
+- **PR Validation**: `.github/workflows/ci.yml`
+- **Release Automation**: `.github/workflows/release.yml`
+- **Dependency Updates**: `.github/workflows/dependency-updates.yml`
+
+### quality-checks.yml (Reusable)
+```yaml
+name: Quality Checks
+on:
+  workflow_call:
+    inputs:
+      php-version:
+        required: false
+        type: string
+        default: '8.2'
+```
+
+**Features**:
+- Reusable across workflows
+- PHP version matrix support
+- Composer install with caching
+- Run quality checks script
+- Proper exit code handling
+
+### ci.yml (Pull Request Validation)
+```yaml
+on:
+  pull_request:
+    branches: [main, develop]
+jobs:
+  quality:
+    uses: ./.github/workflows/quality-checks.yml
+```
+
+**Triggers**: Pull requests to main/develop
+**Runs**: Quality checks via reusable workflow
+
+### release.yml (Automated Releases)
+```yaml
+on:
+  push:
+    tags:
+      - 'v*'
+```
+
+**Process**:
+1. Run quality checks
+2. Build release package
+3. Create GitHub release
+4. Upload release assets
+
+## Build and Release Scripts
+
+### scripts/build-release.sh
+**Purpose**: Create distributable plugin package
+
+**Process**:
+1. Validate version numbers
+2. Run quality checks
+3. Install production dependencies
+4. Copy files to build directory
+5. Exclude development files
+6. Create ZIP archive
+
+**Output**: `contact-form-to-api-{version}.zip`
+
+### scripts/update-version.sh
+**Purpose**: Update version across all files
+
+**Updates**:
+- Main plugin file header
+- Plugin constant
+- package.json (if exists)
+- All @version PHPDoc tags
+- composer.json version
+
+**Validation**: Checks version consistency
 
 ## Plugin Constants - MANDATORY USAGE
 
