@@ -207,7 +207,7 @@ class PluginTest extends TestCase {
 
 			// Test essential directories exist
 			$required_dirs = array(
-				'src',
+				'includes',
 				'assets',
 				'languages',
 			);

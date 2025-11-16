@@ -215,7 +215,13 @@ class IntegrationTest extends CF7TestCase {
 			$processed = str_replace( "[{$field}]", $value, $processed );
 		}
 
-		$this->assertCF7MailTagsProcessed( $template, $processed, $form_data );
+		// Only pass the form data fields that are actually used in the template
+		$template_fields = array(
+			'your-name'  => $form_data['your-name'],
+			'your-email' => $form_data['your-email'],
+		);
+
+		$this->assertCF7MailTagsProcessed( $template, $processed, $template_fields );
 		$this->assertStringContainsString( 'Hello John Doe', $processed, 'Should contain processed name' );
 		$this->assertStringContainsString( 'john.doe@example.com', $processed, 'Should contain processed email' );
 	}
