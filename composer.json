@@ -49,13 +49,13 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"ContactFormToAPI\\": "src/"
+			"SilverAssist\\ContactFormToAPI\\": "includes/"
 		},
 		"files": []
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"ContactFormToAPI\\Tests\\": "tests/"
+			"SilverAssist\\ContactFormToAPI\\Tests\\": "tests/"
 		}
 	},
 	"scripts": {
@@ -67,7 +67,7 @@
 		],
 		"phpcs": "phpcs",
 		"phpcbf": "phpcbf",
-		"phpstan": "phpstan analyse src/ --level=8",
+		"phpstan": "phpstan analyse includes/ --level=8",
 		"test": [
 			"phpunit"
 		],
