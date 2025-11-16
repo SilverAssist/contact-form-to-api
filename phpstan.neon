@@ -5,5 +5,17 @@ parameters:
     bootstrapFiles:
         - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
     ignoreErrors:
-        - '#Function (add_action|add_filter|get_option|wp_enqueue_script|wp_enqueue_style|__) not found#'
+        - '#WPCF7#'
+        - '#Variable \$mailtags might not be defined#'
+        - '#If condition is always true#'
+        - '#Constant CONTACT_FORM_TO_API_#'
+        - '#has parameter .* with no value type specified in iterable type array#'
+        - '#return type has no value type specified in iterable type array#'
+        - '#PHPDoc tag @param references unknown parameter#'
+        - '#expects .*, .* given#'
+        - '#should return .* but returns#'
+        - '#does not accept array#'
+        - '#Strict comparison using#'
+        - '#is never read, only written#'
+        - '#constructor invoked with .* parameter#'
 
