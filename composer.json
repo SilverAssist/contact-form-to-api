@@ -30,8 +30,9 @@
   "prefer-stable": true,
   "require": {
     "php": ">=8.0",
-    "composer/installers": "^1.12 || ^2.0",
-    "silverassist/wp-github-updater": "^1.1"
+    "composer/installers": "^2.3",
+    "silverassist/wp-github-updater": "^1.2",
+    "silverassist/wp-settings-hub": "^1.1"
   },
   "require-dev": {
     "phpunit/phpunit": "^9.6",
