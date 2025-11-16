@@ -296,10 +296,10 @@ class Plugin implements LoadableInterface {
 	 * Get specific setting value
 	 *
 	 * @param string $key Setting key.
-	 * @param mixed  $default Default value if setting doesn't exist.
+	 * @param mixed  $default_value Default value if setting doesn't exist.
 	 * @return mixed Setting value.
 	 */
-	public function get_setting( string $key, $default = null ) {
-		return $this->settings[ $key ] ?? $default;
+	public function get_setting( string $key, $default_value = null ) {
+		return $this->settings[ $key ] ?? $default_value;
 	}
 }
