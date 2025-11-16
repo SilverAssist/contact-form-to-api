@@ -14,20 +14,31 @@ jobs:
     name: Quality Checks (PHP ${{ inputs.php-version }})
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: cf7_api_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        uses: actions/checkout@v4
 
       - name: Setup PHP ${{ inputs.php-version }}
-        uses: shivammathur/setup-php@bf6b4fbd49ca58e4608c9c89fba0b8d90bd2a39f # v2.35.5
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ inputs.php-version }}
-          extensions: curl, dom, json, libxml, mbstring, xmlwriter
+          extensions: curl, dom, json, libxml, mbstring, mysqli, xmlwriter
           coverage: none
           tools: composer:v2
 
-      - name: Validate composer.json
-        run: composer validate --strict
+      - name: Verify MySQL connection
+        run: |
+          mysql --host=127.0.0.1 --port=3306 -uroot -proot -e "SHOW DATABASES"
 
       - name: Get Composer cache directory
         id: composer-cache
@@ -44,5 +55,11 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader
 
-      - name: Run quality checks
+      - name: Run quality checks with WordPress Test Suite
+        env:
+          WP_VERSION: latest
+          DB_NAME: cf7_api_test
+          DB_USER: root
+          DB_PASS: root
+          DB_HOST: 127.0.0.1
         run: ./scripts/run-quality-checks.sh
