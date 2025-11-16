@@ -97,9 +97,9 @@ class PluginTest extends TestCase {
 	 */
 	public function testPluginSingletonPattern(): void {
 		if ( class_exists( 'SilverAssist\\ContactFormToAPI\\Core\\Plugin' ) ) {
-			if ( method_exists( 'SilverAssist\\ContactFormToAPI\\Core\\Plugin', 'getInstance' ) ) {
-				$instance1 = Plugin::getInstance();
-				$instance2 = Plugin::getInstance();
+			if ( method_exists( 'SilverAssist\\ContactFormToAPI\\Core\\Plugin', 'instance' ) ) {
+				$instance1 = Plugin::instance();
+				$instance2 = Plugin::instance();
 
 				$this->assertSame(
 					$instance1,
