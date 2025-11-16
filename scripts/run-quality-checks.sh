@@ -44,7 +44,15 @@ readonly PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 # Flags
 FIX_MODE=false
 VERBOSE_MODE=false
+SKIP_WP_SETUP=false
 FAILED_CHECKS=()
+
+# WordPress Test Suite configuration
+WP_VERSION="${WP_VERSION:-latest}"
+DB_NAME="${DB_NAME:-cf7_api_test}"
+DB_USER="${DB_USER:-root}"
+DB_PASS="${DB_PASS:-}"
+DB_HOST="${DB_HOST:-localhost}"
 
 ###############################################################################
 # Functions
@@ -81,6 +89,45 @@ command_exists() {
 # Record failed check
 record_failure() {
     FAILED_CHECKS+=("$1")
+}
+
+###############################################################################
+# WordPress Test Suite Setup
+###############################################################################
+setup_wordpress_tests() {
+    print_header "WordPress Test Suite Setup"
+    
+    if [[ "$SKIP_WP_SETUP" == true ]]; then
+        print_warning "Skipping WordPress Test Suite setup (--skip-wp-setup)"
+        return 0
+    fi
+    
+    cd "$PROJECT_DIR"
+    
+    # Check if install script exists
+    if [[ ! -f "scripts/install-wp-tests.sh" ]]; then
+        print_warning "install-wp-tests.sh not found, skipping WordPress setup"
+        print_info "To enable WordPress tests, add scripts/install-wp-tests.sh"
+        return 0
+    fi
+    
+    print_info "Installing WordPress Test Suite (version: $WP_VERSION)..."
+    print_info "Database: $DB_NAME @ $DB_HOST"
+    
+    # Drop existing database if it exists
+    mysql -e "DROP DATABASE IF EXISTS $DB_NAME;" -u"$DB_USER" -p"$DB_PASS" 2>/dev/null || true
+    mysql -e "CREATE DATABASE $DB_NAME;" -u"$DB_USER" -p"$DB_PASS"
+    
+    # Install WordPress Test Suite
+    bash "$PROJECT_DIR/scripts/install-wp-tests.sh" "$DB_NAME" "$DB_USER" "$DB_PASS" "$DB_HOST" "$WP_VERSION" true
+    
+    if [[ $? -eq 0 ]]; then
+        print_success "WordPress Test Suite installed"
+        return 0
+    else
+        print_error "WordPress Test Suite installation failed"
+        return 1
+    fi
 }
 
 ###############################################################################
@@ -193,7 +240,7 @@ check_phpstan() {
 # 4. PHPUnit Tests
 ###############################################################################
 check_phpunit() {
-    print_header "4/4 - PHPUnit Test Suite"
+    print_header "4/4 - PHPUnit Test Suite (WordPress)"
     
     cd "$PROJECT_DIR"
     
@@ -210,6 +257,12 @@ check_phpunit() {
         return 0
     fi
     
+    # Set WordPress tests directory for PHPUnit
+    if [[ "$SKIP_WP_SETUP" != true ]]; then
+        export WP_TESTS_DIR="${WP_TESTS_DIR:-/tmp/wordpress-tests-lib}"
+        print_info "Using WordPress Test Suite: $WP_TESTS_DIR"
+    fi
+    
     local phpunit_cmd="vendor/bin/phpunit"
     local phpunit_args=""
     
@@ -217,11 +270,17 @@ check_phpunit() {
         phpunit_args="--verbose"
     fi
     
-    if $phpunit_cmd $phpunit_args; then
+    # Run PHPUnit and capture exit code
+    set +e
+    $phpunit_cmd $phpunit_args
+    local phpunit_exit=$?
+    set -e
+    
+    if [[ $phpunit_exit -eq 0 ]]; then
         print_success "All tests passed"
         return 0
     else
-        print_error "Some tests failed"
+        print_error "PHPUnit tests failed with exit code $phpunit_exit"
         print_info "Review the test output above"
         record_failure "PHPUnit"
         return 1
@@ -264,13 +323,43 @@ main() {
                 VERBOSE_MODE=true
                 shift
                 ;;
+            --skip-wp-setup)
+                SKIP_WP_SETUP=true
+                shift
+                ;;
+            --wp-version)
+                WP_VERSION="$2"
+                shift 2
+                ;;
+            --db-name)
+                DB_NAME="$2"
+                shift 2
+                ;;
+            --db-user)
+                DB_USER="$2"
+                shift 2
+                ;;
+            --db-pass)
+                DB_PASS="$2"
+                shift 2
+                ;;
+            --db-host)
+                DB_HOST="$2"
+                shift 2
+                ;;
             --help|-h)
                 echo "Usage: $0 [OPTIONS]"
                 echo ""
                 echo "Options:"
-                echo "  --fix        Auto-fix PHPCS issues with PHPCBF"
-                echo "  --verbose    Enable verbose output for all checks"
-                echo "  --help       Show this help message"
+                echo "  --fix              Auto-fix PHPCS issues with PHPCBF"
+                echo "  --verbose, -v      Enable verbose output for all checks"
+                echo "  --skip-wp-setup    Skip WordPress Test Suite setup"
+                echo "  --wp-version VER   WordPress version (default: latest)"
+                echo "  --db-name NAME     Database name (default: cf7_api_test)"
+                echo "  --db-user USER     Database user (default: root)"
+                echo "  --db-pass PASS     Database password (default: empty)"
+                echo "  --db-host HOST     Database host (default: localhost)"
+                echo "  --help, -h         Show this help message"
                 echo ""
                 exit 0
                 ;;
@@ -294,7 +383,17 @@ main() {
         print_info "Verbose mode enabled"
     fi
     
+    if [[ "$SKIP_WP_SETUP" == true ]]; then
+        print_info "Skipping WordPress Test Suite setup"
+    fi
+    
     echo ""
+    
+    # Setup WordPress Test Suite if needed
+    if [[ "$SKIP_WP_SETUP" != true ]]; then
+        setup_wordpress_tests || true
+        echo ""
+    fi
     
     # Run all checks
     check_composer || true
