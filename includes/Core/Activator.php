@@ -173,7 +173,7 @@ class Activator {
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-		$wpdb->query( "DROP TABLE IF EXISTS {$table_name}" );
+		$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table_name ) );
 	}
 
 	/**
@@ -194,8 +194,8 @@ class Activator {
 			throw new \Exception(
 				\sprintf(
 					/* translators: %s: required PHP version */
-					\esc_html__( 'Contact Form 7 to API requires PHP %s or higher.', "contact-form-to-api" ),
-					CONTACT_FORM_TO_API_MIN_PHP_VERSION
+					\esc_html__( 'Contact Form 7 to API requires PHP %s or higher.', 'contact-form-to-api' ),
+					\esc_html( CONTACT_FORM_TO_API_MIN_PHP_VERSION )
 				)
 			);
 		}
@@ -210,8 +210,8 @@ class Activator {
 			throw new \Exception(
 				\sprintf(
 					/* translators: %s: required WordPress version */
-					\esc_html__( 'Contact Form 7 to API requires WordPress %s or higher.', "contact-form-to-api" ),
-					CONTACT_FORM_TO_API_MIN_WP_VERSION
+					\esc_html__( 'Contact Form 7 to API requires WordPress %s or higher.', 'contact-form-to-api' ),
+					\esc_html( CONTACT_FORM_TO_API_MIN_WP_VERSION )
 				)
 			);
 		}
@@ -223,7 +223,7 @@ class Activator {
 			}
 
 			throw new \Exception(
-				\esc_html__( 'Contact Form 7 to API requires Contact Form 7 to be active.', "contact-form-to-api" )
+				\esc_html__( 'Contact Form 7 to API requires Contact Form 7 to be active.', 'contact-form-to-api' )
 			);
 		}
 	}

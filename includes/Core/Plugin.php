@@ -213,7 +213,7 @@ class Plugin implements LoadableInterface {
 				'asset_pattern'      => 'contact-form-to-api-v{version}.zip',
 				'ajax_action'        => 'cf7_api_check_version',
 				'ajax_nonce'         => 'cf7_api_version_nonce',
-				'text_domain'        => "contact-form-to-api",
+				'text_domain'        => 'contact-form-to-api',
 			)
 		);
 
@@ -247,7 +247,7 @@ class Plugin implements LoadableInterface {
 	 */
 	private function load_textdomain(): void {
 		\load_plugin_textdomain(
-			"contact-form-to-api",
+			'contact-form-to-api',
 			false,
 			\dirname( CONTACT_FORM_TO_API_BASENAME ) . '/languages'
 		);
@@ -266,7 +266,7 @@ class Plugin implements LoadableInterface {
 		$settings_link = \sprintf(
 			'<a href="%s">%s</a>',
 			\admin_url( 'admin.php?page=wpcf7' ),
-			\esc_html__( 'Settings', "contact-form-to-api" )
+			\esc_html__( 'Settings', 'contact-form-to-api' )
 		);
 
 		\array_unshift( $links, $settings_link );
