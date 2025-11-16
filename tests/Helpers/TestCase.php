@@ -108,6 +108,7 @@ abstract class TestCase extends PHPUnitTestCase {
 			return null;
 		}
 
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Test helper, not production code
 		$json_content = file_get_contents( $file_path );
 		$data         = json_decode( $json_content, true );
 
@@ -192,6 +193,7 @@ abstract class TestCase extends PHPUnitTestCase {
 	 */
 	protected function createTempFile( string $content, string $extension = 'txt' ): string {
 		$temp_file = tempnam( sys_get_temp_dir(), 'cf7api_test_' ) . '.' . $extension;
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Test helper, not production code
 		file_put_contents( $temp_file, $content );
 
 		// Store for cleanup
@@ -212,6 +214,7 @@ abstract class TestCase extends PHPUnitTestCase {
 		if ( isset( $this->temp_files ) && is_array( $this->temp_files ) ) {
 			foreach ( $this->temp_files as $file ) {
 				if ( file_exists( $file ) ) {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Test helper, not production code
 					unlink( $file );
 				}
 			}

@@ -252,7 +252,7 @@ abstract class CF7TestCase extends TestCase {
 			'success'   => true,
 			'message'   => 'Data received successfully',
 			'id'        => 'test_' . uniqid(),
-			'timestamp' => date( 'Y-m-d H:i:s' ),
+			'timestamp' => gmdate( 'Y-m-d H:i:s' ),
 		);
 
 		return $this->createMockHttpResponse(

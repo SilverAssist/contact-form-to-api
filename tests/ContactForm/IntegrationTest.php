@@ -265,7 +265,7 @@ class IntegrationTest extends CF7TestCase {
 		// Test debug logging would be captured
 		if ( $config['debug_mode'] ) {
 			$debug_data = array(
-				'timestamp'      => date( 'Y-m-d H:i:s' ),
+				'timestamp'      => gmdate( 'Y-m-d H:i:s' ),
 				'request_url'    => $config['api_url'],
 				'request_method' => $config['api_method'],
 				'form_data'      => $this->createMockSubmissionData(),

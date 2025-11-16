@@ -14,6 +14,9 @@
 
 namespace SilverAssist\ContactFormToAPI\Tests;
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- Test bootstrap needs to mock WordPress globals
+// phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter -- Mock functions don't use all parameters
+
 // Prevent direct access
 if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', dirname( __DIR__ ) . '/' );
@@ -80,6 +83,9 @@ if ( ! function_exists( 'admin_url' ) ) {
 	}
 }
 
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals
+// phpcs:enable Generic.CodeAnalysis.UnusedFunctionParameter
+
 if ( ! function_exists( 'wp_create_nonce' ) ) {
 	function wp_create_nonce( $action = -1 ) {
 		return 'test_nonce_' . $action;
@@ -101,6 +107,7 @@ if ( ! defined( 'CONTACT_FORM_TO_API_TEST_MODE' ) ) {
 	define( 'CONTACT_FORM_TO_API_TEST_MODE', true );
 }
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- WordPress Test Suite constants
 if ( ! defined( 'CF7_TESTING' ) ) {
 	define( 'CF7_TESTING', true );
 }
@@ -117,6 +124,7 @@ if ( ! defined( 'WP_TESTS_EMAIL' ) ) {
 if ( ! defined( 'WP_TESTS_TITLE' ) ) {
 	define( 'WP_TESTS_TITLE', 'Test Blog' );
 }
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals
 
 // Plugin constants
 if ( ! defined( 'CONTACT_FORM_TO_API_VERSION' ) ) {
@@ -143,6 +151,7 @@ if ( ! defined( 'CONTACT_FORM_TO_API_MIN_WP_VERSION' ) ) {
 	define( 'CONTACT_FORM_TO_API_MIN_WP_VERSION', '6.5' );
 }
 
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- WordPress Test Suite bootstrap variables
 // Load Composer autoloader
 $composer_autoload = dirname( __DIR__ ) . '/vendor/autoload.php';
 if ( file_exists( $composer_autoload ) ) {
@@ -168,6 +177,7 @@ if ( ! $wp_tests_dir ) {
 		}
 	}
 }
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals
 
 // Load WordPress test functions
 if ( $wp_tests_dir && file_exists( $wp_tests_dir . '/includes/functions.php' ) ) {
