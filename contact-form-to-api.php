@@ -33,8 +33,10 @@ defined( 'ABSPATH' ) || exit;
 // Define plugin constants.
 define( 'CONTACT_FORM_TO_API_VERSION', '1.0.1' );
 define( 'CONTACT_FORM_TO_API_FILE', __FILE__ );
-define( 'CONTACT_FORM_TO_API_PATH', plugin_dir_path( __FILE__ ) );
+define( 'CONTACT_FORM_TO_API_DIR', plugin_dir_path( __FILE__ ) );
+define( 'CONTACT_FORM_TO_API_URL', plugin_dir_url( __FILE__ ) );
 define( 'CONTACT_FORM_TO_API_BASENAME', plugin_basename( __FILE__ ) );
+define( 'CONTACT_FORM_TO_API_TEXT_DOMAIN', 'contact-form-to-api' );
 
 // Minimum requirements.
 define( 'CONTACT_FORM_TO_API_MIN_PHP_VERSION', '8.2' );
@@ -43,15 +45,15 @@ define( 'CONTACT_FORM_TO_API_MIN_WP_VERSION', '6.5' );
 /**
  * Composer autoloader
  */
-$contact_form_to_api_autoload_path      = CONTACT_FORM_TO_API_PATH . 'vendor/autoload.php';
+$contact_form_to_api_autoload_path      = CONTACT_FORM_TO_API_DIR . 'vendor/autoload.php';
 $contact_form_to_api_real_autoload_path = realpath( $contact_form_to_api_autoload_path );
-$contact_form_to_api_plugin_real_path   = realpath( CONTACT_FORM_TO_API_PATH );
+$CONTACT_FORM_TO_API_real_path   = realpath( CONTACT_FORM_TO_API_DIR );
 
 // Validate: both paths resolve, autoloader is inside plugin directory.
 if (
 	$contact_form_to_api_real_autoload_path &&
-	$contact_form_to_api_plugin_real_path &&
-	0 === strpos( $contact_form_to_api_real_autoload_path, $contact_form_to_api_plugin_real_path )
+	$CONTACT_FORM_TO_API_real_path &&
+	0 === strpos( $contact_form_to_api_real_autoload_path, $CONTACT_FORM_TO_API_real_path )
 ) {
 	require_once $contact_form_to_api_real_autoload_path;
 } else {

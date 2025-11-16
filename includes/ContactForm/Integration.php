@@ -756,7 +756,7 @@ class Integration implements LoadableInterface {
             return;
         }
 
-        $plugin_url = CONTACT_FORM_TO_API_PLUGIN_URL;
+        $plugin_url = CONTACT_FORM_TO_API_URL;
 
         \wp_enqueue_style(
             "cf7-api-admin",

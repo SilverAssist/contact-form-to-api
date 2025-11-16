@@ -31,7 +31,7 @@ class PluginTest extends TestCase
     {
         $this->assertTrue(defined("CONTACT_FORM_TO_API_VERSION"), "Plugin version constant should be defined");
         $this->assertTrue(defined("CONTACT_FORM_TO_API_TEXT_DOMAIN"), "Text domain constant should be defined");
-        $this->assertTrue(defined("CONTACT_FORM_TO_API_PLUGIN_FILE"), "Plugin file constant should be defined");
+        $this->assertTrue(defined("CONTACT_FORM_TO_API_FILE"), "Plugin file constant should be defined");
     }
 
     /**
@@ -72,13 +72,13 @@ class PluginTest extends TestCase
      */
     public function testPluginFileExists(): void
     {
-        if (defined("CONTACT_FORM_TO_API_PLUGIN_FILE")) {
+        if (defined("CONTACT_FORM_TO_API_FILE")) {
             $this->assertFileExists(
-                CONTACT_FORM_TO_API_PLUGIN_FILE,
+                CONTACT_FORM_TO_API_FILE,
                 "Main plugin file should exist at specified path"
             );
         } else {
-            $this->markTestSkipped("CONTACT_FORM_TO_API_PLUGIN_FILE constant not defined");
+            $this->markTestSkipped("CONTACT_FORM_TO_API_FILE constant not defined");
         }
     }
 
@@ -213,8 +213,8 @@ class PluginTest extends TestCase
      */
     public function testPluginDirectoryStructure(): void
     {
-        if (defined("CONTACT_FORM_TO_API_PLUGIN_DIR")) {
-            $plugin_dir = CONTACT_FORM_TO_API_PLUGIN_DIR;
+        if (defined("CONTACT_FORM_TO_API_DIR")) {
+            $plugin_dir = CONTACT_FORM_TO_API_DIR;
 
             // Test essential directories exist
             $required_dirs = [
@@ -245,7 +245,7 @@ class PluginTest extends TestCase
                 );
             }
         } else {
-            $this->markTestSkipped("CONTACT_FORM_TO_API_PLUGIN_DIR constant not defined");
+            $this->markTestSkipped("CONTACT_FORM_TO_API_DIR constant not defined");
         }
     }
 }

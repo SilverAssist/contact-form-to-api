@@ -187,8 +187,8 @@ class Activator {
 	private static function check_requirements(): void {
 		// Check PHP version.
 		if ( \version_compare(PHP_VERSION, CONTACT_FORM_TO_API_MIN_PHP_VERSION, "<") ) {
-			if ( \defined("CONTACT_FORM_TO_API_PLUGIN_BASENAME") ) {
-				\deactivate_plugins(CONTACT_FORM_TO_API_PLUGIN_BASENAME);
+			if ( \defined("CONTACT_FORM_TO_API_BASENAME") ) {
+				\deactivate_plugins(CONTACT_FORM_TO_API_BASENAME);
 			}
 
 			throw new \Exception(
@@ -203,8 +203,8 @@ class Activator {
 		// Check WordPress version.
 		global $wp_version;
 		if ( \version_compare($wp_version, CONTACT_FORM_TO_API_MIN_WP_VERSION, "<") ) {
-			if ( \defined("CONTACT_FORM_TO_API_PLUGIN_BASENAME") ) {
-				\deactivate_plugins(CONTACT_FORM_TO_API_PLUGIN_BASENAME);
+			if ( \defined("CONTACT_FORM_TO_API_BASENAME") ) {
+				\deactivate_plugins(CONTACT_FORM_TO_API_BASENAME);
 			}
 
 			throw new \Exception(
@@ -218,8 +218,8 @@ class Activator {
 
 		// Check Contact Form 7 availability.
 		if ( ! \class_exists("WPCF7_ContactForm") ) {
-			if ( \defined("CONTACT_FORM_TO_API_PLUGIN_BASENAME") ) {
-				\deactivate_plugins(CONTACT_FORM_TO_API_PLUGIN_BASENAME);
+			if ( \defined("CONTACT_FORM_TO_API_BASENAME") ) {
+				\deactivate_plugins(CONTACT_FORM_TO_API_BASENAME);
 			}
 
 			throw new \Exception(

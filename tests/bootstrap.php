@@ -135,12 +135,12 @@ if (!defined("CONTACT_FORM_TO_API_VERSION")) {
     define("CONTACT_FORM_TO_API_VERSION", "1.0.0");
 }
 
-if (!defined("CONTACT_FORM_TO_API_PLUGIN_FILE")) {
-    define("CONTACT_FORM_TO_API_PLUGIN_FILE", dirname(__DIR__) . "/contact-form-to-api.php");
+if (!defined("CONTACT_FORM_TO_API_FILE")) {
+    define("CONTACT_FORM_TO_API_FILE", dirname(__DIR__) . "/contact-form-to-api.php");
 }
 
-if (!defined("CONTACT_FORM_TO_API_PLUGIN_DIR")) {
-    define("CONTACT_FORM_TO_API_PLUGIN_DIR", dirname(__DIR__) . "/");
+if (!defined("CONTACT_FORM_TO_API_DIR")) {
+    define("CONTACT_FORM_TO_API_DIR", dirname(__DIR__) . "/");
 }
 
 if (!defined("CONTACT_FORM_TO_API_TEXT_DOMAIN")) {

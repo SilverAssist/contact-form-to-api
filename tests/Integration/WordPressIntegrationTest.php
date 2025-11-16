@@ -244,14 +244,14 @@ class WordPressIntegrationTest extends TestCase
 
         // Test plugin constants
         $this->assertTrue(
-            defined("CONTACT_FORM_TO_API_PLUGIN_FILE"),
+            defined("CONTACT_FORM_TO_API_FILE"),
             "Plugin file constant should be defined"
         );
 
         if (function_exists("register_activation_hook")) {
             // Test activation hook registration
             $registered = \register_activation_hook(
-                CONTACT_FORM_TO_API_PLUGIN_FILE,
+                CONTACT_FORM_TO_API_FILE,
                 "contact_form_to_api_activate"
             );
             $this->assertTrue($registered, "Should be able to register activation hook");

@@ -44,7 +44,7 @@ class Plugin
    * @since 1.0.0
    * @var string
    */
-    private string $plugin_file = CONTACT_FORM_TO_API_PLUGIN_FILE;
+    private string $plugin_file = CONTACT_FORM_TO_API_FILE;
 
   /**
    * Plugin URL
@@ -217,8 +217,8 @@ class Plugin
     public function get_plugin_url(): string
     {
         if ($this->plugin_url === null) {
-            $this->plugin_url = defined("CONTACT_FORM_TO_API_PLUGIN_URL")
-              ? CONTACT_FORM_TO_API_PLUGIN_URL
+            $this->plugin_url = defined("CONTACT_FORM_TO_API_URL")
+              ? CONTACT_FORM_TO_API_URL
               : \plugin_dir_url(dirname(dirname(__DIR__)) . "/contact-form-to-api.php");
         }
 

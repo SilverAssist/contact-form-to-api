@@ -283,10 +283,10 @@ The following constants are defined in the main plugin file (`contact-form-to-ap
 ```php
 // Core plugin information
 define("CONTACT_FORM_TO_API_VERSION", "1.0.0");
-define("CONTACT_FORM_TO_API_PLUGIN_FILE", __FILE__);
-define("CONTACT_FORM_TO_API_PLUGIN_DIR", plugin_dir_path(__FILE__));
-define("CONTACT_FORM_TO_API_PLUGIN_URL", plugin_dir_url(__FILE__));
-define("CONTACT_FORM_TO_API_PLUGIN_BASENAME", plugin_basename(__FILE__));
+define("CONTACT_FORM_TO_API_FILE", __FILE__);
+define("CONTACT_FORM_TO_API_DIR", plugin_dir_path(__FILE__));
+define("CONTACT_FORM_TO_API_URL", plugin_dir_url(__FILE__));
+define("CONTACT_FORM_TO_API_BASENAME", plugin_basename(__FILE__));
 define("CONTACT_FORM_TO_API_TEXT_DOMAIN", "contact-form-to-api");
 
 // System requirements
@@ -304,11 +304,11 @@ define("CONTACT_FORM_TO_API_MIN_WP_VERSION", "6.5");
   - ❌ Wrong: `"1.0.0"`
 
 - **Plugin Paths**: ALWAYS use path constants for file operations
-  - ✅ Correct: `CONTACT_FORM_TO_API_PLUGIN_DIR . "assets/css/admin.css"`
+  - ✅ Correct: `CONTACT_FORM_TO_API_DIR . "assets/css/admin.css"`
   - ❌ Wrong: `plugin_dir_path(__FILE__) . "assets/css/admin.css"`
 
 - **Plugin URLs**: ALWAYS use URL constants for asset loading
-  - ✅ Correct: `CONTACT_FORM_TO_API_PLUGIN_URL . "assets/js/admin.js"`
+  - ✅ Correct: `CONTACT_FORM_TO_API_URL . "assets/js/admin.js"`
   - ❌ Wrong: `plugin_dir_url(__FILE__) . "assets/js/admin.js"`
 
 ### Benefits of Using Constants

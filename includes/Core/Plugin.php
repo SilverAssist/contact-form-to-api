@@ -171,7 +171,7 @@ class Plugin implements LoadableInterface {
 	private function init_hooks(): void {
 		\add_action("init", [$this, "handle_init"]);
 		\add_action("admin_init", [$this, "handle_admin_init"]);
-		\add_filter("plugin_action_links_" . CONTACT_FORM_TO_API_PLUGIN_BASENAME, [$this, "add_action_links"]);
+		\add_filter("plugin_action_links_" . CONTACT_FORM_TO_API_BASENAME, [$this, "add_action_links"]);
 	}
 
 	/**
@@ -204,7 +204,7 @@ class Plugin implements LoadableInterface {
 		// Create updater configuration.
 		$config = new \SilverAssist\WpGithubUpdater\UpdaterConfig(
 			[
-				"plugin_file"        => CONTACT_FORM_TO_API_PLUGIN_FILE,
+				"plugin_file"        => CONTACT_FORM_TO_API_FILE,
 				"github_repository"  => "SilverAssist/contact-form-to-api",
 				"plugin_slug"        => "contact-form-to-api",
 				"plugin_name"        => "Contact Form 7 to API",
@@ -249,7 +249,7 @@ class Plugin implements LoadableInterface {
 		\load_plugin_textdomain(
 			CONTACT_FORM_TO_API_TEXT_DOMAIN,
 			false,
-			\dirname(CONTACT_FORM_TO_API_PLUGIN_BASENAME) . "/languages"
+			\dirname(CONTACT_FORM_TO_API_BASENAME) . "/languages"
 		);
 	}
 
