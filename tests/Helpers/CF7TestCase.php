@@ -14,7 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Tests\Helpers;
 
-use ContactFormToAPI\Tests\Helpers\TestCase;
+use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 
 /**
  * Contact Form 7 specific test case class

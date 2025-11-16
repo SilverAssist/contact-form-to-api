@@ -148,7 +148,7 @@ class Integration implements LoadableInterface {
 	 */
 	public function add_integrations_tab( array $panels ): array {
 		$panels['cf7-api-integration'] = array(
-			'title'    => \__( 'API Integration', CONTACT_FORM_TO_API_TEXT_DOMAIN ),
+			'title'    => \__( 'API Integration', "contact-form-to-api" ),
 			'callback' => array( $this, 'render_integration_panel' ),
 		);
 
@@ -236,18 +236,18 @@ class Integration implements LoadableInterface {
         </report>
     </reports>
 </update>',
-			CONTACT_FORM_TO_API_TEXT_DOMAIN
+			"contact-form-to-api"
 		);
 
 		$json_placeholder = \__(
 			'*** THIS IS AN EXAMPLE ** USE YOUR JSON ACCORDING TO YOUR API DOCUMENTATION **
 { "name":"[fullname]", "age":30, "car":null }',
-			CONTACT_FORM_TO_API_TEXT_DOMAIN
+			"contact-form-to-api"
 		);
 
 		?>
 	<div id="cf7-api-integration">
-		<h2><?php \esc_html_e( 'API Integration', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?></h2>
+		<h2><?php \esc_html_e( 'API Integration', "contact-form-to-api" ); ?></h2>
 
 		<fieldset>
 		<?php \do_action( 'cf7_api_before_base_fields', $post ); ?>
@@ -255,13 +255,13 @@ class Integration implements LoadableInterface {
 		<div class="cf7_row">
 			<label for="wpcf7-sf-send-to-api">
 			<input type="checkbox" id="wpcf7-sf-send-to-api" name="wpcf7-sf[send_to_api]" <?php \checked( $wpcf7_api_data['send_to_api'], 'on' ); ?> />
-			<?php \esc_html_e( 'Send to API?', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?>
+			<?php \esc_html_e( 'Send to API?', "contact-form-to-api" ); ?>
 			</label>
 		</div>
 
 		<div class="cf7_row">
 			<label for="wpcf7-sf-base-url">
-			<?php \esc_html_e( 'Base URL', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?>
+			<?php \esc_html_e( 'Base URL', "contact-form-to-api" ); ?>
 			<input type="text" id="wpcf7-sf-base-url" name="wpcf7-sf[base_url]" class="large-text"
 				value="<?php echo \esc_attr( $wpcf7_api_data['base_url'] ); ?>" />
 			</label>
@@ -271,16 +271,16 @@ class Integration implements LoadableInterface {
 
 		<div class="cf7_row">
 			<label for="wpcf7-sf-input-type">
-			<span class="cf7-label-in"><?php \esc_html_e( 'Input type', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?></span>
+			<span class="cf7-label-in"><?php \esc_html_e( 'Input type', "contact-form-to-api" ); ?></span>
 			<select id="wpcf7-sf-input-type" name="wpcf7-sf[input_type]">
 				<option value="params" <?php \selected( $wpcf7_api_data['input_type'], 'params' ); ?>>
-				<?php \esc_html_e( 'Parameters - GET/POST', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?>
+				<?php \esc_html_e( 'Parameters - GET/POST', "contact-form-to-api" ); ?>
 				</option>
 				<option value="xml" <?php \selected( $wpcf7_api_data['input_type'], 'xml' ); ?>>
-				<?php \esc_html_e( 'XML', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?>
+				<?php \esc_html_e( 'XML', "contact-form-to-api" ); ?>
 				</option>
 				<option value="json" <?php \selected( $wpcf7_api_data['input_type'], 'json' ); ?>>
-				<?php \esc_html_e( 'JSON', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?>
+				<?php \esc_html_e( 'JSON', "contact-form-to-api" ); ?>
 				</option>
 			</select>
 			</label>
@@ -288,7 +288,7 @@ class Integration implements LoadableInterface {
 
 		<div class="cf7_row" data-cf7index="params,json">
 			<label for="wpcf7-sf-method">
-			<span class="cf7-label-in"><?php \esc_html_e( 'Method', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?></span>
+			<span class="cf7-label-in"><?php \esc_html_e( 'Method', "contact-form-to-api" ); ?></span>
 			<select id="wpcf7-sf-method" name="wpcf7-sf[method]">
 				<option value="GET" <?php \selected( $wpcf7_api_data['method'], 'GET' ); ?>>GET</option>
 				<option value="POST" <?php \selected( $wpcf7_api_data['method'], 'POST' ); ?>>POST</option>
@@ -302,12 +302,12 @@ class Integration implements LoadableInterface {
 		<!-- Parameters Mapping Section -->
 		<fieldset data-cf7index="params">
 		<div class="cf7_row">
-			<h2><?php \esc_html_e( 'Form fields', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?></h2>
+			<h2><?php \esc_html_e( 'Form fields', "contact-form-to-api" ); ?></h2>
 
 			<table>
 			<tr>
-				<th><?php \esc_html_e( 'Form fields', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?></th>
-				<th><?php \esc_html_e( 'API Key', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?></th>
+				<th><?php \esc_html_e( 'Form fields', "contact-form-to-api" ); ?></th>
+				<th><?php \esc_html_e( 'API Key', "contact-form-to-api" ); ?></th>
 				<th></th>
 			</tr>
 			<?php foreach ( $mail_tags as $mail_tag ) : ?>
@@ -340,7 +340,7 @@ class Integration implements LoadableInterface {
 		<!-- XML Template Section -->
 		<fieldset data-cf7index="xml">
 		<div class="cf7_row">
-			<h2><?php \esc_html_e( 'XML Template', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?></h2>
+			<h2><?php \esc_html_e( 'XML Template', "contact-form-to-api" ); ?></h2>
 
 			<legend>
 			<?php foreach ( $mail_tags as $mail_tag ) : ?>
@@ -356,7 +356,7 @@ class Integration implements LoadableInterface {
 		<!-- JSON Template Section -->
 		<fieldset data-cf7index="json">
 		<div class="cf7_row">
-			<h2><?php \esc_html_e( 'JSON Template', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?></h2>
+			<h2><?php \esc_html_e( 'JSON Template', "contact-form-to-api" ); ?></h2>
 
 			<legend>
 			<?php foreach ( $mail_tags as $mail_tag ) : ?>
@@ -380,21 +380,21 @@ class Integration implements LoadableInterface {
 		<fieldset>
 			<div class="cf7_row">
 			<label class="debug-log-trigger">
-				+ <?php \esc_html_e( 'DEBUG LOG (View last transmission attempt)', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?>
+				+ <?php \esc_html_e( 'DEBUG LOG (View last transmission attempt)', "contact-form-to-api" ); ?>
 			</label>
 			<div class="debug-log-wrap">
-				<h3 class="debug_log_title"><?php \esc_html_e( 'LAST API CALL', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?></h3>
+				<h3 class="debug_log_title"><?php \esc_html_e( 'LAST API CALL', "contact-form-to-api" ); ?></h3>
 				<div class="debug_log">
-				<h4><?php \esc_html_e( 'Called URL', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?>:</h4>
+				<h4><?php \esc_html_e( 'Called URL', "contact-form-to-api" ); ?>:</h4>
 				<textarea rows="1"><?php echo \esc_textarea( trim( $debug_url ) ); ?></textarea>
 
-				<h4><?php \esc_html_e( 'Params', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?>:</h4>
+				<h4><?php \esc_html_e( 'Params', "contact-form-to-api" ); ?>:</h4>
 				<textarea rows="10"><?php print_r( $debug_params ); ?></textarea>
 
-				<h4><?php \esc_html_e( 'Remote server result', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?>:</h4>
+				<h4><?php \esc_html_e( 'Remote server result', "contact-form-to-api" ); ?>:</h4>
 				<textarea rows="10"><?php print_r( $debug_result ); ?></textarea>
 
-				<h4><?php \esc_html_e( 'Error logs', CONTACT_FORM_TO_API_TEXT_DOMAIN ); ?>:</h4>
+				<h4><?php \esc_html_e( 'Error logs', "contact-form-to-api" ); ?>:</h4>
 				<textarea rows="10"><?php print_r( $error_logs ); ?></textarea>
 				</div>
 			</div>
@@ -679,14 +679,14 @@ class Integration implements LoadableInterface {
 	 */
 	private function get_xml( string $lead ) {
 		if ( ! function_exists( 'simplexml_load_string' ) ) {
-			return new \WP_Error( 'xml-error', \__( 'XML functions not available', CONTACT_FORM_TO_API_TEXT_DOMAIN ) );
+			return new \WP_Error( 'xml-error', \__( 'XML functions not available', "contact-form-to-api" ) );
 		}
 
 		libxml_use_internal_errors( true );
 		$xml = simplexml_load_string( $lead );
 
 		if ( $xml === false ) {
-			return new \WP_Error( 'xml-error', \__( 'XML Structure is incorrect', CONTACT_FORM_TO_API_TEXT_DOMAIN ) );
+			return new \WP_Error( 'xml-error', \__( 'XML Structure is incorrect', "contact-form-to-api" ) );
 		}
 
 		return $xml;

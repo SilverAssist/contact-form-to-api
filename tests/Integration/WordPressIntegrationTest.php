@@ -14,7 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Tests\Integration;
 
-use ContactFormToAPI\Tests\Helpers\TestCase;
+use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 
 /**
  * Test cases for WordPress Integration

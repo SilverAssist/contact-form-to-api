@@ -194,7 +194,7 @@ class Activator {
 			throw new \Exception(
 				\sprintf(
 					/* translators: %s: required PHP version */
-					\esc_html__( 'Contact Form 7 to API requires PHP %s or higher.', CONTACT_FORM_TO_API_TEXT_DOMAIN ),
+					\esc_html__( 'Contact Form 7 to API requires PHP %s or higher.', "contact-form-to-api" ),
 					CONTACT_FORM_TO_API_MIN_PHP_VERSION
 				)
 			);
@@ -210,7 +210,7 @@ class Activator {
 			throw new \Exception(
 				\sprintf(
 					/* translators: %s: required WordPress version */
-					\esc_html__( 'Contact Form 7 to API requires WordPress %s or higher.', CONTACT_FORM_TO_API_TEXT_DOMAIN ),
+					\esc_html__( 'Contact Form 7 to API requires WordPress %s or higher.', "contact-form-to-api" ),
 					CONTACT_FORM_TO_API_MIN_WP_VERSION
 				)
 			);
@@ -223,7 +223,7 @@ class Activator {
 			}
 
 			throw new \Exception(
-				\esc_html__( 'Contact Form 7 to API requires Contact Form 7 to be active.', CONTACT_FORM_TO_API_TEXT_DOMAIN )
+				\esc_html__( 'Contact Form 7 to API requires Contact Form 7 to be active.', "contact-form-to-api" )
 			);
 		}
 	}

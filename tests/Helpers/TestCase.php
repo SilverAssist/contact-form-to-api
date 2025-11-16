@@ -70,8 +70,8 @@ abstract class TestCase extends PHPUnitTestCase {
 	 */
 	protected function initializePlugin(): void {
 		// Only initialize plugin if the class exists and has getInstance method
-		if ( class_exists( '\\ContactFormToAPI\\Core\\Plugin' ) ) {
-			$plugin_class = '\\ContactFormToAPI\\Core\\Plugin';
+		if ( class_exists( '\\SilverAssist\\ContactFormToAPI\\Core\\Plugin' ) ) {
+			$plugin_class = '\\SilverAssist\\ContactFormToAPI\\Core\\Plugin';
 			if ( method_exists( $plugin_class, 'getInstance' ) ) {
 				$this->plugin = $plugin_class::getInstance();
 			} else {

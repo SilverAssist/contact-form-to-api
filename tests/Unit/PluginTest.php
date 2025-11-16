@@ -14,8 +14,8 @@
 
 namespace SilverAssist\ContactFormToAPI\Tests\Unit;
 
-use ContactFormToAPI\Tests\Helpers\TestCase;
-use ContactFormToAPI\Core\Plugin;
+use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
+use SilverAssist\ContactFormToAPI\Core\Plugin;
 
 /**
  * Test cases for the Core Plugin class
@@ -85,8 +85,8 @@ class PluginTest extends TestCase {
 	 */
 	public function testPluginClassExists(): void {
 		$this->assertTrue(
-			class_exists( 'ContactFormToAPI\\Core\\Plugin' ),
-			'Plugin class should exist in the ContactFormToAPI\\Core namespace'
+			class_exists( 'SilverAssist\\ContactFormToAPI\\Core\\Plugin' ),
+			'Plugin class should exist in the SilverAssist\\ContactFormToAPI\\Core namespace'
 		);
 	}
 
@@ -96,8 +96,8 @@ class PluginTest extends TestCase {
 	 * @return void
 	 */
 	public function testPluginSingletonPattern(): void {
-		if ( class_exists( 'ContactFormToAPI\\Core\\Plugin' ) ) {
-			if ( method_exists( 'ContactFormToAPI\\Core\\Plugin', 'getInstance' ) ) {
+		if ( class_exists( 'SilverAssist\\ContactFormToAPI\\Core\\Plugin' ) ) {
+			if ( method_exists( 'SilverAssist\\ContactFormToAPI\\Core\\Plugin', 'getInstance' ) ) {
 				$instance1 = Plugin::getInstance();
 				$instance2 = Plugin::getInstance();
 
@@ -139,7 +139,7 @@ class PluginTest extends TestCase {
 	public function testNamespaceAutoloading(): void {
 		// Test that classes in our namespace can be loaded
 		$core_classes = array(
-			'ContactFormToAPI\\Core\\Plugin',
+			'SilverAssist\\ContactFormToAPI\\Core\\Plugin',
 		);
 
 		foreach ( $core_classes as $class_name ) {

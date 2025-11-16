@@ -20,6 +20,16 @@
     <rule ref="WordPress-Extra">
         <!-- Allow PSR-4 file naming -->
         <exclude name="WordPress.Files.FileName"/>
+        <!-- SilverAssist namespace (not plugin prefix) -->
+        <exclude name="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedNamespaceFound"/>
+        <!-- Allow short ternaries (modern PHP) -->
+        <exclude name="Universal.Operators.DisallowShortTernary"/>
+        <!-- Allow non-Yoda conditions (modern PHP) -->
+        <exclude name="WordPress.PHP.YodaConditions"/>
+        <!-- Allow development functions in test helpers -->
+        <exclude name="WordPress.PHP.DevelopmentFunctions"/>
+        <!-- Allow eval in test helpers (for dynamic assertions) -->
+        <exclude name="Squiz.PHP.Eval"/>
     </rule>
 
     <!-- Minimum WordPress version -->
