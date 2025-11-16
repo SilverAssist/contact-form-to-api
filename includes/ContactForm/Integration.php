@@ -229,7 +229,7 @@ class Integration implements LoadableInterface {
 		$xml_placeholder = \__(
 			'*** THIS IS AN EXAMPLE ** USE YOUR XML ACCORDING TO YOUR API DOCUMENTATION **
 <update>
-    <user clientid="" username="user_name" apikey="YOUR_API_KEY" />
+    <user clientid="" username="" auth="" />
     <reports>
         <report tag="NEW">
             <fields>
