@@ -57,6 +57,9 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress --optimize-autoloader
 
+      - name: Install Subversion (required for WordPress Test Suite)
+        run: sudo apt-get update && sudo apt-get install -y subversion
+
       - name: Run quality checks with WordPress Test Suite
         env:
           WP_VERSION: latest
