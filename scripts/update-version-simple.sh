@@ -224,7 +224,14 @@ print_status "Updating PHP files..."
 
 # Get all PHP files with @version tags
 php_files=""
-if [ -d "${PROJECT_ROOT}/src" ]; then
+if [ -d "${PROJECT_ROOT}/includes" ]; then
+    for php_file in $(find "${PROJECT_ROOT}/includes" -name "*.php" 2>/dev/null); do
+        if [ -f "$php_file" ] && grep -q "@version" "$php_file"; then
+            php_files="$php_files $php_file"
+        fi
+    done
+elif [ -d "${PROJECT_ROOT}/src" ]; then
+    # Legacy fallback for old structure
     for php_file in $(find "${PROJECT_ROOT}/src" -name "*.php" 2>/dev/null); do
         if [ -f "$php_file" ] && grep -q "@version" "$php_file"; then
             php_files="$php_files $php_file"
@@ -247,7 +254,7 @@ if [ -n "$php_files" ]; then
     
     print_success "PHP files processed ($php_update_count files)"
 else
-    print_warning "No PHP files with @version tags found in src/ directory"
+    print_warning "No PHP files with @version tags found in includes/ directory"
 fi
 
 # 3. Update CSS files  
@@ -425,7 +432,7 @@ fi
 echo ""
 print_status "Summary of changes:"
 echo "  • Main plugin file: contact-form-to-api.php"
-echo "  • PHP files: src/**/*.php"
+echo "  • PHP files: includes/**/*.php"
 echo "  • CSS files: assets/css/*.css"
 echo "  • JavaScript files: assets/js/*.js"
 echo "  • Header standards: HEADER-STANDARDS.md"

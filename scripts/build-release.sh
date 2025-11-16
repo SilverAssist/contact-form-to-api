@@ -80,10 +80,14 @@ print_status "Copying plugin files..."
 # Main plugin file
 cp "${PROJECT_ROOT}/contact-form-to-api.php" "$PACKAGE_DIR/"
 
-# Source code
-if [ -d "${PROJECT_ROOT}/src" ]; then
+# Source code (includes directory for SilverAssist standards)
+if [ -d "${PROJECT_ROOT}/includes" ]; then
+    cp -r "${PROJECT_ROOT}/includes" "$PACKAGE_DIR/"
+    print_status "  ✓ Source code copied (includes/)"
+elif [ -d "${PROJECT_ROOT}/src" ]; then
+    # Legacy fallback
     cp -r "${PROJECT_ROOT}/src" "$PACKAGE_DIR/"
-    print_status "  ✓ Source code copied"
+    print_status "  ✓ Source code copied (src/)"
 fi
 
 # Assets
