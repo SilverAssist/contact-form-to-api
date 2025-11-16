@@ -31,11 +31,11 @@
     <!-- Source Code Coverage -->
     <coverage>
         <include>
-            <directory suffix=".php">./src</directory>
+            <directory suffix=".php">./includes</directory>
             <file>./contact-form-to-api.php</file>
         </include>
         <exclude>
-            <directory>./src/Templates</directory>
+            <directory>./includes/Templates</directory>
             <directory>./vendor</directory>
         </exclude>
     </coverage>

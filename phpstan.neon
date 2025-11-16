@@ -1,9 +1,9 @@
 parameters:
     level: 8
     paths:
-        - src
-    excludePaths:
-        - tests
+        - includes
+    bootstrapFiles:
+        - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
     ignoreErrors:
-        # WordPress functions are not available during static analysis
-        - '#Call to unknown function: [\\]?[a-zA-Z_]+#'
+        - '#Function (add_action|add_filter|get_option|wp_enqueue_script|wp_enqueue_style|__) not found#'
+
