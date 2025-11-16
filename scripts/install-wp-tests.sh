@@ -7,7 +7,7 @@
 #
 # @package ContactFormToAPI
 # @since 1.0.0
-# @version 1.0.0
+# @version 1.0.1
 #
 # Usage:
 #   bash scripts/install-wp-tests.sh <db-name> <db-user> <db-pass> [db-host] [wp-version] [skip-database-creation]
