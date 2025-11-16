@@ -47,7 +47,7 @@ define( 'CONTACT_FORM_TO_API_MIN_WP_VERSION', '6.5' );
  */
 $contact_form_to_api_autoload_path      = CONTACT_FORM_TO_API_DIR . 'vendor/autoload.php';
 $contact_form_to_api_real_autoload_path = realpath( $contact_form_to_api_autoload_path );
-$CONTACT_FORM_TO_API_real_path   = realpath( CONTACT_FORM_TO_API_DIR );
+$CONTACT_FORM_TO_API_real_path          = realpath( CONTACT_FORM_TO_API_DIR );
 
 // Validate: both paths resolve, autoloader is inside plugin directory.
 if (

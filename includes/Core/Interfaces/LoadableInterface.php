@@ -13,7 +13,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Core\Interfaces;
 
-\defined("ABSPATH") || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Interface LoadableInterface

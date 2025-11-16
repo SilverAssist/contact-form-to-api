@@ -4,6 +4,7 @@ parameters:
         - includes
     bootstrapFiles:
         - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
+    memory_limit: 512M
     ignoreErrors:
         - '#Function (add_action|add_filter|get_option|wp_enqueue_script|wp_enqueue_style|__) not found#'
 

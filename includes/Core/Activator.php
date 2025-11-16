@@ -14,7 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Core;
 
-\defined("ABSPATH") || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Class Activator
@@ -42,13 +42,13 @@ class Activator {
 		self::create_tables();
 
 		// Set plugin version.
-		\update_option("contact_form_to_api_version", CONTACT_FORM_TO_API_VERSION);
+		\update_option( 'contact_form_to_api_version', CONTACT_FORM_TO_API_VERSION );
 
 		// Initialize default settings.
 		self::init_default_settings();
 
 		// Set activation flag for first-time setup.
-		\update_option("contact_form_to_api_activated", time());
+		\update_option( 'contact_form_to_api_activated', time() );
 
 		// Clear any cached data.
 		\wp_cache_flush();
@@ -66,13 +66,13 @@ class Activator {
 	 */
 	public static function deactivate(): void {
 		// Clear any scheduled cron events.
-		\wp_clear_scheduled_hook("contact_form_to_api_cleanup");
+		\wp_clear_scheduled_hook( 'contact_form_to_api_cleanup' );
 
 		// Clear cached data.
 		\wp_cache_flush();
 
 		// Set deactivation timestamp.
-		\update_option("contact_form_to_api_deactivated", time());
+		\update_option( 'contact_form_to_api_deactivated', time() );
 	}
 
 	/**
@@ -85,15 +85,15 @@ class Activator {
 	 */
 	public static function uninstall(): void {
 		// Check if user wants to keep data.
-		$keep_data = \get_option("contact_form_to_api_keep_data_on_uninstall", false);
+		$keep_data = \get_option( 'contact_form_to_api_keep_data_on_uninstall', false );
 
 		if ( ! $keep_data ) {
 			// Remove plugin options.
-			\delete_option("contact_form_to_api_version");
-			\delete_option("contact_form_to_api_settings");
-			\delete_option("contact_form_to_api_activated");
-			\delete_option("contact_form_to_api_deactivated");
-			\delete_option("contact_form_to_api_keep_data_on_uninstall");
+			\delete_option( 'contact_form_to_api_version' );
+			\delete_option( 'contact_form_to_api_settings' );
+			\delete_option( 'contact_form_to_api_activated' );
+			\delete_option( 'contact_form_to_api_deactivated' );
+			\delete_option( 'contact_form_to_api_keep_data_on_uninstall' );
 
 			// Drop database tables.
 			self::drop_tables();
@@ -119,7 +119,7 @@ class Activator {
 	public static function create_tables(): void {
 		global $wpdb;
 
-		$table_name      = $wpdb->prefix . "cf7_api_logs";
+		$table_name      = $wpdb->prefix . 'cf7_api_logs';
 		$charset_collate = $wpdb->get_charset_collate();
 
 		// Note: dbDelta requires specific formatting:
@@ -143,20 +143,20 @@ class Activator {
 		) {$charset_collate};";
 
 		// Try to load dbDelta function.
-		if ( ! \function_exists("dbDelta") && \defined("ABSPATH") ) {
-			$upgrade_file = ABSPATH . "wp-admin/includes/upgrade.php";
-			if ( \file_exists($upgrade_file) ) {
+		if ( ! \function_exists( 'dbDelta' ) && \defined( 'ABSPATH' ) ) {
+			$upgrade_file = ABSPATH . 'wp-admin/includes/upgrade.php';
+			if ( \file_exists( $upgrade_file ) ) {
 				require_once $upgrade_file;
 			}
 		}
 
 		// Use dbDelta if available, otherwise use direct query.
-		if ( \function_exists("dbDelta") ) {
-			\dbDelta($sql);
+		if ( \function_exists( 'dbDelta' ) ) {
+			\dbDelta( $sql );
 		} else {
 			// Fallback for test environments where dbDelta might not be available.
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.NotPrepared
-			$wpdb->query(\str_replace("CREATE TABLE", "CREATE TABLE IF NOT EXISTS", $sql));
+			$wpdb->query( \str_replace( 'CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $sql ) );
 		}
 	}
 
@@ -170,10 +170,10 @@ class Activator {
 	private static function drop_tables(): void {
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . "cf7_api_logs";
+		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
-		$wpdb->query("DROP TABLE IF EXISTS {$table_name}");
+		$wpdb->query( "DROP TABLE IF EXISTS {$table_name}" );
 	}
 
 	/**
@@ -186,15 +186,15 @@ class Activator {
 	 */
 	private static function check_requirements(): void {
 		// Check PHP version.
-		if ( \version_compare(PHP_VERSION, CONTACT_FORM_TO_API_MIN_PHP_VERSION, "<") ) {
-			if ( \defined("CONTACT_FORM_TO_API_BASENAME") ) {
-				\deactivate_plugins(CONTACT_FORM_TO_API_BASENAME);
+		if ( \version_compare( PHP_VERSION, CONTACT_FORM_TO_API_MIN_PHP_VERSION, '<' ) ) {
+			if ( \defined( 'CONTACT_FORM_TO_API_BASENAME' ) ) {
+				\deactivate_plugins( CONTACT_FORM_TO_API_BASENAME );
 			}
 
 			throw new \Exception(
 				\sprintf(
 					/* translators: %s: required PHP version */
-					\esc_html__("Contact Form 7 to API requires PHP %s or higher.", CONTACT_FORM_TO_API_TEXT_DOMAIN),
+					\esc_html__( 'Contact Form 7 to API requires PHP %s or higher.', CONTACT_FORM_TO_API_TEXT_DOMAIN ),
 					CONTACT_FORM_TO_API_MIN_PHP_VERSION
 				)
 			);
@@ -202,28 +202,28 @@ class Activator {
 
 		// Check WordPress version.
 		global $wp_version;
-		if ( \version_compare($wp_version, CONTACT_FORM_TO_API_MIN_WP_VERSION, "<") ) {
-			if ( \defined("CONTACT_FORM_TO_API_BASENAME") ) {
-				\deactivate_plugins(CONTACT_FORM_TO_API_BASENAME);
+		if ( \version_compare( $wp_version, CONTACT_FORM_TO_API_MIN_WP_VERSION, '<' ) ) {
+			if ( \defined( 'CONTACT_FORM_TO_API_BASENAME' ) ) {
+				\deactivate_plugins( CONTACT_FORM_TO_API_BASENAME );
 			}
 
 			throw new \Exception(
 				\sprintf(
 					/* translators: %s: required WordPress version */
-					\esc_html__("Contact Form 7 to API requires WordPress %s or higher.", CONTACT_FORM_TO_API_TEXT_DOMAIN),
+					\esc_html__( 'Contact Form 7 to API requires WordPress %s or higher.', CONTACT_FORM_TO_API_TEXT_DOMAIN ),
 					CONTACT_FORM_TO_API_MIN_WP_VERSION
 				)
 			);
 		}
 
 		// Check Contact Form 7 availability.
-		if ( ! \class_exists("WPCF7_ContactForm") ) {
-			if ( \defined("CONTACT_FORM_TO_API_BASENAME") ) {
-				\deactivate_plugins(CONTACT_FORM_TO_API_BASENAME);
+		if ( ! \class_exists( 'WPCF7_ContactForm' ) ) {
+			if ( \defined( 'CONTACT_FORM_TO_API_BASENAME' ) ) {
+				\deactivate_plugins( CONTACT_FORM_TO_API_BASENAME );
 			}
 
 			throw new \Exception(
-				\esc_html__("Contact Form 7 to API requires Contact Form 7 to be active.", CONTACT_FORM_TO_API_TEXT_DOMAIN)
+				\esc_html__( 'Contact Form 7 to API requires Contact Form 7 to be active.', CONTACT_FORM_TO_API_TEXT_DOMAIN )
 			);
 		}
 	}
@@ -236,16 +236,16 @@ class Activator {
 	 * @return void
 	 */
 	private static function init_default_settings(): void {
-		$default_settings = [
-			"debug_mode"            => false,
-			"log_errors"            => true,
-			"max_log_entries"       => 100,
-			"log_retention_days"    => 30,
-		];
+		$default_settings = array(
+			'debug_mode'         => false,
+			'log_errors'         => true,
+			'max_log_entries'    => 100,
+			'log_retention_days' => 30,
+		);
 
 		// Only set defaults if settings don't exist.
-		if ( \get_option("contact_form_to_api_settings") === false ) {
-			\update_option("contact_form_to_api_settings", $default_settings);
+		if ( \get_option( 'contact_form_to_api_settings' ) === false ) {
+			\update_option( 'contact_form_to_api_settings', $default_settings );
 		}
 	}
 }
