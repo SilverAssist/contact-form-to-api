@@ -264,23 +264,6 @@ If automated release fails:
 
 ## Post-Release Tasks
 
-### Update WordPress.org (If Applicable)
-
-```bash
-# SVN commit to WordPress.org repository
-svn checkout https://plugins.svn.wordpress.org/contact-form-to-api
-cd contact-form-to-api
-
-# Copy files to trunk
-cp -r /path/to/plugin/* trunk/
-
-# Create tag
-svn cp trunk tags/1.2.0
-
-# Commit
-svn ci -m "Release version 1.2.0"
-```
-
 ### Announcement
 
 **Channels**:
