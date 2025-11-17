@@ -232,13 +232,73 @@ Filter debug mode status.
 }, 10, 2);
 ```
 
-### Legacy Hooks (Backward Compatibility)
+#### `cf7_api_collect_mail_tags`
 
-These hooks are maintained for backward compatibility with Paubox CF7 Integration:
+Filter form tags before processing in API integration panel.
 
-- `paubox_cf7_before_send` → Use `cf7_api_before_send`
-- `paubox_cf7_after_send` → Use `cf7_api_after_send`
-- `paubox_cf7_request_data` → Use `cf7_api_request_data`
+**Purpose**: Allows modification of the form tags collection used to build field mappings and templates in the CF7 admin interface. This is useful for adding custom tags, filtering out specific tag types, or modifying tag properties before they are displayed in the API integration panel.
+
+**Used in**: `Integration::get_mail_tags()` - Called when rendering the API integration panel to collect available form fields.
+
+**Parameters**:
+
+- `array $tags` - Array of WPCF7_FormTag objects from `scan_form_tags()`
+
+**Return**: `array` Modified array of form tags
+
+**Example**:
+
+```php
+\add_filter("cf7_api_collect_mail_tags", function($tags) {
+    // Add custom virtual field for API
+    $custom_tag = (object) [
+        'type' => 'text',
+        'name' => 'api_timestamp',
+        'values' => []
+    ];
+    $tags[] = $custom_tag;
+    
+    // Or filter out specific tag types
+    return array_filter($tags, function($tag) {
+        return $tag->type !== 'submit';
+    });
+}, 10, 1);
+```
+
+## Classes
+
+#### `cf7_api_collect_mail_tags`
+
+Filter form tags collection before rendering admin panel.
+
+**Parameters**:
+
+- `array $tags` - Array of form tags from `scan_form_tags()`
+- `\WPCF7_ContactForm $form` - CF7 form object
+- `array $args` - Filter arguments (include/exclude tag types)
+
+**Return**: `array` Filtered array of form tags
+
+**Usage**: This filter allows modification of the form tags list used in the admin panel for field mapping, XML templates, and JSON templates. Useful for adding custom tags or filtering out specific field types.
+
+**Example**:
+
+```php
+\add_filter("cf7_api_collect_mail_tags", function($tags, $form, $args) {
+    // Add custom dynamic tag
+    $tags[] = (object) [
+        "type" => "text",
+        "name" => "custom_user_id"
+    ];
+    
+    // Filter out file upload fields
+    $tags = array_filter($tags, function($tag) {
+        return $tag->type !== "file";
+    });
+    
+    return $tags;
+}, 10, 3);
+```
 
 ## Classes
 

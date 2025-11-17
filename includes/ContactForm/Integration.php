@@ -165,18 +165,18 @@ class Integration implements LoadableInterface {
 	 */
 	private function get_mail_tags( WPCF7_ContactForm $form, array $args ): array {
 		/** @var array<array{type: string, name: string}> $tags */
-		$tags = apply_filters( 'paubox_cf7_collect_mail_tags', $form->scan_form_tags() );
+		$tags = \apply_filters( 'cf7_api_collect_mail_tags', $form->scan_form_tags() );
 
 		foreach ( (array) $tags as $tag ) {
 			$type = trim( $tag['type'], '*' );
 			if ( empty( $type ) || empty( $tag['name'] ) ) {
 				continue;
 			} elseif ( ! empty( $args['include'] ) ) {
-				if ( ! in_array( $type, $args['include'] ) ) {
+				if ( ! \in_array( $type, $args['include'] ) ) {
 					continue;
 				}
 			} elseif ( ! empty( $args['exclude'] ) ) {
-				if ( in_array( $type, $args['exclude'] ) ) {
+				if ( \in_array( $type, $args['exclude'] ) ) {
 					continue;
 				}
 			}
@@ -194,14 +194,14 @@ class Integration implements LoadableInterface {
 	 * @return void
 	 */
 	public function render_integration_panel( WPCF7_ContactForm $post ): void {
-		// Get form data using the SAME METHOD as old plugin for compatibility
+		// Get form data from CF7 properties with post_meta fallback
 		$wpcf7 = WPCF7_ContactForm::get_current();
 		if ( null === $wpcf7 ) {
 			return;
 		}
 		$form_id = $wpcf7->id();
 
-		// Use the SAME approach as the old plugin - get from properties first, fallback to post_meta
+		// Get from properties first, fallback to post_meta for backward compatibility
 		$wpcf7_api_data               = $wpcf7->prop( 'wpcf7_api_data' ) ?: \get_post_meta( $form_id, '_wpcf7_api_data', true );
 		$wpcf7_api_data_map           = $wpcf7->prop( 'wpcf7_api_data_map' ) ?: \get_post_meta( $form_id, '_wpcf7_api_data_map', true );
 		$wpcf7_api_data_template      = $wpcf7->prop( 'template' ) ?: \get_post_meta( $form_id, '_template', true );
@@ -209,7 +209,7 @@ class Integration implements LoadableInterface {
 
 		$mail_tags = $this->get_mail_tags( $post, array() );
 
-		// Set defaults - same as old plugin
+		// Set defaults
 		if ( ! is_array( $wpcf7_api_data ) ) {
 			$wpcf7_api_data = array();
 		}
@@ -418,16 +418,16 @@ class Integration implements LoadableInterface {
 	public function save_contact_form_details( WPCF7_ContactForm $contact_form ): void {
 		$form_id = $contact_form->id();
 
-		// Use the same approach as the old plugin and Paubox - ONLY properties, no post_meta
+		// Use CF7's native properties method for storing form configuration
 		$properties = $contact_form->get_properties();
 
-		// Use the same POST field names as the old plugin for backward compatibility
+		// Get POST data for API configuration
 		$properties['wpcf7_api_data']     = $_POST['wpcf7-sf'] ?? array();
 		$properties['wpcf7_api_data_map'] = $_POST['qs_wpcf7_api_map'] ?? array();
 		$properties['template']           = $_POST['template'] ?? '';
 		$properties['json_template']      = stripslashes( $_POST['json_template'] ?? '' );
 
-		// Set properties using CF7's native method (same as old plugin and Paubox)
+		// Set properties using CF7's native method
 		$contact_form->set_properties( $properties );
 	}
 
@@ -449,16 +449,16 @@ class Integration implements LoadableInterface {
 
 		$form_id = $contact_form->id();
 
-		// Use the same approach as old plugin - try properties first, fallback to post_meta
+		// Get from properties first, fallback to post_meta for backward compatibility
 		$api_data          = $contact_form->prop( 'wpcf7_api_data' ) ?: \get_post_meta( $form_id, '_wpcf7_api_data', true );
 		$api_data_map      = $contact_form->prop( 'wpcf7_api_data_map' ) ?: \get_post_meta( $form_id, '_wpcf7_api_data_map', true );
 		$api_data_template = $contact_form->prop( 'template' ) ?: \get_post_meta( $form_id, '_template', true );
 		$api_json_template = stripslashes( $contact_form->prop( 'json_template' ) ?: \get_post_meta( $form_id, '_json_template', true ) );
 
-		// Always enable debug logging (same as old plugin)
+		// Always enable debug logging
 		$api_data['debug_log'] = true;
 
-		// Check if form should be sent to API (same logic as old plugin)
+		// Check if form should be sent to API
 		if ( empty( $api_data['send_to_api'] ) || $api_data['send_to_api'] !== 'on' ) {
 			return;
 		}
@@ -520,7 +520,7 @@ class Integration implements LoadableInterface {
 					$value = $submitted_data[ $form_key ] ?? '';
 
 					// Flatten radio button values
-					if ( is_array( $value ) ) {
+					if ( \is_array( $value ) ) {
 						$value = reset( $value );
 					}
 
@@ -529,10 +529,10 @@ class Integration implements LoadableInterface {
 			}
 		} elseif ( $type === 'xml' || $type === 'json' ) {
 			foreach ( $data_map as $form_key => $api_form_key ) {
-				if ( is_array( $api_form_key ) ) {
+				if ( \is_array( $api_form_key ) ) {
 					// Handle checkbox arrays
 					$field_value = $submitted_data[ $form_key ] ?? null;
-					if ( ! is_array( $field_value ) ) {
+					if ( ! \is_array( $field_value ) ) {
 						continue;
 					}
 					foreach ( $field_value as $value ) {
@@ -545,7 +545,7 @@ class Integration implements LoadableInterface {
 					$value = $submitted_data[ $form_key ] ?? '';
 
 					// Flatten radio button values
-					if ( is_array( $value ) ) {
+					if ( \is_array( $value ) ) {
 						$value = reset( $value );
 					}
 
@@ -556,7 +556,7 @@ class Integration implements LoadableInterface {
 
 			// Clean unchanged tags
 			foreach ( $data_map as $form_key => $api_form_key ) {
-				if ( is_array( $api_form_key ) ) {
+				if ( \is_array( $api_form_key ) ) {
 					foreach ( $api_form_key as $field_suffix => $api_name ) {
 						$template = str_replace( "[{$form_key}-{$field_suffix}]", '', $template );
 					}
