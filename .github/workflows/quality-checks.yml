@@ -67,7 +67,10 @@ jobs:
           DB_USER: root
           DB_PASS: root
           DB_HOST: 127.0.0.1
-        run: bash scripts/install-wp-tests.sh cf7_api_test root root 127.0.0.1 latest true
+        run: |
+          # Remove old config if exists to ensure fresh configuration
+          rm -f /tmp/wordpress-tests-lib/wp-tests-config.php
+          bash scripts/install-wp-tests.sh cf7_api_test root root 127.0.0.1 latest true
 
       - name: Run quality checks with WordPress Test Suite
         env:
