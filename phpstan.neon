@@ -4,7 +4,7 @@ parameters:
         - includes
     bootstrapFiles:
         - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
-        - vendor/miguelcolmenares/contact-form-7-stubs/contact-form-7-stubs.php
+        - vendor/miguelcolmenares/cf7-stubs/contact-form-7-stubs.php
     ignoreErrors:
         - '#Variable \$mailtags might not be defined#'
         - '#If condition is always true#'

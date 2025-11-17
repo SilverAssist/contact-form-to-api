@@ -198,11 +198,11 @@ if ( ! $wp_core_dir ) {
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals
 
 // Define ABSPATH if we have WP core directory
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- WordPress core constant
 if ( $wp_core_dir && ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', $wp_core_dir . '/' );
 }
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals
 
 // Load WordPress test functions
 if ( $wp_tests_dir && file_exists( $wp_tests_dir . '/includes/functions.php' ) ) {
