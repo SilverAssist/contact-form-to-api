@@ -20,18 +20,18 @@
 // Mock functions are ONLY defined in isolation mode (when WP test suite not found)
 
 // Load Composer autoloader
-$composer_autoload = dirname( __DIR__ ) . '/vendor/autoload.php';
-if ( file_exists( $composer_autoload ) ) {
-	require_once $composer_autoload;
+$cf7_api_composer_autoload = dirname( __DIR__ ) . '/vendor/autoload.php';
+if ( file_exists( $cf7_api_composer_autoload ) ) {
+	require_once $cf7_api_composer_autoload;
 }
 
 // Define testing constants
-if ( ! defined( 'CONTACT_FORM_TO_API_TESTING' ) ) {
-	define( 'CONTACT_FORM_TO_API_TESTING', true );
+if ( ! defined( 'CF7_API_TESTING' ) ) {
+	define( 'CF7_API_TESTING', true );
 }
 
-if ( ! defined( 'CONTACT_FORM_TO_API_TEST_MODE' ) ) {
-	define( 'CONTACT_FORM_TO_API_TEST_MODE', true );
+if ( ! defined( 'CF7_API_TEST_MODE' ) ) {
+	define( 'CF7_API_TEST_MODE', true );
 }
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- WordPress Test Suite constants
@@ -44,28 +44,28 @@ if ( ! defined( 'CF7_TESTING' ) ) {
 // Do NOT define them here to avoid "already defined" warnings
 
 // Plugin constants
-if ( ! defined( 'CONTACT_FORM_TO_API_VERSION' ) ) {
-	define( 'CONTACT_FORM_TO_API_VERSION', '1.0.0' );
+if ( ! defined( 'CF7_API_VERSION' ) ) {
+	define( 'CF7_API_VERSION', '1.0.0' );
 }
 
-if ( ! defined( 'CONTACT_FORM_TO_API_FILE' ) ) {
-	define( 'CONTACT_FORM_TO_API_FILE', dirname( __DIR__ ) . '/contact-form-to-api.php' );
+if ( ! defined( 'CF7_API_FILE' ) ) {
+	define( 'CF7_API_FILE', dirname( __DIR__ ) . '/contact-form-to-api.php' );
 }
 
-if ( ! defined( 'CONTACT_FORM_TO_API_DIR' ) ) {
-	define( 'CONTACT_FORM_TO_API_DIR', dirname( __DIR__ ) . '/' );
+if ( ! defined( 'CF7_API_DIR' ) ) {
+	define( 'CF7_API_DIR', dirname( __DIR__ ) . '/' );
 }
 
-if ( ! defined( 'CONTACT_FORM_TO_API_TEXT_DOMAIN' ) ) {
-	define( 'CONTACT_FORM_TO_API_TEXT_DOMAIN', 'contact-form-to-api' );
+if ( ! defined( 'CF7_API_TEXT_DOMAIN' ) ) {
+	define( 'CF7_API_TEXT_DOMAIN', 'contact-form-to-api' );
 }
 
-if ( ! defined( 'CONTACT_FORM_TO_API_MIN_PHP_VERSION' ) ) {
-	define( 'CONTACT_FORM_TO_API_MIN_PHP_VERSION', '8.2' );
+if ( ! defined( 'CF7_API_MIN_PHP_VERSION' ) ) {
+	define( 'CF7_API_MIN_PHP_VERSION', '8.2' );
 }
 
-if ( ! defined( 'CONTACT_FORM_TO_API_MIN_WP_VERSION' ) ) {
-	define( 'CONTACT_FORM_TO_API_MIN_WP_VERSION', '6.5' );
+if ( ! defined( 'CF7_API_MIN_WP_VERSION' ) ) {
+	define( 'CF7_API_MIN_WP_VERSION', '6.5' );
 }
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- WordPress Test Suite bootstrap variables
@@ -116,7 +116,7 @@ if ( $wp_tests_dir && file_exists( $wp_tests_dir . '/includes/functions.php' ) )
 	/**
 	 * Manually load the plugin being tested
 	 */
-	function _manually_load_plugin() {
+	function cf7_api_manually_load_plugin() {
 		// Load Contact Form 7 first (dependency)
 		if ( defined( 'WP_PLUGIN_DIR' ) && file_exists( WP_PLUGIN_DIR . '/contact-form-7/wp-contact-form-7.php' ) ) {
 			require_once WP_PLUGIN_DIR . '/contact-form-7/wp-contact-form-7.php';
@@ -126,22 +126,22 @@ if ( $wp_tests_dir && file_exists( $wp_tests_dir . '/includes/functions.php' ) )
 		require_once dirname( __DIR__ ) . '/contact-form-to-api.php';
 	}
 
-	tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+	tests_add_filter( 'muplugins_loaded', 'cf7_api_manually_load_plugin' );
 
 	// Start up the WP testing environment
 	require $wp_tests_dir . '/includes/bootstrap.php';
 } else {
 	// Minimal setup if WordPress test suite is not available
 	echo "Warning: WordPress test suite not found. Running tests in isolation mode.\n";
-	
+
 	// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- Mock WordPress functions and constants for isolation mode
 	// phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter -- Mock functions don't use all parameters
-	
+
 	// Define ABSPATH for isolation mode ONLY (when WordPress Test Suite is not loaded)
 	if ( ! defined( 'ABSPATH' ) ) {
 		define( 'ABSPATH', dirname( __DIR__ ) . '/' );
 	}
-	
+
 	// Mock WordPress functions (in global namespace) for isolation mode
 	if ( ! function_exists( '__' ) ) {
 		function __( $text, $domain = 'default' ) {
@@ -214,7 +214,7 @@ if ( $wp_tests_dir && file_exists( $wp_tests_dir . '/includes/functions.php' ) )
 			return 'http://example.com/wp-content/plugins/' . basename( dirname( $file ) ) . '/';
 		}
 	}
-	
+
 	// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals
 	// phpcs:enable Generic.CodeAnalysis.UnusedFunctionParameter
 }

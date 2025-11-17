@@ -26,7 +26,7 @@ This plugin follows the comprehensive [SilverAssist WordPress Plugin Development
 - **No Global Admin Panel**: Settings are form-specific, not plugin-wide
 - **LoadableInterface Pattern**: All components implement priority-based loading
 - **Singleton Pattern**: Main classes use singleton with `instance()` method
-- **Plugin Constants**: All configuration via `CONTACT_FORM_TO_API_*` constants
+- **Plugin Constants**: All configuration via `CF7_API_*` constants
 
 ### File Structure
 ```
@@ -87,8 +87,8 @@ contact-form-to-api/
 
 **Required Elements**:
 - **Update URI header**: `Update URI: https://github.com/SilverAssist/contact-form-to-api` (for GitHub updater)
-- **Plugin constants**: All configuration via `CONTACT_FORM_TO_API_*` prefixed constants
-- **Prefixed globals**: `$GLOBALS["contact_form_to_api_autoloader_loaded"]` to prevent duplicate loading
+- **Plugin constants**: All configuration via `CF7_API_*` prefixed constants
+- **Prefixed globals**: `$GLOBALS["cf7_api_autoloader_loaded"]` to prevent duplicate loading
 - **Autoloader validation**: Secure autoloader path validation with `realpath()` and `strpos()`
 - **Dependency checks**: WordPress/PHP version, Contact Form 7 availability
 - **Admin notices**: User-friendly error messages for missing requirements
@@ -97,14 +97,14 @@ contact-form-to-api/
 
 **Core Constants**:
 ```php
-define("CONTACT_FORM_TO_API_VERSION", "1.0.0");
-define("CONTACT_FORM_TO_API_PLUGIN_FILE", __FILE__);
-define("CONTACT_FORM_TO_API_PLUGIN_DIR", plugin_dir_path(__FILE__));
-define("CONTACT_FORM_TO_API_PLUGIN_URL", plugin_dir_url(__FILE__));
-define("CONTACT_FORM_TO_API_PLUGIN_BASENAME", plugin_basename(__FILE__));
-define("CONTACT_FORM_TO_API_TEXT_DOMAIN", "contact-form-to-api");
-define("CONTACT_FORM_TO_API_MIN_PHP_VERSION", "8.2");
-define("CONTACT_FORM_TO_API_MIN_WP_VERSION", "6.5");
+define("CF7_API_VERSION", "1.0.0");
+define("CF7_API_PLUGIN_FILE", __FILE__);
+define("CF7_API_PLUGIN_DIR", plugin_dir_path(__FILE__));
+define("CF7_API_PLUGIN_URL", plugin_dir_url(__FILE__));
+define("CF7_API_PLUGIN_BASENAME", plugin_basename(__FILE__));
+define("CF7_API_TEXT_DOMAIN", "contact-form-to-api");
+define("CF7_API_MIN_PHP_VERSION", "8.2");
+define("CF7_API_MIN_WP_VERSION", "6.5");
 ```
 
 ### src/Core/Interfaces/LoadableInterface.php - Component Contract
@@ -295,7 +295,7 @@ Activator::create_tables();
 ### WordPress Integration Standards
 - **Hooks**: Use `\add_action("init", [$this, "method"])` with array callbacks
 - **i18n**: All user-facing strings use `\__()`, `\esc_html__()`, `\_e()`, `\esc_html_e()`
-- **Text Domain**: `CONTACT_FORM_TO_API_TEXT_DOMAIN` constant (value: `"contact-form-to-api"`)
+- **Text Domain**: `CF7_API_TEXT_DOMAIN` constant (value: `"contact-form-to-api"`)
 - **Sanitization**: Use `\sanitize_text_field()`, `\sanitize_email()`, etc.
 - **Escaping**: Use `\esc_html()`, `\esc_attr()`, `\esc_url()` for output
 - **Nonces**: Verify with `\wp_verify_nonce()` for forms
@@ -388,7 +388,7 @@ public function test_form_submission(): void {
     <exclude name="WordPress.Files.FileName"/>
 </rule>
 <config name="minimum_wp_version" value="6.5"/>
-<config name="prefixes" value="contact_form_to_api"/>
+<config name="prefixes" value="cf7_api"/>
 ```
 
 **Key Rules**:
@@ -532,33 +532,33 @@ The following constants are defined in the main plugin file (`contact-form-to-ap
 
 ```php
 // Core plugin information
-define("CONTACT_FORM_TO_API_VERSION", "1.0.0");
-define("CONTACT_FORM_TO_API_FILE", __FILE__);
-define("CONTACT_FORM_TO_API_DIR", plugin_dir_path(__FILE__));
-define("CONTACT_FORM_TO_API_URL", plugin_dir_url(__FILE__));
-define("CONTACT_FORM_TO_API_BASENAME", plugin_basename(__FILE__));
-define("CONTACT_FORM_TO_API_TEXT_DOMAIN", "contact-form-to-api");
+define("CF7_API_VERSION", "1.0.0");
+define("CF7_API_FILE", __FILE__);
+define("CF7_API_DIR", plugin_dir_path(__FILE__));
+define("CF7_API_URL", plugin_dir_url(__FILE__));
+define("CF7_API_BASENAME", plugin_basename(__FILE__));
+define("CF7_API_TEXT_DOMAIN", "contact-form-to-api");
 
 // System requirements
-define("CONTACT_FORM_TO_API_MIN_PHP_VERSION", "8.2");
-define("CONTACT_FORM_TO_API_MIN_WP_VERSION", "6.5");
+define("CF7_API_MIN_PHP_VERSION", "8.2");
+define("CF7_API_MIN_WP_VERSION", "6.5");
 ```
 
 ### Mandatory Constant Usage Rules
-- **Text Domain**: ALWAYS use `CONTACT_FORM_TO_API_TEXT_DOMAIN` for i18n functions
-  - ✅ Correct: `\__("Text", CONTACT_FORM_TO_API_TEXT_DOMAIN)`
+- **Text Domain**: ALWAYS use `CF7_API_TEXT_DOMAIN` for i18n functions
+  - ✅ Correct: `\__("Text", CF7_API_TEXT_DOMAIN)`
   - ❌ Wrong: `\__("Text", "contact-form-to-api")`
 
-- **Plugin Version**: ALWAYS use `CONTACT_FORM_TO_API_VERSION` for version references
-  - ✅ Correct: `CONTACT_FORM_TO_API_VERSION`
+- **Plugin Version**: ALWAYS use `CF7_API_VERSION` for version references
+  - ✅ Correct: `CF7_API_VERSION`
   - ❌ Wrong: `"1.0.0"`
 
 - **Plugin Paths**: ALWAYS use path constants for file operations
-  - ✅ Correct: `CONTACT_FORM_TO_API_DIR . "assets/css/admin.css"`
+  - ✅ Correct: `CF7_API_DIR . "assets/css/admin.css"`
   - ❌ Wrong: `plugin_dir_path(__FILE__) . "assets/css/admin.css"`
 
 - **Plugin URLs**: ALWAYS use URL constants for asset loading
-  - ✅ Correct: `CONTACT_FORM_TO_API_URL . "assets/js/admin.js"`
+  - ✅ Correct: `CF7_API_URL . "assets/js/admin.js"`
   - ❌ Wrong: `plugin_dir_url(__FILE__) . "assets/js/admin.js"`
 
 ### Benefits of Using Constants

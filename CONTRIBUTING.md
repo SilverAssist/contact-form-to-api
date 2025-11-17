@@ -306,14 +306,14 @@ public static function instance(): self {
 **ALWAYS use plugin constants** instead of hardcoded values:
 
 ```php
-CONTACT_FORM_TO_API_VERSION        // Plugin version
-CONTACT_FORM_TO_API_FILE           // Main plugin file
-CONTACT_FORM_TO_API_DIR            // Plugin directory path
-CONTACT_FORM_TO_API_URL            // Plugin URL
-CONTACT_FORM_TO_API_BASENAME       // Plugin basename
-CONTACT_FORM_TO_API_TEXT_DOMAIN    // Text domain
-CONTACT_FORM_TO_API_MIN_PHP_VERSION
-CONTACT_FORM_TO_API_MIN_WP_VERSION
+CF7_API_VERSION        // Plugin version
+CF7_API_FILE           // Main plugin file
+CF7_API_DIR            // Plugin directory path
+CF7_API_URL            // Plugin URL
+CF7_API_BASENAME       // Plugin basename
+CF7_API_TEXT_DOMAIN    // Text domain
+CF7_API_MIN_PHP_VERSION
+CF7_API_MIN_WP_VERSION
 ```
 
 ## Resources

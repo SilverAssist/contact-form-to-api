@@ -28,9 +28,9 @@ class PluginTest extends TestCase {
 	 * @return void
 	 */
 	public function testPluginConstantsAreDefined(): void {
-		$this->assertTrue( defined( 'CONTACT_FORM_TO_API_VERSION' ), 'Plugin version constant should be defined' );
-		$this->assertTrue( defined( 'CONTACT_FORM_TO_API_TEXT_DOMAIN' ), 'Text domain constant should be defined' );
-		$this->assertTrue( defined( 'CONTACT_FORM_TO_API_FILE' ), 'Plugin file constant should be defined' );
+		$this->assertTrue( defined( 'CF7_API_VERSION' ), 'Plugin version constant should be defined' );
+		$this->assertTrue( defined( 'CF7_API_TEXT_DOMAIN' ), 'Text domain constant should be defined' );
+		$this->assertTrue( defined( 'CF7_API_FILE' ), 'Plugin file constant should be defined' );
 	}
 
 	/**
@@ -39,7 +39,7 @@ class PluginTest extends TestCase {
 	 * @return void
 	 */
 	public function testPluginVersionFormat(): void {
-		$version = CONTACT_FORM_TO_API_VERSION;
+		$version = CF7_API_VERSION;
 
 		$this->assertIsString( $version, 'Plugin version should be a string' );
 		$this->assertMatchesRegularExpression(
@@ -57,7 +57,7 @@ class PluginTest extends TestCase {
 	public function testTextDomainConstant(): void {
 		$this->assertEquals(
 			'contact-form-to-api',
-			CONTACT_FORM_TO_API_TEXT_DOMAIN,
+			CF7_API_TEXT_DOMAIN,
 			"Text domain should be 'contact-form-to-api'"
 		);
 	}
@@ -68,13 +68,13 @@ class PluginTest extends TestCase {
 	 * @return void
 	 */
 	public function testPluginFileExists(): void {
-		if ( defined( 'CONTACT_FORM_TO_API_FILE' ) ) {
+		if ( defined( 'CF7_API_FILE' ) ) {
 			$this->assertFileExists(
-				CONTACT_FORM_TO_API_FILE,
+				CF7_API_FILE,
 				'Main plugin file should exist at specified path'
 			);
 		} else {
-			$this->markTestSkipped( 'CONTACT_FORM_TO_API_FILE constant not defined' );
+			$this->markTestSkipped( 'CF7_API_FILE constant not defined' );
 		}
 	}
 
@@ -121,12 +121,12 @@ class PluginTest extends TestCase {
 	 */
 	public function testPluginTestingMode(): void {
 		$this->assertTrue(
-			defined( 'CONTACT_FORM_TO_API_TESTING' ) && CONTACT_FORM_TO_API_TESTING,
+			defined( 'CF7_API_TESTING' ) && CF7_API_TESTING,
 			'Plugin should be running in testing mode'
 		);
 
 		$this->assertTrue(
-			defined( 'CONTACT_FORM_TO_API_TEST_MODE' ) && CONTACT_FORM_TO_API_TEST_MODE,
+			defined( 'CF7_API_TEST_MODE' ) && CF7_API_TEST_MODE,
 			'Plugin test mode should be enabled'
 		);
 	}
@@ -159,7 +159,7 @@ class PluginTest extends TestCase {
 		// Test PHP version
 		$this->assertEquals(
 			'8.2',
-			CONTACT_FORM_TO_API_MIN_PHP_VERSION,
+			CF7_API_MIN_PHP_VERSION,
 			'PHP version should be 8.2 or higher'
 		);
 
@@ -191,7 +191,7 @@ class PluginTest extends TestCase {
 		// Test that text domain constant exists and has correct value
 		$this->assertEquals(
 			'contact-form-to-api',
-			CONTACT_FORM_TO_API_TEXT_DOMAIN,
+			CF7_API_TEXT_DOMAIN,
 			'Text domain constant should have correct value'
 		);
 	}
@@ -202,8 +202,8 @@ class PluginTest extends TestCase {
 	 * @return void
 	 */
 	public function testPluginDirectoryStructure(): void {
-		if ( defined( 'CONTACT_FORM_TO_API_DIR' ) ) {
-			$plugin_dir = CONTACT_FORM_TO_API_DIR;
+		if ( defined( 'CF7_API_DIR' ) ) {
+			$plugin_dir = CF7_API_DIR;
 
 			// Test essential directories exist
 			$required_dirs = array(
@@ -234,7 +234,7 @@ class PluginTest extends TestCase {
 				);
 			}
 		} else {
-			$this->markTestSkipped( 'CONTACT_FORM_TO_API_DIR constant not defined' );
+			$this->markTestSkipped( 'CF7_API_DIR constant not defined' );
 		}
 	}
 }

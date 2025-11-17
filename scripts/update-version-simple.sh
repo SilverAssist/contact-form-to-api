@@ -209,7 +209,7 @@ update_file "${PROJECT_ROOT}/contact-form-to-api.php" \
 
 # Update constant
 update_file "${PROJECT_ROOT}/contact-form-to-api.php" \
-    "s/define\\('CONTACT_FORM_TO_API_VERSION', '[0-9]+\\.[0-9]+\\.[0-9]+'\\)/define('CONTACT_FORM_TO_API_VERSION', '${NEW_VERSION}')/g" \
+    "s/define\\('CF7_API_VERSION', '[0-9]+\\.[0-9]+\\.[0-9]+'\\)/define('CF7_API_VERSION', '${NEW_VERSION}')/g" \
     "plugin constant"
 
 # Update @version tag

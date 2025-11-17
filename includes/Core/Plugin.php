@@ -131,12 +131,12 @@ class Plugin implements LoadableInterface {
 
 		// Check minimum WordPress version.
 		global $wp_version;
-		if ( \version_compare( $wp_version, CONTACT_FORM_TO_API_MIN_WP_VERSION, '<' ) ) {
+		if ( \version_compare( $wp_version, CF7_API_MIN_WP_VERSION, '<' ) ) {
 			return false;
 		}
 
 		// Check minimum PHP version.
-		if ( \version_compare( PHP_VERSION, CONTACT_FORM_TO_API_MIN_PHP_VERSION, '<' ) ) {
+		if ( \version_compare( PHP_VERSION, CF7_API_MIN_PHP_VERSION, '<' ) ) {
 			return false;
 		}
 
@@ -171,7 +171,7 @@ class Plugin implements LoadableInterface {
 	private function init_hooks(): void {
 		\add_action( 'init', array( $this, 'handle_init' ) );
 		\add_action( 'admin_init', array( $this, 'handle_admin_init' ) );
-		\add_filter( 'plugin_action_links_' . CONTACT_FORM_TO_API_BASENAME, array( $this, 'add_action_links' ) );
+		\add_filter( 'plugin_action_links_' . CF7_API_BASENAME, array( $this, 'add_action_links' ) );
 	}
 
 	/**
@@ -180,7 +180,7 @@ class Plugin implements LoadableInterface {
 	 * @return void
 	 */
 	private function load_settings(): void {
-		$this->settings = \get_option( 'contact_form_to_api_settings', array() );
+		$this->settings = \get_option( 'cf7_api_settings', array() );
 	}
 
 	/**
@@ -204,12 +204,12 @@ class Plugin implements LoadableInterface {
 		// Create updater configuration.
 		$config = new \SilverAssist\WpGithubUpdater\UpdaterConfig(
 			array(
-				'plugin_file'        => CONTACT_FORM_TO_API_FILE,
+				'plugin_file'        => CF7_API_FILE,
 				'github_repository'  => 'SilverAssist/contact-form-to-api',
 				'plugin_slug'        => 'contact-form-to-api',
 				'plugin_name'        => 'Contact Form 7 to API',
-				'requires_wordpress' => CONTACT_FORM_TO_API_MIN_WP_VERSION,
-				'requires_php'       => CONTACT_FORM_TO_API_MIN_PHP_VERSION,
+				'requires_wordpress' => CF7_API_MIN_WP_VERSION,
+				'requires_php'       => CF7_API_MIN_PHP_VERSION,
 				'asset_pattern'      => 'contact-form-to-api-v{version}.zip',
 				'ajax_action'        => 'cf7_api_check_version',
 				'ajax_nonce'         => 'cf7_api_version_nonce',
@@ -227,7 +227,7 @@ class Plugin implements LoadableInterface {
 	 */
 	public function handle_init(): void {
 		// Register any additional post types or taxonomies if needed.
-		\do_action( 'contact_form_to_api_init' );
+		\do_action( 'cf7_api_init' );
 	}
 
 	/**
@@ -237,7 +237,7 @@ class Plugin implements LoadableInterface {
 	 */
 	public function handle_admin_init(): void {
 		// Admin-specific initialization.
-		\do_action( 'contact_form_to_api_admin_init' );
+		\do_action( 'cf7_api_admin_init' );
 	}
 
 	/**
@@ -249,7 +249,7 @@ class Plugin implements LoadableInterface {
 		\load_plugin_textdomain(
 			'contact-form-to-api',
 			false,
-			\dirname( CONTACT_FORM_TO_API_BASENAME ) . '/languages'
+			\dirname( CF7_API_BASENAME ) . '/languages'
 		);
 	}
 

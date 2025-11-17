@@ -36,9 +36,9 @@
     <config name="minimum_wp_version" value="6.5"/>
 
     <!-- Prefix for global functions/variables -->
-    <config name="prefixes" value="contact_form_to_api"/>
+    <config name="prefixes" value="cf7_api"/>
     <!-- Prefix for global functions/variables -->
-    <config name="prefixes" value="contact_form_to_api"/>
+    <config name="prefixes" value="cf7_api"/>
 
     <!-- Text domain validation -->
     <rule ref="WordPress.WP.I18n">

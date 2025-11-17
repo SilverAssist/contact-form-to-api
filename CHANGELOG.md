@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Directory Structure**: Moved source code from `src/` to `includes/` (PSR-4 standard)
 - **Text Domain**: Updated to literal `"contact-form-to-api"` for i18n compatibility
 - **Singleton Pattern**: Changed method from `getInstance()` to `instance()`
-- **Plugin Constants**: All configuration via `CONTACT_FORM_TO_API_*` constants
+- **Plugin Constants**: All configuration via `CF7_API_*` constants
 
 #### Added
 - **WordPress Test Suite**: Complete integration with WordPress test environment

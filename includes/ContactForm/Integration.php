@@ -760,20 +760,20 @@ class Integration implements LoadableInterface {
 			return;
 		}
 
-		$plugin_url = CONTACT_FORM_TO_API_URL;
+		$plugin_url = CF7_API_URL;
 
 		\wp_enqueue_style(
 			'cf7-api-admin',
 			"{$plugin_url}assets/css/admin.css",
 			array(),
-			CONTACT_FORM_TO_API_VERSION
+			CF7_API_VERSION
 		);
 
 		\wp_enqueue_script(
 			'cf7-api-admin',
 			"{$plugin_url}assets/js/admin.js",
 			array( 'jquery' ),
-			CONTACT_FORM_TO_API_VERSION,
+			CF7_API_VERSION,
 			true
 		);
 	}

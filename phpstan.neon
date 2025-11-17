@@ -8,7 +8,7 @@ parameters:
     ignoreErrors:
         - '#Variable \$mailtags might not be defined#'
         - '#If condition is always true#'
-        - '#Constant CONTACT_FORM_TO_API_#'
+        - '#Constant CF7_API_#'
         - '#has parameter .* with no value type specified in iterable type array#'
         - '#return type has no value type specified in iterable type array#'
         - '#PHPDoc tag @param references unknown parameter#'

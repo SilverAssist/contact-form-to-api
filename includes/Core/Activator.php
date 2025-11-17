@@ -42,13 +42,13 @@ class Activator {
 		self::create_tables();
 
 		// Set plugin version.
-		\update_option( 'contact_form_to_api_version', CONTACT_FORM_TO_API_VERSION );
+		\update_option( 'cf7_api_version', CF7_API_VERSION );
 
 		// Initialize default settings.
 		self::init_default_settings();
 
 		// Set activation flag for first-time setup.
-		\update_option( 'contact_form_to_api_activated', time() );
+		\update_option( 'cf7_api_activated', time() );
 
 		// Clear any cached data.
 		\wp_cache_flush();
@@ -66,13 +66,13 @@ class Activator {
 	 */
 	public static function deactivate(): void {
 		// Clear any scheduled cron events.
-		\wp_clear_scheduled_hook( 'contact_form_to_api_cleanup' );
+		\wp_clear_scheduled_hook( 'cf7_api_cleanup' );
 
 		// Clear cached data.
 		\wp_cache_flush();
 
 		// Set deactivation timestamp.
-		\update_option( 'contact_form_to_api_deactivated', time() );
+		\update_option( 'cf7_api_deactivated', time() );
 	}
 
 	/**
@@ -85,15 +85,15 @@ class Activator {
 	 */
 	public static function uninstall(): void {
 		// Check if user wants to keep data.
-		$keep_data = \get_option( 'contact_form_to_api_keep_data_on_uninstall', false );
+		$keep_data = \get_option( 'cf7_api_keep_data_on_uninstall', false );
 
 		if ( ! $keep_data ) {
 			// Remove plugin options.
-			\delete_option( 'contact_form_to_api_version' );
-			\delete_option( 'contact_form_to_api_settings' );
-			\delete_option( 'contact_form_to_api_activated' );
-			\delete_option( 'contact_form_to_api_deactivated' );
-			\delete_option( 'contact_form_to_api_keep_data_on_uninstall' );
+			\delete_option( 'cf7_api_version' );
+			\delete_option( 'cf7_api_settings' );
+			\delete_option( 'cf7_api_activated' );
+			\delete_option( 'cf7_api_deactivated' );
+			\delete_option( 'cf7_api_keep_data_on_uninstall' );
 
 			// Drop database tables.
 			self::drop_tables();
@@ -186,40 +186,40 @@ class Activator {
 	 */
 	private static function check_requirements(): void {
 		// Check PHP version.
-		if ( \version_compare( PHP_VERSION, CONTACT_FORM_TO_API_MIN_PHP_VERSION, '<' ) ) {
-			if ( \defined( 'CONTACT_FORM_TO_API_BASENAME' ) ) {
-				\deactivate_plugins( CONTACT_FORM_TO_API_BASENAME );
+		if ( \version_compare( PHP_VERSION, CF7_API_MIN_PHP_VERSION, '<' ) ) {
+			if ( \defined( 'CF7_API_BASENAME' ) ) {
+				\deactivate_plugins( CF7_API_BASENAME );
 			}
 
 			throw new \Exception(
 				\sprintf(
 					/* translators: %s: required PHP version */
 					\esc_html__( 'Contact Form 7 to API requires PHP %s or higher.', 'contact-form-to-api' ),
-					\esc_html( CONTACT_FORM_TO_API_MIN_PHP_VERSION )
+					\esc_html( CF7_API_MIN_PHP_VERSION )
 				)
 			);
 		}
 
 		// Check WordPress version.
 		global $wp_version;
-		if ( \version_compare( $wp_version, CONTACT_FORM_TO_API_MIN_WP_VERSION, '<' ) ) {
-			if ( \defined( 'CONTACT_FORM_TO_API_BASENAME' ) ) {
-				\deactivate_plugins( CONTACT_FORM_TO_API_BASENAME );
+		if ( \version_compare( $wp_version, CF7_API_MIN_WP_VERSION, '<' ) ) {
+			if ( \defined( 'CF7_API_BASENAME' ) ) {
+				\deactivate_plugins( CF7_API_BASENAME );
 			}
 
 			throw new \Exception(
 				\sprintf(
 					/* translators: %s: required WordPress version */
 					\esc_html__( 'Contact Form 7 to API requires WordPress %s or higher.', 'contact-form-to-api' ),
-					\esc_html( CONTACT_FORM_TO_API_MIN_WP_VERSION )
+					\esc_html( CF7_API_MIN_WP_VERSION )
 				)
 			);
 		}
 
 		// Check Contact Form 7 availability.
 		if ( ! \class_exists( 'WPCF7_ContactForm' ) ) {
-			if ( \defined( 'CONTACT_FORM_TO_API_BASENAME' ) ) {
-				\deactivate_plugins( CONTACT_FORM_TO_API_BASENAME );
+			if ( \defined( 'CF7_API_BASENAME' ) ) {
+				\deactivate_plugins( CF7_API_BASENAME );
 			}
 
 			throw new \Exception(
@@ -244,8 +244,8 @@ class Activator {
 		);
 
 		// Only set defaults if settings don't exist.
-		if ( \get_option( 'contact_form_to_api_settings' ) === false ) {
-			\update_option( 'contact_form_to_api_settings', $default_settings );
+		if ( \get_option( 'cf7_api_settings' ) === false ) {
+			\update_option( 'cf7_api_settings', $default_settings );
 		}
 	}
 }

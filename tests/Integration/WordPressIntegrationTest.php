@@ -29,12 +29,12 @@ class WordPressIntegrationTest extends TestCase {
 	public function testWordPressEnvironmentSetup(): void {
 		// Test WordPress testing environment is properly set up
 		$this->assertTrue(
-			defined( 'CONTACT_FORM_TO_API_TESTING' ),
+			defined( 'CF7_API_TESTING' ),
 			'Testing constant should be defined'
 		);
 
 		$this->assertTrue(
-			CONTACT_FORM_TO_API_TESTING,
+			CF7_API_TESTING,
 			'Should be running in testing mode'
 		);
 	}
@@ -71,7 +71,7 @@ class WordPressIntegrationTest extends TestCase {
 		// Test text domain constant
 		$this->assertEquals(
 			'contact-form-to-api',
-			CONTACT_FORM_TO_API_TEXT_DOMAIN,
+			CF7_API_TEXT_DOMAIN,
 			'Text domain should be correct'
 		);
 
@@ -96,11 +96,11 @@ class WordPressIntegrationTest extends TestCase {
 			$test_value = array( 'api_url' => 'https://example.com/api' );
 
 			// Simulate saving plugin options
-			$save_result = \update_option( 'contact_form_to_api_settings', $test_value );
+			$save_result = \update_option( 'cf7_api_settings', $test_value );
 			$this->assertTrue( $save_result, 'Should be able to save plugin options' );
 
 			// Simulate retrieving plugin options
-			$retrieved_value = \get_option( 'contact_form_to_api_settings', array() );
+			$retrieved_value = \get_option( 'cf7_api_settings', array() );
 			$this->assertIsArray( $retrieved_value, 'Retrieved options should be an array' );
 		}
 	}
@@ -142,12 +142,12 @@ class WordPressIntegrationTest extends TestCase {
 
 		if ( function_exists( 'wp_create_nonce' ) && function_exists( 'wp_verify_nonce' ) ) {
 			// Test nonce creation
-			$nonce = \wp_create_nonce( 'contact_form_to_api_action' );
+			$nonce = \wp_create_nonce( 'cf7_api_action' );
 			$this->assertIsString( $nonce, 'Nonce should be a string' );
 			$this->assertNotEmpty( $nonce, 'Nonce should not be empty' );
 
 			// Test nonce verification
-			$is_valid = \wp_verify_nonce( $nonce, 'contact_form_to_api_action' );
+			$is_valid = \wp_verify_nonce( $nonce, 'cf7_api_action' );
 			// wp_verify_nonce returns 1 or 2 on success (real WordPress)
 			// OR returns true in isolation mode (mocked)
 			$this->assertNotFalse( $is_valid, 'Nonce should be valid' );
@@ -219,11 +219,11 @@ class WordPressIntegrationTest extends TestCase {
 
 		if ( function_exists( 'wp_schedule_event' ) && function_exists( 'wp_next_scheduled' ) ) {
 			// Test cron scheduling
-			$next_run = \wp_next_scheduled( 'contact_form_to_api_cleanup' );
+			$next_run = \wp_next_scheduled( 'cf7_api_cleanup' );
 			$this->assertIsBool( $next_run, 'wp_next_scheduled should return boolean or timestamp' );
 
 			if ( ! $next_run ) {
-				$scheduled = \wp_schedule_event( time() + 3600, 'hourly', 'contact_form_to_api_cleanup' );
+				$scheduled = \wp_schedule_event( time() + 3600, 'hourly', 'cf7_api_cleanup' );
 				$this->assertTrue( $scheduled, 'Should be able to schedule cron event' );
 			}
 		}
@@ -242,7 +242,7 @@ class WordPressIntegrationTest extends TestCase {
 
 		// Test plugin constants
 		$this->assertTrue(
-			defined( 'CONTACT_FORM_TO_API_FILE' ),
+			defined( 'CF7_API_FILE' ),
 			'Plugin file constant should be defined'
 		);
 
@@ -252,7 +252,7 @@ class WordPressIntegrationTest extends TestCase {
 			$callback = function () {
 			};
 			\register_activation_hook(
-				CONTACT_FORM_TO_API_FILE,
+				CF7_API_FILE,
 				$callback
 			);
 			// If we got here without error, registration worked

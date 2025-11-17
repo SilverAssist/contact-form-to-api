@@ -62,8 +62,8 @@
         <const name="WP_TESTS_FORCE_KNOWN_BUGS" value="false"/>
         
         <!-- Plugin Specific Constants -->
-        <const name="CONTACT_FORM_TO_API_TESTING" value="true"/>
-        <const name="CONTACT_FORM_TO_API_TEST_MODE" value="true"/>
+        <const name="CF7_API_TESTING" value="true"/>
+        <const name="CF7_API_TEST_MODE" value="true"/>
         
         <!-- Contact Form 7 Testing -->
         <const name="CF7_TESTING" value="true"/>

@@ -352,7 +352,7 @@ Plugin activation handler.
 **Example**:
 
 ```php
-\register_activation_hook(CONTACT_FORM_TO_API_FILE, [
+\register_activation_hook(CF7_API_FILE, [
     'SilverAssist\ContactFormToAPI\Core\Activator',
     'activate'
 ]);
@@ -447,36 +447,36 @@ Determine if component should load.
 ### Plugin Information
 
 ```php
-CONTACT_FORM_TO_API_VERSION        // "1.0.0"
-CONTACT_FORM_TO_API_FILE           // Main plugin file path
-CONTACT_FORM_TO_API_DIR            // Plugin directory path
-CONTACT_FORM_TO_API_URL            // Plugin URL
-CONTACT_FORM_TO_API_BASENAME       // Plugin basename
-CONTACT_FORM_TO_API_TEXT_DOMAIN    // "contact-form-to-api"
+CF7_API_VERSION        // "1.0.0"
+CF7_API_FILE           // Main plugin file path
+CF7_API_DIR            // Plugin directory path
+CF7_API_URL            // Plugin URL
+CF7_API_BASENAME       // Plugin basename
+CF7_API_TEXT_DOMAIN    // "contact-form-to-api"
 ```
 
 ### Requirements
 
 ```php
-CONTACT_FORM_TO_API_MIN_PHP_VERSION  // "8.2"
-CONTACT_FORM_TO_API_MIN_WP_VERSION   // "6.5"
+CF7_API_MIN_PHP_VERSION  // "8.2"
+CF7_API_MIN_WP_VERSION   // "6.5"
 ```
 
 ### Usage Examples
 
 ```php
 // Get plugin directory
-$plugin_dir = CONTACT_FORM_TO_API_DIR;
+$plugin_dir = CF7_API_DIR;
 
 // Get plugin URL
-$plugin_url = CONTACT_FORM_TO_API_URL;
+$plugin_url = CF7_API_URL;
 
 // Load asset
 \wp_enqueue_script(
     "cf7-api-admin",
-    CONTACT_FORM_TO_API_URL . "assets/js/admin.js",
+    CF7_API_URL . "assets/js/admin.js",
     ["jquery"],
-    CONTACT_FORM_TO_API_VERSION,
+    CF7_API_VERSION,
     true
 );
 ```

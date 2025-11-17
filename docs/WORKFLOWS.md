@@ -315,7 +315,7 @@ Update version across all files:
 **Files Updated**:
 
 - `contact-form-to-api.php` (Plugin header)
-- `CONTACT_FORM_TO_API_VERSION` constant
+- `CF7_API_VERSION` constant
 - `package.json` (if exists)
 - All `@version` PHPDoc tags
 - `composer.json` version
