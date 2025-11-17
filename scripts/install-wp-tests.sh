@@ -145,7 +145,11 @@ recreate_db() {
 	shopt -s nocasematch
 	if [[ $1 =~ ^(y|yes)$ ]]
 	then
-		mysqladmin drop $DB_NAME -f --user="$DB_USER" --password="$DB_PASS"$EXTRA
+		if [ -z "$DB_PASS" ]; then
+			mysqladmin drop $DB_NAME -f --user="$DB_USER"$EXTRA
+		else
+			mysqladmin drop $DB_NAME -f --user="$DB_USER" --password="$DB_PASS"$EXTRA
+		fi
 		create_db
 		echo "Recreated the database ($DB_NAME)."
 	else
@@ -155,7 +159,11 @@ recreate_db() {
 }
 
 create_db() {
-	mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA
+	if [ -z "$DB_PASS" ]; then
+		mysqladmin create $DB_NAME --user="$DB_USER"$EXTRA
+	else
+		mysqladmin create $DB_NAME --user="$DB_USER" --password="$DB_PASS"$EXTRA
+	fi
 }
 
 install_db() {
@@ -181,10 +189,25 @@ install_db() {
 	fi
 
 	# create database
-	if [ $(mysql --user="$DB_USER" --password="$DB_PASS"$EXTRA --execute="SHOW DATABASES LIKE '$DB_NAME';" | grep "$DB_NAME") ]
+	DB_EXISTS=""
+	if [ -z "$DB_PASS" ]; then
+		DB_EXISTS=$(mysql --user="$DB_USER"$EXTRA --execute="SHOW DATABASES LIKE '$DB_NAME';" 2>/dev/null | grep "$DB_NAME" || echo "")
+	else
+		DB_EXISTS=$(mysql --user="$DB_USER" --password="$DB_PASS"$EXTRA --execute="SHOW DATABASES LIKE '$DB_NAME';" 2>/dev/null | grep "$DB_NAME" || echo "")
+	fi
+	
+	if [ ! -z "$DB_EXISTS" ]
 	then
 		echo "Reinstalling will delete the existing test database ($DB_NAME)"
-		read -p 'Are you sure you want to proceed? [y/N]: ' DELETE_EXISTING_DB
+		# Auto-confirm in non-interactive environments (CI)
+		if [ -t 0 ]; then
+			# Interactive terminal
+			read -p 'Are you sure you want to proceed? [y/N]: ' DELETE_EXISTING_DB
+		else
+			# Non-interactive (CI environment) - auto-confirm
+			DELETE_EXISTING_DB="yes"
+			echo "Non-interactive mode detected, auto-confirming database recreation."
+		fi
 		recreate_db $DELETE_EXISTING_DB
 	else
 		create_db

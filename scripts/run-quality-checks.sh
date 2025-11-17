@@ -114,9 +114,14 @@ setup_wordpress_tests() {
     print_info "Installing WordPress Test Suite (version: $WP_VERSION)..."
     print_info "Database: $DB_NAME @ $DB_HOST"
     
-    # Drop existing database if it exists
-    mysql -e "DROP DATABASE IF EXISTS $DB_NAME;" -u"$DB_USER" -p"$DB_PASS" 2>/dev/null || true
-    mysql -e "CREATE DATABASE $DB_NAME;" -u"$DB_USER" -p"$DB_PASS"
+    # Drop existing database if it exists and create new one
+    if [[ -z "$DB_PASS" ]]; then
+        mysql -h "$DB_HOST" -u"$DB_USER" -e "DROP DATABASE IF EXISTS $DB_NAME;" 2>/dev/null || true
+        mysql -h "$DB_HOST" -u"$DB_USER" -e "CREATE DATABASE $DB_NAME;"
+    else
+        mysql -h "$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "DROP DATABASE IF EXISTS $DB_NAME;" 2>/dev/null || true
+        mysql -h "$DB_HOST" -u"$DB_USER" -p"$DB_PASS" -e "CREATE DATABASE $DB_NAME;"
+    fi
     
     # Install WordPress Test Suite
     bash "$PROJECT_DIR/scripts/install-wp-tests.sh" "$DB_NAME" "$DB_USER" "$DB_PASS" "$DB_HOST" "$WP_VERSION" true

@@ -60,6 +60,15 @@ jobs:
       - name: Install Subversion (required for WordPress Test Suite)
         run: sudo apt-get update && sudo apt-get install -y subversion
 
+      - name: Install WordPress Test Suite
+        env:
+          WP_VERSION: latest
+          DB_NAME: cf7_api_test
+          DB_USER: root
+          DB_PASS: root
+          DB_HOST: 127.0.0.1
+        run: bash scripts/install-wp-tests.sh cf7_api_test root root 127.0.0.1 latest true
+
       - name: Run quality checks with WordPress Test Suite
         env:
           WP_VERSION: latest
@@ -67,4 +76,6 @@ jobs:
           DB_USER: root
           DB_PASS: root
           DB_HOST: 127.0.0.1
-        run: ./scripts/run-quality-checks.sh
+          WP_TESTS_DIR: /tmp/wordpress-tests-lib
+          WP_CORE_DIR: /tmp/wordpress
+        run: ./scripts/run-quality-checks.sh --skip-wp-setup
