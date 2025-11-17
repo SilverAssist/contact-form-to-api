@@ -17,10 +17,8 @@ namespace SilverAssist\ContactFormToAPI\Tests;
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- Test bootstrap needs to mock WordPress globals
 // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter -- Mock functions don't use all parameters
 
-// Prevent direct access
-if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', dirname( __DIR__ ) . '/' );
-}
+// NOTE: Do NOT define ABSPATH here - let WordPress Test Suite define it in wp-tests-config.php
+// We only define it later if WordPress Test Suite is not available (isolation mode)
 
 // Mock WordPress functions FIRST (in global namespace)
 if ( ! function_exists( '__' ) ) {
@@ -111,20 +109,10 @@ if ( ! defined( 'CONTACT_FORM_TO_API_TEST_MODE' ) ) {
 if ( ! defined( 'CF7_TESTING' ) ) {
 	define( 'CF7_TESTING', true );
 }
-
-// WordPress test environment constants
-if ( ! defined( 'WP_TESTS_DOMAIN' ) ) {
-	define( 'WP_TESTS_DOMAIN', 'example.org' );
-}
-
-if ( ! defined( 'WP_TESTS_EMAIL' ) ) {
-	define( 'WP_TESTS_EMAIL', 'admin@example.org' );
-}
-
-if ( ! defined( 'WP_TESTS_TITLE' ) ) {
-	define( 'WP_TESTS_TITLE', 'Test Blog' );
-}
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals
+
+// NOTE: WP_TESTS_DOMAIN, WP_TESTS_EMAIL, WP_TESTS_TITLE are defined by wp-tests-config.php
+// Do NOT define them here to avoid "already defined" warnings
 
 // Plugin constants
 if ( ! defined( 'CONTACT_FORM_TO_API_VERSION' ) ) {
@@ -221,6 +209,13 @@ if ( $wp_tests_dir && file_exists( $wp_tests_dir . '/includes/functions.php' ) )
 } else {
 	// Minimal setup if WordPress test suite is not available
 	echo "Warning: WordPress test suite not found. Running tests in isolation mode.\n";
+	
+	// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- ABSPATH is WordPress core constant
+	// Define ABSPATH for isolation mode ONLY (when WordPress Test Suite is not loaded)
+	if ( ! defined( 'ABSPATH' ) ) {
+		define( 'ABSPATH', dirname( __DIR__ ) . '/' );
+	}
+	// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals
 }
 
 // Test helpers are autoloaded via composer
