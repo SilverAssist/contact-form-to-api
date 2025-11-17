@@ -12,7 +12,8 @@
  * @author  Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Tests;
+// NOTE: This file MUST be in global namespace to work with WordPress Test Suite
+// The tests_add_filter() function expects callbacks in global namespace
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- Test bootstrap needs to mock WordPress globals
 // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter -- Mock functions don't use all parameters
