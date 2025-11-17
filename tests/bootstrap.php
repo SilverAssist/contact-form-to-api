@@ -15,86 +15,14 @@
 // NOTE: This file MUST be in global namespace to work with WordPress Test Suite
 // The tests_add_filter() function expects callbacks in global namespace
 
-// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- Test bootstrap needs to mock WordPress globals
-// phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter -- Mock functions don't use all parameters
+// NOTE: Do NOT define ABSPATH or mock WordPress functions here
+// Let WordPress Test Suite define them in wp-tests-config.php
+// Mock functions are ONLY defined in isolation mode (when WP test suite not found)
 
-// NOTE: Do NOT define ABSPATH here - let WordPress Test Suite define it in wp-tests-config.php
-// We only define it later if WordPress Test Suite is not available (isolation mode)
-
-// Mock WordPress functions FIRST (in global namespace)
-if ( ! function_exists( '__' ) ) {
-	function __( $text, $domain = 'default' ) {
-		return $text;
-	}
-}
-
-if ( ! function_exists( 'esc_html__' ) ) {
-	function esc_html__( $text, $domain = 'default' ) {
-		return htmlspecialchars( $text, ENT_QUOTES, 'UTF-8' );
-	}
-}
-
-if ( ! function_exists( 'add_action' ) ) {
-	function add_action( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
-		return true;
-	}
-}
-
-if ( ! function_exists( 'add_filter' ) ) {
-	function add_filter( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
-		return true;
-	}
-}
-
-if ( ! function_exists( 'do_action' ) ) {
-	function do_action( $hook, ...$args ) {
-		return true;
-	}
-}
-
-if ( ! function_exists( 'is_admin' ) ) {
-	function is_admin() {
-		return false;
-	}
-}
-
-if ( ! function_exists( 'wp_enqueue_style' ) ) {
-	function wp_enqueue_style( $handle, $src = '', $deps = array(), $ver = false, $media = 'all' ) {
-		return true;
-	}
-}
-
-if ( ! function_exists( 'wp_enqueue_script' ) ) {
-	function wp_enqueue_script( $handle, $src = '', $deps = array(), $ver = false, $in_footer = false ) {
-		return true;
-	}
-}
-
-if ( ! function_exists( 'wp_localize_script' ) ) {
-	function wp_localize_script( $handle, $object_name, $data ) {
-		return true;
-	}
-}
-
-if ( ! function_exists( 'admin_url' ) ) {
-	function admin_url( $path = '', $scheme = 'admin' ) {
-		return 'http://example.com/wp-admin/' . $path;
-	}
-}
-
-// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals
-// phpcs:enable Generic.CodeAnalysis.UnusedFunctionParameter
-
-if ( ! function_exists( 'wp_create_nonce' ) ) {
-	function wp_create_nonce( $action = -1 ) {
-		return 'test_nonce_' . $action;
-	}
-}
-
-if ( ! function_exists( 'plugin_dir_url' ) ) {
-	function plugin_dir_url( $file ) {
-		return 'http://example.com/wp-content/plugins/' . basename( dirname( $file ) ) . '/';
-	}
+// Load Composer autoloader
+$composer_autoload = dirname( __DIR__ ) . '/vendor/autoload.php';
+if ( file_exists( $composer_autoload ) ) {
+	require_once $composer_autoload;
 }
 
 // Define testing constants
@@ -141,11 +69,6 @@ if ( ! defined( 'CONTACT_FORM_TO_API_MIN_WP_VERSION' ) ) {
 }
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- WordPress Test Suite bootstrap variables
-// Load Composer autoloader
-$composer_autoload = dirname( __DIR__ ) . '/vendor/autoload.php';
-if ( file_exists( $composer_autoload ) ) {
-	require_once $composer_autoload;
-}
 
 // Try to load WordPress test suite
 $wp_tests_dir = getenv( 'WP_TESTS_DIR' );
@@ -211,12 +134,89 @@ if ( $wp_tests_dir && file_exists( $wp_tests_dir . '/includes/functions.php' ) )
 	// Minimal setup if WordPress test suite is not available
 	echo "Warning: WordPress test suite not found. Running tests in isolation mode.\n";
 	
-	// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- ABSPATH is WordPress core constant
+	// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals -- Mock WordPress functions and constants for isolation mode
+	// phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter -- Mock functions don't use all parameters
+	
 	// Define ABSPATH for isolation mode ONLY (when WordPress Test Suite is not loaded)
 	if ( ! defined( 'ABSPATH' ) ) {
 		define( 'ABSPATH', dirname( __DIR__ ) . '/' );
 	}
+	
+	// Mock WordPress functions (in global namespace) for isolation mode
+	if ( ! function_exists( '__' ) ) {
+		function __( $text, $domain = 'default' ) {
+			return $text;
+		}
+	}
+
+	if ( ! function_exists( 'esc_html__' ) ) {
+		function esc_html__( $text, $domain = 'default' ) {
+			return htmlspecialchars( $text, ENT_QUOTES, 'UTF-8' );
+		}
+	}
+
+	if ( ! function_exists( 'add_action' ) ) {
+		function add_action( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
+			return true;
+		}
+	}
+
+	if ( ! function_exists( 'add_filter' ) ) {
+		function add_filter( $hook, $callback, $priority = 10, $accepted_args = 1 ) {
+			return true;
+		}
+	}
+
+	if ( ! function_exists( 'do_action' ) ) {
+		function do_action( $hook, ...$args ) {
+			return true;
+		}
+	}
+
+	if ( ! function_exists( 'is_admin' ) ) {
+		function is_admin() {
+			return false;
+		}
+	}
+
+	if ( ! function_exists( 'wp_enqueue_style' ) ) {
+		function wp_enqueue_style( $handle, $src = '', $deps = array(), $ver = false, $media = 'all' ) {
+			return true;
+		}
+	}
+
+	if ( ! function_exists( 'wp_enqueue_script' ) ) {
+		function wp_enqueue_script( $handle, $src = '', $deps = array(), $ver = false, $in_footer = false ) {
+			return true;
+		}
+	}
+
+	if ( ! function_exists( 'wp_localize_script' ) ) {
+		function wp_localize_script( $handle, $object_name, $data ) {
+			return true;
+		}
+	}
+
+	if ( ! function_exists( 'admin_url' ) ) {
+		function admin_url( $path = '', $scheme = 'admin' ) {
+			return 'http://example.com/wp-admin/' . $path;
+		}
+	}
+
+	if ( ! function_exists( 'wp_create_nonce' ) ) {
+		function wp_create_nonce( $action = -1 ) {
+			return 'test_nonce_' . $action;
+		}
+	}
+
+	if ( ! function_exists( 'plugin_dir_url' ) ) {
+		function plugin_dir_url( $file ) {
+			return 'http://example.com/wp-content/plugins/' . basename( dirname( $file ) ) . '/';
+		}
+	}
+	
 	// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals
+	// phpcs:enable Generic.CodeAnalysis.UnusedFunctionParameter
 }
 
 // Test helpers are autoloaded via composer
