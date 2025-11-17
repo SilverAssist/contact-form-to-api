@@ -54,13 +54,18 @@ jobs:
 
 1. Checkout code
 2. Setup PHP with extensions
-3. Validate composer.json
-4. Install Composer dependencies (with caching)
-5. Setup WordPress Test Suite
-6. Run PHPCS (WordPress-Extra)
-7. Run PHPStan (Level 8)
-8. Run PHPUnit with WordPress
-9. Upload test results
+3. Verify MySQL connection
+4. Get Composer cache directory
+5. Cache Composer dependencies
+6. Install Composer dependencies (with caching)
+7. Install Subversion (required for WordPress Test Suite)
+8. **Install WordPress Test Suite** (separate dedicated step)
+9. Run quality checks with WordPress Test Suite (skips duplicate setup)
+   - Composer validation
+   - PHPCS (WordPress-Extra)
+   - PHPStan (Level 8)
+   - PHPUnit with WordPress
+10. Upload test results (if configured)
 
 ### CI - Pull Request Validation
 
@@ -453,13 +458,24 @@ mysql -u root -p -e "SHOW DATABASES LIKE 'cf7_api_test%';"
 **WordPress Test Suite Issues**:
 
 ```bash
-# Reinstall test suite
+# Reinstall test suite (CI environment)
+# The workflow now has a dedicated step for WordPress installation
+# that runs before quality checks
+
+# For local development, reinstall manually:
 rm -rf /tmp/wordpress-tests-lib /tmp/wordpress
 ./scripts/install-wp-tests.sh cf7_api_test root '' localhost latest
+
+# For CI-like non-interactive mode (auto-confirms):
+./scripts/install-wp-tests.sh cf7_api_test root root 127.0.0.1 latest true
 
 # Check environment variables
 echo $WP_TESTS_DIR
 echo $WP_CORE_DIR
+
+# Verify WordPress core files exist
+ls -la /tmp/wordpress/wp-settings.php
+ls -la /tmp/wordpress-tests-lib/includes/bootstrap.php
 ```
 
 ## Resources
