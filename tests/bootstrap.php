@@ -160,6 +160,7 @@ if ( file_exists( $composer_autoload ) ) {
 
 // Try to load WordPress test suite
 $wp_tests_dir = getenv( 'WP_TESTS_DIR' );
+$wp_core_dir  = getenv( 'WP_CORE_DIR' );
 
 // If WP_TESTS_DIR is not set, try common locations
 if ( ! $wp_tests_dir ) {
@@ -177,7 +178,31 @@ if ( ! $wp_tests_dir ) {
 		}
 	}
 }
+
+// If WP_CORE_DIR is not set, try common locations
+if ( ! $wp_core_dir ) {
+	$possible_core_locations = array(
+		'/tmp/wordpress',
+		'/var/www/html',
+		dirname( __DIR__ ) . '/vendor/wordpress/wordpress',
+		'/usr/local/src/wordpress',
+	);
+
+	foreach ( $possible_core_locations as $location ) {
+		if ( file_exists( $location . '/wp-settings.php' ) ) {
+			$wp_core_dir = $location;
+			break;
+		}
+	}
+}
 // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals
+
+// Define ABSPATH if we have WP core directory
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
+if ( $wp_core_dir && ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', $wp_core_dir . '/' );
+}
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound
 
 // Load WordPress test functions
 if ( $wp_tests_dir && file_exists( $wp_tests_dir . '/includes/functions.php' ) ) {
