@@ -1,4 +1,4 @@
-# Contact Form 7 to API
+# CF7 to API
 
 **🚀 Connect your Contact Form 7 forms to any API effortlessly!**
 
@@ -9,11 +9,13 @@ Transform your WordPress contact forms into powerful data collection tools that 
 [![PHP](https://img.shields.io/badge/PHP-8.2%2B-purple)](https://php.net)
 [![License](https://img.shields.io/badge/license-Polyform--Noncommercial--1.0.0-blue.svg)](LICENSE)
 
+> **📢 Trademark Notice:** This plugin extends the functionality of Contact Form 7. "Contact Form 7" is a trademark of Rock Lobster, LLC. This plugin is an independent extension and is not affiliated with, endorsed by, or sponsored by the Contact Form 7 project or Rock Lobster, LLC. We use "CF7" (an unofficial abbreviated form) in our plugin name in compliance with the [Contact Form 7 trademark policy](https://contactform7.com/trademark-policy/).
+
 ---
 
 ## ✨ What This Plugin Does
 
-**Contact Form 7 to API** seamlessly connects your existing Contact Form 7 forms with external APIs. No coding required – just configure, map your fields, and you're ready to go!
+**CF7 to API** seamlessly connects your existing Contact Form 7 forms with external APIs. No coding required – just configure, map your fields, and you're ready to go!
 
 ### 🎯 Perfect For:
 - **CRM Integration**: Send leads directly to Salesforce, HubSpot, Pipedrive, etc.
@@ -52,7 +54,7 @@ Transform your WordPress contact forms into powerful data collection tools that 
 ### Step 1: Install & Activate
 1. Install the plugin from WordPress admin or upload manually
 2. Make sure **Contact Form 7** is installed and activated
-3. Activate **Contact Form 7 to API**
+3. Activate **CF7 to API**
 
 ### Step 2: Configure Your First Integration
 1. **Edit your Contact Form 7 form**
@@ -80,7 +82,7 @@ Transform your WordPress contact forms into powerful data collection tools that 
 Form Fields → API Parameters
 -----------------------------
 [your-name]    → customer_name
-[your-email]   → email_address  
+[your-email]   → email_address
 [your-phone]   → phone_number
 [your-message] → inquiry_details
 ```
@@ -113,7 +115,7 @@ Static: "New contact form submission" → text
 
 ### 📈 **CRM Systems**
 - Salesforce
-- HubSpot  
+- HubSpot
 - Pipedrive
 - Zoho CRM
 - Custom CRM APIs
@@ -142,7 +144,7 @@ Static: "New contact form submission" → text
 ## 📋 Requirements
 
 - **WordPress**: 6.5 or higher
-- **PHP**: 8.2 or higher  
+- **PHP**: 8.2 or higher
 - **Contact Form 7**: Latest version
 - **SSL/HTTPS**: Recommended for secure API communications
 
@@ -152,7 +154,7 @@ Static: "New contact form submission" → text
 
 ### Via WordPress Admin (Recommended)
 1. Go to **Plugins → Add New** in your WordPress admin
-2. Search for **"Contact Form 7 to API"**
+2. Search for **"CF7 to API"**
 3. Click **Install Now** → **Activate**
 
 ### Manual Installation
@@ -181,7 +183,7 @@ Static: "New contact form submission" → text
 #### 3. **Add Authentication**
 **For Bearer Token:**
 ```
-Header Name: Authorization  
+Header Name: Authorization
 Header Value: Bearer your-token-here
 ```
 
@@ -201,7 +203,7 @@ Header Value: your-api-key-here
 
 #### 5. **Test Your Setup**
 1. **Use the "Test Connection" button**
-2. **Fill out and submit your form**  
+2. **Fill out and submit your form**
 3. **Check the debug logs** if something doesn't work
 4. **Verify data reaches your API**
 
@@ -353,6 +355,35 @@ After setting up your first integration:
 - Community support
 - Detailed documentation
 - Open source
+
+---
+
+## ™️ Trademark Notice & Compliance
+
+### About Contact Form 7 Trademark
+
+**"Contact Form 7"** is a registered trademark of **Rock Lobster, LLC.**, the company behind the development of the Contact Form 7 WordPress plugin.
+
+### Our Compliance
+
+This plugin (**CF7 to API**) is an **independent extension** that adds API integration functionality to Contact Form 7. We comply with the [Contact Form 7 trademark policy](https://contactform7.com/trademark-policy/) as follows:
+
+✅ **Plugin Name**: We use "CF7" (an unofficial abbreviated form permitted by the policy) instead of "Contact Form 7" in our plugin name
+✅ **No Affiliation**: We clearly state that this plugin is not affiliated with, endorsed by, or sponsored by Contact Form 7 or Rock Lobster, LLC
+✅ **Documentation**: We mention "Contact Form 7" only for reference and compatibility information
+✅ **No Confusion**: We avoid any suggestion of official endorsement or partnership
+
+### Our Relationship with Contact Form 7
+
+- **What we are**: An independent extension plugin that enhances Contact Form 7 with API connectivity features
+- **What we are NOT**: An official Contact Form 7 product, affiliate, or endorsed extension
+- **Our purpose**: To provide additional functionality to Contact Form 7 users who need API integrations
+
+### Acknowledgment
+
+We are grateful to Rock Lobster, LLC and the Contact Form 7 development team for creating and maintaining the excellent Contact Form 7 plugin that makes this extension possible.
+
+If you use Contact Form 7, please consider [supporting its development](https://contactform7.com/donate/).
 
 ---
 
