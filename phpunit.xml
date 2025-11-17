@@ -55,10 +55,7 @@
     <!-- PHP Configuration -->
     <php>
         <!-- WordPress Test Environment -->
-        <const name="WP_TESTS_DOMAIN" value="example.org"/>
-        <const name="WP_TESTS_EMAIL" value="admin@example.org"/>
-        <const name="WP_TESTS_TITLE" value="Test Blog"/>
-        <const name="WP_PHP_BINARY" value="php"/>
+        <!-- WP_TESTS_* constants are defined by wp-tests-config.php -->
         <const name="WP_TESTS_FORCE_KNOWN_BUGS" value="false"/>
         
         <!-- Plugin Specific Constants -->
