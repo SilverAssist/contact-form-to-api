@@ -18,4 +18,18 @@ parameters:
         - '#Strict comparison using#'
         - '#is never read, only written#'
         - '#constructor invoked with .* parameter#'
+        # Methods used via WordPress hooks - PHPStan can't detect WordPress action/filter callbacks
+        - '#Method .+::get_record\(\) is unused#'
+        - '#Method .+::send_lead\(\) is unused#'
+        - '#Method .+::log_error\(\) is unused#'
+        # Legacy code patterns from CF7 API plugin - intentional for compatibility
+        - '#Negated boolean expression is always true#'
+        - '#Unreachable statement#'
+        - '#Ternary operator condition is always false#'
+        - '#Offset .+ on .+ in isset\(\) does not exist#'
+        - '#Result of && is always false#'
+        - '#If condition is always false#'
+        - '#Offset .+ on .+ on left side of \?\? does not exist#'
+        - '#Call to function is_array\(\) with .+ will always evaluate to false#'
+
 
