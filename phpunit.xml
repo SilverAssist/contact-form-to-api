@@ -38,16 +38,18 @@
             <directory>./includes/Templates</directory>
             <directory>./vendor</directory>
         </exclude>
+        <report>
+            <html outputDirectory="./tests/coverage/html"/>
+            <text outputFile="./tests/coverage/coverage.txt"/>
+            <xml outputDirectory="./tests/coverage/xml"/>
+        </report>
     </coverage>
 
-    <!-- Code Coverage Reports -->
+    <!-- Test Result Logging -->
     <logging>
-        <log type="coverage-html" target="./tests/coverage/html"/>
-        <log type="coverage-text" target="./tests/coverage/coverage.txt"/>
-        <log type="coverage-xml" target="./tests/coverage/xml"/>
-        <log type="junit" target="./tests/logs/junit.xml"/>
-        <log type="testdox-html" target="./tests/logs/testdox.html"/>
-        <log type="testdox-text" target="./tests/logs/testdox.txt"/>
+        <junit outputFile="./tests/logs/junit.xml"/>
+        <testdoxHtml outputFile="./tests/logs/testdox.html"/>
+        <testdoxText outputFile="./tests/logs/testdox.txt"/>
     </logging>
 
     <!-- PHP Configuration -->
