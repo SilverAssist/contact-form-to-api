@@ -567,3 +567,57 @@ define("CF7_API_MIN_WP_VERSION", "6.5");
 3. **Maintenance**: Easy to update plugin information
 4. **Version Management**: Automated version updates via scripts
 5. **Error Prevention**: Reduces typos in hardcoded values
+
+## GitHub CLI Workflows
+
+### IMPORTANT: Pager Configuration
+**ALWAYS** use `PAGER=cat gh ...` or `gh ... | cat` to prevent interactive pager issues.
+
+### Monitor CI/CD Status
+```bash
+# View workflow runs
+PAGER=cat gh run list
+gh run list | cat
+
+# Watch specific workflow run
+PAGER=cat gh run view <run-id>
+gh run view <run-id> | cat
+
+# View workflow run logs
+PAGER=cat gh run view <run-id> --log
+gh run view --log | cat
+
+# Check status of latest run
+PAGER=cat gh run list --limit 1
+```
+
+### Common Workflow Tasks
+```bash
+# List all workflows
+PAGER=cat gh workflow list
+
+# View workflow details
+PAGER=cat gh workflow view <workflow-name>
+
+# Trigger manual workflow
+gh workflow run <workflow-name>
+
+# Re-run failed jobs
+gh run rerun <run-id>
+
+# Cancel running workflow
+gh run cancel <run-id>
+```
+
+### Pull Request Commands
+```bash
+# View PR checks status
+PAGER=cat gh pr checks
+gh pr checks | cat
+
+# View PR status
+PAGER=cat gh pr status
+
+# View PR details
+PAGER=cat gh pr view <pr-number>
+```

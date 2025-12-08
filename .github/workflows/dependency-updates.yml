@@ -28,7 +28,6 @@ jobs:
       - name: Update Composer dependencies
         run: |
           composer update --prefer-dist --no-interaction
-          composer normalize
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
@@ -43,7 +42,6 @@ jobs:
             
             ### Changes
             - Updated `composer.lock` with latest compatible versions
-            - Normalized `composer.json`
             
             ### Testing
             - [ ] Quality checks passed
