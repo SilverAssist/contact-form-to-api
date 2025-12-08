@@ -158,9 +158,10 @@ class WordPressIntegrationTest extends TestCase {
 	/**
 	 * Test WordPress HTTP API integration
 	 *
+	 * @group external-http
 	 * @return void
 	 */
-	public function testWordPressHttpApiIntegration(): void {
+	public function test_wordpress_http_api_integration(): void {
 		// Mock WordPress HTTP functions
 		$mock_response = $this->createMockHttpResponse(
 			array(
