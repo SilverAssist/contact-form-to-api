@@ -1,0 +1,337 @@
+/**
+ * API Log Admin Styles
+ *
+ * Styles for the API logs admin interface.
+ *
+ * @package ContactFormToAPI
+ * @since 1.0.0
+ */
+
+/* Statistics Summary */
+.cf7-api-stats-summary {
+	margin: 20px 0 30px 0;
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 20px;
+}
+
+.stats-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 20px;
+}
+
+.stat-box {
+	text-align: center;
+	padding: 15px;
+	background: #f6f7f7;
+	border-radius: 4px;
+	border: 1px solid #dcdcde;
+}
+
+.stat-box.success {
+	background: #d7f5d7;
+	border-color: #00a32a;
+}
+
+.stat-box.error {
+	background: #ffd6d6;
+	border-color: #d63638;
+}
+
+.stat-number {
+	display: block;
+	font-size: 32px;
+	font-weight: 600;
+	line-height: 1.2;
+	color: #1d2327;
+	margin-bottom: 5px;
+}
+
+.stat-label {
+	display: block;
+	font-size: 14px;
+	color: #646970;
+}
+
+.stat-percentage {
+	display: block;
+	font-size: 12px;
+	color: #646970;
+	margin-top: 5px;
+}
+
+/* Status Badges */
+.cf7-api-status {
+	display: inline-block;
+	padding: 4px 8px;
+	border-radius: 3px;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: capitalize;
+}
+
+.cf7-api-status-success {
+	background: #d7f5d7;
+	color: #00a32a;
+}
+
+.cf7-api-status-error {
+	background: #ffd6d6;
+	color: #d63638;
+}
+
+.cf7-api-status-pending {
+	background: #fff2c7;
+	color: #856404;
+}
+
+.cf7-api-status-client_error {
+	background: #ffe5e5;
+	color: #cc1818;
+}
+
+.cf7-api-status-server_error {
+	background: #ffebe8;
+	color: #d63638;
+}
+
+.cf7-api-status-unknown {
+	background: #f0f0f1;
+	color: #646970;
+}
+
+/* Method Badges */
+.method-badge {
+	display: inline-block;
+	padding: 4px 8px;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.method-get {
+	background: #cce5ff;
+	color: #004085;
+}
+
+.method-post {
+	background: #d4edda;
+	color: #155724;
+}
+
+.method-put,
+.method-patch {
+	background: #fff3cd;
+	color: #856404;
+}
+
+.method-delete {
+	background: #ffd6d6;
+	color: #721c24;
+}
+
+/* Log Detail View */
+.cf7-api-log-detail {
+	background: #fff;
+	padding: 20px;
+	margin-top: 20px;
+}
+
+.log-section {
+	margin-bottom: 30px;
+	padding: 20px;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+}
+
+.log-section h2 {
+	margin: 0 0 15px 0;
+	padding: 0 0 10px 0;
+	border-bottom: 2px solid #dcdcde;
+	font-size: 16px;
+	color: #1d2327;
+}
+
+.log-section .form-table {
+	background: #fff;
+}
+
+.log-section .form-table th {
+	width: 200px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.log-section .form-table td {
+	color: #646970;
+}
+
+.log-section .form-table code {
+	background: #f0f0f1;
+	padding: 2px 6px;
+	border-radius: 3px;
+	font-size: 13px;
+	word-break: break-all;
+}
+
+.log-content {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 3px;
+	padding: 15px;
+	overflow-x: auto;
+	font-family: Monaco, Consolas, "Courier New", monospace;
+	font-size: 13px;
+	line-height: 1.5;
+	color: #1d2327;
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.error-message {
+	color: #d63638;
+	font-weight: 600;
+}
+
+/* List Table Enhancements */
+.wp-list-table .column-endpoint {
+	width: 35%;
+}
+
+.wp-list-table .column-method {
+	width: 8%;
+}
+
+.wp-list-table .column-status {
+	width: 10%;
+}
+
+.wp-list-table .column-response_code {
+	width: 10%;
+}
+
+.wp-list-table .column-execution_time {
+	width: 10%;
+}
+
+.wp-list-table .column-retry_count {
+	width: 8%;
+}
+
+.wp-list-table .column-created_at {
+	width: 15%;
+}
+
+/* Responsive Design */
+@media (max-width: 782px) {
+	.stats-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.stat-box {
+		padding: 10px;
+	}
+
+	.stat-number {
+		font-size: 24px;
+	}
+
+	.log-section .form-table th {
+		width: auto;
+		display: block;
+		padding-bottom: 5px;
+	}
+
+	.log-section .form-table td {
+		display: block;
+		padding-top: 0;
+	}
+}
+
+/* Loading State */
+.cf7-api-loading {
+	opacity: 0.6;
+	pointer-events: none;
+	position: relative;
+}
+
+.cf7-api-loading::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 20px;
+	height: 20px;
+	margin: -10px 0 0 -10px;
+	border: 2px solid #f3f3f3;
+	border-top: 2px solid #0073aa;
+	border-radius: 50%;
+	animation: cf7-api-spin 1s linear infinite;
+}
+
+@keyframes cf7-api-spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+/* Empty State */
+.no-items {
+	text-align: center;
+	padding: 40px 20px;
+	color: #646970;
+}
+
+/* Filter Links */
+.subsubsub {
+	margin-bottom: 15px;
+}
+
+.subsubsub li {
+	margin: 0;
+	padding: 0;
+	display: inline-block;
+}
+
+.subsubsub li::after {
+	content: "|";
+	margin: 0 5px;
+	color: #dcdcde;
+}
+
+.subsubsub li:last-child::after {
+	display: none;
+}
+
+.subsubsub a {
+	text-decoration: none;
+}
+
+.subsubsub a.current {
+	font-weight: 600;
+	color: #000;
+}
+
+/* Search Box */
+.search-box {
+	float: right;
+	margin: 0 0 10px 0;
+}
+
+/* Bulk Actions */
+.bulkactions {
+	margin-bottom: 10px;
+}
+
+/* Pagination */
+.tablenav.bottom {
+	margin-top: 20px;
+}

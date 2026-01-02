@@ -372,26 +372,40 @@ class Logger {
 	 * Returns aggregated statistics about API calls.
 	 *
 	 * @since 1.0.0
-	 * @param int $form_id Form ID
+	 * @param int $form_id Form ID (0 for all forms)
 	 * @return array Statistics array
 	 */
 	public function get_statistics( int $form_id ): array {
 		global $wpdb;
 
-		$stats = $wpdb->get_row(
-			$wpdb->prepare(
+		if ( $form_id > 0 ) {
+			$stats = $wpdb->get_row(
+				$wpdb->prepare(
+					"SELECT 
+						COUNT(*) as total_requests,
+						SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) as successful_requests,
+						SUM(CASE WHEN status IN ('error', 'client_error', 'server_error') THEN 1 ELSE 0 END) as failed_requests,
+						AVG(execution_time) as avg_execution_time,
+						MAX(retry_count) as max_retries
+					FROM {$this->table_name}
+					WHERE form_id = %d",
+					$form_id
+				),
+				ARRAY_A
+			);
+		} else {
+			// Get statistics for all forms
+			$stats = $wpdb->get_row(
 				"SELECT 
 					COUNT(*) as total_requests,
 					SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) as successful_requests,
-					SUM(CASE WHEN status = 'error' THEN 1 ELSE 0 END) as failed_requests,
+					SUM(CASE WHEN status IN ('error', 'client_error', 'server_error') THEN 1 ELSE 0 END) as failed_requests,
 					AVG(execution_time) as avg_execution_time,
 					MAX(retry_count) as max_retries
-				FROM {$this->table_name}
-				WHERE form_id = %d",
-				$form_id
-			),
-			ARRAY_A
-		);
+				FROM {$this->table_name}",
+				ARRAY_A
+			);
+		}
 
 		return $stats ?: array(
 			"total_requests"      => 0,

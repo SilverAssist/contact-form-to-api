@@ -161,6 +161,19 @@ class Plugin implements LoadableInterface {
 				\error_log( "Contact Form to API: Failed to load ContactForm integration - {$e->getMessage()}" );
 			}
 		}
+
+		// Load Admin interface (hybrid approach).
+		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Admin\\ApiLogAdmin' ) ) {
+			try {
+				$admin = \SilverAssist\ContactFormToAPI\Admin\ApiLogAdmin::instance();
+				if ( $admin->should_load() ) {
+					$admin->init();
+					$this->components[] = $admin;
+				}
+			} catch ( \Exception $e ) {
+				\error_log( "Contact Form to API: Failed to load API Log Admin - {$e->getMessage()}" );
+			}
+		}
 	}
 
 	/**
