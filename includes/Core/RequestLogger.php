@@ -1,6 +1,6 @@
 <?php
 /**
- * API Logger
+ * API Request Logger
  *
  * Handles comprehensive logging of all API requests and responses,
  * inspired by Flamingo plugin's approach to data tracking.
@@ -8,8 +8,8 @@
  *
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Core
- * @since 1.0.0
- * @version 1.0.0
+ * @since 1.1.0
+ * @version 1.1.0
  * @author Silver Assist
  */
 
@@ -18,14 +18,14 @@ namespace SilverAssist\ContactFormToAPI\Core;
 \defined( "ABSPATH" ) || exit;
 
 /**
- * Class Logger
+ * Class RequestLogger
  *
  * Advanced logging system for API requests and responses.
  * Tracks all data sent to APIs and received responses for complete traceability.
  *
- * @since 1.0.0
+ * @since 1.1.0
  */
-class Logger {
+class RequestLogger {
 	/**
 	 * Table name for logs
 	 *
@@ -71,7 +71,7 @@ class Logger {
 	/**
 	 * Constructor
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 */
 	public function __construct() {
 		global $wpdb;
@@ -83,7 +83,7 @@ class Logger {
 	 *
 	 * Creates initial log entry before sending request.
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 * @param int    $form_id        Contact Form 7 form ID
 	 * @param string $endpoint       API endpoint URL
 	 * @param string $method         HTTP method (GET, POST, etc.)
@@ -132,7 +132,7 @@ class Logger {
 	 *
 	 * Updates log entry with response information and execution time.
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 * @param array|\WP_Error $response      API response or error
 	 * @param int|null        $retry_count   Number of retry attempts
 	 * @return bool True on success, false on failure
@@ -195,7 +195,7 @@ class Logger {
 	 *
 	 * Updates retry count for current log entry.
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 * @param int $retry_count Current retry attempt number
 	 * @return bool True on success, false on failure
 	 */
@@ -222,7 +222,7 @@ class Logger {
 	 *
 	 * Removes or masks sensitive information from logged data.
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 * @param mixed $data Data to anonymize
 	 * @return mixed Anonymized data
 	 */
@@ -268,7 +268,7 @@ class Logger {
 	 *
 	 * Removes or masks sensitive headers.
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 * @param array|\WpOrg\Requests\Utility\CaseInsensitiveDictionary $headers Headers to anonymize
 	 * @return array Anonymized headers
 	 */
@@ -299,7 +299,7 @@ class Logger {
 	/**
 	 * Determine status from response code
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 * @param int $code HTTP response code
 	 * @return string Status string
 	 */
@@ -320,12 +320,16 @@ class Logger {
 	 *
 	 * Retrieves recent API call logs for debugging.
 	 *
-	 * @since 1.0.0
-	 * @param int $form_id Form ID to get logs for
-	 * @param int $limit   Maximum number of logs to retrieve
+	 * @since 1.1.0
+	 * @param int|null $form_id Form ID to get logs for (null for new forms)
+	 * @param int      $limit   Maximum number of logs to retrieve
 	 * @return array Array of log entries
 	 */
-	public function get_recent_logs( int $form_id, int $limit = 10 ): array {
+	public function get_recent_logs( ?int $form_id, int $limit = 10 ): array {
+		if ( null === $form_id || $form_id <= 0 ) {
+			return array();
+		}
+
 		global $wpdb;
 
 		$results = $wpdb->get_results(
@@ -348,7 +352,7 @@ class Logger {
 	 *
 	 * Removes logs older than specified days.
 	 *
-	 * @since 1.0.0
+	 * @since 1.1.0
 	 * @param int $days Number of days to keep logs
 	 * @return int Number of deleted rows
 	 */
@@ -371,14 +375,14 @@ class Logger {
 	 *
 	 * Returns aggregated statistics about API calls.
 	 *
-	 * @since 1.0.0
-	 * @param int $form_id Form ID (0 for all forms)
+	 * @since 1.1.0
+	 * @param int|null $form_id Form ID (0 or null for all forms)
 	 * @return array Statistics array
 	 */
-	public function get_statistics( int $form_id ): array {
+	public function get_statistics( ?int $form_id ): array {
 		global $wpdb;
 
-		if ( $form_id > 0 ) {
+		if ( null !== $form_id && $form_id > 0 ) {
 			$stats = $wpdb->get_row(
 				$wpdb->prepare(
 					"SELECT 

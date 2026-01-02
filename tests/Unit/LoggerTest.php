@@ -14,18 +14,18 @@
 namespace SilverAssist\ContactFormToAPI\Tests\Unit;
 
 use SilverAssist\ContactFormToAPI\Core\Activator;
-use SilverAssist\ContactFormToAPI\Core\Logger;
+use SilverAssist\ContactFormToAPI\Core\RequestLogger;
 use WP_UnitTestCase;
 
 /**
- * Test cases for Logger class
+ * Test cases for RequestLogger class
  */
 class LoggerTest extends WP_UnitTestCase {
 
 	/**
 	 * Logger instance
 	 *
-	 * @var Logger
+	 * @var RequestLogger
 	 */
 	private $logger;
 
@@ -49,7 +49,7 @@ class LoggerTest extends WP_UnitTestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		$this->logger = new Logger();
+		$this->logger = new RequestLogger();
 	}
 
 	/**
@@ -73,7 +73,7 @@ class LoggerTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_logger_can_be_instantiated(): void {
-		$this->assertInstanceOf( Logger::class, $this->logger );
+		$this->assertInstanceOf( RequestLogger::class, $this->logger );
 	}
 
 	/**

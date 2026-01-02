@@ -8,13 +8,16 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Core
  * @since 1.0.0
- * @version 1.0.0
+ * @version 1.1.0
  * @author Silver Assist
  */
 
 namespace SilverAssist\ContactFormToAPI\Core;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
+use SilverAssist\WpGithubUpdater\Updater;
+use SilverAssist\WpGithubUpdater\UpdaterConfig;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -49,9 +52,9 @@ class Plugin implements LoadableInterface {
 	/**
 	 * GitHub updater instance
 	 *
-	 * @var \SilverAssist\WpGithubUpdater\Updater|null
+	 * @var Updater|null
 	 */
-	private ?\SilverAssist\WpGithubUpdater\Updater $updater = null;
+	private ?Updater $updater = null;
 
 	/**
 	 * Initialization flag
@@ -146,10 +149,41 @@ class Plugin implements LoadableInterface {
 	/**
 	 * Load plugin components
 	 *
+	 * Loads components using the Loader pattern for better organization.
+	 * Each layer (ContactForm, Admin, Utils) has its own Loader that manages its components.
+	 *
 	 * @return void
 	 */
 	private function load_components(): void {
-		// Load ContactForm integration.
+		// Load Utils Logger first (priority 40 - but initialized early for error logging).
+		if ( \class_exists( DebugLogger::class ) ) {
+			try {
+				$logger = DebugLogger::instance();
+				if ( $logger->should_load() ) {
+					$logger->init();
+					$this->components[] = $logger;
+				}
+			} catch ( \Exception $e ) {
+				// Fallback to error_log if Logger fails.
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+				\error_log( 'Contact Form to API: Failed to load Logger - ' . $e->getMessage() );
+			}
+		}
+
+		// Load Services Loader (priority 20 - Services).
+		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Services\\Loader' ) ) {
+			try {
+				$services_loader = \SilverAssist\ContactFormToAPI\Services\Loader::instance();
+				if ( $services_loader->should_load() ) {
+					$services_loader->init();
+					$this->components[] = $services_loader;
+				}
+			} catch ( \Exception $e ) {
+				$this->log_error( 'Services\\Loader', $e->getMessage() );
+			}
+		}
+
+		// Load ContactForm integration (priority 20 - Services).
 		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\ContactForm\\Integration' ) ) {
 			try {
 				$integration = \SilverAssist\ContactFormToAPI\ContactForm\Integration::instance();
@@ -158,22 +192,49 @@ class Plugin implements LoadableInterface {
 					$this->components[] = $integration;
 				}
 			} catch ( \Exception $e ) {
-				\error_log( "Contact Form to API: Failed to load ContactForm integration - {$e->getMessage()}" );
+				$this->log_error( 'ContactForm\\Integration', $e->getMessage() );
 			}
 		}
 
-		// Load Admin interface (hybrid approach).
-		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Admin\\ApiLogAdmin' ) ) {
+		// Load Admin Loader (priority 30 - Admin components).
+		// The Admin\Loader manages SettingsPage and RequestLogController internally.
+		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Admin\\Loader' ) ) {
 			try {
-				$admin = \SilverAssist\ContactFormToAPI\Admin\ApiLogAdmin::instance();
-				if ( $admin->should_load() ) {
-					$admin->init();
-					$this->components[] = $admin;
+				$admin_loader = \SilverAssist\ContactFormToAPI\Admin\Loader::instance();
+				if ( $admin_loader->should_load() ) {
+					$admin_loader->init();
+					$this->components[] = $admin_loader;
 				}
 			} catch ( \Exception $e ) {
-				\error_log( "Contact Form to API: Failed to load API Log Admin - {$e->getMessage()}" );
+				$this->log_error( 'Admin\\Loader', $e->getMessage() );
 			}
 		}
+	}
+
+	/**
+	 * Log component loading error
+	 *
+	 * Uses the Utils\Logger if available, falls back to error_log.
+	 *
+	 * @param string $component Component name.
+	 * @param string $message   Error message.
+	 * @return void
+	 */
+	private function log_error( string $component, string $message ): void {
+		$full_message = "Failed to load {$component} - {$message}";
+
+		// Try to use the Logger if available.
+		if ( \class_exists( DebugLogger::class ) ) {
+			try {
+				DebugLogger::instance()->error( $full_message, array( 'component' => $component ) );
+				return;
+			} catch ( \Exception $e ) {
+				// Fall through to error_log.
+			}
+		}
+
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		\error_log( 'Contact Form to API: ' . $full_message );
 	}
 
 	/**
@@ -205,7 +266,7 @@ class Plugin implements LoadableInterface {
 	 */
 	private function init_updater(): void {
 		// Only initialize updater if package is available.
-		if ( ! \class_exists( '\\SilverAssist\\WpGithubUpdater\\Updater' ) ) {
+		if ( ! \class_exists( Updater::class ) ) {
 			return;
 		}
 
@@ -215,7 +276,7 @@ class Plugin implements LoadableInterface {
 		}
 
 		// Create updater configuration.
-		$config = new \SilverAssist\WpGithubUpdater\UpdaterConfig(
+		$config = new UpdaterConfig(
 			CF7_API_FILE,
 			'SilverAssist/contact-form-to-api',
 			array(
@@ -230,7 +291,7 @@ class Plugin implements LoadableInterface {
 			)
 		);
 
-		$this->updater = new \SilverAssist\WpGithubUpdater\Updater( $config );
+		$this->updater = new Updater( $config );
 	}
 
 	/**
@@ -294,6 +355,27 @@ class Plugin implements LoadableInterface {
 	 */
 	public function get_components(): array {
 		return $this->components;
+	}
+
+	/**
+	 * Get GitHub Updater instance
+	 *
+	 * @return Updater|null
+	 */
+	public function get_updater(): ?Updater {
+		return $this->updater;
+	}
+
+	/**
+	 * Get Logger instance
+	 *
+	 * @return DebugLogger|null
+	 */
+	public function get_logger(): ?DebugLogger {
+		if ( \class_exists( DebugLogger::class ) ) {
+			return DebugLogger::instance();
+		}
+		return null;
 	}
 
 	/**
