@@ -199,6 +199,10 @@
 }
 
 /* List Table Enhancements */
+.wp-list-table .column-form {
+	width: 25%;
+}
+
 .wp-list-table .column-endpoint {
 	width: 35%;
 }
