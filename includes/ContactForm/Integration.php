@@ -16,10 +16,11 @@
 namespace SilverAssist\ContactFormToAPI\ContactForm;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Core\Logger;
 use WPCF7_ContactForm;
 use WPCF7_Submission;
 
-\defined( 'ABSPATH' ) || exit;
+\defined( "ABSPATH" ) || exit;
 
 /**
  * Contact Form 7 Integration Class
@@ -35,9 +36,18 @@ class Integration implements LoadableInterface {
 	 *
 	 * @since 1.0.0
 	 */
-	private const CHECKBOX_VALUES = array( 'TRUE', 'FALSE', '1', '0', 'true', 'false', 1, 0, true, false );
-	private const CHECKED_VALUES  = array( 'TRUE', '1', 'true', 1, true );
-	private const CHECKBOX_YES_NO = array( '1', '0' );
+	private const CHECKBOX_VALUES = array( "TRUE", "FALSE", "1", "0", "true", "false", 1, 0, true, false );
+	private const CHECKED_VALUES  = array( "TRUE", "1", "true", 1, true );
+	private const CHECKBOX_YES_NO = array( "1", "0" );
+
+	/**
+	 * Retry configuration defaults
+	 *
+	 * @since 1.0.0
+	 */
+	private const DEFAULT_MAX_RETRIES = 3;
+	private const DEFAULT_RETRY_DELAY = 2;
+	private const RETRY_MULTIPLIER    = 2;
 
 	/**
 	 * Singleton instance
@@ -131,10 +141,11 @@ class Integration implements LoadableInterface {
 	 * @return array Modified properties
 	 */
 	public function add_form_properties( array $properties ): array {
-		$properties['wpcf7_api_data']     ??= array();
-		$properties['wpcf7_api_data_map'] ??= array();
-		$properties['template']           ??= '';
-		$properties['json_template']      ??= '';
+		$properties["wpcf7_api_data"]        ??= array();
+		$properties["wpcf7_api_data_map"]    ??= array();
+		$properties["template"]              ??= "";
+		$properties["json_template"]         ??= "";
+		$properties["retry_config"]          ??= array();
 
 		return $properties;
 	}
@@ -450,32 +461,41 @@ class Integration implements LoadableInterface {
 		$form_id = $contact_form->id();
 
 		// Get from properties first, fallback to post_meta for backward compatibility
-		$api_data          = $contact_form->prop( 'wpcf7_api_data' ) ?: \get_post_meta( $form_id, '_wpcf7_api_data', true );
-		$api_data_map      = $contact_form->prop( 'wpcf7_api_data_map' ) ?: \get_post_meta( $form_id, '_wpcf7_api_data_map', true );
-		$api_data_template = $contact_form->prop( 'template' ) ?: \get_post_meta( $form_id, '_template', true );
-		$api_json_template = stripslashes( $contact_form->prop( 'json_template' ) ?: \get_post_meta( $form_id, '_json_template', true ) );
+		$api_data          = $contact_form->prop( "wpcf7_api_data" ) ?: \get_post_meta( $form_id, "_wpcf7_api_data", true );
+		$api_data_map      = $contact_form->prop( "wpcf7_api_data_map" ) ?: \get_post_meta( $form_id, "_wpcf7_api_data_map", true );
+		$api_data_template = $contact_form->prop( "template" ) ?: \get_post_meta( $form_id, "_template", true );
+		$api_json_template = \stripslashes( $contact_form->prop( "json_template" ) ?: \get_post_meta( $form_id, "_json_template", true ) );
+		$retry_config      = $contact_form->prop( "retry_config" ) ?: array();
+
+		// Set default retry configuration if not provided
+		if ( ! \is_array( $retry_config ) ) {
+			$retry_config = array();
+		}
+		$retry_config["max_retries"]      ??= self::DEFAULT_MAX_RETRIES;
+		$retry_config["retry_delay"]      ??= self::DEFAULT_RETRY_DELAY;
+		$retry_config["retry_on_timeout"] ??= true;
 
 		// Always enable debug logging
-		$api_data['debug_log'] = true;
+		$api_data["debug_log"] = true;
 
 		// Check if form should be sent to API
-		if ( empty( $api_data['send_to_api'] ) || $api_data['send_to_api'] !== 'on' ) {
+		if ( empty( $api_data["send_to_api"] ) || $api_data["send_to_api"] !== "on" ) {
 			return;
 		}
 
-		$record_type = $api_data['input_type'] ?? 'params';
+		$record_type = $api_data["input_type"] ?? "params";
 
-		if ( $record_type === 'json' ) {
-			$api_data_template = stripslashes( $api_json_template );
+		if ( $record_type === "json" ) {
+			$api_data_template = \stripslashes( $api_json_template );
 		}
 
 		$record        = $this->get_record( $submission, $api_data_map, $record_type, $api_data_template );
-		$record['url'] = $api_data['base_url'];
+		$record["url"] = $api_data["base_url"];
 
-		if ( ! empty( $record['url'] ) ) {
-			\do_action( 'cf7_api_before_send_to_api', $record );
+		if ( ! empty( $record["url"] ) ) {
+			\do_action( "cf7_api_before_send_to_api", $record );
 
-			$response = $this->send_lead( $record, $api_data['debug_log'], $api_data['method'], $record_type );
+			$response = $this->send_lead( $record, $api_data["debug_log"], $api_data["method"], $record_type, $retry_config );
 
 			if ( \is_wp_error( $response ) ) {
 				$this->log_error( $response, $contact_form->id() );
@@ -572,96 +592,176 @@ class Integration implements LoadableInterface {
 	}
 
 	/**
-	 * Send lead data to API endpoint
+	 * Send lead data to API endpoint with retry support
 	 *
 	 * @since 1.0.0
-	 * @param array   $record      Record data
-	 * @param boolean $debug       Enable debug logging
-	 * @param string  $method      HTTP method
-	 * @param string  $record_type Record type
+	 * @param array   $record       Record data
+	 * @param boolean $debug        Enable debug logging
+	 * @param string  $method       HTTP method
+	 * @param string  $record_type  Record type
+	 * @param array   $retry_config Retry configuration
 	 * @return array|\WP_Error Response data or error
 	 */
-	private function send_lead( array $record, bool $debug = false, string $method = 'GET', string $record_type = 'params' ) {
+	private function send_lead( array $record, bool $debug = false, string $method = "GET", string $record_type = "params", array $retry_config = array() ) {
 		global $wp_version;
 
-		$lead = $record['fields'];
-		$url  = $record['url'];
+		$lead = $record["fields"];
+		$url  = $record["url"];
+
+		// Setup retry configuration
+		$max_retries  = $retry_config["max_retries"] ?? self::DEFAULT_MAX_RETRIES;
+		$retry_delay  = $retry_config["retry_delay"] ?? self::DEFAULT_RETRY_DELAY;
+		$retry_on_timeout = $retry_config["retry_on_timeout"] ?? true;
 
 		$args = array(
-			'timeout'     => 30,
-			'redirection' => 5,
-			'httpversion' => '1.1',
-			'user-agent'  => "WordPress/{$wp_version}; " . \home_url(),
-			'blocking'    => true,
-			'headers'     => array(),
-			'cookies'     => array(),
-			'compress'    => false,
-			'decompress'  => true,
-			'sslverify'   => true,
-			'stream'      => false,
-			'filename'    => null,
+			"timeout"     => 30,
+			"redirection" => 5,
+			"httpversion" => "1.1",
+			"user-agent"  => "WordPress/{$wp_version}; " . \home_url(),
+			"blocking"    => true,
+			"headers"     => array(),
+			"cookies"     => array(),
+			"compress"    => false,
+			"decompress"  => true,
+			"sslverify"   => true,
+			"stream"      => false,
+			"filename"    => null,
 		);
 
-		if ( $method === 'GET' && ( $record_type === 'params' || $record_type === 'json' ) ) {
-			if ( $record_type === 'json' ) {
-				$args['headers']['Content-Type'] = 'application/json';
+		if ( $method === "GET" && ( $record_type === "params" || $record_type === "json" ) ) {
+			if ( $record_type === "json" ) {
+				$args["headers"]["Content-Type"] = "application/json";
 
 				$json = $this->parse_json( $lead );
 				if ( \is_wp_error( $json ) ) {
 					return $json;
 				}
 
-				$args['body'] = $json;
+				$args["body"] = $json;
 			} else {
-				$lead_string = http_build_query( $lead );
-				$url         = strpos( $url, '?' ) !== false ? "{$url}&{$lead_string}" : "{$url}?{$lead_string}";
+				$lead_string = \http_build_query( $lead );
+				$url         = \strpos( $url, "?" ) !== false ? "{$url}&{$lead_string}" : "{$url}?{$lead_string}";
 			}
 
-			$args = \apply_filters( 'cf7_api_get_args', $args );
-			$url  = \apply_filters( 'cf7_api_get_url', $url, $record );
-
-			$result = \wp_remote_get( $url, $args );
+			$args = \apply_filters( "cf7_api_get_args", $args );
+			$url  = \apply_filters( "cf7_api_get_url", $url, $record );
 		} else {
-			$args['body'] = $lead;
+			$args["body"] = $lead;
 
-			if ( $record_type === 'xml' ) {
-				$args['headers']['Content-Type'] = 'text/xml';
+			if ( $record_type === "xml" ) {
+				$args["headers"]["Content-Type"] = "text/xml";
 
 				$xml = $this->get_xml( $lead );
 				if ( \is_wp_error( $xml ) ) {
 					return $xml;
 				}
 
-				$args['body'] = $xml->asXML();
-			} elseif ( $record_type === 'json' ) {
-				$args['headers']['Content-Type'] = 'application/json';
+				$args["body"] = $xml->asXML();
+			} elseif ( $record_type === "json" ) {
+				$args["headers"]["Content-Type"] = "application/json";
 
 				$json = $this->parse_json( $lead );
 				if ( \is_wp_error( $json ) ) {
 					return $json;
 				}
 
-				$args['body'] = $json;
+				$args["body"] = $json;
 			}
 
-			$args = \apply_filters( 'cf7_api_post_args', $args );
-			$url  = \apply_filters( 'cf7_api_post_url', $url );
-
-			$result = \wp_remote_post( $url, $args );
+			$args = \apply_filters( "cf7_api_post_args", $args );
+			$url  = \apply_filters( "cf7_api_post_url", $url );
 		}
 
+		// Initialize logger
+		$logger = new Logger();
+		$log_id = false;
+
+		if ( $this->current_form ) {
+			$log_id = $logger->start_request(
+				$this->current_form->id(),
+				$url,
+				$method,
+				$args["body"] ?? "",
+				$args["headers"] ?? array()
+			);
+		}
+
+		// Attempt request with retries
+		$result       = null;
+		$retry_count  = 0;
+		$last_error   = null;
+
+		for ( $attempt = 0; $attempt <= $max_retries; $attempt++ ) {
+			// Make the request
+			if ( $method === "GET" ) {
+				$result = \wp_remote_get( $url, $args );
+			} else {
+				$result = \wp_remote_post( $url, $args );
+			}
+
+			// Check if request was successful
+			if ( ! \is_wp_error( $result ) ) {
+				$response_code = \wp_remote_retrieve_response_code( $result );
+				// Success codes (2xx)
+				if ( $response_code >= 200 && $response_code < 300 ) {
+					break;
+				}
+				// Server errors (5xx) might be transient, retry
+				if ( $response_code >= 500 && $attempt < $max_retries ) {
+					$retry_count++;
+					if ( $log_id ) {
+						$logger->log_retry( $retry_count );
+					}
+					\sleep( $retry_delay * \pow( self::RETRY_MULTIPLIER, $attempt ) );
+					continue;
+				}
+				// Client errors (4xx) should not be retried
+				break;
+			}
+
+			// Handle WP_Error
+			$last_error = $result;
+
+			// Check if we should retry on this error
+			$should_retry = false;
+			if ( $retry_on_timeout && $attempt < $max_retries ) {
+				$error_code = $result->get_error_code();
+				// Retry on timeout and connection errors
+				if ( \in_array( $error_code, array( "http_request_failed", "timeout", "connect_timeout" ), true ) ) {
+					$should_retry = true;
+				}
+			}
+
+			if ( $should_retry ) {
+				$retry_count++;
+				if ( $log_id ) {
+					$logger->log_retry( $retry_count );
+				}
+				// Exponential backoff
+				\sleep( $retry_delay * \pow( self::RETRY_MULTIPLIER, $attempt ) );
+			} else {
+				break;
+			}
+		}
+
+		// Complete logging
+		if ( $log_id ) {
+			$logger->complete_request( $result, $retry_count );
+		}
+
+		// Legacy debug logging (for backward compatibility)
 		if ( $debug && $this->current_form ) {
-			\update_post_meta( $this->current_form->id(), 'cf7_api_debug_url', $record['url'] );
-			\update_post_meta( $this->current_form->id(), 'cf7_api_debug_params', $lead );
+			\update_post_meta( $this->current_form->id(), "cf7_api_debug_url", $record["url"] );
+			\update_post_meta( $this->current_form->id(), "cf7_api_debug_params", $lead );
 
 			if ( \is_wp_error( $result ) ) {
 				$result->add_data( $args );
 			}
 
-			\update_post_meta( $this->current_form->id(), 'cf7_api_debug_result', $result );
+			\update_post_meta( $this->current_form->id(), "cf7_api_debug_result", $result );
 		}
 
-		return \apply_filters( 'cf7_api_after_send_lead', $result, $record );
+		return \apply_filters( "cf7_api_after_send_lead", $result, $record );
 	}
 
 	/**
@@ -706,6 +806,8 @@ class Integration implements LoadableInterface {
 	/**
 	 * Log API error
 	 *
+	 * Keeps legacy error logging for backward compatibility.
+	 *
 	 * @since 1.0.0
 	 * @param \WP_Error $wp_error WordPress error
 	 * @param integer   $form_id  Form ID
@@ -713,28 +815,7 @@ class Integration implements LoadableInterface {
 	 */
 	private function log_error( \WP_Error $wp_error, int $form_id ): void {
 		$this->api_errors[] = $wp_error;
-		\update_post_meta( $form_id, 'api_errors', $this->api_errors );
-
-		// Also log to database
-		global $wpdb;
-		$table_name = "{$wpdb->prefix}cf7_api_logs";
-
-		$wpdb->insert(
-			$table_name,
-			array(
-				'form_id'        => $form_id,
-				'endpoint'       => '',
-				'method'         => 'UNKNOWN',
-				'status'         => 'error',
-				'request_data'   => '',
-				'response_data'  => $wp_error->get_error_message(),
-				'response_code'  => 0,
-				'error_message'  => $wp_error->get_error_message(),
-				'execution_time' => 0,
-				'created_at'     => \current_time( 'mysql' ),
-			),
-			array( '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%s', '%f', '%s' )
-		);
+		\update_post_meta( $form_id, "api_errors", $this->api_errors );
 	}
 
 	/**

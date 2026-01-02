@@ -130,16 +130,22 @@ class Activator {
 		$sql = "CREATE TABLE {$table_name} (
 			id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 			form_id bigint(20) UNSIGNED NOT NULL,
-			api_url varchar(255) NOT NULL,
-			request_method varchar(10) NOT NULL,
+			endpoint varchar(500) NOT NULL,
+			method varchar(10) NOT NULL,
+			status varchar(20) NOT NULL,
 			request_data longtext NOT NULL,
+			request_headers longtext DEFAULT NULL,
+			response_data longtext DEFAULT NULL,
+			response_headers longtext DEFAULT NULL,
 			response_code int(11) UNSIGNED DEFAULT NULL,
-			response_body longtext DEFAULT NULL,
 			error_message text DEFAULT NULL,
+			execution_time decimal(10,4) DEFAULT NULL,
+			retry_count int(3) UNSIGNED DEFAULT 0,
 			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			PRIMARY KEY  (id),
 			KEY form_id (form_id),
-			KEY created_at (created_at)
+			KEY created_at (created_at),
+			KEY status (status)
 		) {$charset_collate};";
 
 		// Try to load dbDelta function.
