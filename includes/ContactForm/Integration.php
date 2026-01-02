@@ -213,28 +213,42 @@ class Integration implements LoadableInterface {
 		$form_id = $wpcf7->id();
 
 		// Get from properties first, fallback to post_meta for backward compatibility
-		$wpcf7_api_data               = $wpcf7->prop( 'wpcf7_api_data' ) ?: \get_post_meta( $form_id, '_wpcf7_api_data', true );
-		$wpcf7_api_data_map           = $wpcf7->prop( 'wpcf7_api_data_map' ) ?: \get_post_meta( $form_id, '_wpcf7_api_data_map', true );
-		$wpcf7_api_data_template      = $wpcf7->prop( 'template' ) ?: \get_post_meta( $form_id, '_template', true );
-		$wpcf7_api_json_data_template = stripslashes( $wpcf7->prop( 'json_template' ) ?: \get_post_meta( $form_id, '_json_template', true ) );
+		$wpcf7_api_data               = $wpcf7->prop( "wpcf7_api_data" ) ?: \get_post_meta( $form_id, "_wpcf7_api_data", true );
+		$wpcf7_api_data_map           = $wpcf7->prop( "wpcf7_api_data_map" ) ?: \get_post_meta( $form_id, "_wpcf7_api_data_map", true );
+		$wpcf7_api_data_template      = $wpcf7->prop( "template" ) ?: \get_post_meta( $form_id, "_template", true );
+		$wpcf7_api_json_data_template = \stripslashes( $wpcf7->prop( "json_template" ) ?: \get_post_meta( $form_id, "_json_template", true ) );
+		$retry_config                 = $wpcf7->prop( "retry_config" ) ?: array();
 
 		$mail_tags = $this->get_mail_tags( $post, array() );
 
 		// Set defaults
-		if ( ! is_array( $wpcf7_api_data ) ) {
+		if ( ! \is_array( $wpcf7_api_data ) ) {
 			$wpcf7_api_data = array();
 		}
-		$wpcf7_api_data['base_url']    ??= '';
-		$wpcf7_api_data['send_to_api'] ??= '';
-		$wpcf7_api_data['input_type']  ??= 'params';
-		$wpcf7_api_data['method']      ??= 'GET';
-		$wpcf7_api_data['debug_log']     = true;
+		$wpcf7_api_data["base_url"]    ??= "";
+		$wpcf7_api_data["send_to_api"] ??= "";
+		$wpcf7_api_data["input_type"]  ??= "params";
+		$wpcf7_api_data["method"]      ??= "GET";
+		$wpcf7_api_data["debug_log"]     = true;
+
+		// Set retry configuration defaults
+		if ( ! \is_array( $retry_config ) ) {
+			$retry_config = array();
+		}
+		$retry_config["max_retries"]      ??= self::DEFAULT_MAX_RETRIES;
+		$retry_config["retry_delay"]      ??= self::DEFAULT_RETRY_DELAY;
+		$retry_config["retry_on_timeout"] ??= true;
 
 		// Get debug information
-		$debug_url    = \get_post_meta( $form_id, 'cf7_api_debug_url', true );
-		$debug_result = \get_post_meta( $form_id, 'cf7_api_debug_result', true );
-		$debug_params = \get_post_meta( $form_id, 'cf7_api_debug_params', true );
-		$error_logs   = \get_post_meta( $form_id, 'api_errors', true );
+		$debug_url    = \get_post_meta( $form_id, "cf7_api_debug_url", true );
+		$debug_result = \get_post_meta( $form_id, "cf7_api_debug_result", true );
+		$debug_params = \get_post_meta( $form_id, "cf7_api_debug_params", true );
+		$error_logs   = \get_post_meta( $form_id, "api_errors", true );
+
+		// Get recent logs and statistics
+		$logger = new Logger();
+		$recent_logs = $logger->get_recent_logs( $form_id, 5 );
+		$statistics  = $logger->get_statistics( $form_id );
 
 		// Placeholders
 		$xml_placeholder = \__(
@@ -302,15 +316,47 @@ class Integration implements LoadableInterface {
 
 		<div class="cf7_row" data-cf7index="params,json">
 			<label for="wpcf7-sf-method">
-			<span class="cf7-label-in"><?php \esc_html_e( 'Method', 'contact-form-to-api' ); ?></span>
+			<span class="cf7-label-in"><?php \esc_html_e( "Method", "contact-form-to-api" ); ?></span>
 			<select id="wpcf7-sf-method" name="wpcf7-sf[method]">
-				<option value="GET" <?php \selected( $wpcf7_api_data['method'], 'GET' ); ?>>GET</option>
-				<option value="POST" <?php \selected( $wpcf7_api_data['method'], 'POST' ); ?>>POST</option>
+				<option value="GET" <?php \selected( $wpcf7_api_data["method"], "GET" ); ?>>GET</option>
+				<option value="POST" <?php \selected( $wpcf7_api_data["method"], "POST" ); ?>>POST</option>
 			</select>
 			</label>
 		</div>
 
-		<?php \do_action( 'cf7_api_after_base_fields', $post ); ?>
+		<hr>
+
+		<!-- Retry Configuration Section -->
+		<h3><?php \esc_html_e( "Retry Configuration", "contact-form-to-api" ); ?></h3>
+		<p class="description"><?php \esc_html_e( "Configure automatic retry behavior for failed API requests.", "contact-form-to-api" ); ?></p>
+
+		<div class="cf7_row">
+			<label for="wpcf7-retry-max-retries">
+			<?php \esc_html_e( "Maximum Retries", "contact-form-to-api" ); ?>
+			<input type="number" id="wpcf7-retry-max-retries" name="retry_config[max_retries]" 
+				min="0" max="10" value="<?php echo \esc_attr( $retry_config["max_retries"] ); ?>" />
+			</label>
+			<p class="description"><?php \esc_html_e( "Number of times to retry a failed request (0-10). Default: 3", "contact-form-to-api" ); ?></p>
+		</div>
+
+		<div class="cf7_row">
+			<label for="wpcf7-retry-delay">
+			<?php \esc_html_e( "Retry Delay (seconds)", "contact-form-to-api" ); ?>
+			<input type="number" id="wpcf7-retry-delay" name="retry_config[retry_delay]" 
+				min="1" max="60" value="<?php echo \esc_attr( $retry_config["retry_delay"] ); ?>" />
+			</label>
+			<p class="description"><?php \esc_html_e( "Initial delay between retries in seconds (uses exponential backoff). Default: 2", "contact-form-to-api" ); ?></p>
+		</div>
+
+		<div class="cf7_row">
+			<label for="wpcf7-retry-on-timeout">
+			<input type="checkbox" id="wpcf7-retry-on-timeout" name="retry_config[retry_on_timeout]" <?php \checked( $retry_config["retry_on_timeout"], true ); ?> />
+			<?php \esc_html_e( "Retry on timeout errors", "contact-form-to-api" ); ?>
+			</label>
+			<p class="description"><?php \esc_html_e( "Automatically retry when API request times out.", "contact-form-to-api" ); ?></p>
+		</div>
+
+		<?php \do_action( "cf7_api_after_base_fields", $post ); ?>
 		</fieldset>
 
 		<!-- Parameters Mapping Section -->
@@ -390,26 +436,102 @@ class Integration implements LoadableInterface {
 		</fieldset>
 
 		<!-- Debug Log Section -->
-		<?php if ( $wpcf7_api_data['debug_log'] ) : ?>
+		<?php if ( $wpcf7_api_data["debug_log"] ) : ?>
 		<fieldset>
 			<div class="cf7_row">
+			<h3><?php \esc_html_e( "API Call Logs & Statistics", "contact-form-to-api" ); ?></h3>
+
+			<!-- Statistics Section -->
+			<?php if ( ! empty( $statistics ) && $statistics["total_requests"] > 0 ) : ?>
+				<div class="cf7-api-stats">
+				<h4><?php \esc_html_e( "Overall Statistics", "contact-form-to-api" ); ?></h4>
+				<table class="widefat">
+					<tr>
+					<th><?php \esc_html_e( "Total Requests", "contact-form-to-api" ); ?></th>
+					<td><?php echo \esc_html( $statistics["total_requests"] ); ?></td>
+					</tr>
+					<tr>
+					<th><?php \esc_html_e( "Successful", "contact-form-to-api" ); ?></th>
+					<td><?php echo \esc_html( $statistics["successful_requests"] ); ?> 
+						(<?php echo \esc_html( $statistics["total_requests"] > 0 ? \round( ( $statistics["successful_requests"] / $statistics["total_requests"] ) * 100, 1 ) : 0 ); ?>%)
+					</td>
+					</tr>
+					<tr>
+					<th><?php \esc_html_e( "Failed", "contact-form-to-api" ); ?></th>
+					<td><?php echo \esc_html( $statistics["failed_requests"] ); ?></td>
+					</tr>
+					<tr>
+					<th><?php \esc_html_e( "Avg Response Time", "contact-form-to-api" ); ?></th>
+					<td><?php echo \esc_html( \number_format( (float) $statistics["avg_execution_time"], 3 ) ); ?> <?php \esc_html_e( "seconds", "contact-form-to-api" ); ?></td>
+					</tr>
+					<tr>
+					<th><?php \esc_html_e( "Max Retries Used", "contact-form-to-api" ); ?></th>
+					<td><?php echo \esc_html( $statistics["max_retries"] ); ?></td>
+					</tr>
+				</table>
+				</div>
+			<?php endif; ?>
+
+			<!-- Recent Logs Section -->
 			<label class="debug-log-trigger">
-				+ <?php \esc_html_e( 'DEBUG LOG (View last transmission attempt)', 'contact-form-to-api' ); ?>
+				+ <?php \esc_html_e( "Recent API Calls (Last 5)", "contact-form-to-api" ); ?>
 			</label>
 			<div class="debug-log-wrap">
-				<h3 class="debug_log_title"><?php \esc_html_e( 'LAST API CALL', 'contact-form-to-api' ); ?></h3>
+				<?php if ( ! empty( $recent_logs ) ) : ?>
+				<table class="widefat">
+					<thead>
+					<tr>
+						<th><?php \esc_html_e( "Date", "contact-form-to-api" ); ?></th>
+						<th><?php \esc_html_e( "Endpoint", "contact-form-to-api" ); ?></th>
+						<th><?php \esc_html_e( "Method", "contact-form-to-api" ); ?></th>
+						<th><?php \esc_html_e( "Status", "contact-form-to-api" ); ?></th>
+						<th><?php \esc_html_e( "Response Code", "contact-form-to-api" ); ?></th>
+						<th><?php \esc_html_e( "Time (s)", "contact-form-to-api" ); ?></th>
+						<th><?php \esc_html_e( "Retries", "contact-form-to-api" ); ?></th>
+					</tr>
+					</thead>
+					<tbody>
+					<?php foreach ( $recent_logs as $log ) : ?>
+						<tr>
+						<td><?php echo \esc_html( $log["created_at"] ); ?></td>
+						<td title="<?php echo \esc_attr( $log["endpoint"] ); ?>">
+							<?php echo \esc_html( \strlen( $log["endpoint"] ) > 50 ? \substr( $log["endpoint"], 0, 47 ) . "..." : $log["endpoint"] ); ?>
+						</td>
+						<td><?php echo \esc_html( $log["method"] ); ?></td>
+						<td>
+							<span class="cf7-api-status cf7-api-status-<?php echo \esc_attr( $log["status"] ); ?>">
+							<?php echo \esc_html( \ucfirst( \str_replace( "_", " ", $log["status"] ) ) ); ?>
+							</span>
+						</td>
+						<td><?php echo \esc_html( $log["response_code"] ?? "-" ); ?></td>
+						<td><?php echo \esc_html( \number_format( (float) $log["execution_time"], 3 ) ); ?></td>
+						<td><?php echo \esc_html( $log["retry_count"] ); ?></td>
+						</tr>
+					<?php endforeach; ?>
+					</tbody>
+				</table>
+				<?php else : ?>
+				<p><?php \esc_html_e( "No API calls logged yet. Submit a form to see logs here.", "contact-form-to-api" ); ?></p>
+				<?php endif; ?>
+			</div>
+
+			<!-- Legacy Debug Info -->
+			<label class="debug-log-trigger">
+				+ <?php \esc_html_e( "Legacy Debug Info (Last Transmission)", "contact-form-to-api" ); ?>
+			</label>
+			<div class="debug-log-wrap">
 				<div class="debug_log">
-				<h4><?php \esc_html_e( 'Called URL', 'contact-form-to-api' ); ?>:</h4>
-				<textarea rows="1"><?php echo \esc_textarea( trim( $debug_url ) ); ?></textarea>
+				<h4><?php \esc_html_e( "Called URL", "contact-form-to-api" ); ?>:</h4>
+				<textarea rows="1"><?php echo \esc_textarea( \trim( $debug_url ) ); ?></textarea>
 
-				<h4><?php \esc_html_e( 'Params', 'contact-form-to-api' ); ?>:</h4>
-				<textarea rows="10"><?php print_r( $debug_params ); ?></textarea>
+				<h4><?php \esc_html_e( "Params", "contact-form-to-api" ); ?>:</h4>
+				<textarea rows="10"><?php \print_r( $debug_params ); ?></textarea>
 
-				<h4><?php \esc_html_e( 'Remote server result', 'contact-form-to-api' ); ?>:</h4>
-				<textarea rows="10"><?php print_r( $debug_result ); ?></textarea>
+				<h4><?php \esc_html_e( "Remote server result", "contact-form-to-api" ); ?>:</h4>
+				<textarea rows="10"><?php \print_r( $debug_result ); ?></textarea>
 
-				<h4><?php \esc_html_e( 'Error logs', 'contact-form-to-api' ); ?>:</h4>
-				<textarea rows="10"><?php print_r( $error_logs ); ?></textarea>
+				<h4><?php \esc_html_e( "Error logs", "contact-form-to-api" ); ?>:</h4>
+				<textarea rows="10"><?php \print_r( $error_logs ); ?></textarea>
 				</div>
 			</div>
 			</div>
@@ -433,10 +555,27 @@ class Integration implements LoadableInterface {
 		$properties = $contact_form->get_properties();
 
 		// Get POST data for API configuration
-		$properties['wpcf7_api_data']     = $_POST['wpcf7-sf'] ?? array();
-		$properties['wpcf7_api_data_map'] = $_POST['qs_wpcf7_api_map'] ?? array();
-		$properties['template']           = $_POST['template'] ?? '';
-		$properties['json_template']      = stripslashes( $_POST['json_template'] ?? '' );
+		$properties["wpcf7_api_data"]     = $_POST["wpcf7-sf"] ?? array();
+		$properties["wpcf7_api_data_map"] = $_POST["qs_wpcf7_api_map"] ?? array();
+		$properties["template"]           = $_POST["template"] ?? "";
+		$properties["json_template"]      = \stripslashes( $_POST["json_template"] ?? "" );
+
+		// Get retry configuration
+		$retry_config = $_POST["retry_config"] ?? array();
+		// Convert checkbox value
+		if ( isset( $retry_config["retry_on_timeout"] ) ) {
+			$retry_config["retry_on_timeout"] = true;
+		} else {
+			$retry_config["retry_on_timeout"] = false;
+		}
+		// Ensure numeric values
+		if ( isset( $retry_config["max_retries"] ) ) {
+			$retry_config["max_retries"] = (int) $retry_config["max_retries"];
+		}
+		if ( isset( $retry_config["retry_delay"] ) ) {
+			$retry_config["retry_delay"] = (int) $retry_config["retry_delay"];
+		}
+		$properties["retry_config"] = $retry_config;
 
 		// Set properties using CF7's native method
 		$contact_form->set_properties( $properties );
