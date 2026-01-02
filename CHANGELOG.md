@@ -7,46 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### 🎯 SilverAssist Migration - 2025-11-16
-
-#### Changed
-- **Namespace Migration**: Updated to `SilverAssist\ContactFormToAPI\` namespace structure
-- **Directory Structure**: Moved source code from `src/` to `includes/` (PSR-4 standard)
-- **Text Domain**: Updated to literal `"contact-form-to-api"` for i18n compatibility
-- **Singleton Pattern**: Changed method from `getInstance()` to `instance()`
-- **Plugin Constants**: All configuration via `CF7_API_*` constants
-
-#### Added
-- **WordPress Test Suite**: Complete integration with WordPress test environment
-- **PHPStan Level 8**: Static analysis with strict type checking
-- **Comprehensive Documentation**:
-  * CONTRIBUTING.md - Development setup and coding standards
-  * docs/WORKFLOWS.md - CI/CD workflows and development process
-  * docs/RELEASE_PROCESS.md - Versioning and release procedures
-  * docs/API_REFERENCE.md - Hooks, filters, and integration examples
-- **Quality Checks**: Automated quality check script with PHPCS, PHPStan, PHPUnit
-- **GitHub Actions**: CI/CD workflows for PR validation and automated releases
-
-#### Fixed
-- **PHPUnit Tests**: All 37 tests passing (100% success rate)
-- **PHPCS Compliance**: Source code fully compliant with WordPress-Extra standards
-- **PHPStan Issues**: Resolved all Level 8 type safety errors
-
-#### Development
-- **PHP Version**: Minimum 8.2+ (modern PHP features)
-- **WordPress Version**: Minimum 6.5+
-- **Dependencies Updated**:
-  * Added `silverassist/wp-github-updater ^1.2`
-  * Added `silverassist/wp-settings-hub ^1.1`
-  * Removed obsolete ACF Pro stubs
-  * Added WordPress test stubs for testing
-
-#### Quality Metrics
-- ✅ Composer Validation: PASSED
-- ✅ PHPCS (WordPress-Extra): Source code clean (0 errors)
-- ✅ PHPStan Level 8: PASSED (0 errors)
-- ✅ PHPUnit: 37/37 tests passing (103 assertions)
-
 ### Planned Features
 
 #### API Logs Enhancements
@@ -66,7 +26,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Multi-site Support**: Enhanced WordPress multisite compatibility
 - **Template System**: Pre-configured templates for popular APIs (Mailchimp, HubSpot, etc.)
 
-## [1.0.0] - 2025-08-11
+## [1.1.0] - 2026-01-02
+
+### 🚀 Advanced Logging System
+
+#### Added
+- **Request Logger**: Database-backed logging system for API requests/responses
+  * Custom database table `{prefix}cf7_api_logs` with optimized indexes
+  * Tracks endpoint, method, status, response code, execution time, retry count
+  * Automatic sensitive data anonymization (passwords, tokens, API keys)
+- **Admin Interface**: WordPress native admin UI for viewing logs
+  * `WP_List_Table` implementation with sorting, filtering, pagination
+  * Statistics panel with total requests, success rate, avg response time
+  * Status filters (All, Success, Errors)
+  * Bulk actions (Delete, Retry)
+  * Detailed log view with request/response data
+- **API Client Service**: Centralized HTTP client with advanced features
+  * Retry logic with exponential backoff
+  * Request/response logging integration
+  * Authentication header handling (Bearer, Basic, API Key)
+  * Configurable timeout and SSL verification
+- **Settings Hub Integration**: Plugin settings page via Settings Hub
+  * Quick links to API Logs and CF7 forms
+  * Plugin status and version information
+  * Update checker with GitHub integration
+- **Debug Logger**: PSR-3 compliant file logger for development
+  * Log levels: debug, info, warning, error
+  * Automatic log rotation
+  * Configurable via WP_DEBUG
+- **Utility Classes**: Helper classes for common operations
+  * `StringHelper`: Field name conversion (kebab-case, camelCase)
+  * `CheckboxHandler`: CF7 checkbox value processing for APIs
+- **MVC Architecture**: Separated views from controllers
+  * `RequestLogView`: HTML rendering for logs pages
+  * `SettingsView`: HTML rendering for settings page
+  * `IntegrationView`: HTML rendering for CF7 panel
+
+#### Changed
+- **Integration.php**: Refactored to use IntegrationView for HTML rendering
+- **Plugin.php**: Added component loader system with priority-based loading
+- **Activator.php**: Added database table creation on activation
+
+#### Quality
+- ✅ PHPStan Level 8: PASSED (0 errors)
+- ✅ PHPCS (WordPress-Extra): 0 errors
+- ✅ PHPUnit: 48 tests passing (142 assertions)
+
+## [1.0.1] - 2025-11-16
+
+### 🎯 SilverAssist Migration
 
 ### 🎉 Initial Release
 

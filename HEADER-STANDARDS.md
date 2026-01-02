@@ -26,14 +26,14 @@ The main plugin file (`contact-form-to-api.php`) must include both the WordPress
  * @package ContactFormToAPI
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.1
+ * @version 1.1.0
  * @license Polyform-Noncommercial-1.0.0
  *
  * @wordpress-plugin
  * Plugin Name: Contact Form 7 to API
  * Plugin URI: https://github.com/SilverAssist/contact-form-to-api
  * Description: Integrate Contact Form 7 with external APIs. Send form submissions to custom API endpoints with advanced configuration options, field mapping, and error handling.
- * Version: 1.0.1
+ * Version: 1.1.0
  * Requires at least: 5.0
  * Requires PHP: 7.4
  * Author: Silver Assist
@@ -67,7 +67,7 @@ All PHP files containing classes must use this header format:
  * @subpackage [Subpackage if applicable]
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.1
+ * @version 1.1.0
  * @license Polyform-Noncommercial-1.0.0
  */
 
@@ -90,7 +90,7 @@ if (!defined('ABSPATH')) {
  * @subpackage API
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.1
+ * @version 1.1.0
  * @license Polyform-Noncommercial-1.0.0
  */
 ```
@@ -106,7 +106,7 @@ if (!defined('ABSPATH')) {
  * @subpackage Admin
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.1
+ * @version 1.1.0
  * @license Polyform-Noncommercial-1.0.0
  */
 ```
@@ -124,7 +124,7 @@ All CSS files must include this header:
  * @package ContactFormToAPI
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.1
+ * @version 1.1.0
  * @license Polyform-Noncommercial-1.0.0
  */
 ```
@@ -140,7 +140,7 @@ All CSS files must include this header:
  * @package ContactFormToAPI
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.1
+ * @version 1.1.0
  * @license Polyform-Noncommercial-1.0.0
  */
 ```
@@ -154,7 +154,7 @@ All CSS files must include this header:
  * @package ContactFormToAPI
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.1
+ * @version 1.1.0
  * @license Polyform-Noncommercial-1.0.0
  */
 ```
@@ -172,7 +172,7 @@ All JavaScript files must include this header:
  * @package ContactFormToAPI
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.1
+ * @version 1.1.0
  * @license Polyform-Noncommercial-1.0.0
  */
 ```
@@ -188,7 +188,7 @@ All JavaScript files must include this header:
  * @package ContactFormToAPI
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.1
+ * @version 1.1.0
  * @license Polyform-Noncommercial-1.0.0
  */
 ```
@@ -202,7 +202,7 @@ All JavaScript files must include this header:
  * @package ContactFormToAPI
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.1
+ * @version 1.1.0
  * @license Polyform-Noncommercial-1.0.0
  */
 ```
@@ -224,7 +224,7 @@ All shell scripts must include this header:
 # @package ContactFormToAPI
 # @since 1.0.0
 # @author Silver Assist
-# @version 1.0.1
+# @version 1.1.0
 ###############################################################################
 ```
 
@@ -243,7 +243,7 @@ All shell scripts must include this header:
 # @package ContactFormToAPI
 # @since 1.0.0
 # @author Silver Assist
-# @version 1.0.1
+# @version 1.1.0
 ###############################################################################
 ```
 
@@ -260,7 +260,7 @@ All shell scripts must include this header:
 # @package ContactFormToAPI
 # @since 1.0.0
 # @author Silver Assist
-# @version 1.0.1
+# @version 1.1.0
 ###############################################################################
 ```
 
@@ -291,13 +291,13 @@ All files must include these fields:
 **Example for new files in v1.0.0:**
 ```php
  * @since 1.0.0      <- Never changes (when file was created)
- * @version 1.0.1    <- Updates with releases that modify this file
+ * @version 1.1.0    <- Updates with releases that modify this file
 ```
 
 **Example for files modified in future versions:**
 ```php
  * @since 1.0.0      <- Still shows original introduction version
- * @version 1.0.1    <- Updated to show last modification version
+ * @version 1.1.0    <- Updated to show last modification version
 ```
 
 ## Standard Project Information
@@ -376,7 +376,7 @@ The build process includes automated validation of:
  * @subpackage API
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.1
+ * @version 1.1.0
  * @license Polyform-Noncommercial-1.0.0
  */
 
@@ -391,7 +391,7 @@ namespace ContactFormToAPI\\API;
  * API Endpoint Manager Class
  *
  * @since 1.0.0
- * @version 1.0.1
+ * @version 1.1.0
  */
 class EndpointManager
 {
@@ -411,7 +411,7 @@ class EndpointManager
  * @package ContactFormToAPI
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.1
+ * @version 1.1.0
  * @license Polyform-Noncommercial-1.0.0
  */
 
@@ -433,7 +433,7 @@ class EndpointManager
  * @package ContactFormToAPI
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.1
+ * @version 1.1.0
  * @license Polyform-Noncommercial-1.0.0
  */
 
