@@ -17,6 +17,7 @@ namespace SilverAssist\ContactFormToAPI\Services;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\RequestLogger;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
+use WP_Error;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -120,7 +121,7 @@ class ApiClient implements LoadableInterface {
 	 * Send HTTP request with retry logic
 	 *
 	 * @param array<string, mixed> $request_config Request configuration.
-	 * @return array<string, mixed>|\WP_Error Response data or error.
+	 * @return array<string, mixed>|WP_Error Response data or error.
 	 */
 	public function send( array $request_config ) {
 		$url          = $request_config['url'] ?? '';
@@ -173,7 +174,7 @@ class ApiClient implements LoadableInterface {
 	 * @param mixed                $body         Request body.
 	 * @param array<string, mixed> $headers      Request headers.
 	 * @param string               $content_type Content type (params, json, xml).
-	 * @return array<string, mixed>|\WP_Error Request args or error.
+	 * @return array<string, mixed>|WP_Error Request args or error.
 	 */
 	private function build_request_args( string $method, $body, array $headers, string $content_type ) {
 		global $wp_version;
@@ -221,7 +222,7 @@ class ApiClient implements LoadableInterface {
 	 *
 	 * @param mixed  $body         Request body.
 	 * @param string $content_type Content type (params, json, xml).
-	 * @return array<string, mixed>|\WP_Error Processed body data or error.
+	 * @return array<string, mixed>|WP_Error Processed body data or error.
 	 */
 	private function process_body( $body, string $content_type ) {
 		$result = array(
@@ -282,7 +283,14 @@ class ApiClient implements LoadableInterface {
 
 		// Apply URL filter.
 		if ( $method === 'GET' ) {
-			$url = \apply_filters( 'cf7_api_get_url', $url, array( 'fields' => $body, 'url' => $url ) );
+			$url = \apply_filters(
+				'cf7_api_get_url',
+				$url,
+				array(
+					'fields' => $body,
+					'url'    => $url,
+				)
+			);
 		} else {
 			$url = \apply_filters( 'cf7_api_post_url', $url );
 		}
@@ -324,7 +332,7 @@ class ApiClient implements LoadableInterface {
 
 				// Server errors (5xx) might be transient.
 				if ( $response_code >= 500 && $attempt < $max_retries ) {
-					$retry_count++;
+					++$retry_count;
 					$this->log_retry( $logger, $log_id, $retry_count );
 					$this->wait_with_backoff( $retry_delay, $attempt );
 					continue;
@@ -341,7 +349,7 @@ class ApiClient implements LoadableInterface {
 				// Retry on timeout and connection errors.
 				$retryable_errors = array( 'http_request_failed', 'timeout', 'connect_timeout' );
 				if ( in_array( $error_code, $retryable_errors, true ) ) {
-					$retry_count++;
+					++$retry_count;
 					$this->log_retry( $logger, $log_id, $retry_count );
 					$this->wait_with_backoff( $retry_delay, $attempt );
 					continue;
@@ -364,7 +372,7 @@ class ApiClient implements LoadableInterface {
 	 * @param string               $url    Request URL.
 	 * @param string               $method HTTP method.
 	 * @param array<string, mixed> $args   Request arguments.
-	 * @return array<string, mixed>|\WP_Error Response or error.
+	 * @return array<string, mixed>|WP_Error Response or error.
 	 */
 	private function make_request( string $url, string $method, array $args ) {
 		if ( $method === 'GET' ) {
@@ -414,34 +422,35 @@ class ApiClient implements LoadableInterface {
 	 * Parse JSON string
 	 *
 	 * @param string $json_string JSON string.
-	 * @return string|\WP_Error Parsed JSON or error.
+	 * @return string|WP_Error Parsed JSON or error.
 	 */
 	public function parse_json( string $json_string ) {
 		$json = json_decode( $json_string );
 
 		if ( json_last_error() === JSON_ERROR_NONE ) {
-			return wp_json_encode( $json );
+			$encoded = wp_json_encode( $json );
+			return $encoded !== false ? $encoded : '';
 		}
 
-		return new \WP_Error( 'json-error', 'Invalid JSON: ' . json_last_error_msg() );
+		return new WP_Error( 'json-error', 'Invalid JSON: ' . json_last_error_msg() );
 	}
 
 	/**
 	 * Parse XML string
 	 *
 	 * @param string $xml_string XML string.
-	 * @return \SimpleXMLElement|\WP_Error Parsed XML or error.
+	 * @return \SimpleXMLElement|WP_Error Parsed XML or error.
 	 */
 	public function parse_xml( string $xml_string ) {
 		if ( ! function_exists( 'simplexml_load_string' ) ) {
-			return new \WP_Error( 'xml-error', \__( 'XML functions not available', 'contact-form-to-api' ) );
+			return new WP_Error( 'xml-error', \__( 'XML functions not available', 'contact-form-to-api' ) );
 		}
 
 		libxml_use_internal_errors( true );
 		$xml = simplexml_load_string( $xml_string );
 
 		if ( $xml === false ) {
-			return new \WP_Error( 'xml-error', \__( 'XML Structure is incorrect', 'contact-form-to-api' ) );
+			return new WP_Error( 'xml-error', \__( 'XML Structure is incorrect', 'contact-form-to-api' ) );
 		}
 
 		return $xml;

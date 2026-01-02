@@ -46,7 +46,7 @@ class RequestLogTable extends \WP_List_Table {
 	/**
 	 * Get columns
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function get_columns(): array {
 		return array(
@@ -65,7 +65,7 @@ class RequestLogTable extends \WP_List_Table {
 	/**
 	 * Get sortable columns
 	 *
-	 * @return array
+	 * @return array<string, array<int, string|bool>>
 	 */
 	public function get_sortable_columns(): array {
 		return array(
@@ -81,7 +81,7 @@ class RequestLogTable extends \WP_List_Table {
 	/**
 	 * Get bulk actions
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	public function get_bulk_actions(): array {
 		return array(
@@ -93,7 +93,7 @@ class RequestLogTable extends \WP_List_Table {
 	/**
 	 * Get views (status filters)
 	 *
-	 * @return array
+	 * @return array<string, string>
 	 */
 	protected function get_views(): array {
 		global $wpdb;
@@ -190,7 +190,7 @@ class RequestLogTable extends \WP_List_Table {
 	 *
 	 * @param int $per_page Items per page.
 	 * @param int $paged    Current page.
-	 * @return array
+	 * @return array{items: array<int, array<string, mixed>>, total: int}
 	 */
 	private function get_logs_data( int $per_page, int $paged ): array {
 		global $wpdb;
@@ -270,8 +270,8 @@ class RequestLogTable extends \WP_List_Table {
 	/**
 	 * Column default
 	 *
-	 * @param array  $item        Item data.
-	 * @param string $column_name Column name.
+	 * @param array<string, mixed> $item        Item data.
+	 * @param string               $column_name Column name.
 	 * @return string
 	 */
 	public function column_default( $item, $column_name ): string {
@@ -294,7 +294,7 @@ class RequestLogTable extends \WP_List_Table {
 	/**
 	 * Column checkbox
 	 *
-	 * @param array $item Item data.
+	 * @param array<string, mixed> $item Item data.
 	 * @return string
 	 */
 	public function column_cb( $item ): string {
@@ -307,7 +307,7 @@ class RequestLogTable extends \WP_List_Table {
 	/**
 	 * Column form
 	 *
-	 * @param array $item Item data.
+	 * @param array<string, mixed> $item Item data.
 	 * @return string
 	 */
 	public function column_form( $item ): string {
@@ -315,7 +315,8 @@ class RequestLogTable extends \WP_List_Table {
 
 		// Try to get form title.
 		$form       = \get_post( $form_id );
-		$form_title = $form ? $form->post_title : \sprintf( \__( 'Form #%d', 'contact-form-to-api' ), $form_id );
+		/* translators: %d: Form ID number */
+		$form_title = ( $form instanceof \WP_Post ) ? $form->post_title : \sprintf( \__( 'Form #%d', 'contact-form-to-api' ), $form_id );
 
 		// Add filter link.
 		$filter_url = \add_query_arg( 'form_id', $form_id );
@@ -330,7 +331,7 @@ class RequestLogTable extends \WP_List_Table {
 	/**
 	 * Column endpoint
 	 *
-	 * @param array $item Item data.
+	 * @param array<string, mixed> $item Item data.
 	 * @return string
 	 */
 	public function column_endpoint( $item ): string {
@@ -406,7 +407,7 @@ class RequestLogTable extends \WP_List_Table {
 	/**
 	 * Column method
 	 *
-	 * @param array $item Item data.
+	 * @param array<string, mixed> $item Item data.
 	 * @return string
 	 */
 	public function column_method( $item ): string {
@@ -420,7 +421,7 @@ class RequestLogTable extends \WP_List_Table {
 	/**
 	 * Column status
 	 *
-	 * @param array $item Item data.
+	 * @param array<string, mixed> $item Item data.
 	 * @return string
 	 */
 	public function column_status( $item ): string {

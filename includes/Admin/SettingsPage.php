@@ -36,7 +36,7 @@ class SettingsPage implements LoadableInterface {
 	 *
 	 * @var string
 	 */
-	private const string SLUG = 'contact-form-to-api';
+	private const SLUG = 'contact-form-to-api';
 
 	/**
 	 * Singleton instance
@@ -178,6 +178,7 @@ class SettingsPage implements LoadableInterface {
 				'updateUrl' => \admin_url( 'update-core.php' ),
 				'strings'   => array(
 					'checking'        => \__( 'Checking...', 'contact-form-to-api' ),
+					/* translators: %s: Version number */
 					'updateAvailable' => \__( 'Update available: v%s! Redirecting...', 'contact-form-to-api' ),
 					'upToDate'        => \__( 'Plugin is up to date!', 'contact-form-to-api' ),
 					'checkError'      => \__( 'Error checking updates. Please try again.', 'contact-form-to-api' ),

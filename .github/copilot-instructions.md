@@ -51,8 +51,7 @@ contact-form-to-api/
 │   ├── WORKFLOWS.md
 │   ├── RELEASE_PROCESS.md
 │   ├── API_REFERENCE.md
-│   ├── ADMIN_INTERFACE.md
-│   └── ARCHITECTURE_COMPARISON.md
+│   └── ADMIN_INTERFACE.md
 ├── includes/                      # Source code (PSR-4)
 │   ├── Admin/                     # Priority 30 - Admin components
 │   │   ├── Loader.php            # Admin component loader

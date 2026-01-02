@@ -1,230 +1,201 @@
 # WordPress Admin Interface - API Logs
 
 ## Overview
-Esta es la interfaz de administración implementada con el enfoque híbrido, combinando el rendimiento de la tabla de base de datos con la familiaridad de la interfaz de WordPress.
 
-## Página Principal de Logs
+The admin interface for managing API request logs, implemented using WordPress native `WP_List_Table` combined with a custom database table for optimal performance.
 
-### Ubicación
+## Menu Location
+
 **WordPress Admin → Contact Form 7 → API Logs**
 
-### Componentes Principales
+## Main Components
 
-#### 1. Panel de Estadísticas (Superior)
+### 1. Statistics Panel
+
+Displays aggregated metrics at the top of the logs page:
+
+| Metric | Description |
+|--------|-------------|
+| Total Requests | Count of all API calls logged |
+| Successful | Requests completed with success status |
+| Failed | Requests that resulted in errors |
+| Avg Response Time | Average execution time in seconds |
+
+The statistics can be filtered by form when using the `form_id` query parameter.
+
+### 2. Status Filters (Views)
+
+Filter logs by status using tabs:
+
+- **All** - All logged requests
+- **Success** - Successful API calls
+- **Errors** - Failed requests (includes error, client_error, server_error)
+
+### 3. List Table Columns
+
+| Column | Sortable | Description |
+|--------|----------|-------------|
+| Form | ✓ | Form name with link to filter by form |
+| Endpoint | ✗ | API URL (truncated, with view details link) |
+| Method | ✗ | HTTP method (GET, POST, etc.) |
+| Status | ✓ | Request status with color indicator |
+| Response | ✓ | HTTP response code |
+| Time (s) | ✓ | Execution time in seconds |
+| Retries | ✓ | Number of retry attempts |
+| Date | ✓ | Request timestamp (default sort: DESC) |
+
+### 4. Bulk Actions
+
+- **Delete** - Remove selected log entries
+- **Retry** - Re-execute failed requests
+
+### 5. Row Actions
+
+- **View Details** - Open detailed log view
+- **Delete** - Remove single log entry
+
+## Log Detail Page
+
+Shows complete information for a single log entry:
+
+### Request Information
+- Endpoint URL
+- HTTP Method  
+- Request status
+- Timestamp
+- Execution time
+- Retry count
+
+### Request Headers
+Pretty-printed JSON with sensitive data redacted (Authorization, API keys, etc.)
+
+### Request Data
+Form submission data sent to the API
+
+### Response Information
+- HTTP response code
+- Response headers
+- Response body (formatted JSON)
+
+### Error Message
+Displayed for failed requests with error details.
+
+## Visual Indicators
+
+### Status Colors
+- **Success** - Green background
+- **Error** - Red background
+- **Client Error** - Light red background
+- **Server Error** - Red background
+- **Pending** - Yellow background
+- **Timeout** - Orange background
+
+### HTTP Method Badges
+Color-coded badges for each HTTP method type.
+
+## Privacy & Security
+
+- **Sensitive Data Redaction**: Authorization headers, API keys, passwords, and tokens are automatically masked as `***REDACTED***`
+- **JSON Pretty Printing**: Request/response data formatted for readability
+- **Confirmation Dialogs**: Required for destructive actions
+
+## Screen Options
+
+Users can configure:
+- **Items per page**: Number of logs displayed (default: 20)
+
+## Search Functionality
+
+The search box searches across:
+- Endpoint URLs
+- Error messages
+
+## CSS Styling
+
+Styles are loaded from:
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                      Estadísticas Generales                      │
-├──────────────┬──────────────┬──────────────┬──────────────────────┤
-│  Total       │  Exitosos    │  Fallidos    │  Tiempo Promedio   │
-│  Requests    │              │              │  de Respuesta      │
-│              │              │              │                    │
-│    1,234     │    1,156     │      78      │     0.342s        │
-│              │  (93.7%)     │              │                    │
-└──────────────┴──────────────┴──────────────┴──────────────────────┘
-```
-
-#### 2. Filtros de Estado (Pestañas)
-```
-All (1,234) | Success (1,156) | Errors (78)
-```
-
-#### 3. Barra de Búsqueda y Acciones Bulk
-```
-┌─ Acciones Bulk ─┐  [Aplicar]           [ Buscar logs... ] [Buscar]
-```
-
-#### 4. Tabla de Logs (WP_List_Table)
-```
-┌──┬──────────────┬────────────────────────────┬────────┬─────────┬──────────┬────────┬────────┬─────────────────┐
-│☐ │ Formulario   │ Endpoint                   │ Método │ Estado  │ Response │ Tiempo │ Retry  │ Fecha           │
-├──┼──────────────┼────────────────────────────┼────────┼─────────┼──────────┼────────┼────────┼─────────────────┤
-│☐ │ Contacto     │ https://api.example.com/v1 │  POST  │ Success │   200    │ 0.245s │   0    │ 2026-01-02 10:15│
-│  │              │ Ver Detalles | Eliminar    │        │         │          │        │        │                 │
-├──┼──────────────┼────────────────────────────┼────────┼─────────┼──────────┼────────┼────────┼─────────────────┤
-│☐ │ Registro     │ https://api.service.io/api │  POST  │ Error   │   500    │ 1.234s │   3    │ 2026-01-02 09:45│
-│  │              │ Ver Detalles | Reintentar  │        │         │          │        │        │                 │
-│  │              │ Eliminar                    │        │         │          │        │        │                 │
-└──┴──────────────┴────────────────────────────┴────────┴─────────┴──────────┴────────┴────────┴─────────────────┘
-
-       Mostrando 1-20 de 1,234                                           [← 1 2 3 ... 62 →]
-```
-
-### Características de la Tabla
-
-#### Columnas Ordenables
-- ✅ Formulario (por ID)
-- ✅ Estado
-- ✅ Response Code
-- ✅ Tiempo de Ejecución
-- ✅ Retry Count
-- ✅ Fecha (orden por defecto: DESC)
-
-#### Filtros Disponibles
-- **Por Estado**: All, Success, Errors (incluye client_error, server_error)
-- **Por Formulario**: Click en nombre del formulario para filtrar
-- **Búsqueda**: Busca en endpoint y mensajes de error
-
-#### Acciones por Fila
-- **Ver Detalles**: Muestra vista completa del log
-- **Reintentar**: Re-ejecuta el request (solo para errores)
-- **Eliminar**: Elimina el log
-
-#### Acciones Bulk
-- **Eliminar**: Elimina logs seleccionados
-- **Reintentar**: Reintenta requests seleccionados
-
-## Página de Detalle de Log
-
-### Navegación
-Click en "Ver Detalles" o en el endpoint → Muestra vista detallada
-
-### Estructura
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                         API Log Detail
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-[← Volver a Logs]
-
-┌─────────────────────────────────────────────────────────────────┐
-│                   Información del Request                        │
-├──────────────────────┬──────────────────────────────────────────┤
-│ Endpoint             │ https://api.example.com/v1/submit        │
-│ Método               │ [POST]                                   │
-│ Estado               │ [Success]                                │
-│ Fecha                │ 02/01/2026 10:15:23                      │
-│ Tiempo de Ejecución  │ 0.245s                                   │
-│ Reintentos           │ 0                                        │
-└──────────────────────┴──────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────┐
-│                      Request Headers                             │
-├─────────────────────────────────────────────────────────────────┤
-│ {                                                                │
-│   "Content-Type": "application/json",                           │
-│   "Authorization": "***REDACTED***",                            │
-│   "User-Agent": "WordPress/6.5; https://example.com"            │
-│ }                                                                │
-└─────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────┐
-│                       Request Data                               │
-├─────────────────────────────────────────────────────────────────┤
-│ {                                                                │
-│   "name": "John Doe",                                           │
-│   "email": "john@example.com",                                  │
-│   "message": "Hello, this is a test message",                   │
-│   "form_id": "123"                                              │
-│ }                                                                │
-└─────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────┐
-│                   Información de Respuesta                       │
-├──────────────────────┬──────────────────────────────────────────┤
-│ Response Code        │ 200                                      │
-└──────────────────────┴──────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────┐
-│                      Response Headers                            │
-├─────────────────────────────────────────────────────────────────┤
-│ {                                                                │
-│   "Content-Type": "application/json",                           │
-│   "X-Request-Id": "abc123xyz",                                  │
-│   "Date": "Thu, 02 Jan 2026 10:15:23 GMT"                      │
-│ }                                                                │
-└─────────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────────┐
-│                       Response Data                              │
-├─────────────────────────────────────────────────────────────────┤
-│ {                                                                │
-│   "status": "success",                                          │
-│   "id": "456789",                                               │
-│   "message": "Data received successfully"                       │
-│ }                                                                │
-└─────────────────────────────────────────────────────────────────┘
+assets/css/api-log-admin.css
 ```
 
-## Características de UX
+Key style classes:
+- `.cf7-api-stats-summary` - Statistics panel container
+- `.stats-grid` - Grid layout for stat boxes
+- `.stat-box` - Individual statistic display
+- `.status-badge` - Status indicator badges
+- `.method-badge` - HTTP method badges
 
-### Indicadores Visuales
+## JavaScript Functionality
 
-#### Estados con Colores
-- **Success**: Verde claro (#d7f5d7)
-- **Error**: Rojo claro (#ffd6d6)
-- **Client Error**: Rojo suave (#ffe5e5)
-- **Server Error**: Rojo claro (#ffebe8)
-- **Pending**: Amarillo (#fff2c7)
+Scripts loaded from:
+```
+assets/js/api-log-admin.js
+```
 
-#### Métodos HTTP con Colores
-- **GET**: Azul (#cce5ff)
-- **POST**: Verde (#d4edda)
-- **PUT/PATCH**: Amarillo (#fff3cd)
-- **DELETE**: Rojo (#ffd6d6)
+Features:
+- Delete confirmation dialogs
+- Bulk action validation
 
-### Privacidad y Seguridad
-- **Datos Sensibles Anonimizados**: 
-  - Passwords, tokens, API keys → `***REDACTED***`
-  - Campos sensibles detectados automáticamente
-- **Pretty-Printed JSON**: Formato legible para debugging
-- **Confirmaciones**: Diálogos de confirmación para acciones destructivas
+## Database Schema
 
-### Responsive Design
-- **Desktop**: Grid completo con todas las columnas
-- **Tablet**: Columnas esenciales visibles
-- **Mobile**: Lista vertical con información clave
+Logs are stored in a custom table: `{prefix}cf7_api_logs`
 
-## Flujo de Uso Típico
+Indexed columns for performance:
+- `form_id`
+- `status`
+- `created_at`
 
-### Caso 1: Detectar Problemas
-1. Usuario navega a **Contact Form 7 → API Logs**
-2. Ve estadísticas: 78 errores de 1,234 requests
-3. Click en pestaña **"Errors"** para filtrar
-4. Ve lista de requests fallidos con códigos 500
-5. Click en **"Ver Detalles"** de uno de ellos
-6. Revisa error message y response data
-7. Identifica problema en API endpoint
-8. Opcionalmente, click en **"Reintentar"** después de fix
+## Performance Optimizations
 
-### Caso 2: Monitorear Formulario Específico
-1. Click en nombre del formulario en la tabla
-2. Ve solo logs de ese formulario
-3. Revisa estadísticas filtradas
-4. Verifica tasa de éxito
+- **Direct SQL queries** - No ORM overhead
+- **Indexed columns** - Fast filtering and sorting
+- **Pagination** - Limits data loaded per request
+- **Lazy loading** - Details only loaded when accessed
 
-### Caso 3: Búsqueda de Endpoint Específico
-1. Usa barra de búsqueda
-2. Escribe parte del endpoint: "api.service.io"
-3. Ve solo logs que coinciden
-4. Analiza problemas específicos de ese endpoint
+## Related Files
 
-### Caso 4: Limpieza de Logs Antiguos
-1. Filtra logs por fecha (usando ordenamiento)
-2. Selecciona múltiples logs antiguos
-3. Usa acción bulk **"Eliminar"**
-4. Confirma eliminación
+### Controllers
+- [RequestLogController.php](../includes/Admin/RequestLogController.php) - Route handling and actions
 
-## Performance
+### Views  
+- [RequestLogView.php](../includes/Admin/Views/RequestLogView.php) - HTML rendering
 
-### Optimizaciones Implementadas
-- **Índices DB**: form_id, status, created_at
-- **Paginación**: 20 items por página (configurable)
-- **Queries Directas**: Sin ORM, consultas SQL optimizadas
-- **Carga Lazy**: Solo carga detalles cuando se accede a vista individual
-- **Cache Ready**: Estructura preparada para WordPress Object Cache
+### Table
+- [RequestLogTable.php](../includes/Admin/RequestLogTable.php) - WP_List_Table implementation
 
-### Escalabilidad
-- ✅ Maneja >100K logs sin problemas
-- ✅ Queries optimizadas con LIMIT/OFFSET
-- ✅ Filtros indexados para búsqueda rápida
-- ✅ No impacta performance del frontend
+### Logger
+- [RequestLogger.php](../includes/Core/RequestLogger.php) - Database operations
 
-## Próximas Mejoras Posibles
+## Hooks
 
-1. **AJAX Live Refresh**: Actualización automática de estadísticas
-2. **Exportación**: Botón para exportar logs a CSV/JSON
-3. **Dashboard Widget**: Resumen en WordPress Dashboard
-4. **Alertas**: Notificaciones cuando tasa de error > umbral
-5. **Gráficos**: Visualización de tendencias con Chart.js
-6. **Filtros Avanzados**: Por rango de fechas, múltiples formularios
+### Actions
+
+```php
+// Before displaying logs page
+do_action('cf7_api_before_logs_page');
+
+// After log deletion
+do_action('cf7_api_log_deleted', $log_id);
+
+// After bulk deletion
+do_action('cf7_api_logs_bulk_deleted', $log_ids);
+```
+
+### Filters
+
+```php
+// Modify logs query arguments
+$args = apply_filters('cf7_api_logs_query_args', $args);
+
+// Modify statistics output
+$stats = apply_filters('cf7_api_logs_statistics', $stats, $form_id);
+```
+
+## Future Improvements
+
+Potential enhancements for future versions:
+
+1. **Export** - CSV/JSON export functionality
+2. **Dashboard Widget** - Summary widget for WordPress dashboard
+3. **Date Range Filter** - Filter logs by date range
+4. **Charts** - Visual representation of trends
+5. **Email Alerts** - Notifications when error rate exceeds threshold

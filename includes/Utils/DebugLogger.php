@@ -19,7 +19,7 @@ namespace SilverAssist\ContactFormToAPI\Utils;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 
-defined( "ABSPATH" ) || exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Class DebugLogger
@@ -44,14 +44,14 @@ class DebugLogger implements LoadableInterface {
 	/**
 	 * Log levels (PSR-3 compliant)
 	 */
-	public const EMERGENCY = "emergency";
-	public const ALERT     = "alert";
-	public const CRITICAL  = "critical";
-	public const ERROR     = "error";
-	public const WARNING   = "warning";
-	public const NOTICE    = "notice";
-	public const INFO      = "info";
-	public const DEBUG     = "debug";
+	public const EMERGENCY = 'emergency';
+	public const ALERT     = 'alert';
+	public const CRITICAL  = 'critical';
+	public const ERROR     = 'error';
+	public const WARNING   = 'warning';
+	public const NOTICE    = 'notice';
+	public const INFO      = 'info';
+	public const DEBUG     = 'debug';
 
 	/**
 	 * Log file path
@@ -85,7 +85,7 @@ class DebugLogger implements LoadableInterface {
 	private function __construct() {
 		$upload_dir = \wp_upload_dir();
 
-		$this->log_file = $upload_dir["basedir"] . "/cf7-to-api-debug.log";
+		$this->log_file = $upload_dir['basedir'] . '/cf7-to-api-debug.log';
 	}
 
 	/**
@@ -136,7 +136,7 @@ class DebugLogger implements LoadableInterface {
 	 * @param array<string, mixed> $context Additional context.
 	 * @return void
 	 */
-	public function log( string $level, string $message, array $context = [] ): void {
+	public function log( string $level, string $message, array $context = array() ): void {
 		if ( ! $this->should_log( $level ) ) {
 			return;
 		}
@@ -154,7 +154,7 @@ class DebugLogger implements LoadableInterface {
 	 * @param array<string, mixed> $context Additional context.
 	 * @return void
 	 */
-	public function emergency( string $message, array $context = [] ): void {
+	public function emergency( string $message, array $context = array() ): void {
 		$this->log( self::EMERGENCY, $message, $context );
 	}
 
@@ -167,7 +167,7 @@ class DebugLogger implements LoadableInterface {
 	 * @param array<string, mixed> $context Additional context.
 	 * @return void
 	 */
-	public function alert( string $message, array $context = [] ): void {
+	public function alert( string $message, array $context = array() ): void {
 		$this->log( self::ALERT, $message, $context );
 	}
 
@@ -180,7 +180,7 @@ class DebugLogger implements LoadableInterface {
 	 * @param array<string, mixed> $context Additional context.
 	 * @return void
 	 */
-	public function critical( string $message, array $context = [] ): void {
+	public function critical( string $message, array $context = array() ): void {
 		$this->log( self::CRITICAL, $message, $context );
 	}
 
@@ -193,7 +193,7 @@ class DebugLogger implements LoadableInterface {
 	 * @param array<string, mixed> $context Additional context.
 	 * @return void
 	 */
-	public function error( string $message, array $context = [] ): void {
+	public function error( string $message, array $context = array() ): void {
 		$this->log( self::ERROR, $message, $context );
 	}
 
@@ -206,7 +206,7 @@ class DebugLogger implements LoadableInterface {
 	 * @param array<string, mixed> $context Additional context.
 	 * @return void
 	 */
-	public function warning( string $message, array $context = [] ): void {
+	public function warning( string $message, array $context = array() ): void {
 		$this->log( self::WARNING, $message, $context );
 	}
 
@@ -219,7 +219,7 @@ class DebugLogger implements LoadableInterface {
 	 * @param array<string, mixed> $context Additional context.
 	 * @return void
 	 */
-	public function notice( string $message, array $context = [] ): void {
+	public function notice( string $message, array $context = array() ): void {
 		$this->log( self::NOTICE, $message, $context );
 	}
 
@@ -232,7 +232,7 @@ class DebugLogger implements LoadableInterface {
 	 * @param array<string, mixed> $context Additional context.
 	 * @return void
 	 */
-	public function info( string $message, array $context = [] ): void {
+	public function info( string $message, array $context = array() ): void {
 		$this->log( self::INFO, $message, $context );
 	}
 
@@ -245,7 +245,7 @@ class DebugLogger implements LoadableInterface {
 	 * @param array<string, mixed> $context Additional context.
 	 * @return void
 	 */
-	public function debug( string $message, array $context = [] ): void {
+	public function debug( string $message, array $context = array() ): void {
 		$this->log( self::DEBUG, $message, $context );
 	}
 
@@ -263,7 +263,7 @@ class DebugLogger implements LoadableInterface {
 		}
 
 		// Log other levels only if WP_DEBUG is enabled.
-		return defined( "WP_DEBUG" ) && WP_DEBUG;
+		return defined( 'WP_DEBUG' ) && WP_DEBUG;
 	}
 
 	/**
@@ -275,11 +275,11 @@ class DebugLogger implements LoadableInterface {
 	 * @return string
 	 */
 	private function format_log_entry( string $level, string $message, array $context ): string {
-		$timestamp = gmdate( "Y-m-d H:i:s" );
-		$formatted = sprintf( "[%s] [%s] %s", $timestamp, strtoupper( $level ), $message );
+		$timestamp = gmdate( 'Y-m-d H:i:s' );
+		$formatted = sprintf( '[%s] [%s] %s', $timestamp, strtoupper( $level ), $message );
 
 		if ( ! empty( $context ) ) {
-			$formatted .= " | Context: " . \wp_json_encode( $context, JSON_UNESCAPED_SLASHES );
+			$formatted .= ' | Context: ' . \wp_json_encode( $context, JSON_UNESCAPED_SLASHES );
 		}
 
 		return $formatted . PHP_EOL;
@@ -319,7 +319,7 @@ class DebugLogger implements LoadableInterface {
 			return;
 		}
 
-		$backup_file = $this->log_file . ".old";
+		$backup_file = $this->log_file . '.old';
 
 		// Remove old backup if exists.
 		if ( file_exists( $backup_file ) ) {
@@ -365,13 +365,13 @@ class DebugLogger implements LoadableInterface {
 	 */
 	public function get_log_contents( int $lines = 100 ): string {
 		if ( ! file_exists( $this->log_file ) ) {
-			return "";
+			return '';
 		}
 
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Direct file read required.
 		$contents = file_get_contents( $this->log_file );
 		if ( false === $contents ) {
-			return "";
+			return '';
 		}
 
 		$all_lines = explode( PHP_EOL, trim( $contents ) );

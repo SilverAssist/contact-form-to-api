@@ -15,7 +15,9 @@
 
 namespace SilverAssist\ContactFormToAPI\Core;
 
-\defined( "ABSPATH" ) || exit;
+use WP_Error;
+
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Class RequestLogger
@@ -53,19 +55,19 @@ class RequestLogger {
 	 * @var array<string>
 	 */
 	private array $sensitive_patterns = array(
-		"password",
-		"passwd",
-		"secret",
-		"api_key",
-		"api-key",
-		"apikey",
-		"token",
-		"auth",
-		"authorization",
-		"ssn",
-		"social_security",
-		"credit_card",
-		"card_number",
+		'password',
+		'passwd',
+		'secret',
+		'api_key',
+		'api-key',
+		'apikey',
+		'token',
+		'auth',
+		'authorization',
+		'ssn',
+		'social_security',
+		'credit_card',
+		'card_number',
 	);
 
 	/**
@@ -84,11 +86,11 @@ class RequestLogger {
 	 * Creates initial log entry before sending request.
 	 *
 	 * @since 1.1.0
-	 * @param int    $form_id        Contact Form 7 form ID
-	 * @param string $endpoint       API endpoint URL
-	 * @param string $method         HTTP method (GET, POST, etc.)
-	 * @param mixed  $request_data   Request body data
-	 * @param array  $request_headers Request headers
+	 * @param int                    $form_id         Contact Form 7 form ID
+	 * @param string                 $endpoint        API endpoint URL
+	 * @param string                 $method          HTTP method (GET, POST, etc.)
+	 * @param mixed                  $request_data    Request body data
+	 * @param array<string, string>  $request_headers Request headers
 	 * @return int|false Log entry ID or false on failure
 	 */
 	public function start_request( int $form_id, string $endpoint, string $method, $request_data, array $request_headers = array() ) {
@@ -107,21 +109,21 @@ class RequestLogger {
 		$result = $wpdb->insert(
 			$this->table_name,
 			array(
-				"form_id"         => $form_id,
-				"endpoint"        => $endpoint,
-				"method"          => $method,
-				"status"          => "pending",
-				"request_data"    => $prepared_data,
-				"request_headers" => $prepared_headers,
-				"retry_count"     => 0,
-				"created_at"      => \current_time( "mysql" ),
+				'form_id'         => $form_id,
+				'endpoint'        => $endpoint,
+				'method'          => $method,
+				'status'          => 'pending',
+				'request_data'    => $prepared_data,
+				'request_headers' => $prepared_headers,
+				'retry_count'     => 0,
+				'created_at'      => \current_time( 'mysql' ),
 			),
-			array( "%d", "%s", "%s", "%s", "%s", "%s", "%d", "%s" )
+			array( '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
 		if ( $result ) {
 			$this->log_id = $wpdb->insert_id;
-			return $this->log_id;
+			return $this->log_id ?: false;
 		}
 
 		return false;
@@ -133,8 +135,8 @@ class RequestLogger {
 	 * Updates log entry with response information and execution time.
 	 *
 	 * @since 1.1.0
-	 * @param array|\WP_Error $response      API response or error
-	 * @param int|null        $retry_count   Number of retry attempts
+	 * @param array<string, mixed>|WP_Error $response      API response or error
+	 * @param int|null                       $retry_count   Number of retry attempts
 	 * @return bool True on success, false on failure
 	 */
 	public function complete_request( $response, ?int $retry_count = 0 ): bool {
@@ -149,16 +151,16 @@ class RequestLogger {
 		// Handle WP_Error responses
 		if ( \is_wp_error( $response ) ) {
 			$update_data = array(
-				"status"         => "error",
-				"error_message"  => $response->get_error_message(),
-				"execution_time" => $execution_time,
-				"retry_count"    => $retry_count,
+				'status'         => 'error',
+				'error_message'  => $response->get_error_message(),
+				'execution_time' => $execution_time,
+				'retry_count'    => $retry_count,
 			);
-			$format = array( "%s", "%s", "%f", "%d" );
+			$format      = array( '%s', '%s', '%f', '%d' );
 		} else {
 			// Handle successful responses
-			$response_code = \wp_remote_retrieve_response_code( $response );
-			$response_body = \wp_remote_retrieve_body( $response );
+			$response_code    = \wp_remote_retrieve_response_code( $response );
+			$response_body    = \wp_remote_retrieve_body( $response );
 			$response_headers = \wp_remote_retrieve_headers( $response );
 
 			// Anonymize response data
@@ -168,23 +170,26 @@ class RequestLogger {
 			// Determine status based on response code
 			$status = $this->determine_status( $response_code );
 
+			// Encode response data if it's an array
+			$encoded_body = \is_array( $anonymized_body ) ? \wp_json_encode( $anonymized_body ) : $anonymized_body;
+
 			$update_data = array(
-				"status"           => $status,
-				"response_code"    => $response_code,
-				"response_data"    => $anonymized_body,
-				"response_headers" => \wp_json_encode( $anonymized_headers ),
-				"execution_time"   => $execution_time,
-				"retry_count"      => $retry_count,
+				'status'           => $status,
+				'response_code'    => $response_code,
+				'response_data'    => $encoded_body,
+				'response_headers' => \wp_json_encode( $anonymized_headers ),
+				'execution_time'   => $execution_time,
+				'retry_count'      => $retry_count,
 			);
-			$format = array( "%s", "%d", "%s", "%s", "%f", "%d" );
+			$format      = array( '%s', '%d', '%s', '%s', '%f', '%d' );
 		}
 
 		$result = $wpdb->update(
 			$this->table_name,
 			$update_data,
-			array( "id" => $this->log_id ),
+			array( 'id' => $this->log_id ),
 			$format,
-			array( "%d" )
+			array( '%d' )
 		);
 
 		return $result !== false;
@@ -208,10 +213,10 @@ class RequestLogger {
 
 		$result = $wpdb->update(
 			$this->table_name,
-			array( "retry_count" => $retry_count ),
-			array( "id" => $this->log_id ),
-			array( "%d" ),
-			array( "%d" )
+			array( 'retry_count' => $retry_count ),
+			array( 'id' => $this->log_id ),
+			array( '%d' ),
+			array( '%d' )
 		);
 
 		return $result !== false;
@@ -253,7 +258,7 @@ class RequestLogger {
 				}
 
 				if ( $is_sensitive ) {
-					$data[ $key ] = "***REDACTED***";
+					$data[ $key ] = '***REDACTED***';
 				} elseif ( \is_array( $value ) ) {
 					$data[ $key ] = $this->anonymize_data( $value );
 				}
@@ -269,8 +274,8 @@ class RequestLogger {
 	 * Removes or masks sensitive headers.
 	 *
 	 * @since 1.1.0
-	 * @param array|\WpOrg\Requests\Utility\CaseInsensitiveDictionary $headers Headers to anonymize
-	 * @return array Anonymized headers
+	 * @param array<string, string>|\WpOrg\Requests\Utility\CaseInsensitiveDictionary $headers Headers to anonymize
+	 * @return array<string, string> Anonymized headers
 	 */
 	private function anonymize_headers( $headers ): array {
 		if ( ! \is_array( $headers ) && ! $headers instanceof \ArrayAccess ) {
@@ -290,7 +295,7 @@ class RequestLogger {
 				}
 			}
 
-			$anonymized[ $key ] = $is_sensitive ? "***REDACTED***" : $value;
+			$anonymized[ $key ] = $is_sensitive ? '***REDACTED***' : $value;
 		}
 
 		return $anonymized;
@@ -305,14 +310,14 @@ class RequestLogger {
 	 */
 	private function determine_status( int $code ): string {
 		if ( $code >= 200 && $code < 300 ) {
-			return "success";
+			return 'success';
 		} elseif ( $code >= 400 && $code < 500 ) {
-			return "client_error";
+			return 'client_error';
 		} elseif ( $code >= 500 ) {
-			return "server_error";
+			return 'server_error';
 		}
 
-		return "unknown";
+		return 'unknown';
 	}
 
 	/**
@@ -323,7 +328,7 @@ class RequestLogger {
 	 * @since 1.1.0
 	 * @param int|null $form_id Form ID to get logs for (null for new forms)
 	 * @param int      $limit   Maximum number of logs to retrieve
-	 * @return array Array of log entries
+	 * @return array<int, array<string, mixed>> Array of log entries
 	 */
 	public function get_recent_logs( ?int $form_id, int $limit = 10 ): array {
 		if ( null === $form_id || $form_id <= 0 ) {
@@ -332,6 +337,7 @@ class RequestLogger {
 
 		global $wpdb;
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$this->table_name} 
@@ -343,6 +349,7 @@ class RequestLogger {
 			),
 			ARRAY_A
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $results ?: array();
 	}
@@ -359,6 +366,7 @@ class RequestLogger {
 	public function clean_old_logs( int $days = 30 ): int {
 		global $wpdb;
 
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
 		$result = $wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$this->table_name} 
@@ -366,6 +374,7 @@ class RequestLogger {
 				$days
 			)
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $result ?: 0;
 	}
@@ -377,12 +386,13 @@ class RequestLogger {
 	 *
 	 * @since 1.1.0
 	 * @param int|null $form_id Form ID (0 or null for all forms)
-	 * @return array Statistics array
+	 * @return array<string, int|float> Statistics array
 	 */
 	public function get_statistics( ?int $form_id ): array {
 		global $wpdb;
 
 		if ( null !== $form_id && $form_id > 0 ) {
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
 			$stats = $wpdb->get_row(
 				$wpdb->prepare(
 					"SELECT 
@@ -397,8 +407,10 @@ class RequestLogger {
 				),
 				ARRAY_A
 			);
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		} else {
 			// Get statistics for all forms
+			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
 			$stats = $wpdb->get_row(
 				"SELECT 
 					COUNT(*) as total_requests,
@@ -409,14 +421,15 @@ class RequestLogger {
 				FROM {$this->table_name}",
 				ARRAY_A
 			);
+			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		}
 
 		return $stats ?: array(
-			"total_requests"      => 0,
-			"successful_requests" => 0,
-			"failed_requests"     => 0,
-			"avg_execution_time"  => 0,
-			"max_retries"         => 0,
+			'total_requests'      => 0,
+			'successful_requests' => 0,
+			'failed_requests'     => 0,
+			'avg_execution_time'  => 0,
+			'max_retries'         => 0,
 		);
 	}
 }

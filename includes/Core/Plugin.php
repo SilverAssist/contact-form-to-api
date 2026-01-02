@@ -229,7 +229,8 @@ class Plugin implements LoadableInterface {
 				DebugLogger::instance()->error( $full_message, array( 'component' => $component ) );
 				return;
 			} catch ( \Exception $e ) {
-				// Fall through to error_log.
+				// Logger unavailable, fall through to error_log.
+				unset( $e );
 			}
 		}
 

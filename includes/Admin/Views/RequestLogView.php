@@ -100,7 +100,7 @@ class RequestLogView {
 	/**
 	 * Render log detail view
 	 *
-	 * @param array $log Log entry data.
+	 * @param array<string, mixed> $log Log entry data.
 	 * @return void
 	 */
 	public static function render_detail( array $log ): void {
@@ -129,7 +129,7 @@ class RequestLogView {
 	/**
 	 * Render request information section
 	 *
-	 * @param array $log Log entry data.
+	 * @param array<string, mixed> $log Log entry data.
 	 * @return void
 	 */
 	private static function render_request_section( array $log ): void {
@@ -169,7 +169,7 @@ class RequestLogView {
 	/**
 	 * Render request headers section
 	 *
-	 * @param array $log Log entry data.
+	 * @param array<string, mixed> $log Log entry data.
 	 * @return void
 	 */
 	private static function render_request_headers( array $log ): void {
@@ -187,7 +187,7 @@ class RequestLogView {
 	/**
 	 * Render request data section
 	 *
-	 * @param array $log Log entry data.
+	 * @param array<string, mixed> $log Log entry data.
 	 * @return void
 	 */
 	private static function render_request_data( array $log ): void {
@@ -202,7 +202,7 @@ class RequestLogView {
 	/**
 	 * Render response information section
 	 *
-	 * @param array $log Log entry data.
+	 * @param array<string, mixed> $log Log entry data.
 	 * @return void
 	 */
 	private static function render_response_section( array $log ): void {
@@ -228,7 +228,7 @@ class RequestLogView {
 	/**
 	 * Render response headers section
 	 *
-	 * @param array $log Log entry data.
+	 * @param array<string, mixed> $log Log entry data.
 	 * @return void
 	 */
 	private static function render_response_headers( array $log ): void {
@@ -246,7 +246,7 @@ class RequestLogView {
 	/**
 	 * Render response data section
 	 *
-	 * @param array $log Log entry data.
+	 * @param array<string, mixed> $log Log entry data.
 	 * @return void
 	 */
 	private static function render_response_data( array $log ): void {
@@ -323,7 +323,8 @@ class RequestLogView {
 	private static function format_json( string $json ): string {
 		$decoded = \json_decode( $json, true );
 		if ( \json_last_error() === JSON_ERROR_NONE && \is_array( $decoded ) ) {
-			return \wp_json_encode( $decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+			$encoded = \wp_json_encode( $decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+			return $encoded !== false ? $encoded : $json;
 		}
 		return $json;
 	}

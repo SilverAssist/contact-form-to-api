@@ -5,19 +5,21 @@ parameters:
     bootstrapFiles:
         - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
         - vendor/miguelcolmenares/cf7-stubs/contact-form-7-stubs.php
+    reportUnmatchedIgnoredErrors: false
     ignoreErrors:
         - '#Variable \$mailtags might not be defined#'
-        - '#If condition is always true#'
         - '#Constant CF7_API_#'
-        - '#has parameter .* with no value type specified in iterable type array#'
-        - '#return type has no value type specified in iterable type array#'
+        - '#Constant ARRAY_A not found#'
         - '#PHPDoc tag @param references unknown parameter#'
         - '#expects .*, .* given#'
-        - '#should return .* but returns#'
-        - '#does not accept array#'
         - '#Strict comparison using#'
-        - '#is never read, only written#'
-        - '#constructor invoked with .* parameter#'
+        # Instanceof check is valid but flagged due to PHPDoc types
+        -
+            identifier: instanceof.alwaysTrue
+        # Protected property access in WP_List_Table (WordPress pattern)
+        - '#Access to protected property.+::._args#'
+        # Call to method that exists in parent class
+        - '#Call to an undefined method.+::process_bulk_action#'
         # Methods used via WordPress hooks - PHPStan can't detect WordPress action/filter callbacks
         - '#Method .+::get_record\(\) is unused#'
         - '#Method .+::send_lead\(\) is unused#'
@@ -26,9 +28,7 @@ parameters:
         - '#Negated boolean expression is always true#'
         - '#Unreachable statement#'
         - '#Ternary operator condition is always false#'
-        - '#Offset .+ on .+ in isset\(\) does not exist#'
         - '#Result of && is always false#'
-        - '#If condition is always false#'
         - '#Offset .+ on .+ on left side of \?\? does not exist#'
         - '#Call to function is_array\(\) with .+ will always evaluate to false#'
 

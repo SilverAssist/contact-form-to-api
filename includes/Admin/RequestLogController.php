@@ -199,7 +199,7 @@ class RequestLogController implements LoadableInterface {
 	/**
 	 * Handle delete action
 	 *
-	 * @param array $log_ids Log IDs to delete.
+	 * @param array<int, int> $log_ids Log IDs to delete.
 	 * @return void
 	 */
 	private function handle_delete_action( array $log_ids ): void {
@@ -225,7 +225,7 @@ class RequestLogController implements LoadableInterface {
 	/**
 	 * Handle retry action
 	 *
-	 * @param array $log_ids Log IDs to retry.
+	 * @param array<int, int> $log_ids Log IDs to retry.
 	 * @return void
 	 */
 	private function handle_retry_action( array $log_ids ): void {
@@ -268,7 +268,9 @@ class RequestLogController implements LoadableInterface {
 		RequestLogView::render_notices();
 
 		// Prepare items.
-		$this->list_table->prepare_items();
+		if ( $this->list_table ) {
+			$this->list_table->prepare_items();
+		}
 
 		// Render page.
 		RequestLogView::render_page( $this->list_table );
@@ -294,7 +296,7 @@ class RequestLogController implements LoadableInterface {
 	 * Get log entry by ID
 	 *
 	 * @param int $log_id Log ID.
-	 * @return array|null Log data or null if not found.
+	 * @return array<string, mixed>|null Log data or null if not found.
 	 */
 	private function get_log_by_id( int $log_id ): ?array {
 		global $wpdb;

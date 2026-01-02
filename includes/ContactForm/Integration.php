@@ -24,7 +24,7 @@ use WPCF7_ContactForm;
 use WPCF7_Submission;
 use WP_Error;
 
-\defined( "ABSPATH" ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Contact Form 7 Integration Class
@@ -40,8 +40,8 @@ class Integration implements LoadableInterface {
 	 *
 	 * @since 1.0.0
 	 */
-	private const int DEFAULT_MAX_RETRIES = 3;
-	private const int DEFAULT_RETRY_DELAY = 2;
+	private const DEFAULT_MAX_RETRIES = 3;
+	private const DEFAULT_RETRY_DELAY = 2;
 
 	/**
 	 * Singleton instance
@@ -62,7 +62,7 @@ class Integration implements LoadableInterface {
 	 * API errors for current request
 	 *
 	 * @since 1.0.0
-	 * @var array<string, mixed>
+	 * @var array<int|string, mixed>
 	 */
 	private array $api_errors = array();
 
@@ -145,15 +145,15 @@ class Integration implements LoadableInterface {
 	 * Add form properties for API integration
 	 *
 	 * @since 1.0.0
-	 * @param array $properties Form properties
-	 * @return array Modified properties
+	 * @param array<string, mixed> $properties Form properties
+	 * @return array<string, mixed> Modified properties
 	 */
 	public function add_form_properties( array $properties ): array {
-		$properties["wpcf7_api_data"]        ??= array();
-		$properties["wpcf7_api_data_map"]    ??= array();
-		$properties["template"]              ??= "";
-		$properties["json_template"]         ??= "";
-		$properties["retry_config"]          ??= array();
+		$properties['wpcf7_api_data']     ??= array();
+		$properties['wpcf7_api_data_map'] ??= array();
+		$properties['template']           ??= '';
+		$properties['json_template']      ??= '';
+		$properties['retry_config']       ??= array();
 
 		return $properties;
 	}
@@ -162,8 +162,8 @@ class Integration implements LoadableInterface {
 	 * Add integrations tab to Contact Form 7 admin
 	 *
 	 * @since 1.0.0
-	 * @param array $panels Existing panels
-	 * @return array Modified panels with API integration tab
+	 * @param array<string, array<string, mixed>> $panels Existing panels
+	 * @return array<string, array<string, mixed>> Modified panels with API integration tab
 	 */
 	public function add_integrations_tab( array $panels ): array {
 		$panels['cf7-api-integration'] = array(
@@ -178,9 +178,9 @@ class Integration implements LoadableInterface {
 	 * Collect mail tags from form
 	 *
 	 * @since 1.0.0
-	 * @param WPCF7_ContactForm $post The contact form object to scan for tags
-	 * @param array             $args Optional arguments to filter tags by type
-	 * @return array Array of WPCF7_FormTag objects for use in templates
+	 * @param WPCF7_ContactForm      $form The contact form object to scan for tags
+	 * @param array<string, mixed>  $args Optional arguments to filter tags by type
+	 * @return array<int, array<string, string>> Array of WPCF7_FormTag objects for use in templates
 	 */
 	private function get_mail_tags( WPCF7_ContactForm $form, array $args ): array {
 		/** @var array<array{type: string, name: string}> $tags */
@@ -221,11 +221,11 @@ class Integration implements LoadableInterface {
 		$form_id = $wpcf7->id();
 
 		// Get from properties first, fallback to post_meta for backward compatibility
-		$wpcf7_api_data               = $wpcf7->prop( "wpcf7_api_data" ) ?: \get_post_meta( $form_id, "_wpcf7_api_data", true );
-		$wpcf7_api_data_map           = $wpcf7->prop( "wpcf7_api_data_map" ) ?: \get_post_meta( $form_id, "_wpcf7_api_data_map", true );
-		$wpcf7_api_data_template      = $wpcf7->prop( "template" ) ?: \get_post_meta( $form_id, "_template", true );
-		$wpcf7_api_json_data_template = \stripslashes( $wpcf7->prop( "json_template" ) ?: \get_post_meta( $form_id, "_json_template", true ) );
-		$retry_config                 = $wpcf7->prop( "retry_config" ) ?: array();
+		$wpcf7_api_data               = $wpcf7->prop( 'wpcf7_api_data' ) ?: \get_post_meta( $form_id, '_wpcf7_api_data', true );
+		$wpcf7_api_data_map           = $wpcf7->prop( 'wpcf7_api_data_map' ) ?: \get_post_meta( $form_id, '_wpcf7_api_data_map', true );
+		$wpcf7_api_data_template      = $wpcf7->prop( 'template' ) ?: \get_post_meta( $form_id, '_template', true );
+		$wpcf7_api_json_data_template = \stripslashes( $wpcf7->prop( 'json_template' ) ?: \get_post_meta( $form_id, '_json_template', true ) );
+		$retry_config                 = $wpcf7->prop( 'retry_config' ) ?: array();
 
 		$mail_tags = $this->get_mail_tags( $post, array() );
 
@@ -233,37 +233,37 @@ class Integration implements LoadableInterface {
 		if ( ! \is_array( $wpcf7_api_data ) ) {
 			$wpcf7_api_data = array();
 		}
-		$wpcf7_api_data["base_url"]    ??= "";
-		$wpcf7_api_data["send_to_api"] ??= "";
-		$wpcf7_api_data["input_type"]  ??= "params";
-		$wpcf7_api_data["method"]      ??= "GET";
-		$wpcf7_api_data["debug_log"]     = true;
+		$wpcf7_api_data['base_url']    ??= '';
+		$wpcf7_api_data['send_to_api'] ??= '';
+		$wpcf7_api_data['input_type']  ??= 'params';
+		$wpcf7_api_data['method']      ??= 'GET';
+		$wpcf7_api_data['debug_log']     = true;
 
 		// Set retry configuration defaults
 		if ( ! \is_array( $retry_config ) ) {
 			$retry_config = array();
 		}
-		$retry_config["max_retries"]      ??= self::DEFAULT_MAX_RETRIES;
-		$retry_config["retry_delay"]      ??= self::DEFAULT_RETRY_DELAY;
-		$retry_config["retry_on_timeout"] ??= true;
+		$retry_config['max_retries']      ??= self::DEFAULT_MAX_RETRIES;
+		$retry_config['retry_delay']      ??= self::DEFAULT_RETRY_DELAY;
+		$retry_config['retry_on_timeout'] ??= true;
 
 		// Get debug information
-		$debug_url    = \get_post_meta( $form_id, "cf7_api_debug_url", true );
-		$debug_result = \get_post_meta( $form_id, "cf7_api_debug_result", true );
-		$debug_params = \get_post_meta( $form_id, "cf7_api_debug_params", true );
-		$error_logs   = \get_post_meta( $form_id, "api_errors", true );
+		$debug_url    = \get_post_meta( $form_id, 'cf7_api_debug_url', true );
+		$debug_result = \get_post_meta( $form_id, 'cf7_api_debug_result', true );
+		$debug_params = \get_post_meta( $form_id, 'cf7_api_debug_params', true );
+		$error_logs   = \get_post_meta( $form_id, 'api_errors', true );
 
 		// Get recent logs and statistics
-		$logger = new RequestLogger();
+		$logger      = new RequestLogger();
 		$recent_logs = $logger->get_recent_logs( $form_id, 5 );
 		$statistics  = $logger->get_statistics( $form_id );
 
 		// Prepare debug info array
 		$debug_info = array(
-			"url"    => $debug_url,
-			"params" => $debug_params,
-			"result" => $debug_result,
-			"errors" => $error_logs,
+			'url'    => $debug_url,
+			'params' => $debug_params,
+			'result' => $debug_result,
+			'errors' => $error_logs,
 		);
 
 		// Render using view
@@ -271,8 +271,8 @@ class Integration implements LoadableInterface {
 			$post,
 			$wpcf7_api_data,
 			\is_array( $wpcf7_api_data_map ) ? $wpcf7_api_data_map : array(),
-			$wpcf7_api_data_template ?: "",
-			$wpcf7_api_json_data_template ?: "",
+			$wpcf7_api_data_template ?: '',
+			$wpcf7_api_json_data_template ?: '',
 			$retry_config,
 			$mail_tags,
 			$recent_logs,
@@ -295,27 +295,27 @@ class Integration implements LoadableInterface {
 		$properties = $contact_form->get_properties();
 
 		// Get POST data for API configuration
-		$properties["wpcf7_api_data"]     = $_POST["wpcf7-sf"] ?? array();
-		$properties["wpcf7_api_data_map"] = $_POST["qs_wpcf7_api_map"] ?? array();
-		$properties["template"]           = $_POST["template"] ?? "";
-		$properties["json_template"]      = \stripslashes( $_POST["json_template"] ?? "" );
+		$properties['wpcf7_api_data']     = $_POST['wpcf7-sf'] ?? array();
+		$properties['wpcf7_api_data_map'] = $_POST['qs_wpcf7_api_map'] ?? array();
+		$properties['template']           = $_POST['template'] ?? '';
+		$properties['json_template']      = \stripslashes( $_POST['json_template'] ?? '' );
 
 		// Get retry configuration
-		$retry_config = $_POST["retry_config"] ?? array();
+		$retry_config = $_POST['retry_config'] ?? array();
 		// Convert checkbox value
-		if ( isset( $retry_config["retry_on_timeout"] ) ) {
-			$retry_config["retry_on_timeout"] = true;
+		if ( isset( $retry_config['retry_on_timeout'] ) ) {
+			$retry_config['retry_on_timeout'] = true;
 		} else {
-			$retry_config["retry_on_timeout"] = false;
+			$retry_config['retry_on_timeout'] = false;
 		}
 		// Ensure numeric values
-		if ( isset( $retry_config["max_retries"] ) ) {
-			$retry_config["max_retries"] = (int) $retry_config["max_retries"];
+		if ( isset( $retry_config['max_retries'] ) ) {
+			$retry_config['max_retries'] = (int) $retry_config['max_retries'];
 		}
-		if ( isset( $retry_config["retry_delay"] ) ) {
-			$retry_config["retry_delay"] = (int) $retry_config["retry_delay"];
+		if ( isset( $retry_config['retry_delay'] ) ) {
+			$retry_config['retry_delay'] = (int) $retry_config['retry_delay'];
 		}
-		$properties["retry_config"] = $retry_config;
+		$properties['retry_config'] = $retry_config;
 
 		// Set properties using CF7's native method
 		$contact_form->set_properties( $properties );
@@ -340,41 +340,41 @@ class Integration implements LoadableInterface {
 		$form_id = $contact_form->id();
 
 		// Get from properties first, fallback to post_meta for backward compatibility
-		$api_data          = $contact_form->prop( "wpcf7_api_data" ) ?: \get_post_meta( $form_id, "_wpcf7_api_data", true );
-		$api_data_map      = $contact_form->prop( "wpcf7_api_data_map" ) ?: \get_post_meta( $form_id, "_wpcf7_api_data_map", true );
-		$api_data_template = $contact_form->prop( "template" ) ?: \get_post_meta( $form_id, "_template", true );
-		$api_json_template = \stripslashes( $contact_form->prop( "json_template" ) ?: \get_post_meta( $form_id, "_json_template", true ) );
-		$retry_config      = $contact_form->prop( "retry_config" ) ?: array();
+		$api_data          = $contact_form->prop( 'wpcf7_api_data' ) ?: \get_post_meta( $form_id, '_wpcf7_api_data', true );
+		$api_data_map      = $contact_form->prop( 'wpcf7_api_data_map' ) ?: \get_post_meta( $form_id, '_wpcf7_api_data_map', true );
+		$api_data_template = $contact_form->prop( 'template' ) ?: \get_post_meta( $form_id, '_template', true );
+		$api_json_template = \stripslashes( $contact_form->prop( 'json_template' ) ?: \get_post_meta( $form_id, '_json_template', true ) );
+		$retry_config      = $contact_form->prop( 'retry_config' ) ?: array();
 
 		// Set default retry configuration if not provided
 		if ( ! \is_array( $retry_config ) ) {
 			$retry_config = array();
 		}
-		$retry_config["max_retries"]      ??= self::DEFAULT_MAX_RETRIES;
-		$retry_config["retry_delay"]      ??= self::DEFAULT_RETRY_DELAY;
-		$retry_config["retry_on_timeout"] ??= true;
+		$retry_config['max_retries']      ??= self::DEFAULT_MAX_RETRIES;
+		$retry_config['retry_delay']      ??= self::DEFAULT_RETRY_DELAY;
+		$retry_config['retry_on_timeout'] ??= true;
 
 		// Always enable debug logging
-		$api_data["debug_log"] = true;
+		$api_data['debug_log'] = true;
 
 		// Check if form should be sent to API
-		if ( empty( $api_data["send_to_api"] ) || $api_data["send_to_api"] !== "on" ) {
+		if ( empty( $api_data['send_to_api'] ) || $api_data['send_to_api'] !== 'on' ) {
 			return;
 		}
 
-		$record_type = $api_data["input_type"] ?? "params";
+		$record_type = $api_data['input_type'] ?? 'params';
 
-		if ( $record_type === "json" ) {
+		if ( $record_type === 'json' ) {
 			$api_data_template = \stripslashes( $api_json_template );
 		}
 
 		$record        = $this->get_record( $submission, $api_data_map, $record_type, $api_data_template );
-		$record["url"] = $api_data["base_url"];
+		$record['url'] = $api_data['base_url'];
 
-		if ( ! empty( $record["url"] ) ) {
-			\do_action( "cf7_api_before_send_to_api", $record );
+		if ( ! empty( $record['url'] ) ) {
+			\do_action( 'cf7_api_before_send_to_api', $record );
 
-			$response = $this->send_lead( $record, $api_data["debug_log"], $api_data["method"], $record_type, $retry_config );
+			$response = $this->send_lead( $record, $api_data['debug_log'], $api_data['method'], $record_type, $retry_config );
 
 			if ( \is_wp_error( $response ) ) {
 				$this->log_error( $response, $contact_form->id() );
@@ -388,11 +388,11 @@ class Integration implements LoadableInterface {
 	 * Convert form data to API record format
 	 *
 	 * @since 1.0.0
-	 * @param WPCF7_Submission $submission Form submission (CF7 Submission object)
-	 * @param array            $data_map   Field mapping
-	 * @param string           $type       Record type (params, xml, json)
-	 * @param string           $template   Template for xml/json
-	 * @return array API record data
+	 * @param WPCF7_Submission       $submission Form submission (CF7 Submission object)
+	 * @param array<string, mixed>  $data_map   Field mapping
+	 * @param string                $type       Record type (params, xml, json)
+	 * @param string                $template   Template for xml/json
+	 * @return array<string, mixed> API record data
 	 */
 	private function get_record( WPCF7_Submission $submission, array $data_map, string $type = 'params', string $template = '' ): array {
 		$submitted_data = $submission->get_posted_data();
@@ -532,7 +532,7 @@ class Integration implements LoadableInterface {
 	 */
 	private function log_error( WP_Error $wp_error, int $form_id ): void {
 		$this->api_errors[] = $wp_error;
-		\update_post_meta( $form_id, "api_errors", $this->api_errors );
+		\update_post_meta( $form_id, 'api_errors', $this->api_errors );
 	}
 
 	/**
