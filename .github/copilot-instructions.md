@@ -736,54 +736,67 @@ define("CF7_API_MIN_WP_VERSION", "6.5");
 
 ## GitHub CLI Workflows
 
-### IMPORTANT: Pager Configuration
-**ALWAYS** use `PAGER=cat gh ...` or `gh ... | cat` to prevent interactive pager issues.
+### 🚨 CRITICAL: Pager Configuration
+**ALWAYS** append `| cat` to ALL `gh` commands to prevent the terminal from waiting for interactive pager input.
+
+**Why**: GitHub CLI uses a pager by default for output. In non-interactive environments (like AI agents), this causes the terminal to hang indefinitely waiting for user input.
+
+**Rule**: Every `gh` command MUST end with `| cat`:
+```bash
+# ✅ CORRECT - Always use | cat
+gh pr checks | cat
+gh run list | cat
+gh run view <run-id> --log | cat
+
+# ❌ WRONG - Terminal will hang
+gh pr checks
+gh run list
+```
 
 ### Monitor CI/CD Status
 ```bash
 # View workflow runs
-PAGER=cat gh run list
 gh run list | cat
 
 # Watch specific workflow run
-PAGER=cat gh run view <run-id>
 gh run view <run-id> | cat
 
 # View workflow run logs
-PAGER=cat gh run view <run-id> --log
-gh run view --log | cat
+gh run view <run-id> --log | cat
 
 # Check status of latest run
-PAGER=cat gh run list --limit 1
+gh run list --limit 1 | cat
+
+# View failed logs only
+gh run view <run-id> --log-failed | cat
 ```
 
 ### Common Workflow Tasks
 ```bash
 # List all workflows
-PAGER=cat gh workflow list
+gh workflow list | cat
 
 # View workflow details
-PAGER=cat gh workflow view <workflow-name>
+gh workflow view <workflow-name> | cat
 
-# Trigger manual workflow
+# Trigger manual workflow (no output, no | cat needed)
 gh workflow run <workflow-name>
 
-# Re-run failed jobs
+# Re-run failed jobs (no output, no | cat needed)
 gh run rerun <run-id>
 
-# Cancel running workflow
+# Cancel running workflow (no output, no | cat needed)
 gh run cancel <run-id>
 ```
 
 ### Pull Request Commands
 ```bash
 # View PR checks status
-PAGER=cat gh pr checks
 gh pr checks | cat
 
 # View PR status
-PAGER=cat gh pr status
+gh pr status | cat
 
 # View PR details
-PAGER=cat gh pr view <pr-number>
+gh pr view <pr-number> | cat
 ```
