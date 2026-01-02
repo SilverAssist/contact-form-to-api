@@ -223,7 +223,7 @@ check_phpstan() {
         return 1
     fi
     
-    local phpstan_cmd="php -d memory_limit=512M vendor/bin/phpstan analyse"
+    local phpstan_cmd="php -d memory_limit=1G vendor/bin/phpstan analyse"
     local phpstan_args=""
     
     if [[ "$VERBOSE_MODE" == true ]]; then
