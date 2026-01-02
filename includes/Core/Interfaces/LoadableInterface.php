@@ -2,12 +2,13 @@
 /**
  * Loadable Interface
  *
- * Defines the contract for loadable plugin components following SilverAssist architecture pattern.
+ * Defines the contract for loadable plugin components following the pattern
+ * established in the SilverAssist plugins architecture.
  *
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Core\Interfaces
- * @since 1.0.0
- * @version 1.0.0
+ * @since 1.1.0
+ * @version 1.1.0
  * @author Silver Assist
  */
 
@@ -38,7 +39,7 @@ interface LoadableInterface {
 	 * Lower numbers indicate higher priority (loaded earlier).
 	 * Recommended priorities:
 	 * - Core components: 10
-	 * - Services: 20
+	 * - ContactForm services: 20
 	 * - Admin components: 30
 	 * - Utils: 40
 	 *

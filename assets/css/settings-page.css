@@ -1,0 +1,278 @@
+/**
+ * Contact Form 7 to API - Settings Page Styles
+ *
+ * Styles for the Silver Assist Settings Hub integration page,
+ * including How To documentation and status sections.
+ *
+ * @package ContactFormToAPI
+ * @since 1.1.0
+ * @author Silver Assist
+ * @version 1.1.0
+ * @license Polyform-Noncommercial-1.0.0
+ */
+
+/* Settings Page Container */
+.cf7-api-settings-page {
+	max-width: 1200px;
+	margin: 0;
+}
+
+/* Section Styles */
+.cf7-api-section {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 20px 24px;
+	margin-bottom: 20px;
+}
+
+.cf7-api-section h2 {
+	margin: 0 0 20px;
+	padding: 0 0 12px;
+	border-bottom: 1px solid #e0e0e0;
+	font-size: 16px;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.cf7-api-section h2 .dashicons {
+	color: #2271b1;
+}
+
+/* How To Section - Steps */
+.cf7-api-steps {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.cf7-api-step {
+	display: flex;
+	gap: 16px;
+	padding: 16px;
+	background: #f6f7f7;
+	border-radius: 4px;
+	border-left: 4px solid #2271b1;
+}
+
+.cf7-api-step .step-number {
+	flex-shrink: 0;
+	width: 32px;
+	height: 32px;
+	background: #2271b1;
+	color: #fff;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 600;
+	font-size: 14px;
+}
+
+.cf7-api-step .step-content {
+	flex: 1;
+}
+
+.cf7-api-step .step-content h3 {
+	margin: 0 0 8px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.cf7-api-step .step-content p {
+	margin: 0 0 10px;
+	color: #50575e;
+	line-height: 1.5;
+}
+
+.cf7-api-step .step-content p:last-child {
+	margin-bottom: 0;
+}
+
+/* Step Tips */
+.cf7-api-step .step-tip {
+	display: flex;
+	align-items: flex-start;
+	gap: 8px;
+	padding: 10px 12px;
+	background: #fff8e5;
+	border: 1px solid #dba617;
+	border-radius: 4px;
+	font-size: 13px;
+	color: #6e4e00;
+	margin-top: 10px;
+}
+
+.cf7-api-step .step-tip .dashicons {
+	color: #dba617;
+	flex-shrink: 0;
+}
+
+/* Step Examples */
+.cf7-api-step .step-example {
+	padding: 12px;
+	background: #2c3338;
+	border-radius: 4px;
+	font-family: Consolas, Monaco, monospace;
+	font-size: 13px;
+	color: #e0e0e0;
+	margin-top: 10px;
+	line-height: 1.8;
+}
+
+.cf7-api-step .step-example code {
+	background: transparent;
+	color: #72aee6;
+	padding: 0;
+}
+
+/* Config List */
+.cf7-api-config-list {
+	margin: 10px 0 0 20px;
+	padding: 0;
+	list-style: disc;
+}
+
+.cf7-api-config-list li {
+	margin-bottom: 8px;
+	color: #50575e;
+	line-height: 1.5;
+}
+
+.cf7-api-config-list li:last-child {
+	margin-bottom: 0;
+}
+
+.cf7-api-config-list li strong {
+	color: #1d2327;
+}
+
+/* Quick Links Section */
+.cf7-api-links-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 16px;
+}
+
+.cf7-api-link-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px;
+	background: #f6f7f7;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	text-decoration: none;
+	color: #1d2327;
+	transition: all 0.2s ease;
+}
+
+.cf7-api-link-card:hover {
+	background: #fff;
+	border-color: #2271b1;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	transform: translateY(-2px);
+}
+
+.cf7-api-link-card:focus {
+	outline: 2px solid #2271b1;
+	outline-offset: 2px;
+}
+
+.cf7-api-link-card .dashicons {
+	font-size: 32px;
+	width: 32px;
+	height: 32px;
+	color: #2271b1;
+	margin-bottom: 12px;
+}
+
+.cf7-api-link-card .link-title {
+	font-weight: 600;
+	font-size: 14px;
+	margin-bottom: 4px;
+}
+
+.cf7-api-link-card .link-desc {
+	font-size: 12px;
+	color: #646970;
+	text-align: center;
+}
+
+/* Status Section */
+.cf7-api-status-table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+.cf7-api-status-table th,
+.cf7-api-status-table td {
+	padding: 12px;
+	border-bottom: 1px solid #e0e0e0;
+	text-align: left;
+}
+
+.cf7-api-status-table th {
+	width: 200px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.cf7-api-status-table td code {
+	background: #f0f0f1;
+	padding: 4px 8px;
+	border-radius: 3px;
+	font-size: 13px;
+}
+
+.cf7-api-status-table tr:last-child th,
+.cf7-api-status-table tr:last-child td {
+	border-bottom: none;
+}
+
+/* Status Indicators */
+.cf7-api-status-table .status-ok {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: #00a32a;
+	font-weight: 500;
+}
+
+.cf7-api-status-table .status-ok .dashicons {
+	color: #00a32a;
+}
+
+.cf7-api-status-table .status-error {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: #d63638;
+	font-weight: 500;
+}
+
+.cf7-api-status-table .status-error .dashicons {
+	color: #d63638;
+}
+
+/* Responsive */
+@media screen and (max-width: 782px) {
+	.cf7-api-step {
+		flex-direction: column;
+	}
+
+	.cf7-api-step .step-number {
+		align-self: flex-start;
+	}
+
+	.cf7-api-links-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.cf7-api-status-table th {
+		width: auto;
+	}
+}

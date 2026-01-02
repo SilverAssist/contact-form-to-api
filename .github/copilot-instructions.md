@@ -39,45 +39,97 @@ contact-form-to-api/
 │   │   └── dependency-updates.yml
 │   └── copilot-instructions.md
 ├── assets/
-│   ├── css/admin.css          # CF7 admin styles
-│   └── js/admin.js            # CF7 admin scripts (ES6+)
-├── docs/                      # Documentation
+│   ├── css/
+│   │   ├── admin.css              # CF7 admin styles
+│   │   ├── request-log.css        # Request logs page styles
+│   │   └── settings-page.css      # Settings Hub page styles
+│   └── js/
+│       ├── admin.js               # CF7 admin scripts (ES6+)
+│       ├── admin-check-updates.js # GitHub updater button
+│       └── api-log-admin.js       # Request logs interactions
+├── docs/                          # Documentation
 │   ├── WORKFLOWS.md
 │   ├── RELEASE_PROCESS.md
-│   └── API_REFERENCE.md
-├── includes/                  # Source code (PSR-4)
-│   ├── Core/
+│   ├── API_REFERENCE.md
+│   └── ADMIN_INTERFACE.md
+├── includes/                      # Source code (PSR-4)
+│   ├── Admin/                     # Priority 30 - Admin components
+│   │   ├── Loader.php            # Admin component loader
+│   │   ├── SettingsPage.php      # Settings Hub integration controller
+│   │   ├── RequestLogController.php # Request logs admin controller
+│   │   ├── RequestLogTable.php   # WP_List_Table for logs
+│   │   └── Views/                # Separated view templates
+│   │       ├── RequestLogView.php    # Request log HTML rendering
+│   │       └── SettingsView.php      # Settings page HTML rendering
+│   ├── ContactForm/              # Priority 30 - CF7 Integration
+│   │   ├── Integration.php       # CF7 hooks and panel logic
+│   │   └── Views/
+│   │       └── IntegrationView.php   # CF7 panel HTML rendering
+│   ├── Core/                     # Priority 10 - Core components
 │   │   ├── Interfaces/
-│   │   │   └── LoadableInterface.php
-│   │   ├── Activator.php     # Lifecycle management
-│   │   ├── Plugin.php        # Main plugin controller
-│   │   └── Updater.php       # GitHub updater integration
-│   └── ContactForm/
-│       └── Integration.php   # CF7 integration
-├── languages/                 # Translation files
-├── scripts/                   # Build and quality scripts
+│   │   │   └── LoadableInterface.php # Component contract
+│   │   ├── Activator.php         # Lifecycle management
+│   │   ├── RequestLogger.php     # API request/response DB logger
+│   │   └── Plugin.php            # Main plugin controller
+│   ├── Services/                 # Priority 20 - Business logic services
+│   │   ├── Loader.php            # Services component loader
+│   │   ├── ApiClient.php         # HTTP client with retry logic
+│   │   └── CheckboxHandler.php   # Checkbox value processing
+│   └── Utils/                    # Priority 40 - Utility classes
+│       ├── DebugLogger.php       # PSR-3 file logger for debugging
+│       └── StringHelper.php      # String manipulation utilities
+├── languages/                     # Translation files
+│   ├── contact-form-to-api.pot
+│   └── README.md
+├── scripts/                       # Build and quality scripts
 │   ├── run-quality-checks.sh
 │   ├── build-release.sh
-│   └── update-version.sh
-├── tests/                     # WordPress Test Suite
+│   ├── check-versions.sh
+│   ├── install-wp-tests.sh
+│   ├── pre-push-checks.sh
+│   └── update-version-simple.sh
+├── tests/                         # WordPress Test Suite
 │   ├── bootstrap.php
 │   ├── Helpers/
 │   │   ├── TestCase.php
 │   │   └── CF7TestCase.php
 │   ├── Unit/
-│   │   └── PluginTest.php
+│   │   ├── PluginTest.php
+│   │   └── LoggerTest.php
 │   ├── Integration/
+│   │   └── WordPressIntegrationTest.php
 │   └── ContactForm/
 │       └── IntegrationTest.php
-├── contact-form-to-api.php   # Main plugin file
-├── composer.json             # Dependencies
-├── phpcs.xml                 # PHPCS configuration
-├── phpstan.neon              # PHPStan configuration
-├── phpunit.xml.dist          # PHPUnit configuration
+├── contact-form-to-api.php       # Main plugin file
+├── composer.json                 # Dependencies
+├── phpcs.xml                     # PHPCS configuration
+├── phpstan.neon                  # PHPStan configuration
+├── phpunit.xml                   # PHPUnit configuration
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
+├── HEADER-STANDARDS.md
 └── README.md
 ```
+
+## Architecture Overview
+
+### Component Priority System (LoadableInterface)
+All components implement `LoadableInterface` with priority-based loading:
+- **Priority 10**: Core (Plugin, Activator)
+- **Priority 20**: Services (ApiClient, CheckboxHandler)
+- **Priority 30**: Admin & ContactForm (SettingsPage, RequestLogController, Integration)
+- **Priority 40**: Utils (Logger, StringHelper)
+
+### Dual Logger Architecture
+The plugin has two distinct logging systems:
+- **`Core\RequestLogger`**: Database-backed logger for API request/response tracking (shown in admin UI)
+- **`Utils\DebugLogger`**: PSR-3 compliant file logger for plugin debugging (dev/troubleshooting)
+
+### MVC Pattern in Admin
+Admin components follow MVC separation:
+- **Controllers**: `RequestLogController`, `SettingsPage` (routing, actions)
+- **Views**: `Views/RequestLogView`, `Views/SettingsView` (HTML rendering)
+- **Models**: `RequestLogTable` (WP_List_Table data handling)
 
 ## Core Components Architecture
 
@@ -107,7 +159,7 @@ define("CF7_API_MIN_PHP_VERSION", "8.2");
 define("CF7_API_MIN_WP_VERSION", "6.5");
 ```
 
-### src/Core/Interfaces/LoadableInterface.php - Component Contract
+### includes/Core/Interfaces/LoadableInterface.php - Component Contract
 **Purpose**: Define contract for all loadable components with priority-based loading
 **Pattern**: Interface with three required methods
 
@@ -122,7 +174,7 @@ define("CF7_API_MIN_WP_VERSION", "6.5");
 - **30**: Admin components (settings pages, metaboxes)
 - **40**: Utility components (helpers, formatters)
 
-### src/Core/Activator.php - Lifecycle Management
+### includes/Core/Activator.php - Lifecycle Management
 **Purpose**: Handle plugin activation, deactivation, and uninstallation
 **Pattern**: Static methods for WordPress lifecycle hooks
 
@@ -159,7 +211,7 @@ Activator::create_tables();
 // This avoids MySQL implicit COMMIT issues
 ```
 
-### src/Core/Plugin.php - Main Controller
+### includes/Core/Plugin.php - Main Controller
 **Purpose**: Central plugin coordinator implementing LoadableInterface
 **Pattern**: Singleton with LoadableInterface implementation
 
@@ -188,9 +240,9 @@ Activator::create_tables();
 - `get_priority(): int` - Return 10 (Core priority)
 - `should_load(): bool` - Check WordPress version and dependencies
 
-### src/ContactForm/Integration.php - CF7 Integration
+### includes/ContactForm/Integration.php - CF7 Integration
 **Purpose**: Complete Contact Form 7 to API integration functionality
-**Pattern**: Singleton implementing LoadableInterface
+**Pattern**: Singleton implementing LoadableInterface with View delegation
 **Integration**: Direct CF7 hooks via `wpcf7_editor_panels` and `wpcf7_before_send_mail`
 
 **Implements**: `LoadableInterface`
@@ -201,7 +253,7 @@ Activator::create_tables();
   * `wpcf7_editor_panels` - Add "API Integration" tab
   * `wpcf7_before_send_mail` - Process form submissions
   * Admin enqueue scripts/styles
-
+- `render_integration_panel()` - Delegates to IntegrationView
 - `get_priority(): int` - Return 30 (Admin priority)
 - `should_load(): bool` - Return `is_admin()` (admin-only functionality)
 
@@ -213,6 +265,120 @@ Activator::create_tables();
 - **Authentication**: Bearer tokens, Basic Auth, API keys, custom headers
 - **Error Handling**: Comprehensive logging and retry mechanisms
 - **Debug Mode**: Detailed logging for troubleshooting
+
+### includes/ContactForm/Views/IntegrationView.php - CF7 Panel HTML
+**Purpose**: HTML rendering for CF7 API Integration panel
+**Pattern**: Static View class with render methods
+
+**Key Methods**:
+- `render_panel(...)` - Main panel rendering with all sections
+- `render_base_fields()` - URL and enable checkbox
+- `render_input_type_field()` - Input type selector
+- `render_method_field()` - HTTP method selector
+- `render_retry_config()` - Retry configuration section
+- `render_params_mapping()` - Field mapping table
+- `render_xml_template()` - XML template editor
+- `render_json_template()` - JSON template editor
+- `render_debug_section()` - Logs and statistics display
+
+### includes/Services/ApiClient.php - HTTP Client Service
+**Purpose**: Centralized HTTP client with retry logic and logging
+**Pattern**: Singleton implementing LoadableInterface
+**Priority**: 20 (Services layer)
+
+**Implements**: `LoadableInterface`
+**Singleton**: `instance()` method, private constructor
+
+**Key Methods**:
+- `request(string $url, array $config): array` - Execute HTTP request
+- `post(string $url, array $data, array $headers = []): array` - POST shortcut
+- `get(string $url, array $params = [], array $headers = []): array` - GET shortcut
+- `get_priority(): int` - Returns 20 (Services priority)
+- `should_load(): bool` - Returns true (always available)
+
+**Features**:
+- Retry logic with exponential backoff
+- Request/response logging via Core\RequestLogger
+- Authentication header handling (Bearer, Basic, API Key)
+- Configurable timeout and SSL verification
+- Error categorization and handling
+
+### includes/Services/CheckboxHandler.php - Checkbox Value Processing
+**Purpose**: Handle CF7 checkbox values for API submission
+**Pattern**: Static utility class
+
+**Key Methods**:
+- `is_checkbox_value(mixed $value): bool` - Check if value represents checkbox
+- `is_checkbox_checked(mixed $value): bool` - Determine if checkbox is checked
+- `convert_checkbox_value(mixed $value, array $options = []): mixed` - Convert to API format
+
+**Conversion Options**:
+- `true_value` - Value for checked state (default: "1")
+- `false_value` - Value for unchecked state (default: "0")
+- `format` - Output format: "boolean", "string", "integer"
+
+### includes/Admin/RequestLogController.php - Request Logs Admin
+**Purpose**: Admin interface for viewing API request/response logs
+**Pattern**: MVC Controller with View delegation
+
+**Key Methods**:
+- `handle_page_request(): void` - Route to appropriate view
+- `show_logs_list(): void` - Display logs list table
+- `show_log_detail(int $log_id): void` - Display single log detail
+- `process_bulk_actions(): void` - Handle bulk delete/export
+
+### includes/Admin/Views/RequestLogView.php - Request Logs HTML
+**Purpose**: HTML rendering for request logs pages
+**Pattern**: Static View class with render methods
+
+**Key Methods**:
+- `render_page(RequestLogTable $table, array $statistics): void` - Main page
+- `render_statistics(array $stats): void` - Stats cards
+- `render_detail(array $log): void` - Single log detail view
+- `render_notices(array $notices): void` - Admin notices
+
+### includes/Admin/Views/SettingsView.php - Settings Page HTML
+**Purpose**: HTML rendering for Settings Hub documentation page
+**Pattern**: Static View class with render methods
+
+**Key Methods**:
+- `render_page(): void` - Main settings page
+- `render_how_to_section(): void` - Usage instructions
+- `render_quick_links_section(): void` - Quick navigation links
+- `render_status_section(): void` - Plugin status display
+
+### includes/Core/RequestLogger.php - API Request Logger
+**Purpose**: Database-backed logging for API requests/responses
+**Pattern**: Singleton implementing LoadableInterface
+**Storage**: Custom database table `{prefix}cf7_api_logs`
+
+**Key Methods**:
+- `log(array $data): int|false` - Log request/response to database
+- `get_logs(array $args = []): array` - Retrieve logs with filtering
+- `get_log(int $id): array|null` - Get single log entry
+- `delete_logs(array $ids): int` - Delete log entries
+- `get_statistics(): array` - Get log statistics for dashboard
+
+### includes/Utils/DebugLogger.php - Debug File Logger
+**Purpose**: PSR-3 compliant file logger for plugin debugging
+**Pattern**: Singleton implementing LoadableInterface
+**Storage**: File at `wp-content/uploads/cf7-to-api-debug.log`
+
+**Key Methods**:
+- `debug(string $message, array $context = []): void` - Debug level
+- `info(string $message, array $context = []): void` - Info level
+- `warning(string $message, array $context = []): void` - Warning level
+- `error(string $message, array $context = []): void` - Error level
+- `log(string $level, string $message, array $context = []): void` - Generic log
+
+### includes/Utils/StringHelper.php - String Utilities
+**Purpose**: String manipulation utilities for field mapping
+**Pattern**: Static utility class
+
+**Key Methods**:
+- `kebab_to_camel(string $string): string` - Convert kebab-case to camelCase
+- `camel_to_kebab(string $string): string` - Convert camelCase to kebab-case
+- `fields_match(string $field1, string $field2): bool` - Case-insensitive field comparison
 
 ## Asset Architecture
 
@@ -570,54 +736,67 @@ define("CF7_API_MIN_WP_VERSION", "6.5");
 
 ## GitHub CLI Workflows
 
-### IMPORTANT: Pager Configuration
-**ALWAYS** use `PAGER=cat gh ...` or `gh ... | cat` to prevent interactive pager issues.
+### 🚨 CRITICAL: Pager Configuration
+**ALWAYS** append `| cat` to ALL `gh` commands to prevent the terminal from waiting for interactive pager input.
+
+**Why**: GitHub CLI uses a pager by default for output. In non-interactive environments (like AI agents), this causes the terminal to hang indefinitely waiting for user input.
+
+**Rule**: Every `gh` command MUST end with `| cat`:
+```bash
+# ✅ CORRECT - Always use | cat
+gh pr checks | cat
+gh run list | cat
+gh run view <run-id> --log | cat
+
+# ❌ WRONG - Terminal will hang
+gh pr checks
+gh run list
+```
 
 ### Monitor CI/CD Status
 ```bash
 # View workflow runs
-PAGER=cat gh run list
 gh run list | cat
 
 # Watch specific workflow run
-PAGER=cat gh run view <run-id>
 gh run view <run-id> | cat
 
 # View workflow run logs
-PAGER=cat gh run view <run-id> --log
-gh run view --log | cat
+gh run view <run-id> --log | cat
 
 # Check status of latest run
-PAGER=cat gh run list --limit 1
+gh run list --limit 1 | cat
+
+# View failed logs only
+gh run view <run-id> --log-failed | cat
 ```
 
 ### Common Workflow Tasks
 ```bash
 # List all workflows
-PAGER=cat gh workflow list
+gh workflow list | cat
 
 # View workflow details
-PAGER=cat gh workflow view <workflow-name>
+gh workflow view <workflow-name> | cat
 
-# Trigger manual workflow
+# Trigger manual workflow (no output, no | cat needed)
 gh workflow run <workflow-name>
 
-# Re-run failed jobs
+# Re-run failed jobs (no output, no | cat needed)
 gh run rerun <run-id>
 
-# Cancel running workflow
+# Cancel running workflow (no output, no | cat needed)
 gh run cancel <run-id>
 ```
 
 ### Pull Request Commands
 ```bash
 # View PR checks status
-PAGER=cat gh pr checks
 gh pr checks | cat
 
 # View PR status
-PAGER=cat gh pr status
+gh pr status | cat
 
 # View PR details
-PAGER=cat gh pr view <pr-number>
+gh pr view <pr-number> | cat
 ```

@@ -48,6 +48,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ PHPUnit: 37/37 tests passing (103 assertions)
 
 ### Planned Features
+
+#### API Logs Enhancements
+- **AJAX Live Refresh**: Real-time statistics updates without page reload
+- **Retry Mechanism**: Execute retry for failed API requests from admin UI
+- **Export Logs**: Export logs to CSV/JSON formats
+- **Dashboard Widget**: Summary widget for WordPress dashboard
+- **Email Alerts**: Notifications when error rate exceeds threshold
+- **Performance Charts**: Visual trends and analytics with Chart.js
+- **Advanced Date Filters**: Filter logs by custom date ranges
+
+#### API Integration
 - **GraphQL API Support**: Native support for GraphQL endpoints
 - **Advanced Analytics**: Detailed analytics dashboard with charts and reports  
 - **Webhook Security**: Enhanced security with signature verification

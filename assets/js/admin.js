@@ -70,8 +70,8 @@
       });
 
       // Debug log toggle
-      $(document).on("click", ".debug-log-trigger", () => {
-        this.toggleDebugLog();
+      $(document).on("click", ".debug-log-trigger", (e) => {
+        this.toggleDebugLog($(e.currentTarget));
       });
 
       // API URL validation - corrected selector
@@ -184,11 +184,11 @@
      * Toggle debug log visibility
      *
      * @since 1.0.0
+     * @param {jQuery} $trigger The clicked trigger button
      * @return {void}
      */
-    toggleDebugLog() {
-      const $trigger = $(".debug-log-trigger");
-      const $wrap = $(".debug-log-wrap");
+    toggleDebugLog($trigger) {
+      const $wrap = $trigger.next(".debug-log-wrap");
 
       if ($wrap.is(":visible")) {
         $wrap.slideUp(300);

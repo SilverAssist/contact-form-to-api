@@ -1,21 +1,23 @@
-# Copyright (C) 2024 Silver Assist
+# Copyright (C) 2026 Silver Assist
 # This file is distributed under the Polyform-Noncommercial-1.0.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: Contact Form 7 to API 1.0.0\n"
+"Project-Id-Version: CF7 to API 1.0.1\n"
 "Report-Msgid-Bugs-To: https://github.com/SilverAssist/contact-form-to-api/issues\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: Contact Form 7 to API <support@silverassist.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-08-13T18:22:45+00:00\n"
+"POT-Creation-Date: 2026-01-02T16:19:53+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: contact-form-to-api\n"
 
 #. Plugin Name of the plugin
 #: contact-form-to-api.php
-msgid "Contact Form 7 to API"
+#: includes/Admin/SettingsPage.php:143
+msgid "CF7 to API"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -25,7 +27,7 @@ msgstr ""
 
 #. Description of the plugin
 #: contact-form-to-api.php
-msgid "Integrate Contact Form 7 with external APIs. Send form submissions to custom API endpoints with advanced configuration options."
+msgid "Extend Contact Form 7 functionality by connecting forms to external APIs. Send form submissions to custom API endpoints with advanced configuration options."
 msgstr ""
 
 #. Author of the plugin
@@ -38,170 +40,553 @@ msgstr ""
 msgid "https://silverassist.com"
 msgstr ""
 
-#: contact-form-to-api.php:253
-msgid "Contact Form 7 to API plugin could not be activated due to missing requirements."
+#: contact-form-to-api.php:65
+msgid "Contact Form 7 to API: Missing or invalid Composer dependencies. Run \"composer install\"."
 msgstr ""
 
-#. translators: 1: Required PHP version, 2: Current PHP version
-#: contact-form-to-api.php:361
+#: includes/Admin/RequestLogController.php:116
+#: includes/Admin/RequestLogController.php:117
+#: includes/Admin/Views/RequestLogView.php:40
+#: includes/Admin/Views/SettingsView.php:251
+msgid "API Logs"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:135
+msgid "Logs per page"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:179
+msgid "Security check failed"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:289
+msgid "Log entry not found."
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:54
+msgid "Form"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:55
+#: includes/Admin/Views/RequestLogView.php:141
+#: includes/ContactForm/Views/IntegrationView.php:405
+msgid "Endpoint"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:56
+#: includes/Admin/Views/RequestLogView.php:145
+#: includes/ContactForm/Views/IntegrationView.php:160
+#: includes/ContactForm/Views/IntegrationView.php:406
+msgid "Method"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:57
+#: includes/Admin/Views/RequestLogView.php:149
+#: includes/ContactForm/Views/IntegrationView.php:407
+msgid "Status"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:58
+msgid "Response"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:59
+#: includes/ContactForm/Views/IntegrationView.php:409
+msgid "Time (s)"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:60
+#: includes/ContactForm/Views/IntegrationView.php:410
+msgid "Retries"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:61
+#: includes/Admin/Views/RequestLogView.php:153
+#: includes/ContactForm/Views/IntegrationView.php:404
+msgid "Date"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:88
+#: includes/Admin/RequestLogTable.php:384
+msgid "Delete"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:89
+#: includes/Admin/RequestLogTable.php:367
+msgid "Retry"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:131
+msgid "All"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:139
+msgid "Success"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:147
+msgid "Errors"
+msgstr ""
+
+#. translators: %d: Form ID number
+#: includes/Admin/RequestLogTable.php:319
 #, php-format
-msgid "Contact Form 7 to API requires PHP version %1$s or higher. You are running version %2$s."
+msgid "Form #%d"
 msgstr ""
 
-#. translators: 1: Required WordPress version, 2: Current WordPress version
-#: contact-form-to-api.php:379
+#: includes/Admin/RequestLogTable.php:349
+msgid "View Details"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:444
+msgid "No API logs found."
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:128
+msgid "Check Updates"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:137
+msgid "Contact Form 7 to API"
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:140
+msgid "Send CF7 form submissions to external APIs with field mapping and logging."
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:180
+msgid "Checking..."
+msgstr ""
+
+#. translators: %s: Version number
+#: includes/Admin/SettingsPage.php:182
 #, php-format
-msgid "Contact Form 7 to API requires WordPress version %1$s or higher. You are running version %2$s."
+msgid "Update available: v%s! Redirecting..."
 msgstr ""
 
-#: contact-form-to-api.php:395
-msgid "Contact Form 7 to API requires Contact Form 7 plugin to be installed and activated."
+#: includes/Admin/SettingsPage.php:183
+msgid "Plugin is up to date!"
 msgstr ""
 
-#: contact-form-to-api.php:407
-msgid "Contact Form 7 to API: Please run 'composer install' to install required dependencies."
+#: includes/Admin/SettingsPage.php:184
+msgid "Error checking updates. Please try again."
 msgstr ""
 
-#: src/ContactForm/Integration.php:139
-#: src/ContactForm/Integration.php:228
+#: includes/Admin/SettingsPage.php:185
+msgid "Error connecting to update server."
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:47
+msgid "Search logs"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:80
+#: includes/ContactForm/Views/IntegrationView.php:360
+msgid "Total Requests"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:84
+#: includes/ContactForm/Views/IntegrationView.php:364
+msgid "Successful"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:89
+#: includes/ContactForm/Views/IntegrationView.php:371
+msgid "Failed"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:93
+#: includes/ContactForm/Views/IntegrationView.php:375
+msgid "Avg Response Time"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:109
+msgid "API Log Detail"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:113
+msgid "Back to Logs"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:138
+msgid "Request Information"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:157
+msgid "Execution Time"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:161
+msgid "Retry Count"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:181
+msgid "Request Headers"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:196
+msgid "Request Data"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:211
+msgid "Response Information"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:214
+#: includes/ContactForm/Views/IntegrationView.php:408
+msgid "Response Code"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:219
+msgid "Error Message"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:240
+msgid "Response Headers"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:258
+msgid "Response Data"
+msgstr ""
+
+#. translators: %d: number of deleted logs
+#: includes/Admin/Views/RequestLogView.php:278
+#, php-format
+msgid "%d log entry deleted."
+msgid_plural "%d log entries deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of retried logs
+#: includes/Admin/Views/RequestLogView.php:301
+#, php-format
+msgid "%d log entry queued for retry."
+msgid_plural "%d log entries queued for retry."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Admin/Views/SettingsView.php:56
+msgid "How to Configure API Integration"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:82
+msgid "Open your Contact Form 7 form"
+msgstr ""
+
+#. translators: %s: Link to Contact Forms page
+#: includes/Admin/Views/SettingsView.php:87
+#, php-format
+msgid "Go to %s and select the form you want to integrate with an API."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:107
+msgid "Navigate to the API Integration tab"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:108
+msgid "In the form editor, click on the \"API Integration\" tab to access the API settings."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:111
+msgid "Each form can have its own API endpoint and configuration."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:128
+msgid "Enable API Integration"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:129
+msgid "Check the \"Send to API\" checkbox to enable the integration for this form."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:145
+msgid "Configure your API endpoint"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:146
+msgid "Enter the following settings:"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:149
+msgid "API URL:"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:150
+msgid "The full URL of your API endpoint (e.g., https://api.example.com/leads)"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:153
+msgid "HTTP Method:"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:154
+msgid "Usually POST for form submissions"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:157
+msgid "Input Type:"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:158
+msgid "JSON or Form Data, depending on your API requirements"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:176
+msgid "Map your form fields"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:177
+msgid "Use the field mapping section to match your CF7 form fields with the API parameters."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:184
+msgid "Click on the mail tags to insert them into your field mapping."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:201
+msgid "Add authentication (if required)"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:202
+msgid "If your API requires authentication, add the necessary headers:"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:222
+msgid "Save and test"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:223
+msgid "Save your form and submit a test entry. Check the API Logs to verify the submission was successful."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:239
+msgid "Quick Links"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:245
+msgid "Contact Forms"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:246
+msgid "Manage your CF7 forms"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:252
+msgid "View submission history"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:257
+msgid "Documentation"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:258
+msgid "Full plugin documentation"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:263
+msgid "Support"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:264
+msgid "Report issues or get help"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:282
+msgid "Plugin Status"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:287
+msgid "Plugin Version"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:291
+msgid "Contact Form 7"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:296
+msgid "Active"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:301
+msgid "Not Active - Plugin requires Contact Form 7"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:307
+msgid "PHP Version"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:311
+msgid "WordPress Version"
+msgstr ""
+
+#: includes/ContactForm/Integration.php:170
+#: includes/ContactForm/Views/IntegrationView.php:63
 msgid "API Integration"
 msgstr ""
 
-#: src/ContactForm/Integration.php:211
+#: includes/ContactForm/Views/IntegrationView.php:107
+msgid "Send to API?"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:113
+msgid "Base URL"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:132
+msgid "Input type"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:135
+msgid "Parameters - GET/POST"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:138
+msgid "XML"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:141
+msgid "JSON"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:179
+msgid "Retry Configuration"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:180
+msgid "Configure automatic retry behavior for failed API requests."
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:184
+msgid "Maximum Retries"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:188
+msgid "Number of times to retry a failed request (0-10). Default: 3"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:193
+msgid "Retry Delay (seconds)"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:197
+msgid "Initial delay between retries in seconds (uses exponential backoff). Default: 2"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:203
+msgid "Retry on timeout errors"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:205
+msgid "Automatically retry when API request times out."
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:222
+#: includes/ContactForm/Views/IntegrationView.php:226
+msgid "Form fields"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:227
+msgid "API Key"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:272
+msgid "XML Template"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:300
+msgid "JSON Template"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:334
+msgid "API Call Logs & Statistics"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:357
+msgid "Overall Statistics"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:376
+msgid "seconds"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:379
+msgid "Max Retries Used"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:397
+msgid "Recent API Calls (Last 5)"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:434
+msgid "No API calls logged yet. Submit a form to see logs here."
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:450
+msgid "Legacy Debug Info (Last Transmission)"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:454
+msgid "Called URL"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:457
+msgid "Params"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:460
+msgid "Remote server result"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:463
+msgid "Error logs"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:477
 msgid ""
 "*** THIS IS AN EXAMPLE ** USE YOUR XML ACCORDING TO YOUR API DOCUMENTATION **\n"
 "<update>\n"
-"    <user clientid=\"\" username=\"user_name\" password=\"mypassword\" />\n"
+"    <user clientid=\"\" username=\"\" auth=\"\" />\n"
 "    <reports>\n"
 "        <report tag=\"NEW\">\n"
 "            <fields>\n"
-"               <field id=\"1\" name=\"REFERENCE_ID\" value=\"[your-name]\" />\n"
-"               <field id=\"2\" name=\"DESCRIPTION\" value=\"[your-email]\" />\n"
+"              <field id=\"1\" name=\"REFERENCE_ID\" value=\"[your-name]\" />\n"
+"              <field id=\"2\" name=\"DESCRIPTION\" value=\"[your-email]\" />\n"
 "            </fields>\n"
 "        </report>\n"
 "    </reports>\n"
 "</update>"
 msgstr ""
 
-#: src/ContactForm/Integration.php:224
+#: includes/ContactForm/Views/IntegrationView.php:501
 msgid ""
 "*** THIS IS AN EXAMPLE ** USE YOUR JSON ACCORDING TO YOUR API DOCUMENTATION **\n"
 "{ \"name\":\"[fullname]\", \"age\":30, \"car\":null }"
 msgstr ""
 
-#: src/ContactForm/Integration.php:236
-msgid "Send to API?"
+#. translators: %s: required PHP version
+#: includes/Core/Activator.php:203
+#, php-format
+msgid "Contact Form 7 to API requires PHP %s or higher."
 msgstr ""
 
-#: src/ContactForm/Integration.php:242
-msgid "Base URL"
+#. translators: %s: required WordPress version
+#: includes/Core/Activator.php:219
+#, php-format
+msgid "Contact Form 7 to API requires WordPress %s or higher."
 msgstr ""
 
-#: src/ContactForm/Integration.php:252
-msgid "Input type"
+#: includes/Core/Activator.php:232
+msgid "Contact Form 7 to API requires Contact Form 7 to be active."
 msgstr ""
 
-#: src/ContactForm/Integration.php:255
-msgid "Parameters - GET/POST"
+#: includes/Core/Plugin.php:344
+msgid "Settings"
 msgstr ""
 
-#: src/ContactForm/Integration.php:258
-msgid "XML"
-msgstr ""
-
-#: src/ContactForm/Integration.php:261
-msgid "JSON"
-msgstr ""
-
-#: src/ContactForm/Integration.php:269
-msgid "Method"
-msgstr ""
-
-#: src/ContactForm/Integration.php:283
-#: src/ContactForm/Integration.php:287
-msgid "Form fields"
-msgstr ""
-
-#: src/ContactForm/Integration.php:288
-msgid "API Key"
-msgstr ""
-
-#: src/ContactForm/Integration.php:321
-msgid "XML Template"
-msgstr ""
-
-#: src/ContactForm/Integration.php:337
-msgid "JSON Template"
-msgstr ""
-
-#: src/ContactForm/Integration.php:361
-msgid "DEBUG LOG (View last transmission attempt)"
-msgstr ""
-
-#: src/ContactForm/Integration.php:364
-msgid "LAST API CALL"
-msgstr ""
-
-#: src/ContactForm/Integration.php:366
-msgid "Called URL"
-msgstr ""
-
-#: src/ContactForm/Integration.php:369
-msgid "Params"
-msgstr ""
-
-#: src/ContactForm/Integration.php:372
-msgid "Remote server result"
-msgstr ""
-
-#: src/ContactForm/Integration.php:375
-msgid "Error logs"
-msgstr ""
-
-#: src/ContactForm/Integration.php:660
+#: includes/Services/ApiClient.php:446
 msgid "XML functions not available"
 msgstr ""
 
-#: src/ContactForm/Integration.php:667
+#: includes/Services/ApiClient.php:453
 msgid "XML Structure is incorrect"
-msgstr ""
-
-#: src/Core/Plugin.php:178
-msgid "Testing..."
-msgstr ""
-
-#: src/Core/Plugin.php:179
-msgid "Test Connection"
-msgstr ""
-
-#: src/Core/Plugin.php:180
-msgid "Connection failed"
-msgstr ""
-
-#: src/Core/Plugin.php:181
-msgid "Select Field"
-msgstr ""
-
-#: src/Core/Plugin.php:182
-msgid "Are you sure you want to delete this integration?"
-msgstr ""
-
-#: src/Core/Plugin.php:183
-msgid "Invalid JSON format"
-msgstr ""
-
-#: src/Core/Plugin.php:184
-msgid "Invalid XML format"
-msgstr ""
-
-#: src/Core/Plugin.php:185
-msgid "Saving..."
-msgstr ""
-
-#: src/Core/Plugin.php:186
-msgid "Saved successfully"
-msgstr ""
-
-#: src/Core/Plugin.php:187
-msgid "Error saving settings"
 msgstr ""

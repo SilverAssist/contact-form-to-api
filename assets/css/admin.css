@@ -164,14 +164,20 @@ body.cf7-input-type-json .cf7_row[data-cf7index="params"] {
 /* Debug log styling */
 .debug-log-trigger {
   display: block;
+  width: 100%;
   padding: 12px 15px;
   background: #0073aa;
   color: white;
   text-decoration: none;
+  text-align: left;
+  border: none;
   border-radius: 4px;
   margin-bottom: 10px;
   cursor: pointer;
+  font-size: 14px;
+  line-height: 1.4;
   transition: background-color 0.2s ease;
+  box-sizing: border-box;
 }
 
 .debug-log-trigger:hover {
@@ -819,5 +825,189 @@ body.cf7-input-type-json .cf7_row[data-cf7index="params"] {
 
   100% {
     transform: rotate(360deg);
+  }
+}
+
+/* Statistics Section Styles */
+.cf7-api-stats {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+.cf7-api-stats h4 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.cf7-api-stats table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cf7-api-stats table tr {
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.cf7-api-stats table tr:last-child {
+  border-bottom: none;
+}
+
+.cf7-api-stats table th {
+  text-align: left;
+  padding: 8px 10px;
+  font-weight: 600;
+  color: #555;
+  background: transparent;
+  width: 40%;
+}
+
+.cf7-api-stats table td {
+  padding: 8px 10px;
+  color: #333;
+  background: transparent;
+}
+
+/* Status badges for API logs */
+.cf7-api-status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.cf7-api-status-success {
+  background-color: #d7f5d7;
+  color: #00a32a;
+}
+
+.cf7-api-status-error {
+  background-color: #ffd6d6;
+  color: #d63638;
+}
+
+.cf7-api-status-pending {
+  background-color: #fff2c7;
+  color: #b47500;
+}
+
+.cf7-api-status-client_error {
+  background-color: #ffe5e5;
+  color: #cc1818;
+}
+
+.cf7-api-status-server_error {
+  background-color: #ffebe8;
+  color: #d63638;
+}
+
+.cf7-api-status-unknown {
+  background-color: #f0f0f1;
+  color: #646970;
+}
+
+/* Retry configuration section */
+#cf7-api-integration h3 {
+  margin: 15px 0 10px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.cf7_row .description {
+  margin-top: 5px;
+  font-size: 13px;
+  color: #646970;
+  font-style: italic;
+  display: block;
+}
+
+.cf7_row input[type="number"] {
+  width: auto;
+  min-width: 80px;
+  max-width: 150px;
+}
+
+/* Recent logs table improvements */
+.debug-log-wrap table.widefat {
+  margin-top: 10px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.debug-log-wrap table.widefat thead th {
+  background: #f8f9fa;
+  padding: 10px;
+  font-weight: 600;
+  color: #555;
+  border-bottom: 2px solid #ddd;
+  font-size: 13px;
+}
+
+.debug-log-wrap table.widefat tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f1;
+  font-size: 13px;
+  color: #333;
+}
+
+.debug-log-wrap table.widefat tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.debug-log-wrap table.widefat tbody tr:hover {
+  background: #f9f9f9;
+}
+
+/* Responsive improvements for new tables */
+@media (max-width: 782px) {
+  .cf7-api-stats table {
+    font-size: 13px;
+  }
+
+  .cf7-api-stats table th {
+    width: 50%;
+  }
+
+  .debug-log-wrap table.widefat,
+  .debug-log-wrap table.widefat thead,
+  .debug-log-wrap table.widefat tbody,
+  .debug-log-wrap table.widefat tr,
+  .debug-log-wrap table.widefat th,
+  .debug-log-wrap table.widefat td {
+    display: block;
+    width: 100%;
+  }
+
+  .debug-log-wrap table.widefat thead {
+    display: none;
+  }
+
+  .debug-log-wrap table.widefat tbody tr {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+  }
+
+  .debug-log-wrap table.widefat tbody td {
+    padding: 5px 0;
+    border: none;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .debug-log-wrap table.widefat tbody td:before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #555;
   }
 }
