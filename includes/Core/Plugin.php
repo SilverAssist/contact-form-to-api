@@ -203,9 +203,9 @@ class Plugin implements LoadableInterface {
 
 		// Create updater configuration.
 		$config = new \SilverAssist\WpGithubUpdater\UpdaterConfig(
+			CF7_API_FILE,
+			'SilverAssist/contact-form-to-api',
 			array(
-				'plugin_file'        => CF7_API_FILE,
-				'github_repository'  => 'SilverAssist/contact-form-to-api',
 				'plugin_slug'        => 'contact-form-to-api',
 				'plugin_name'        => 'Contact Form 7 to API',
 				'requires_wordpress' => CF7_API_MIN_WP_VERSION,
