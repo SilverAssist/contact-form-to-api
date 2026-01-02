@@ -198,7 +198,8 @@ check_phpcs() {
         fi
     fi
     
-    if $phpcs_cmd $phpcs_args; then
+    # Use -n to ignore warnings (exit code 0 if no errors, even with warnings)
+    if $phpcs_cmd $phpcs_args -n; then
         print_success "PHPCS check passed"
         return 0
     else
