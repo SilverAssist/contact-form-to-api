@@ -265,9 +265,9 @@ class Activator {
 				$settings->init();
 				\update_option( 'cf7_api_global_settings', $settings::get_defaults() );
 
-				// Schedule daily log cleanup if retention is enabled.
+				// Schedule daily log cleanup if retention is enabled and not already scheduled.
 				$retention_days = $settings->get_log_retention_days();
-				if ( $retention_days > 0 ) {
+				if ( $retention_days > 0 && ! \wp_next_scheduled( 'cf7_api_cleanup_old_logs' ) ) {
 					\wp_schedule_event( \time(), 'daily', 'cf7_api_cleanup_old_logs' );
 				}
 			}

@@ -225,13 +225,18 @@ class SettingsTest extends TestCase {
 	public function testSettingsPersistAcrossInstances(): void {
 		$this->settings->set( 'max_manual_retries', 8 );
 
-		// Get new instance and verify persistence.
-		\delete_option( 'cf7_api_global_settings' );
+		// Update the option directly to simulate database persistence.
 		\update_option( 'cf7_api_global_settings', array( 'max_manual_retries' => 8 ) );
 
-		$new_settings = Settings::instance();
-		$new_settings->init();
+		// Force the Settings singleton to reload from the stored option
+		// by resetting its internal initialization flag.
+		$reflection  = new \ReflectionClass( Settings::class );
+		$initialized = $reflection->getProperty( 'initialized' );
+		$initialized->setAccessible( true );
+		$initialized->setValue( $this->settings, false );
 
-		$this->assertSame( 8, $new_settings->get( 'max_manual_retries' ) );
+		$this->settings->init();
+
+		$this->assertSame( 8, $this->settings->get( 'max_manual_retries' ) );
 	}
 }
