@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### API Logs Enhancements
 - **AJAX Live Refresh**: Real-time statistics updates without page reload
-- **Email Alerts**: Notifications when error rate exceeds threshold
 - **Performance Charts**: Visual trends and analytics with Chart.js
 
 #### API Integration
@@ -25,6 +24,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2026-01-03
 
 ### Added
+- **Email Alerts for High API Error Rates**: Proactive monitoring with email notifications (#24)
+  * New `EmailAlertService` monitors hourly error statistics via WordPress cron
+  * Dual threshold detection: error count (default: 10/hr) and error rate (default: 20%)
+  * Configurable cooldown period (1-24 hours) prevents alert spam
+  * HTML email template with error details, recent failures, and direct log link
+  * Multiple recipients support (comma-separated email addresses)
+  * "Send Test Email" button with AJAX validation
+  * Dynamic cron rescheduling when check interval changes
+  * All alert settings stored in `cf7_api_global_settings` option
 - **Retry Failed Requests from Admin UI**: Manual retry mechanism for failed API requests (#21)
   * Retry button on log detail page for failed requests (error, client_error, server_error statuses)
   * Bulk retry action in logs list table for multiple failed requests
@@ -87,7 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * `get_recent_errors()`: Retrieve most recent failed requests
 - **Global Plugin Settings Page**: Centralized configuration for plugin-wide settings (#28)
   * New `Core\Settings` singleton class for settings management
-  * New `Admin\GlobalSettingsController` and `Admin\Views\GlobalSettingsView` for admin UI
+  * New `Admin\GlobalSettingsController` for form handling
   * **Retry Configuration**: Configure `max_manual_retries` and `max_retries_per_hour` from admin
   * **Sensitive Data Patterns**: Add custom field patterns for anonymization (project-specific)
   * **Logging Control**: Toggle API request logging on/off (useful for GDPR compliance)

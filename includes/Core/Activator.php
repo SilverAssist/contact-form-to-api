@@ -272,11 +272,8 @@ class Activator {
 					\wp_schedule_event( \time(), 'daily', 'cf7_api_cleanup_old_logs' );
 				}
 
-				// Schedule email alert checks if enabled and not already scheduled.
-				if ( $settings->is_alerts_enabled() && ! \wp_next_scheduled( 'cf7_api_check_alerts' ) ) {
-					$interval = $settings->get_alert_check_interval();
-					\wp_schedule_event( \time(), $interval, 'cf7_api_check_alerts' );
-				}
+				// Note: Email alert cron is scheduled when user enables alerts in settings.
+				// Default is disabled, so we don't schedule here.
 			}
 		}
 	}

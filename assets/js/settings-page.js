@@ -43,13 +43,13 @@
 			const firstEmail = recipient.split(',')[0].trim();
 
 			if (!firstEmail) {
-				showResult(resultSpan, 'error', 'Please enter a recipient email address.');
+				showResult(resultSpan, 'error', cf7ApiSettings.i18n.enterRecipient);
 				return;
 			}
 
 			// Disable button and show loading state.
 			button.prop('disabled', true);
-			button.text('Sending...');
+			button.text(cf7ApiSettings.i18n.sending);
 			resultSpan.html('');
 
 			// Send AJAX request.
@@ -69,12 +69,12 @@
 					}
 				},
 				error: function () {
-					showResult(resultSpan, 'error', 'An error occurred while sending the test email.');
+					showResult(resultSpan, 'error', cf7ApiSettings.i18n.ajaxError);
 				},
 				complete: function () {
 					// Re-enable button and restore text.
 					button.prop('disabled', false);
-					button.text('Send Test Email');
+					button.text(cf7ApiSettings.i18n.sendTestEmail);
 				}
 			});
 		});

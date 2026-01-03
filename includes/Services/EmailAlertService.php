@@ -283,9 +283,11 @@ class EmailAlertService implements LoadableInterface {
 		$html .= '<tr><td>' . \esc_html__( 'Site', 'contact-form-to-api' ) . '</td><td>' . \esc_html( $site_name ) . '</td></tr>';
 		$html .= '<tr><td>' . \esc_html__( 'Time', 'contact-form-to-api' ) . '</td><td>' . \esc_html( $timestamp ) . '</td></tr>';
 		$html .= '<tr><td>' . \esc_html__( 'Errors (last hour)', 'contact-form-to-api' ) . '</td><td>' . \esc_html( (string) $stats['errors'] ) . '</td></tr>';
-		$html .= '<tr><td>' . \esc_html__( 'Error Rate', 'contact-form-to-api' ) . '</td><td>' . \esc_html( $stats['error_rate'] ) . '%</td></tr>';
-		$html .= '<tr><td>' . \esc_html__( 'Total Requests', 'contact-form-to-api' ) . '</td><td>' . \esc_html( (string) $stats['total_requests'] ) . '</td></tr>';
-		$html .= '</table>';
+
+		$error_rate = \number_format( (float) $stats['error_rate'], 2 );
+		$html      .= '<tr><td>' . \esc_html__( 'Error Rate', 'contact-form-to-api' ) . '</td><td>' . \esc_html( $error_rate . '%' ) . '</td></tr>';
+		$html      .= '<tr><td>' . \esc_html__( 'Total Requests', 'contact-form-to-api' ) . '</td><td>' . \esc_html( (string) $stats['total_requests'] ) . '</td></tr>';
+		$html      .= '</table>';
 
 		if ( ! empty( $recent_errors ) ) {
 			$html .= '<h3>' . \esc_html__( 'Recent Errors', 'contact-form-to-api' ) . '</h3>';

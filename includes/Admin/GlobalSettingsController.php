@@ -149,8 +149,15 @@ class GlobalSettingsController implements LoadableInterface {
 			'cf7-api-settings',
 			'cf7ApiSettings',
 			array(
-				'ajaxUrl' => \admin_url( 'admin-ajax.php' ),
-				'nonce'   => \wp_create_nonce( 'cf7_api_test_email' ),
+				'ajaxUrl'            => \admin_url( 'admin-ajax.php' ),
+				'nonce'              => \wp_create_nonce( 'cf7_api_test_email' ),
+				// i18n strings for JavaScript.
+				'i18n'               => array(
+					'enterRecipient' => \__( 'Please enter a recipient email address.', 'contact-form-to-api' ),
+					'sending'        => \__( 'Sending...', 'contact-form-to-api' ),
+					'sendTestEmail'  => \__( 'Send Test Email', 'contact-form-to-api' ),
+					'ajaxError'      => \__( 'An error occurred while sending the test email.', 'contact-form-to-api' ),
+				),
 			)
 		);
 	}
@@ -183,7 +190,7 @@ class GlobalSettingsController implements LoadableInterface {
 			'log_retention_days'      => isset( $_POST['log_retention_days'] ) ? \absint( $_POST['log_retention_days'] ) : 30,
 			// Email alert settings.
 			'alerts_enabled'          => isset( $_POST['alerts_enabled'] ) && '1' === $_POST['alerts_enabled'],
-			'alert_recipients'        => isset( $_POST['alert_recipients'] ) ? \sanitize_text_field( \wp_unslash( $_POST['alert_recipients'] ) ) : \get_option( 'admin_email' ),
+			'alert_recipients'        => $this->sanitize_email_recipients( isset( $_POST['alert_recipients'] ) ? \wp_unslash( $_POST['alert_recipients'] ) : \get_option( 'admin_email' ) ),
 			'alert_error_threshold'   => isset( $_POST['alert_error_threshold'] ) ? \absint( $_POST['alert_error_threshold'] ) : 10,
 			'alert_rate_threshold'    => isset( $_POST['alert_rate_threshold'] ) ? \absint( $_POST['alert_rate_threshold'] ) : 20,
 			'alert_check_interval'    => isset( $_POST['alert_check_interval'] ) ? \sanitize_text_field( \wp_unslash( $_POST['alert_check_interval'] ) ) : 'hourly',
@@ -242,6 +249,35 @@ class GlobalSettingsController implements LoadableInterface {
 	}
 
 	/**
+	 * Sanitize comma-separated email recipients
+	 *
+	 * @since 1.2.0
+	 * @param string $input Raw input string with comma-separated emails.
+	 * @return string Sanitized comma-separated valid emails.
+	 */
+	private function sanitize_email_recipients( string $input ): string {
+		// Split by commas.
+		$emails = \array_map( 'trim', \explode( ',', $input ) );
+
+		// Validate and sanitize each email.
+		$valid_emails = array();
+		foreach ( $emails as $email ) {
+			$sanitized = \sanitize_email( $email );
+			if ( ! empty( $sanitized ) && \is_email( $sanitized ) ) {
+				$valid_emails[] = $sanitized;
+			}
+		}
+
+		// Return comma-separated string, or admin email if all were invalid.
+		if ( empty( $valid_emails ) ) {
+			$admin_email = \get_option( 'admin_email' );
+			return \is_string( $admin_email ) ? $admin_email : '';
+		}
+
+		return \implode( ', ', $valid_emails );
+	}
+
+	/**
 	 * Update log cleanup schedule
 	 *
 	 * @param int $retention_days Number of days to retain logs.
@@ -279,10 +315,18 @@ class GlobalSettingsController implements LoadableInterface {
 			\wp_unschedule_event( $timestamp, $hook );
 		}
 
-		// Schedule alert checks if enabled.
-		if ( $enabled ) {
-			\wp_schedule_event( \time(), $interval, $hook );
+		// If alerts are not enabled, do not schedule a new event.
+		if ( ! $enabled ) {
+			return;
 		}
+
+		// Validate interval against registered schedules before scheduling.
+		$schedules = \wp_get_schedules();
+		if ( ! isset( $schedules[ $interval ] ) ) {
+			return;
+		}
+
+		\wp_schedule_event( \time(), $interval, $hook );
 	}
 
 	/**
