@@ -101,6 +101,14 @@ class Loader implements LoadableInterface {
 			}
 		}
 
+		// Initialize Global Settings Controller (Settings Hub submenu).
+		if ( \class_exists( GlobalSettingsController::class ) ) {
+			$global_settings = GlobalSettingsController::instance();
+			if ( $global_settings->should_load() ) {
+				$global_settings->init();
+			}
+		}
+
 		// Initialize Request Log Controller (under Contact Form 7 menu).
 		if ( \class_exists( RequestLogController::class ) ) {
 			$request_log_controller = RequestLogController::instance();

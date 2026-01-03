@@ -30,6 +30,7 @@ Transform your WordPress contact forms into powerful data collection tools that 
 ### 🔧 **Easy Setup**
 - **No Code Required**: Configure everything through a simple interface
 - **Form-Specific Settings**: Each form can have its own API configuration
+- **Global Settings**: Configure plugin-wide retry limits, logging, and data retention
 - **Live Testing**: Test your API connections before going live
 
 ### 🔄 **Flexible Data Mapping**
@@ -40,12 +41,21 @@ Transform your WordPress contact forms into powerful data collection tools that 
 ### 🚀 **Reliable Delivery**
 - **Multiple HTTP Methods**: Support for GET, POST, PUT, PATCH requests
 - **Retry Logic**: Automatic retries if API calls fail
+- **Manual Retry**: Retry failed requests directly from the admin interface
 - **Error Handling**: Graceful handling of API errors without breaking your forms
 
-### 📊 **Monitoring & Debugging**
+### 📊 **Advanced Monitoring & Analytics**
+- **API Request Logs**: Complete history of all API requests with status, response times, and data
+- **Dashboard Widget**: At-a-glance statistics on your WordPress dashboard
+- **Date Range Filters**: Filter logs by today, yesterday, last 7/30 days, or custom ranges
+- **Export Logs**: Export your API logs to CSV or JSON for analysis
 - **Debug Mode**: See exactly what data is being sent to your APIs
-- **Error Logging**: Track failed submissions and troubleshoot issues
-- **Success Tracking**: Monitor successful API calls and response data
+
+### ⚙️ **Global Settings**
+- **Retry Configuration**: Set maximum retries per request and hourly rate limits
+- **Sensitive Data Protection**: Configure patterns for automatic data anonymization
+- **Logging Control**: Enable/disable API logging globally
+- **Log Retention**: Automatic cleanup of old logs (7, 14, 30, 60, or 90 days)
 
 ---
 
@@ -72,6 +82,35 @@ Transform your WordPress contact forms into powerful data collection tools that 
 1. **Use the test feature** to verify everything works
 2. **Save your configuration**
 3. **Your form is now connected!** 🎉
+
+---
+
+## 📊 Admin Dashboard & Monitoring
+
+### Dashboard Widget
+Once activated, a **CF7 to API Statistics** widget appears on your WordPress dashboard showing:
+- **Total Requests**: Number of API calls in the last 24 hours
+- **Success Rate**: Percentage of successful submissions
+- **Avg Response Time**: Average API response time
+
+### API Logs
+Access detailed logs at **Settings → Silver Assist → CF7 to API → API Logs**:
+- View all API requests with status (success, error, pending)
+- Filter by date range (today, last 7 days, custom range)
+- See full request/response data for debugging
+- **Retry failed requests** with one click
+- **Export logs** to CSV or JSON
+
+### Global Settings
+Configure plugin-wide settings at **Settings → Silver Assist → CF7 to API**:
+
+| Setting | Description | Default |
+|---------|-------------|----------|
+| Max Retries per Entry | Maximum retry attempts for a single request | 3 |
+| Max Retries per Hour | Global hourly rate limit for retries | 10 |
+| Sensitive Patterns | Field patterns to anonymize (password, token, etc.) | Built-in list |
+| Enable Logging | Turn API logging on/off | Enabled |
+| Log Retention | Auto-delete logs older than X days | 30 days |
 
 ---
 

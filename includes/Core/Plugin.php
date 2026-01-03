@@ -14,7 +14,10 @@
 
 namespace SilverAssist\ContactFormToAPI\Core;
 
+use SilverAssist\ContactFormToAPI\Admin\Loader as AdminLoader;
+use SilverAssist\ContactFormToAPI\ContactForm\Integration;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Services\Loader as ServicesLoader;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 use SilverAssist\WpGithubUpdater\Updater;
 use SilverAssist\WpGithubUpdater\UpdaterConfig;
@@ -155,7 +158,22 @@ class Plugin implements LoadableInterface {
 	 * @return void
 	 */
 	private function load_components(): void {
-		// Load Utils Logger first (priority 40 - but initialized early for error logging).
+		// Load Settings first (priority 10 - Core).
+		if ( \class_exists( Settings::class ) ) {
+			try {
+				$settings = Settings::instance();
+				if ( $settings->should_load() ) {
+					$settings->init();
+					$this->components[] = $settings;
+				}
+			} catch ( \Exception $e ) {
+				if ( \class_exists( DebugLogger::class ) ) {
+					DebugLogger::instance()->error( 'Failed to load Settings - ' . $e->getMessage() );
+				}
+			}
+		}
+
+		// Load Utils Logger (priority 40 - but initialized early for error logging).
 		if ( \class_exists( DebugLogger::class ) ) {
 			try {
 				$logger = DebugLogger::instance();
@@ -171,9 +189,9 @@ class Plugin implements LoadableInterface {
 		}
 
 		// Load Services Loader (priority 20 - Services).
-		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Services\\Loader' ) ) {
+		if ( \class_exists( ServicesLoader::class ) ) {
 			try {
-				$services_loader = \SilverAssist\ContactFormToAPI\Services\Loader::instance();
+				$services_loader = ServicesLoader::instance();
 				if ( $services_loader->should_load() ) {
 					$services_loader->init();
 					$this->components[] = $services_loader;
@@ -184,9 +202,9 @@ class Plugin implements LoadableInterface {
 		}
 
 		// Load ContactForm integration (priority 20 - Services).
-		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\ContactForm\\Integration' ) ) {
+		if ( \class_exists( Integration::class ) ) {
 			try {
-				$integration = \SilverAssist\ContactFormToAPI\ContactForm\Integration::instance();
+				$integration = Integration::instance();
 				if ( $integration->should_load() ) {
 					$integration->init();
 					$this->components[] = $integration;
@@ -198,9 +216,9 @@ class Plugin implements LoadableInterface {
 
 		// Load Admin Loader (priority 30 - Admin components).
 		// The Admin\Loader manages SettingsPage and RequestLogController internally.
-		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Admin\\Loader' ) ) {
+		if ( \class_exists( AdminLoader::class ) ) {
 			try {
-				$admin_loader = \SilverAssist\ContactFormToAPI\Admin\Loader::instance();
+				$admin_loader = AdminLoader::instance();
 				if ( $admin_loader->should_load() ) {
 					$admin_loader->init();
 					$this->components[] = $admin_loader;
@@ -247,6 +265,9 @@ class Plugin implements LoadableInterface {
 		\add_action( 'init', array( $this, 'handle_init' ) );
 		\add_action( 'admin_init', array( $this, 'handle_admin_init' ) );
 		\add_filter( 'plugin_action_links_' . CF7_API_BASENAME, array( $this, 'add_action_links' ) );
+
+		// Register cron job for log cleanup.
+		\add_action( 'cf7_api_cleanup_old_logs', array( $this, 'cleanup_old_logs' ) );
 	}
 
 	/**
@@ -397,5 +418,48 @@ class Plugin implements LoadableInterface {
 	 */
 	public function get_setting( string $key, $default_value = null ) {
 		return $this->settings[ $key ] ?? $default_value;
+	}
+
+	/**
+	 * Cleanup old logs based on retention settings
+	 *
+	 * Scheduled via WP-Cron to run daily.
+	 *
+	 * @since 1.2.0
+	 * @return void
+	 */
+	public function cleanup_old_logs(): void {
+		// Get retention days from settings.
+		if ( ! \class_exists( Settings::class ) ) {
+			return;
+		}
+
+		$settings       = Settings::instance();
+		$retention_days = $settings->get_log_retention_days();
+
+		// Don't delete if retention is disabled (0 days).
+		if ( $retention_days <= 0 ) {
+			return;
+		}
+
+		// Use RequestLogger to clean old logs.
+		$logger  = new RequestLogger();
+		$deleted = $logger->clean_old_logs( $retention_days );
+
+		// Log cleanup result if debug logger is available.
+		if ( $deleted > 0 && \class_exists( DebugLogger::class ) ) {
+			try {
+				DebugLogger::instance()->info(
+					"Cleaned up {$deleted} old API logs (retention: {$retention_days} days)",
+					array(
+						'deleted_count'  => $deleted,
+						'retention_days' => $retention_days,
+					)
+				);
+			} catch ( \Exception $e ) {
+				// Silently fail if logger not available.
+				unset( $e );
+			}
+		}
 	}
 }

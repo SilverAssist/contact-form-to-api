@@ -606,7 +606,7 @@ class RequestLogView {
 		}
 
 		$retry_count = $logger->count_retries( (int) $log['id'] );
-		$max_retries = RequestLogger::MAX_MANUAL_RETRIES;
+		$max_retries = RequestLogger::get_max_manual_retries();
 
 		if ( $retry_count >= $max_retries ) {
 			?>
