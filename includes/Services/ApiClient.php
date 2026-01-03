@@ -272,15 +272,28 @@ class ApiClient implements LoadableInterface {
 		);
 
 		// Determine content type based on Content-Type header
-		$content_type = 'params';
-		if ( isset( $request_data['headers']['Content-Type'] ) ) {
-			$ct = $request_data['headers']['Content-Type'];
-			if ( \strpos( $ct, 'application/json' ) !== false ) {
+		// Determine content type based on Content-Type header (case-insensitive lookup per RFC 7230)
+		$content_type        = 'params';
+		$content_type_header = null;
+
+		if ( ! empty( $request_data['headers'] ) && \is_array( $request_data['headers'] ) ) {
+			foreach ( $request_data['headers'] as $header_name => $header_value ) {
+				if ( \strtolower( (string) $header_name ) === 'content-type' ) {
+					$content_type_header = $header_value;
+					break;
+				}
+			}
+		}
+
+		if ( null !== $content_type_header ) {
+			$ct = (string) $content_type_header;
+			if ( \stripos( $ct, 'application/json' ) !== false ) {
 				$content_type = 'json';
-			} elseif ( \strpos( $ct, 'text/xml' ) !== false || \strpos( $ct, 'application/xml' ) !== false ) {
+			} elseif ( \stripos( $ct, 'text/xml' ) !== false || \stripos( $ct, 'application/xml' ) !== false ) {
 				$content_type = 'xml';
 			}
 		}
+
 		$config['content_type'] = $content_type;
 
 		// Send the retry request
@@ -302,7 +315,7 @@ class ApiClient implements LoadableInterface {
 			'success'       => $is_success,
 			'response_code' => $response_code,
 			'retry_of'      => $log_id,
-			'log_id'        => $logger->log_id ?? null,
+			'log_id'        => null, // Note: log_id is private in RequestLogger, use get_last_log_id() when available
 		);
 	}
 

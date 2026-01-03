@@ -606,7 +606,7 @@ class RequestLogView {
 		}
 
 		$retry_count = $logger->count_retries( (int) $log['id'] );
-		$max_retries = 3;
+		$max_retries = RequestLogger::MAX_MANUAL_RETRIES;
 
 		if ( $retry_count >= $max_retries ) {
 			?>
@@ -630,7 +630,7 @@ class RequestLogView {
 		);
 		?>
 		<a href="<?php echo \esc_url( $retry_url ); ?>" class="button button-primary cf7-api-retry-button" 
-		   onclick="return confirm('<?php \esc_attr_e( 'Are you sure you want to retry this request?', 'contact-form-to-api' ); ?>');">
+		   onclick="return confirm('<?php echo \esc_js( \__( 'Are you sure you want to retry this request?', 'contact-form-to-api' ) ); ?>');">
 			<?php \esc_html_e( 'Retry Request', 'contact-form-to-api' ); ?>
 		</a>
 		<?php

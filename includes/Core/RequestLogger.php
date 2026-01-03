@@ -29,6 +29,23 @@ use WP_Error;
  * @since 1.1.0
  */
 class RequestLogger {
+
+	/**
+	 * Maximum number of manual retries allowed per log entry
+	 *
+	 * @since 1.2.0
+	 * @var int
+	 */
+	public const MAX_MANUAL_RETRIES = 3;
+
+	/**
+	 * Maximum number of retries allowed per hour (global rate limit)
+	 *
+	 * @since 1.2.0
+	 * @var int
+	 */
+	public const MAX_RETRIES_PER_HOUR = 10;
+
 	/**
 	 * Table name for logs
 	 *
@@ -576,8 +593,8 @@ class RequestLogger {
 			return null;
 		}
 
-		// Only retry failed requests
-		$retryable_statuses = array( 'error', 'client_error', 'server_error', 'pending' );
+		// Only retry failed requests (pending excluded as they haven't completed yet)
+		$retryable_statuses = array( 'error', 'client_error', 'server_error' );
 		if ( ! \in_array( $log['status'], $retryable_statuses, true ) ) {
 			return null;
 		}

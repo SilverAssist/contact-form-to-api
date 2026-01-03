@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2026-01-03
 
 ### Added
-- **Retry Failed Requests from Admin UI**: Manual retry mechanism for failed API requests (#XX)
+- **Retry Failed Requests from Admin UI**: Manual retry mechanism for failed API requests (#21)
   * Retry button on log detail page for failed requests (error, client_error, server_error statuses)
   * Bulk retry action in logs list table for multiple failed requests
   * Rate limiting: Maximum 3 retries per log entry, 10 retries per hour globally

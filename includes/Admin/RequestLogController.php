@@ -275,15 +275,14 @@ class RequestLogController implements LoadableInterface {
 		$success_count = 0;
 		$failed_count  = 0;
 		$skipped_count = 0;
-		$errors        = array();
 
 		// Rate limiting constants
-		$max_retries_per_entry = 3;
-		$max_retries_per_minute = 10;
+		$max_retries_per_entry = RequestLogger::MAX_MANUAL_RETRIES;
+		$max_retries_per_hour  = RequestLogger::MAX_RETRIES_PER_HOUR;
 
-		// Check global rate limit
+		// Check global rate limit (hourly)
 		$recent_retries = $this->count_recent_retries( 1 ); // Last 1 hour
-		if ( $recent_retries >= $max_retries_per_minute ) {
+		if ( $recent_retries >= $max_retries_per_hour ) {
 			$redirect = \add_query_arg(
 				array(
 					'retry_error' => 'rate_limit',
@@ -302,8 +301,8 @@ class RequestLogController implements LoadableInterface {
 				continue;
 			}
 
-			// Check if we've hit the per-minute limit
-			if ( $success_count + $failed_count >= $max_retries_per_minute ) {
+			// Check if we've hit the per-hour limit (including recent retries)
+			if ( $recent_retries + $success_count + $failed_count >= $max_retries_per_hour ) {
 				++$skipped_count;
 				continue;
 			}
@@ -315,9 +314,6 @@ class RequestLogController implements LoadableInterface {
 				++$success_count;
 			} else {
 				++$failed_count;
-				if ( isset( $result['error'] ) ) {
-					$errors[] = $result['error'];
-				}
 			}
 		}
 
