@@ -174,6 +174,12 @@ class RequestLogController implements LoadableInterface {
 			return;
 		}
 
+		// Skip non-bulk actions (like 'view' for single log detail).
+		$bulk_actions = array( 'delete', 'retry' );
+		if ( ! \in_array( $action, $bulk_actions, true ) ) {
+			return;
+		}
+
 		// Verify nonce.
 		if ( ! isset( $_REQUEST['_wpnonce'] ) || ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_REQUEST['_wpnonce'] ) ), 'bulk-' . $this->list_table->_args['plural'] ) ) {
 			\wp_die( \esc_html__( 'Security check failed', 'contact-form-to-api' ) );

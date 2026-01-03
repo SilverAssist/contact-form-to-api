@@ -1011,3 +1011,169 @@ body.cf7-input-type-json .cf7_row[data-cf7index="params"] {
     color: #555;
   }
 }
+
+/* ==========================================================================
+   Custom Headers / Authentication Section
+   ========================================================================== */
+
+.cf7-api-authentication {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f9f9f9;
+  border: 1px solid #e1e1e1;
+  border-radius: 4px;
+}
+
+.cf7-api-authentication h3 {
+  margin: 0 0 10px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  color: #23282d;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cf7-api-authentication p.description {
+  margin: 0 0 15px 0;
+  color: #666;
+  font-size: 13px;
+}
+
+.cf7-api-authentication p.description code {
+  background: #e7e8e9;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+/* Custom headers table */
+.cf7-api-headers-table {
+  width: 100%;
+  background: #fff;
+  border-collapse: collapse;
+  margin-bottom: 15px;
+}
+
+.cf7-api-headers-table th {
+  background: #f1f1f1;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  border: 1px solid #ddd;
+}
+
+.cf7-api-headers-table th.header-name {
+  width: 35%;
+}
+
+.cf7-api-headers-table th.header-value {
+  width: 50%;
+}
+
+.cf7-api-headers-table th.header-actions {
+  width: 15%;
+  text-align: center;
+}
+
+.cf7-api-headers-table td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  vertical-align: middle;
+}
+
+.cf7-api-headers-table .cf7-header-name,
+.cf7-api-headers-table .cf7-header-value {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.cf7-api-headers-table .cf7-header-name:focus,
+.cf7-api-headers-table .cf7-header-value:focus {
+  border-color: #007cba;
+  box-shadow: 0 0 0 1px #007cba;
+  outline: none;
+}
+
+.cf7-api-headers-table .cf7-api-remove-header {
+  padding: 4px 8px;
+  min-height: 28px;
+}
+
+.cf7-api-headers-table .cf7-api-remove-header .dashicons {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* Header action buttons */
+.cf7-api-headers-wrapper {
+  margin-bottom: 20px;
+}
+
+.cf7-api-add-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.cf7-api-add-header .dashicons {
+  line-height: 1.4;
+}
+
+/* Auth presets section */
+.cf7-api-auth-presets {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #ddd;
+}
+
+.cf7-api-auth-presets h4 {
+  margin: 0 0 5px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #23282d;
+}
+
+.cf7-api-auth-presets p.description {
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.cf7-api-preset-header {
+  margin-right: 5px !important;
+  margin-bottom: 5px !important;
+}
+
+/* Row highlight on preset add */
+.cf7-api-header-row {
+  transition: background-color 0.3s ease;
+}
+
+/* Responsive styles for custom headers */
+@media (max-width: 782px) {
+  .cf7-api-authentication {
+    padding: 10px;
+  }
+  
+  .cf7-api-headers-table th.header-name,
+  .cf7-api-headers-table th.header-value {
+    width: auto;
+  }
+  
+  .cf7-api-headers-table th.header-actions {
+    width: 50px;
+  }
+  
+  .cf7-api-preset-header {
+    display: block;
+    margin-bottom: 8px !important;
+  }
+}

@@ -104,6 +104,9 @@ class Integration implements LoadableInterface {
 			return;
 		}
 
+		// Register legacy hook aliases for backward compatibility.
+		$this->register_legacy_hooks();
+
 		// Hook into Contact Form 7 submission process.
 		\add_action( 'wpcf7_before_send_mail', array( $this, 'send_data_to_api' ) );
 
@@ -121,6 +124,25 @@ class Integration implements LoadableInterface {
 		}
 
 		$this->initialized = true;
+	}
+
+	/**
+	 * Register legacy hook aliases for backward compatibility
+	 *
+	 * Maps old qs_cf7_* hooks to new cf7_api_* hooks.
+	 *
+	 * @since 1.1.1
+	 * @return void
+	 */
+	private function register_legacy_hooks(): void {
+		// Legacy: qs_cf7_collect_mail_tags -> cf7_api_collect_mail_tags.
+		\add_filter(
+			"cf7_api_collect_mail_tags",
+			function ( $tags ) {
+				return \apply_filters( "qs_cf7_collect_mail_tags", $tags );
+			},
+			5
+		);
 	}
 
 	/**
@@ -154,6 +176,7 @@ class Integration implements LoadableInterface {
 		$properties['template']           ??= '';
 		$properties['json_template']      ??= '';
 		$properties['retry_config']       ??= array();
+		$properties['custom_headers']     ??= array();
 
 		return $properties;
 	}
@@ -226,6 +249,7 @@ class Integration implements LoadableInterface {
 		$wpcf7_api_data_template      = $wpcf7->prop( 'template' ) ?: \get_post_meta( $form_id, '_template', true );
 		$wpcf7_api_json_data_template = \stripslashes( $wpcf7->prop( 'json_template' ) ?: \get_post_meta( $form_id, '_json_template', true ) );
 		$retry_config                 = $wpcf7->prop( 'retry_config' ) ?: array();
+		$custom_headers               = $wpcf7->prop( 'custom_headers' ) ?: array();
 
 		$mail_tags = $this->get_mail_tags( $post, array() );
 
@@ -277,7 +301,8 @@ class Integration implements LoadableInterface {
 			$mail_tags,
 			$recent_logs,
 			$statistics,
-			$debug_info
+			$debug_info,
+			\is_array( $custom_headers ) ? $custom_headers : array()
 		);
 	}
 
@@ -317,6 +342,24 @@ class Integration implements LoadableInterface {
 		}
 		$properties['retry_config'] = $retry_config;
 
+		// Get custom headers and sanitize
+		$raw_headers    = $_POST['custom_headers'] ?? array();
+		$custom_headers = array();
+		if ( \is_array( $raw_headers ) ) {
+			foreach ( $raw_headers as $header ) {
+				$name  = \sanitize_text_field( $header['name'] ?? '' );
+				$value = \sanitize_text_field( $header['value'] ?? '' );
+				// Only save non-empty headers
+				if ( ! empty( $name ) ) {
+					$custom_headers[] = array(
+						'name'  => $name,
+						'value' => $value,
+					);
+				}
+			}
+		}
+		$properties['custom_headers'] = $custom_headers;
+
 		// Set properties using CF7's native method
 		$contact_form->set_properties( $properties );
 	}
@@ -345,6 +388,7 @@ class Integration implements LoadableInterface {
 		$api_data_template = $contact_form->prop( 'template' ) ?: \get_post_meta( $form_id, '_template', true );
 		$api_json_template = \stripslashes( $contact_form->prop( 'json_template' ) ?: \get_post_meta( $form_id, '_json_template', true ) );
 		$retry_config      = $contact_form->prop( 'retry_config' ) ?: array();
+		$custom_headers    = $contact_form->prop( 'custom_headers' ) ?: array();
 
 		// Set default retry configuration if not provided
 		if ( ! \is_array( $retry_config ) ) {
@@ -374,7 +418,7 @@ class Integration implements LoadableInterface {
 		if ( ! empty( $record['url'] ) ) {
 			\do_action( 'cf7_api_before_send_to_api', $record );
 
-			$response = $this->send_lead( $record, $api_data['debug_log'], $api_data['method'], $record_type, $retry_config );
+			$response = $this->send_lead( $record, $api_data['debug_log'], $api_data['method'], $record_type, $retry_config, $custom_headers );
 
 			if ( \is_wp_error( $response ) ) {
 				$this->log_error( $response, $contact_form->id() );
@@ -476,23 +520,34 @@ class Integration implements LoadableInterface {
 	 * Uses ApiClient service for HTTP requests with retry logic.
 	 *
 	 * @since 1.1.0
-	 * @param array<string, mixed> $record       Record data.
-	 * @param bool                 $debug        Enable debug logging.
-	 * @param string               $method       HTTP method.
-	 * @param string               $record_type  Record type (params, json, xml).
-	 * @param array<string, mixed> $retry_config Retry configuration.
+	 * @param array<string, mixed>                $record         Record data.
+	 * @param bool                                $debug          Enable debug logging.
+	 * @param string                              $method         HTTP method.
+	 * @param string                              $record_type    Record type (params, json, xml).
+	 * @param array<string, mixed>                $retry_config   Retry configuration.
+	 * @param array<int, array<string, string>>   $custom_headers Custom HTTP headers.
 	 * @return array<string, mixed>|WP_Error Response data or error.
 	 */
-	private function send_lead( array $record, bool $debug = false, string $method = 'GET', string $record_type = 'params', array $retry_config = array() ) {
+	private function send_lead( array $record, bool $debug = false, string $method = 'GET', string $record_type = 'params', array $retry_config = array(), array $custom_headers = array() ) {
 		$lead = $record['fields'];
 		$url  = $record['url'];
+
+		// Build headers array from custom_headers.
+		$headers = array();
+		if ( ! empty( $custom_headers ) && \is_array( $custom_headers ) ) {
+			foreach ( $custom_headers as $header ) {
+				if ( ! empty( $header['name'] ) ) {
+					$headers[ $header['name'] ] = $header['value'] ?? '';
+				}
+			}
+		}
 
 		// Build request configuration for ApiClient.
 		$request_config = array(
 			'url'          => $url,
 			'method'       => $method,
 			'body'         => $lead,
-			'headers'      => array(),
+			'headers'      => $headers,
 			'content_type' => $record_type,
 			'form_id'      => $this->current_form ? $this->current_form->id() : 0,
 			'retry_config' => array(

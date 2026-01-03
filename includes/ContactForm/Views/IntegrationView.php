@@ -42,6 +42,7 @@ class IntegrationView {
 	 * @param array<int, array<string, mixed>>     $recent_logs       Recent API logs
 	 * @param array<string, int|float>             $statistics        API statistics
 	 * @param array<string, mixed>                 $debug_info        Legacy debug information
+	 * @param array<int, array<string, string>>    $custom_headers    Custom HTTP headers
 	 * @return void
 	 */
 	public static function render_panel(
@@ -54,7 +55,8 @@ class IntegrationView {
 		array $mail_tags,
 		array $recent_logs,
 		array $statistics,
-		array $debug_info
+		array $debug_info,
+		array $custom_headers = array()
 	): void {
 		$xml_placeholder  = self::get_xml_placeholder();
 		$json_placeholder = self::get_json_placeholder();
@@ -78,6 +80,8 @@ class IntegrationView {
 
 				<?php \do_action( 'cf7_api_after_base_fields', $post ); ?>
 			</fieldset>
+
+			<?php self::render_authentication_section( $custom_headers ); ?>
 
 			<?php self::render_params_mapping( $mail_tags, $wpcf7_api_data_map ); ?>
 
@@ -204,6 +208,98 @@ class IntegrationView {
 			</label>
 			<p class="description"><?php \esc_html_e( 'Automatically retry when API request times out.', 'contact-form-to-api' ); ?></p>
 		</div>
+		<?php
+	}
+
+	/**
+	 * Render authentication/custom headers section
+	 *
+	 * @since 1.1.1
+	 * @param array<int, array<string, string>> $custom_headers Custom HTTP headers
+	 * @return void
+	 */
+	private static function render_authentication_section( array $custom_headers ): void {
+		// Ensure we have at least one empty row for adding new headers.
+		if ( empty( $custom_headers ) ) {
+			$custom_headers = array(
+				array(
+					'name'  => '',
+					'value' => '',
+				),
+			);
+		}
+		?>
+		<fieldset class="cf7-api-authentication">
+			<h3><?php \esc_html_e( 'Authentication & Custom Headers', 'contact-form-to-api' ); ?></h3>
+			<p class="description">
+				<?php \esc_html_e( 'Add custom HTTP headers for authentication or other purposes. Common examples:', 'contact-form-to-api' ); ?>
+				<code>Authorization: Bearer your-token</code>,
+				<code>X-API-Key: your-key</code>
+			</p>
+
+			<div class="cf7-api-headers-wrapper">
+				<table class="cf7-api-headers-table widefat">
+					<thead>
+						<tr>
+							<th class="header-name"><?php \esc_html_e( 'Header Name', 'contact-form-to-api' ); ?></th>
+							<th class="header-value"><?php \esc_html_e( 'Header Value', 'contact-form-to-api' ); ?></th>
+							<th class="header-actions"><?php \esc_html_e( 'Actions', 'contact-form-to-api' ); ?></th>
+						</tr>
+					</thead>
+					<tbody id="cf7-api-headers-list">
+						<?php foreach ( $custom_headers as $index => $header ) : ?>
+							<tr class="cf7-api-header-row">
+								<td>
+									<input type="text"
+										name="custom_headers[<?php echo \esc_attr( $index ); ?>][name]"
+										class="cf7-header-name large-text"
+										value="<?php echo \esc_attr( $header['name'] ?? '' ); ?>"
+										placeholder="<?php \esc_attr_e( 'e.g., Authorization', 'contact-form-to-api' ); ?>" />
+								</td>
+								<td>
+									<input type="text"
+										name="custom_headers[<?php echo \esc_attr( $index ); ?>][value]"
+										class="cf7-header-value large-text"
+										value="<?php echo \esc_attr( $header['value'] ?? '' ); ?>"
+										placeholder="<?php \esc_attr_e( 'e.g., Bearer your-api-token', 'contact-form-to-api' ); ?>" />
+								</td>
+								<td>
+									<button type="button" class="button cf7-api-remove-header" title="<?php \esc_attr_e( 'Remove header', 'contact-form-to-api' ); ?>">
+										<span class="dashicons dashicons-trash"></span>
+									</button>
+								</td>
+							</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+
+				<p>
+					<button type="button" class="button cf7-api-add-header" id="cf7-api-add-header">
+						<span class="dashicons dashicons-plus-alt2"></span>
+						<?php \esc_html_e( 'Add Header', 'contact-form-to-api' ); ?>
+					</button>
+				</p>
+			</div>
+
+			<div class="cf7-api-auth-presets">
+				<h4><?php \esc_html_e( 'Quick Add Authentication', 'contact-form-to-api' ); ?></h4>
+				<p class="description"><?php \esc_html_e( 'Click a preset to add common authentication headers:', 'contact-form-to-api' ); ?></p>
+				<p>
+					<button type="button" class="button cf7-api-preset-header" data-header-name="Authorization" data-header-value="Bearer ">
+						<?php \esc_html_e( 'Bearer Token', 'contact-form-to-api' ); ?>
+					</button>
+					<button type="button" class="button cf7-api-preset-header" data-header-name="Authorization" data-header-value="Basic ">
+						<?php \esc_html_e( 'Basic Auth', 'contact-form-to-api' ); ?>
+					</button>
+					<button type="button" class="button cf7-api-preset-header" data-header-name="X-API-Key" data-header-value="">
+						<?php \esc_html_e( 'API Key', 'contact-form-to-api' ); ?>
+					</button>
+					<button type="button" class="button cf7-api-preset-header" data-header-name="Content-Type" data-header-value="application/json">
+						<?php \esc_html_e( 'Content-Type JSON', 'contact-form-to-api' ); ?>
+					</button>
+				</p>
+			</div>
+		</fieldset>
 		<?php
 	}
 

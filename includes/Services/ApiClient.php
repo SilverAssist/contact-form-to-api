@@ -96,7 +96,58 @@ class ApiClient implements LoadableInterface {
 			return;
 		}
 
+		// Register legacy hook aliases for backward compatibility.
+		$this->register_legacy_hooks();
+
 		$this->initialized = true;
+	}
+
+	/**
+	 * Register legacy hook aliases for backward compatibility
+	 *
+	 * Maps old qs_cf7_api_* hooks to new cf7_api_* hooks.
+	 *
+	 * @since 1.1.1
+	 * @return void
+	 */
+	private function register_legacy_hooks(): void {
+		// Legacy: qs_cf7_api_get_args -> cf7_api_get_args.
+		\add_filter(
+			"cf7_api_get_args",
+			function ( $args ) {
+				return \apply_filters( "qs_cf7_api_get_args", $args );
+			},
+			5
+		);
+
+		// Legacy: qs_cf7_api_post_args (new) with fallback to qs_cf7_api_get_args.
+		\add_filter(
+			"cf7_api_post_args",
+			function ( $args ) {
+				// The original plugin used qs_cf7_api_get_args for both GET and POST.
+				return \apply_filters( "qs_cf7_api_get_args", $args );
+			},
+			5
+		);
+
+		// Legacy: qs_cf7_api_get_url -> cf7_api_get_url.
+		\add_filter(
+			"cf7_api_get_url",
+			function ( $url, $record ) {
+				return \apply_filters( "qs_cf7_api_get_url", $url, $record );
+			},
+			5,
+			2
+		);
+
+		// Legacy: qs_cf7_api_post_url -> cf7_api_post_url.
+		\add_filter(
+			"cf7_api_post_url",
+			function ( $url ) {
+				return \apply_filters( "qs_cf7_api_post_url", $url );
+			},
+			5
+		);
 	}
 
 	/**

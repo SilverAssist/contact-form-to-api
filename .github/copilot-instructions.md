@@ -475,6 +475,55 @@ Activator::create_tables();
 - **Test Directory**: `tests/` with namespaced structure
 - **Bootstrap**: `tests/bootstrap.php` loads WordPress test environment
 
+### Local Testing Environment Variables
+**CRITICAL**: The WordPress Test Suite requires environment variables to locate the test library and configuration.
+
+#### Required Environment Variables
+```bash
+# Path to WordPress test library (contains includes/functions.php)
+export WP_TESTS_DIR="/tmp/wordpress-tests-lib"
+
+# Path to WordPress core installation for tests
+export WP_CORE_DIR="/tmp/wordpress"
+
+# Database configuration for tests (uses separate test database)
+export WP_TESTS_DB_NAME="wordpress_test"
+export WP_TESTS_DB_USER="root"
+export WP_TESTS_DB_PASSWORD=""
+export WP_TESTS_DB_HOST="localhost"
+```
+
+#### Quick Setup for Local Testing
+```bash
+# 1. Install WordPress Test Suite (run once)
+./scripts/install-wp-tests.sh wordpress_test root "" localhost latest
+
+# 2. Set environment variables (add to ~/.zshrc or ~/.bashrc for persistence)
+export WP_TESTS_DIR="/tmp/wordpress-tests-lib"
+export WP_CORE_DIR="/tmp/wordpress"
+
+# 3. Run tests
+./vendor/bin/phpunit
+
+# 4. Run specific test file
+./vendor/bin/phpunit --filter RequestLogControllerTest
+
+# 5. Run specific test suite
+./vendor/bin/phpunit --testsuite "Unit Tests"
+```
+
+#### Local Sites (Flywheel/Local) Configuration
+For Local by Flywheel environments, you may need to use the site's MySQL socket:
+```bash
+# Find your Local site's MySQL socket
+export WP_TESTS_DB_HOST="localhost:/Users/username/Library/Application Support/Local/run/XXXXXX/mysql/mysqld.sock"
+```
+
+#### Troubleshooting Test Environment
+- **"WordPress Test Suite not found"**: Set `WP_TESTS_DIR` environment variable
+- **"Database connection failed"**: Verify MySQL credentials and that test database exists
+- **"Table doesn't exist"**: Run `Activator::create_tables()` in `wpSetUpBeforeClass()`
+
 ### Test File Organization
 ```
 tests/

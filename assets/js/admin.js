@@ -45,6 +45,7 @@
       this.setupDebugLogToggle();
       this.setupMailTagInsertion();
       this.validateApiUrl();
+      this.setupCustomHeaders();
     }
 
     /**
@@ -77,6 +78,19 @@
       // API URL validation - corrected selector
       $(document).on("blur", "#wpcf7-sf-base-url", (e) => {
         this.validateUrl($(e.target).val());
+      });
+
+      // Custom headers management
+      $(document).on("click", "#cf7-api-add-header", () => {
+        this.addHeaderRow();
+      });
+
+      $(document).on("click", ".cf7-api-remove-header", (e) => {
+        this.removeHeaderRow($(e.currentTarget));
+      });
+
+      $(document).on("click", ".cf7-api-preset-header", (e) => {
+        this.addPresetHeader($(e.currentTarget));
       });
 
       // Test API connection
@@ -413,6 +427,142 @@
           $(this).remove();
         });
       }, 5000);
+    }
+
+    /**
+     * Setup custom headers functionality
+     *
+     * @since 1.1.1
+     * @return {void}
+     */
+    setupCustomHeaders() {
+      // Reindex headers on page load to ensure proper ordering
+      this.reindexHeaders();
+    }
+
+    /**
+     * Add a new header row to the custom headers table
+     *
+     * @since 1.1.1
+     * @return {void}
+     */
+    addHeaderRow() {
+      const $tbody = $("#cf7-api-headers-list");
+      const currentRows = $tbody.find("tr").length;
+      
+      const newRow = `
+        <tr class="cf7-api-header-row">
+          <td>
+            <input type="text" 
+                   name="custom_headers[${currentRows}][name]" 
+                   class="cf7-header-name large-text"
+                   placeholder="e.g., Authorization">
+          </td>
+          <td>
+            <input type="text" 
+                   name="custom_headers[${currentRows}][value]" 
+                   class="cf7-header-value large-text"
+                   placeholder="e.g., Bearer your-api-token">
+          </td>
+          <td>
+            <button type="button" class="button cf7-api-remove-header" title="Remove header">
+              <span class="dashicons dashicons-trash"></span>
+            </button>
+          </td>
+        </tr>
+      `;
+      
+      $tbody.append(newRow);
+      
+      // Focus the new name input
+      $tbody.find("tr:last .cf7-header-name").focus();
+    }
+
+    /**
+     * Remove a header row from the custom headers table
+     *
+     * @since 1.1.1
+     * @param {jQuery} $button The clicked remove button
+     * @return {void}
+     */
+    removeHeaderRow($button) {
+      const $tbody = $("#cf7-api-headers-list");
+      const rowCount = $tbody.find("tr").length;
+      
+      // Keep at least one row
+      if (rowCount <= 1) {
+        // Just clear the inputs instead of removing
+        const $row = $button.closest("tr");
+        $row.find("input").val("");
+        return;
+      }
+      
+      // Store reference to this for callback
+      const self = this;
+      
+      // Remove the row
+      $button.closest("tr").fadeOut(200, function() {
+        $(this).remove();
+        // Reindex remaining rows
+        self.reindexHeaders();
+      });
+    }
+
+    /**
+     * Add a preset header from the quick add buttons
+     *
+     * @since 1.1.1
+     * @param {jQuery} $button The clicked preset button
+     * @return {void}
+     */
+    addPresetHeader($button) {
+      const headerName = $button.data("header-name");
+      const headerValue = $button.data("header-value");
+      const $tbody = $("#cf7-api-headers-list");
+      
+      // Find an empty row or create a new one
+      let $targetRow = null;
+      $tbody.find("tr").each(function() {
+        const $nameInput = $(this).find(".cf7-header-name");
+        const $valueInput = $(this).find(".cf7-header-value");
+        if (!$nameInput.val() && !$valueInput.val()) {
+          $targetRow = $(this);
+          return false; // break
+        }
+      });
+      
+      // If no empty row, add a new one first
+      if (!$targetRow) {
+        this.addHeaderRow();
+        $targetRow = $tbody.find("tr:last");
+      }
+      
+      const $nameInput = $targetRow.find(".cf7-header-name");
+      const $valueInput = $targetRow.find(".cf7-header-value");
+      
+      // Set the header name and value from data attributes
+      $nameInput.val(headerName);
+      $valueInput.val(headerValue).focus();
+      
+      // Visual feedback
+      $targetRow.css("background-color", "#e7f5ea");
+      setTimeout(() => {
+        $targetRow.css("background-color", "");
+      }, 1000);
+    }
+
+    /**
+     * Reindex header rows to ensure proper array indexing
+     *
+     * @since 1.1.1
+     * @return {void}
+     */
+    reindexHeaders() {
+      const $tbody = $("#cf7-api-headers-list");
+      $tbody.find("tr").each(function(index) {
+        $(this).find(".cf7-header-name").attr("name", `custom_headers[${index}][name]`);
+        $(this).find(".cf7-header-value").attr("name", `custom_headers[${index}][value]`);
+      });
     }
 
     /**
