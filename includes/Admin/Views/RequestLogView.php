@@ -107,6 +107,7 @@ class RequestLogView {
 	 * @return void
 	 */
 	public static function render_detail( array $log ): void {
+		$logger = new RequestLogger();
 		?>
 		<div class="wrap">
 			<h1><?php \esc_html_e( 'API Log Detail', 'contact-form-to-api' ); ?></h1>
@@ -115,7 +116,10 @@ class RequestLogView {
 				<a href="<?php echo \esc_url( \admin_url( 'admin.php?page=cf7-api-logs' ) ); ?>" class="button">
 					← <?php \esc_html_e( 'Back to Logs', 'contact-form-to-api' ); ?>
 				</a>
+				<?php self::render_retry_button( $log, $logger ); ?>
 			</p>
+
+			<?php self::render_retry_information( $log, $logger ); ?>
 
 			<div class="cf7-api-log-detail">
 				<?php self::render_request_section( $log ); ?>
@@ -293,7 +297,90 @@ class RequestLogView {
 			<?php
 		}
 
-		if ( isset( $_GET['retried'] ) ) {
+		if ( isset( $_GET['retried_success'] ) ) {
+			$count = \absint( $_GET['retried_success'] );
+			?>
+			<div class="notice notice-success is-dismissible">
+				<p>
+					<?php
+					echo \esc_html(
+						\sprintf(
+							/* translators: %d: number of successfully retried requests */
+							\_n(
+								'%d request retried successfully.',
+								'%d requests retried successfully.',
+								$count,
+								'contact-form-to-api'
+							),
+							$count
+						)
+					);
+					?>
+				</p>
+			</div>
+			<?php
+		}
+
+		if ( isset( $_GET['retried_failed'] ) ) {
+			$count = \absint( $_GET['retried_failed'] );
+			?>
+			<div class="notice notice-error is-dismissible">
+				<p>
+					<?php
+					echo \esc_html(
+						\sprintf(
+							/* translators: %d: number of failed retry attempts */
+							\_n(
+								'%d retry attempt failed.',
+								'%d retry attempts failed.',
+								$count,
+								'contact-form-to-api'
+							),
+							$count
+						)
+					);
+					?>
+				</p>
+			</div>
+			<?php
+		}
+
+		if ( isset( $_GET['retried_skipped'] ) ) {
+			$count = \absint( $_GET['retried_skipped'] );
+			?>
+			<div class="notice notice-warning is-dismissible">
+				<p>
+					<?php
+					echo \esc_html(
+						\sprintf(
+							/* translators: %d: number of skipped retry attempts */
+							\_n(
+								'%d request skipped (maximum retries exceeded).',
+								'%d requests skipped (maximum retries exceeded).',
+								$count,
+								'contact-form-to-api'
+							),
+							$count
+						)
+					);
+					?>
+				</p>
+			</div>
+			<?php
+		}
+
+		if ( isset( $_GET['retry_error'] ) && 'rate_limit' === $_GET['retry_error'] ) {
+			?>
+			<div class="notice notice-error is-dismissible">
+				<p>
+					<?php \esc_html_e( 'Rate limit exceeded. Please wait before retrying more requests.', 'contact-form-to-api' ); ?>
+				</p>
+			</div>
+			<?php
+		}
+
+		// Legacy notice for backward compatibility
+		if ( isset( $_GET['retried'] ) && ! isset( $_GET['retried_success'] ) ) {
 			?>
 			<div class="notice notice-success is-dismissible">
 				<p>
@@ -501,5 +588,117 @@ class RequestLogView {
 			</div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render retry button for failed requests
+	 *
+	 * Shows retry button only for failed requests that haven't exceeded retry limit.
+	 *
+	 * @param array<string, mixed> $log    Log entry data.
+	 * @param RequestLogger        $logger Logger instance.
+	 * @return void
+	 */
+	private static function render_retry_button( array $log, RequestLogger $logger ): void {
+		$retryable_statuses = array( 'error', 'client_error', 'server_error' );
+		if ( ! \in_array( $log['status'], $retryable_statuses, true ) ) {
+			return;
+		}
+
+		$retry_count = $logger->count_retries( (int) $log['id'] );
+		$max_retries = 3;
+
+		if ( $retry_count >= $max_retries ) {
+			?>
+			<span class="button disabled" aria-disabled="true" title="<?php \esc_attr_e( 'Maximum retries exceeded', 'contact-form-to-api' ); ?>">
+				<?php \esc_html_e( 'Retry Request', 'contact-form-to-api' ); ?>
+			</span>
+			<?php
+			return;
+		}
+
+		$retry_url = \wp_nonce_url(
+			\add_query_arg(
+				array(
+					'page'   => 'cf7-api-logs',
+					'action' => 'retry',
+					'log'    => $log['id'],
+				),
+				\admin_url( 'admin.php' )
+			),
+			'bulk-cf7-api-logs'
+		);
+		?>
+		<a href="<?php echo \esc_url( $retry_url ); ?>" class="button button-primary cf7-api-retry-button" 
+		   onclick="return confirm('<?php \esc_attr_e( 'Are you sure you want to retry this request?', 'contact-form-to-api' ); ?>');">
+			<?php \esc_html_e( 'Retry Request', 'contact-form-to-api' ); ?>
+		</a>
+		<?php
+	}
+
+	/**
+	 * Render retry information section
+	 *
+	 * Shows if this is a retry and links to original/retried entries.
+	 *
+	 * @param array<string, mixed> $log    Log entry data.
+	 * @param RequestLogger        $logger Logger instance.
+	 * @return void
+	 */
+	private static function render_retry_information( array $log, RequestLogger $logger ): void {
+		$retry_of = isset( $log['retry_of'] ) ? (int) $log['retry_of'] : 0;
+
+		// Show if this is a retry of another request
+		if ( $retry_of > 0 ) {
+			$original_url = \add_query_arg(
+				array(
+					'page'   => 'cf7-api-logs',
+					'action' => 'view',
+					'log_id' => $retry_of,
+				),
+				\admin_url( 'admin.php' )
+			);
+			?>
+			<div class="notice notice-info inline">
+				<p>
+					<?php
+					echo \wp_kses_post(
+						\sprintf(
+							/* translators: %1$d: original log ID, %2$s: link to original log */
+							\__( 'This is a retry of log entry <a href="%2$s">#%1$d</a>.', 'contact-form-to-api' ),
+							$retry_of,
+							\esc_url( $original_url )
+						)
+					);
+					?>
+				</p>
+			</div>
+			<?php
+		}
+
+		// Show retry attempts for this request
+		$retry_count = $logger->count_retries( (int) $log['id'] );
+		if ( $retry_count > 0 ) {
+			?>
+			<div class="notice notice-info inline">
+				<p>
+					<?php
+					echo \esc_html(
+						\sprintf(
+							/* translators: %d: number of retry attempts */
+							\_n(
+								'This request has been retried %d time.',
+								'This request has been retried %d times.',
+								$retry_count,
+								'contact-form-to-api'
+							),
+							$retry_count
+						)
+					);
+					?>
+				</p>
+			</div>
+			<?php
+		}
 	}
 }

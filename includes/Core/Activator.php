@@ -141,11 +141,13 @@ class Activator {
 			error_message text DEFAULT NULL,
 			execution_time decimal(10,4) DEFAULT NULL,
 			retry_count int(3) UNSIGNED DEFAULT 0,
+			retry_of bigint(20) UNSIGNED DEFAULT NULL,
 			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			PRIMARY KEY  (id),
 			KEY form_id (form_id),
 			KEY created_at (created_at),
-			KEY status (status)
+			KEY status (status),
+			KEY retry_of (retry_of)
 		) {$charset_collate};";
 
 		// Try to load dbDelta function.

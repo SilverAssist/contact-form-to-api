@@ -261,17 +261,105 @@ class RequestLogController implements LoadableInterface {
 	/**
 	 * Handle retry action
 	 *
+	 * Retries failed API requests with rate limiting.
+	 *
 	 * @param array<int, int> $log_ids Log IDs to retry.
 	 * @return void
 	 */
 	private function handle_retry_action( array $log_ids ): void {
-		// TODO: Implement retry logic for failed requests.
-		$redirect = \add_query_arg(
-			array( 'retried' => \count( $log_ids ) ),
-			\wp_get_referer()
-		);
+		$logger     = new \SilverAssist\ContactFormToAPI\Core\RequestLogger();
+		$api_client = \SilverAssist\ContactFormToAPI\Services\ApiClient::instance();
+
+		$success_count = 0;
+		$failed_count  = 0;
+		$skipped_count = 0;
+		$errors        = array();
+
+		// Rate limiting constants
+		$max_retries_per_entry = 3;
+		$max_retries_per_minute = 10;
+
+		// Check global rate limit
+		$recent_retries = $this->count_recent_retries( 1 ); // Last 1 hour
+		if ( $recent_retries >= $max_retries_per_minute ) {
+			$redirect = \add_query_arg(
+				array(
+					'retry_error' => 'rate_limit',
+				),
+				\wp_get_referer()
+			);
+			\wp_safe_redirect( $redirect );
+			exit;
+		}
+
+		foreach ( $log_ids as $log_id ) {
+			// Check per-entry retry limit
+			$retry_count = $logger->count_retries( $log_id );
+			if ( $retry_count >= $max_retries_per_entry ) {
+				++$skipped_count;
+				continue;
+			}
+
+			// Check if we've hit the per-minute limit
+			if ( $success_count + $failed_count >= $max_retries_per_minute ) {
+				++$skipped_count;
+				continue;
+			}
+
+			// Attempt retry
+			$result = $api_client->retry_from_log( $log_id );
+
+			if ( $result['success'] ) {
+				++$success_count;
+			} else {
+				++$failed_count;
+				if ( isset( $result['error'] ) ) {
+					$errors[] = $result['error'];
+				}
+			}
+		}
+
+		// Build redirect with results
+		$args = array();
+		if ( $success_count > 0 ) {
+			$args['retried_success'] = $success_count;
+		}
+		if ( $failed_count > 0 ) {
+			$args['retried_failed'] = $failed_count;
+		}
+		if ( $skipped_count > 0 ) {
+			$args['retried_skipped'] = $skipped_count;
+		}
+
+		$redirect = \add_query_arg( $args, \wp_get_referer() );
 		\wp_safe_redirect( $redirect );
 		exit;
+	}
+
+	/**
+	 * Count recent retries for rate limiting
+	 *
+	 * Counts retries in the last N hours.
+	 *
+	 * @param int $hours Number of hours to look back.
+	 * @return int Number of retries.
+	 */
+	private function count_recent_retries( int $hours ): int {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'cf7_api_logs';
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
+		$count = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$table_name} 
+				WHERE retry_of IS NOT NULL 
+				AND created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)",
+				$hours
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return (int) ( $count ?: 0 );
 	}
 
 	/**
@@ -380,9 +468,11 @@ class RequestLogController implements LoadableInterface {
 			'cf7-api-log-admin',
 			'cf7ApiAdmin',
 			array(
-				'confirmDelete'     => \__( 'Are you sure you want to delete this log entry?', 'contact-form-to-api' ),
-				'selectItems'       => \__( 'Please select at least one item.', 'contact-form-to-api' ),
-				'confirmBulkDelete' => \__( 'Are you sure you want to delete the selected log entries?', 'contact-form-to-api' ),
+				'confirmDelete'      => \__( 'Are you sure you want to delete this log entry?', 'contact-form-to-api' ),
+				'selectItems'        => \__( 'Please select at least one item.', 'contact-form-to-api' ),
+				'confirmBulkDelete'  => \__( 'Are you sure you want to delete the selected log entries?', 'contact-form-to-api' ),
+				'confirmRetry'       => \__( 'Are you sure you want to retry this request?', 'contact-form-to-api' ),
+				'confirmBulkRetry'   => \__( 'Are you sure you want to retry the selected requests?', 'contact-form-to-api' ),
 				'dateStartBeforeEnd' => \__( 'Start date must be before or equal to end date.', 'contact-form-to-api' ),
 				'dateEndAfterStart'  => \__( 'End date must be after or equal to start date.', 'contact-form-to-api' ),
 			)
