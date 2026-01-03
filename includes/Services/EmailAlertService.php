@@ -142,8 +142,8 @@ class EmailAlertService implements LoadableInterface {
 			return false;
 		}
 
-		// Calculate cooldown end time.
-		$cooldown_end = $last_sent + ( $cooldown_hours * HOUR_IN_SECONDS );
+		// Calculate cooldown end time (HOUR_IN_SECONDS = 3600).
+		$cooldown_end = $last_sent + ( $cooldown_hours * 3600 );
 
 		// Check if still in cooldown.
 		return \time() < $cooldown_end;

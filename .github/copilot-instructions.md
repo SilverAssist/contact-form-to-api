@@ -1034,7 +1034,7 @@ EOF
 - The `path` and `line` should match the original comment's location
 - Always pipe to `| cat` to avoid paging issues
 
-**Example Workflow**:
+**Example Workflow (REST API)**:
 ```bash
 # 1. Get comment IDs
 gh api repos/SilverAssist/contact-form-to-api/pulls/29/comments --jq '.[] | "ID: \(.id) | File: \(.path):\(.original_line)"' | cat
@@ -1053,4 +1053,87 @@ gh api repos/SilverAssist/contact-form-to-api/pulls/29/comments -X POST --input 
   "in_reply_to": 2659078318
 }
 EOF
+```
+
+### Using GraphQL API for Review Threads (Recommended)
+The GraphQL API provides better access to review threads and is more reliable for replying to Copilot Code Review comments:
+
+```bash
+# Get all review thread IDs with their comments
+gh api graphql -f query='
+query {
+  repository(owner: "SilverAssist", name: "contact-form-to-api") {
+    pullRequest(number: 30) {
+      reviewThreads(first: 20) {
+        nodes {
+          id
+          path
+          isResolved
+          comments(first: 1) {
+            nodes {
+              id
+              body
+            }
+          }
+        }
+      }
+    }
+  }
+}' | cat
+```
+
+**Reply to a specific review thread using GraphQL**:
+```bash
+gh api graphql -f query='
+mutation {
+  addPullRequestReviewThreadReply(input: {
+    pullRequestReviewThreadId: "PRRT_kwDONqY9Pc6XXXXXXX",
+    body: "Fixed in commit abc1234. Description of the fix."
+  }) {
+    comment {
+      id
+      body
+    }
+  }
+}' | cat
+```
+
+**Why GraphQL over REST API**:
+- Review thread IDs (`PRRT_...`) are more reliable for Copilot Code Review comments
+- No need to provide `commit_id`, `path`, or `line` - the thread ID handles all context
+- Simpler mutation structure for replies
+- Better support for multi-line review comments
+
+**Example GraphQL Workflow**:
+```bash
+# 1. Get all review thread IDs
+gh api graphql -f query='
+query {
+  repository(owner: "SilverAssist", name: "contact-form-to-api") {
+    pullRequest(number: 30) {
+      reviewThreads(first: 20) {
+        nodes {
+          id
+          path
+          comments(first: 1) {
+            nodes {
+              body
+            }
+          }
+        }
+      }
+    }
+  }
+}' | cat
+
+# 2. Reply to each thread (repeat for each thread ID)
+gh api graphql -f query='
+mutation {
+  addPullRequestReviewThreadReply(input: {
+    pullRequestReviewThreadId: "PRRT_kwDONqY9Pc6ABC123",
+    body: "Fixed in commit abc1234. Added proper validation."
+  }) {
+    comment { id }
+  }
+}' | cat
 ```
