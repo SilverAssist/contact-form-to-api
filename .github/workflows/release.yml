@@ -157,7 +157,7 @@ jobs:
               uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v1
               with:
                   tag_name: ${{ needs.validate-release.outputs.tag_name }}
-                  name: "Contact Form 7 to API v${{ needs.validate-release.outputs.version }}"
+                  name: "CF7 to API v${{ needs.validate-release.outputs.version }}"
                   body_path: release-notes.md
                   draft: false
                   prerelease: false
@@ -213,7 +213,7 @@ jobs:
                   fi
 
                   # Verify plugin header
-                  if grep -q "Plugin Name: Contact Form 7 to API" contact-form-to-api.php; then
+                  if grep -q "Plugin Name: CF7 to API" contact-form-to-api.php; then
                     echo "✅ Plugin header validation passed"
                   else
                     echo "❌ Plugin header validation failed"
@@ -269,7 +269,7 @@ jobs:
                     echo "✅ Extracted plugin syntax OK"
                     
                     # Verify plugin header in extracted file
-                    if grep -q "Plugin Name: Contact Form 7 to API" contact-form-to-api.php; then
+                    if grep -q "Plugin Name: CF7 to API" contact-form-to-api.php; then
                       echo "✅ Extracted plugin header validation passed"
                     else
                       echo "❌ Extracted plugin header validation failed"
