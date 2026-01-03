@@ -503,6 +503,13 @@ class RequestLogController implements LoadableInterface {
 			$where_values[] = $search;
 		}
 
+		// Apply date filter (same logic as RequestLogTable).
+		$date_filter = $this->get_export_date_filter_clause();
+		if ( ! empty( $date_filter['clause'] ) ) {
+			$where         .= ' ' . $date_filter['clause'];
+			$where_values   = \array_merge( $where_values, $date_filter['values'] );
+		}
+
 		// Prepare WHERE clause.
 		if ( ! empty( $where_values ) ) {
 			$where = $wpdb->prepare( $where, ...$where_values );
@@ -520,5 +527,103 @@ class RequestLogController implements LoadableInterface {
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $logs ?: array();
+	}
+
+	/**
+	 * Get date filter clause for export
+	 *
+	 * Same logic as RequestLogTable::get_date_filter_clause() but for export.
+	 *
+	 * @return array{clause: string, values: array<int, string>} SQL clause and prepared statement values.
+	 */
+	private function get_export_date_filter_clause(): array {
+		$filter = isset( $_GET['date_filter'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_filter'] ) ) : '';
+		$start  = isset( $_GET['date_start'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_start'] ) ) : '';
+		$end    = isset( $_GET['date_end'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_end'] ) ) : '';
+
+		if ( empty( $filter ) ) {
+			return array(
+				'clause' => '',
+				'values' => array(),
+			);
+		}
+
+		return match ( $filter ) {
+			'today' => array(
+				'clause' => 'AND DATE(created_at) = CURDATE()',
+				'values' => array(),
+			),
+			'yesterday' => array(
+				'clause' => 'AND DATE(created_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)',
+				'values' => array(),
+			),
+			'7days' => array(
+				'clause' => 'AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)',
+				'values' => array(),
+			),
+			'30days' => array(
+				'clause' => 'AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)',
+				'values' => array(),
+			),
+			'month' => array(
+				'clause' => 'AND MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())',
+				'values' => array(),
+			),
+			'custom' => $this->build_export_custom_range_clause( $start, $end ),
+			default => array(
+				'clause' => '',
+				'values' => array(),
+			),
+		};
+	}
+
+	/**
+	 * Build custom date range clause for export
+	 *
+	 * @param string $start Start date (Y-m-d format).
+	 * @param string $end   End date (Y-m-d format).
+	 * @return array{clause: string, values: array<int, string>} SQL clause and prepared statement values.
+	 */
+	private function build_export_custom_range_clause( string $start, string $end ): array {
+		if ( ! $this->validate_export_date_format( $start ) ) {
+			return array(
+				'clause' => '',
+				'values' => array(),
+			);
+		}
+
+		if ( ! empty( $end ) ) {
+			if ( ! $this->validate_export_date_format( $end ) ) {
+				return array(
+					'clause' => '',
+					'values' => array(),
+				);
+			}
+
+			return array(
+				'clause' => 'AND DATE(created_at) BETWEEN %s AND %s',
+				'values' => array( $start, $end ),
+			);
+		}
+
+		return array(
+			'clause' => 'AND DATE(created_at) >= %s',
+			'values' => array( $start ),
+		);
+	}
+
+	/**
+	 * Validate date format for export
+	 *
+	 * @param string $date Date string to validate.
+	 * @return bool True if valid, false otherwise.
+	 */
+	private function validate_export_date_format( string $date ): bool {
+		if ( empty( $date ) ) {
+			return false;
+		}
+
+		$d = \DateTime::createFromFormat( 'Y-m-d', $date );
+		return $d && $d->format( 'Y-m-d' ) === $date;
 	}
 }

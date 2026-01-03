@@ -20,6 +20,7 @@
 		init: function () {
 			this.bindEvents();
 			this.initTooltips();
+			this.initDateFilter();
 		},
 
 		/**
@@ -68,6 +69,54 @@
 				const fullUrl = $(this).attr("href");
 				if (fullUrl && fullUrl.includes("log_id=")) {
 					// Could add title attribute with full endpoint
+				}
+			});
+		},
+
+		/**
+		 * Initialize date filter functionality
+		 */
+		initDateFilter: function () {
+			const $dateFilter = $("#date_filter");
+			const $customDateRange = $("#custom-date-range");
+			const $dateStart = $("#date_start");
+			const $dateEnd = $("#date_end");
+
+			// Toggle custom date range visibility
+			$dateFilter.on("change", function () {
+				const value = $(this).val();
+				if (value === "custom") {
+					$customDateRange.slideDown(200);
+					$dateStart.focus();
+				} else {
+					$customDateRange.slideUp(200);
+					// Clear custom date inputs when switching to preset filter
+					if (value !== "") {
+						$("#cf7-date-filter-form").submit();
+					}
+				}
+			});
+
+			// Validate date inputs
+			$dateStart.on("change", function () {
+				const startDate = $(this).val();
+				const endDate = $dateEnd.val();
+
+				if (startDate && endDate && startDate > endDate) {
+					alert("Start date must be before or equal to end date.");
+					$(this).val("");
+					return;
+				}
+			});
+
+			$dateEnd.on("change", function () {
+				const startDate = $dateStart.val();
+				const endDate = $(this).val();
+
+				if (startDate && endDate && startDate > endDate) {
+					alert("End date must be after or equal to start date.");
+					$(this).val("");
+					return;
 				}
 			});
 		},

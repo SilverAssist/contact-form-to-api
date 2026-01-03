@@ -237,6 +237,13 @@ class RequestLogTable extends \WP_List_Table {
 			$where_values[] = $search;
 		}
 
+		// Apply date filter.
+		$date_filter = $this->get_date_filter_clause();
+		if ( ! empty( $date_filter['clause'] ) ) {
+			$where         .= ' ' . $date_filter['clause'];
+			$where_values   = \array_merge( $where_values, $date_filter['values'] );
+		}
+
 		// Prepare WHERE clause.
 		if ( ! empty( $where_values ) ) {
 			$where = $wpdb->prepare( $where, ...$where_values );
@@ -444,6 +451,114 @@ class RequestLogTable extends \WP_List_Table {
 			\esc_attr( $status ),
 			\esc_html( $label )
 		);
+	}
+
+	/**
+	 * Get date filter clause for SQL query
+	 *
+	 * Builds WHERE clause for date filtering based on GET parameters.
+	 * Supports preset filters and custom date ranges.
+	 *
+	 * @return array{clause: string, values: array<int, string>} SQL clause and prepared statement values.
+	 */
+	private function get_date_filter_clause(): array {
+		$filter = isset( $_GET['date_filter'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_filter'] ) ) : '';
+		$start  = isset( $_GET['date_start'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_start'] ) ) : '';
+		$end    = isset( $_GET['date_end'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_end'] ) ) : '';
+
+		// No filter selected.
+		if ( empty( $filter ) ) {
+			return array(
+				'clause' => '',
+				'values' => array(),
+			);
+		}
+
+		return match ( $filter ) {
+			'today' => array(
+				'clause' => 'AND DATE(created_at) = CURDATE()',
+				'values' => array(),
+			),
+			'yesterday' => array(
+				'clause' => 'AND DATE(created_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)',
+				'values' => array(),
+			),
+			'7days' => array(
+				'clause' => 'AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)',
+				'values' => array(),
+			),
+			'30days' => array(
+				'clause' => 'AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)',
+				'values' => array(),
+			),
+			'month' => array(
+				'clause' => 'AND MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())',
+				'values' => array(),
+			),
+			'custom' => $this->build_custom_range_clause( $start, $end ),
+			default => array(
+				'clause' => '',
+				'values' => array(),
+			),
+		};
+	}
+
+	/**
+	 * Build custom date range clause
+	 *
+	 * Validates and builds WHERE clause for custom date range filter.
+	 *
+	 * @param string $start Start date (Y-m-d format).
+	 * @param string $end   End date (Y-m-d format).
+	 * @return array{clause: string, values: array<int, string>} SQL clause and prepared statement values.
+	 */
+	private function build_custom_range_clause( string $start, string $end ): array {
+		// Validate start date.
+		if ( ! $this->validate_date_format( $start ) ) {
+			return array(
+				'clause' => '',
+				'values' => array(),
+			);
+		}
+
+		// If end date is provided, validate it.
+		if ( ! empty( $end ) ) {
+			if ( ! $this->validate_date_format( $end ) ) {
+				return array(
+					'clause' => '',
+					'values' => array(),
+				);
+			}
+
+			// Both start and end dates provided.
+			return array(
+				'clause' => 'AND DATE(created_at) BETWEEN %s AND %s',
+				'values' => array( $start, $end ),
+			);
+		}
+
+		// Only start date provided.
+		return array(
+			'clause' => 'AND DATE(created_at) >= %s',
+			'values' => array( $start ),
+		);
+	}
+
+	/**
+	 * Validate date format
+	 *
+	 * Checks if date string is in Y-m-d format.
+	 *
+	 * @param string $date Date string to validate.
+	 * @return bool True if valid, false otherwise.
+	 */
+	private function validate_date_format( string $date ): bool {
+		if ( empty( $date ) ) {
+			return false;
+		}
+
+		$d = \DateTime::createFromFormat( 'Y-m-d', $date );
+		return $d && $d->format( 'Y-m-d' ) === $date;
 	}
 
 	/**

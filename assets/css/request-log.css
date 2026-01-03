@@ -361,3 +361,90 @@
 .tablenav.bottom {
 	margin-top: 20px;
 }
+
+/* Date Filter */
+.cf7-api-date-filter {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	padding: 15px 20px;
+	margin: 20px 0;
+}
+
+.date-filter-controls {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.date-filter-label {
+	font-weight: 600;
+	margin: 0;
+}
+
+.date-filter-select {
+	min-width: 150px;
+}
+
+.custom-date-range {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding-left: 15px;
+	border-left: 2px solid #dcdcde;
+}
+
+.custom-date-range label {
+	margin: 0;
+	font-weight: 500;
+}
+
+.date-input {
+	padding: 4px 8px;
+	border: 1px solid #8c8f94;
+	border-radius: 3px;
+	font-size: 14px;
+}
+
+.active-filter-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 8px 12px;
+	background: #e5f5fa;
+	border: 1px solid #0073aa;
+	border-radius: 3px;
+	margin-top: 10px;
+	font-size: 13px;
+	color: #0073aa;
+}
+
+.active-filter-badge .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+/* Responsive Design for Date Filter */
+@media (max-width: 782px) {
+	.date-filter-controls {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.custom-date-range {
+		flex-direction: column;
+		align-items: flex-start;
+		padding-left: 0;
+		border-left: none;
+		padding-top: 10px;
+		border-top: 1px solid #dcdcde;
+		width: 100%;
+	}
+
+	.date-filter-select,
+	.date-input {
+		width: 100%;
+	}
+}
