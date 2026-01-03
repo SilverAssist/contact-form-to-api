@@ -37,14 +37,15 @@ class RequestLogView {
 	public static function render_page( RequestLogTable $list_table ): void {
 		?>
 		<div class="wrap">
-			<h1 class="wp-heading-inline"><?php \esc_html_e( 'API Logs', 'contact-form-to-api' ); ?></h1>
+			<h1 class="wp-heading-inline"><?php \esc_html_e( "API Logs", CF7_API_TEXT_DOMAIN ); ?></h1>
+			<?php self::render_export_buttons(); ?>
 
 			<?php self::render_statistics(); ?>
 
 			<form method="get">
-				<input type="hidden" name="page" value="<?php echo \esc_attr( $_REQUEST['page'] ?? '' ); ?>" />
+				<input type="hidden" name="page" value="<?php echo \esc_attr( $_REQUEST["page"] ?? "" ); ?>" />
 				<?php
-				$list_table->search_box( \__( 'Search logs', 'contact-form-to-api' ), 'cf7-api-log' );
+				$list_table->search_box( \__( "Search logs", CF7_API_TEXT_DOMAIN ), "cf7-api-log" );
 				$list_table->display();
 				?>
 			</form>
@@ -327,5 +328,54 @@ class RequestLogView {
 			return $encoded !== false ? $encoded : $json;
 		}
 		return $json;
+	}
+
+	/**
+	 * Render export buttons
+	 *
+	 * @return void
+	 */
+	private static function render_export_buttons(): void {
+		// Build export URLs with nonce and current filters.
+		$base_args = array(
+			"page"     => $_REQUEST["page"] ?? "cf7-api-logs",
+			"_wpnonce" => \wp_create_nonce( "cf7_api_export_logs" ),
+		);
+
+		// Preserve current filters.
+		if ( isset( $_GET["status"] ) && "all" !== $_GET["status"] ) {
+			$base_args["status"] = \sanitize_text_field( \wp_unslash( $_GET["status"] ) );
+		}
+
+		if ( isset( $_GET["form_id"] ) && ! empty( $_GET["form_id"] ) ) {
+			$base_args["form_id"] = \absint( $_GET["form_id"] );
+		}
+
+		if ( isset( $_GET["s"] ) && ! empty( $_GET["s"] ) ) {
+			$base_args["s"] = \sanitize_text_field( \wp_unslash( $_GET["s"] ) );
+		}
+
+		// CSV export URL.
+		$csv_args = \array_merge( $base_args, array( "action" => "export_csv" ) );
+		$csv_url  = \add_query_arg( $csv_args, \admin_url( "admin.php" ) );
+
+		// JSON export URL.
+		$json_args = \array_merge( $base_args, array( "action" => "export_json" ) );
+		$json_url  = \add_query_arg( $json_args, \admin_url( "admin.php" ) );
+
+		?>
+		<div class="cf7-api-export-buttons" style="display: inline-block; margin-left: 10px;">
+			<div class="button-group">
+				<a href="<?php echo \esc_url( $csv_url ); ?>" class="button">
+					<span class="dashicons dashicons-download" style="vertical-align: middle;"></span>
+					<?php \esc_html_e( "Export as CSV", CF7_API_TEXT_DOMAIN ); ?>
+				</a>
+				<a href="<?php echo \esc_url( $json_url ); ?>" class="button">
+					<span class="dashicons dashicons-download" style="vertical-align: middle;"></span>
+					<?php \esc_html_e( "Export as JSON", CF7_API_TEXT_DOMAIN ); ?>
+				</a>
+			</div>
+		</div>
+		<?php
 	}
 }
