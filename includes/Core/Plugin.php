@@ -266,8 +266,9 @@ class Plugin implements LoadableInterface {
 		\add_action( 'admin_init', array( $this, 'handle_admin_init' ) );
 		\add_filter( 'plugin_action_links_' . CF7_API_BASENAME, array( $this, 'add_action_links' ) );
 
-		// Register cron job for log cleanup.
+		// Register cron jobs.
 		\add_action( 'cf7_api_cleanup_old_logs', array( $this, 'cleanup_old_logs' ) );
+		\add_action( 'cf7_api_check_alerts', array( $this, 'check_email_alerts' ) );
 	}
 
 	/**
@@ -461,5 +462,24 @@ class Plugin implements LoadableInterface {
 				unset( $e );
 			}
 		}
+	}
+
+	/**
+	 * Check email alerts for high error rates
+	 *
+	 * Scheduled via WP-Cron to run at configured intervals.
+	 *
+	 * @since 1.3.0
+	 * @return void
+	 */
+	public function check_email_alerts(): void {
+		// Only run if EmailAlertService is available.
+		if ( ! \class_exists( 'SilverAssist\\ContactFormToAPI\\Services\\EmailAlertService' ) ) {
+			return;
+		}
+
+		// Get service instance and check alerts.
+		$alert_service = \SilverAssist\ContactFormToAPI\Services\EmailAlertService::instance();
+		$alert_service->check_and_alert();
 	}
 }

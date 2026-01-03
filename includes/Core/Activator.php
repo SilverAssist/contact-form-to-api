@@ -68,6 +68,7 @@ class Activator {
 		// Clear any scheduled cron events.
 		\wp_clear_scheduled_hook( 'cf7_api_cleanup' );
 		\wp_clear_scheduled_hook( 'cf7_api_cleanup_old_logs' );
+		\wp_clear_scheduled_hook( 'cf7_api_check_alerts' );
 
 		// Clear cached data.
 		\wp_cache_flush();
@@ -269,6 +270,12 @@ class Activator {
 				$retention_days = $settings->get_log_retention_days();
 				if ( $retention_days > 0 && ! \wp_next_scheduled( 'cf7_api_cleanup_old_logs' ) ) {
 					\wp_schedule_event( \time(), 'daily', 'cf7_api_cleanup_old_logs' );
+				}
+
+				// Schedule email alert checks if enabled and not already scheduled.
+				if ( $settings->is_alerts_enabled() && ! \wp_next_scheduled( 'cf7_api_check_alerts' ) ) {
+					$interval = $settings->get_alert_check_interval();
+					\wp_schedule_event( \time(), $interval, 'cf7_api_check_alerts' );
 				}
 			}
 		}
