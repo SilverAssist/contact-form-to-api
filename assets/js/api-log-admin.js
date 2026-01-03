@@ -82,14 +82,16 @@
 			const $dateStart = $("#date_start");
 			const $dateEnd = $("#date_end");
 
-			// Toggle custom date range visibility
+			// Toggle custom date range visibility using CSS class
 			$dateFilter.on("change", function () {
 				const value = $(this).val();
 				if (value === "custom") {
-					$customDateRange.slideDown(200);
+					$customDateRange.removeClass("cf7-api-hidden").slideDown(200);
 					$dateStart.focus();
 				} else {
-					$customDateRange.slideUp(200);
+					$customDateRange.slideUp(200, function() {
+						$(this).addClass("cf7-api-hidden");
+					});
 					// Clear custom date inputs when switching to preset filter
 					if (value !== "") {
 						$("#cf7-date-filter-form").submit();
@@ -97,26 +99,28 @@
 				}
 			});
 
-			// Validate date inputs
-			$dateStart.on("change", function () {
+			// Validate date inputs with proper event handling
+			$dateStart.on("change", function (e) {
 				const startDate = $(this).val();
 				const endDate = $dateEnd.val();
 
 				if (startDate && endDate && startDate > endDate) {
+					e.preventDefault();
 					alert(window.cf7ApiAdmin?.dateStartBeforeEnd || "Start date must be before or equal to end date.");
 					$(this).val("");
-					return;
+					return false;
 				}
 			});
 
-			$dateEnd.on("change", function () {
+			$dateEnd.on("change", function (e) {
 				const startDate = $dateStart.val();
 				const endDate = $(this).val();
 
 				if (startDate && endDate && startDate > endDate) {
+					e.preventDefault();
 					alert(window.cf7ApiAdmin?.dateEndAfterStart || "End date must be after or equal to start date.");
 					$(this).val("");
-					return;
+					return false;
 				}
 			});
 		},

@@ -41,6 +41,17 @@ class RequestLogTableTest extends TestCase {
 	}
 
 	/**
+	 * Cleanup method called after each test
+	 *
+	 * Ensures $_GET superglobal is cleaned up even if test fails.
+	 *
+	 * @return void
+	 */
+	protected function tearDown(): void {
+		parent::tearDown();
+	}
+
+	/**
 	 * Test that RequestLogTable class exists
 	 *
 	 * @return void
@@ -111,13 +122,13 @@ class RequestLogTableTest extends TestCase {
 	}
 
 	/**
-	 * Test build_custom_range_clause with both start and end dates
+	 * Test build_custom_date_range_clause with both start and end dates
 	 *
 	 * @return void
 	 */
 	public function testBuildCustomRangeClauseWithBothDates(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
-		$method     = $reflection->getMethod( 'build_custom_range_clause' );
+		$method     = $reflection->getMethod( 'build_custom_date_range_clause' );
 		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table, '2026-01-01', '2026-01-31' );
@@ -130,13 +141,13 @@ class RequestLogTableTest extends TestCase {
 	}
 
 	/**
-	 * Test build_custom_range_clause with only start date
+	 * Test build_custom_date_range_clause with only start date
 	 *
 	 * @return void
 	 */
 	public function testBuildCustomRangeClauseWithStartDateOnly(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
-		$method     = $reflection->getMethod( 'build_custom_range_clause' );
+		$method     = $reflection->getMethod( 'build_custom_date_range_clause' );
 		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table, '2026-01-01', '' );
@@ -147,13 +158,13 @@ class RequestLogTableTest extends TestCase {
 	}
 
 	/**
-	 * Test build_custom_range_clause with invalid start date
+	 * Test build_custom_date_range_clause with invalid start date
 	 *
 	 * @return void
 	 */
 	public function testBuildCustomRangeClauseWithInvalidStartDate(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
-		$method     = $reflection->getMethod( 'build_custom_range_clause' );
+		$method     = $reflection->getMethod( 'build_custom_date_range_clause' );
 		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table, 'invalid', '2026-01-31' );
@@ -164,13 +175,13 @@ class RequestLogTableTest extends TestCase {
 	}
 
 	/**
-	 * Test build_custom_range_clause with invalid end date
+	 * Test build_custom_date_range_clause with invalid end date
 	 *
 	 * @return void
 	 */
 	public function testBuildCustomRangeClauseWithInvalidEndDate(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
-		$method     = $reflection->getMethod( 'build_custom_range_clause' );
+		$method     = $reflection->getMethod( 'build_custom_date_range_clause' );
 		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table, '2026-01-01', 'invalid' );
@@ -214,7 +225,6 @@ class RequestLogTableTest extends TestCase {
 		$this->assertEquals( 'AND DATE(created_at) = CURDATE()', $result['clause'] );
 		$this->assertEquals( array(), $result['values'] );
 
-		unset( $_GET['date_filter'] );
 	}
 
 	/**
@@ -234,7 +244,6 @@ class RequestLogTableTest extends TestCase {
 		$this->assertEquals( 'AND DATE(created_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)', $result['clause'] );
 		$this->assertEquals( array(), $result['values'] );
 
-		unset( $_GET['date_filter'] );
 	}
 
 	/**
@@ -254,7 +263,6 @@ class RequestLogTableTest extends TestCase {
 		$this->assertEquals( 'AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)', $result['clause'] );
 		$this->assertEquals( array(), $result['values'] );
 
-		unset( $_GET['date_filter'] );
 	}
 
 	/**
@@ -274,7 +282,6 @@ class RequestLogTableTest extends TestCase {
 		$this->assertEquals( 'AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)', $result['clause'] );
 		$this->assertEquals( array(), $result['values'] );
 
-		unset( $_GET['date_filter'] );
 	}
 
 	/**
@@ -294,7 +301,6 @@ class RequestLogTableTest extends TestCase {
 		$this->assertEquals( 'AND MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())', $result['clause'] );
 		$this->assertEquals( array(), $result['values'] );
 
-		unset( $_GET['date_filter'] );
 	}
 
 	/**
@@ -316,7 +322,6 @@ class RequestLogTableTest extends TestCase {
 		$this->assertEquals( 'AND DATE(created_at) BETWEEN %s AND %s', $result['clause'] );
 		$this->assertEquals( array( '2026-01-01', '2026-01-31' ), $result['values'] );
 
-		unset( $_GET['date_filter'], $_GET['date_start'], $_GET['date_end'] );
 	}
 
 	/**
@@ -336,6 +341,5 @@ class RequestLogTableTest extends TestCase {
 		$this->assertEquals( '', $result['clause'], 'Should return empty clause for invalid filter' );
 		$this->assertEquals( array(), $result['values'], 'Should return empty values for invalid filter' );
 
-		unset( $_GET['date_filter'] );
 	}
 }

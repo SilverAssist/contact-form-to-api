@@ -378,7 +378,7 @@ class RequestLogView {
 						</option>
 					</select>
 
-					<div class="custom-date-range" id="custom-date-range" <?php echo $is_custom ? '' : 'style="display:none;"'; ?>>
+					<div class="custom-date-range<?php echo $is_custom ? '' : ' cf7-api-hidden'; ?>" id="custom-date-range">
 						<label for="date_start">
 							<?php \esc_html_e( 'From', 'contact-form-to-api' ); ?>:
 						</label>
@@ -395,7 +395,7 @@ class RequestLogView {
 					</button>
 
 					<?php if ( ! empty( $current_filter ) ) : ?>
-						<a href="<?php echo \esc_url( \admin_url( 'admin.php?page=' . $page ) ); ?>" class="button">
+						<a href="<?php echo \esc_url( \add_query_arg( 'page', $page, \admin_url( 'admin.php' ) ) ); ?>" class="button">
 							<?php \esc_html_e( 'Clear Filter', 'contact-form-to-api' ); ?>
 						</a>
 					<?php endif; ?>
