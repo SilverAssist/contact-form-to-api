@@ -39,8 +39,9 @@ class SettingsTest extends TestCase {
 		// Delete any existing settings.
 		\delete_option( 'cf7_api_global_settings' );
 
-		// Get fresh settings instance.
+		// Get fresh settings instance and reset to defaults.
 		$this->settings = Settings::instance();
+		$this->settings->reset();
 		$this->settings->init();
 	}
 

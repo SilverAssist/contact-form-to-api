@@ -439,7 +439,7 @@ class Plugin implements LoadableInterface {
 		}
 
 		// Use RequestLogger to clean old logs.
-		$logger = new RequestLogger();
+		$logger  = new RequestLogger();
 		$deleted = $logger->clean_old_logs( $retention_days );
 
 		// Log cleanup result if debug logger is available.

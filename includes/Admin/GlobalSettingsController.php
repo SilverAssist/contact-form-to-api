@@ -266,7 +266,7 @@ class GlobalSettingsController implements LoadableInterface {
 	/**
 	 * Get admin notices from query params
 	 *
-	 * @return array<string, string> Array of notices with type and message.
+	 * @return array<int, array{type: string, message: string}> Array of notices.
 	 */
 	private function get_admin_notices(): array {
 		$notices = array();

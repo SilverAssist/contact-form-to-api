@@ -66,13 +66,13 @@ class GlobalSettingsView {
 	/**
 	 * Render admin notices
 	 *
-	 * @param array<string, string> $notices Array of notices.
+	 * @param array<int, array{type: string, message: string}> $notices Array of notices.
 	 * @return void
 	 */
 	private static function render_notices( array $notices ): void {
 		foreach ( $notices as $notice ) {
-			$type    = isset( $notice['type'] ) ? \sanitize_html_class( $notice['type'] ) : 'info';
-			$message = isset( $notice['message'] ) ? $notice['message'] : '';
+			$type    = \sanitize_html_class( $notice['type'] );
+			$message = $notice['message'];
 			?>
 			<div class="notice notice-<?php echo \esc_attr( $type ); ?> is-dismissible">
 				<p><?php echo \esc_html( $message ); ?></p>
