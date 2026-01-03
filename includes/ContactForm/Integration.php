@@ -137,9 +137,10 @@ class Integration implements LoadableInterface {
 	private function register_legacy_hooks(): void {
 		// Legacy: qs_cf7_collect_mail_tags -> cf7_api_collect_mail_tags.
 		\add_filter(
-			"cf7_api_collect_mail_tags",
+			'cf7_api_collect_mail_tags',
 			function ( $tags ) {
-				return \apply_filters( "qs_cf7_collect_mail_tags", $tags );
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
+				return \apply_filters( 'qs_cf7_collect_mail_tags', $tags );
 			},
 			5
 		);
@@ -534,7 +535,7 @@ class Integration implements LoadableInterface {
 
 		// Build headers array from custom_headers.
 		$headers = array();
-		if ( ! empty( $custom_headers ) && \is_array( $custom_headers ) ) {
+		if ( ! empty( $custom_headers ) ) {
 			foreach ( $custom_headers as $header ) {
 				if ( ! empty( $header['name'] ) ) {
 					$headers[ $header['name'] ] = $header['value'] ?? '';

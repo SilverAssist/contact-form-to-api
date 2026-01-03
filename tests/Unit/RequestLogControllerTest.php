@@ -108,54 +108,54 @@ class RequestLogControllerTest extends TestCase {
 	public function testViewActionIsNotProcessedAsBulkAction(): void {
 		// Read the source code of process_bulk_actions to verify the fix
 		$reflection = new ReflectionClass( RequestLogController::class );
-		$method     = $reflection->getMethod( "process_bulk_actions" );
+		$method     = $reflection->getMethod( 'process_bulk_actions' );
 		// Verify that the method checks for valid bulk actions before processing
 
 		// Get the file and read the method contents
 		$filename  = $method->getFileName();
-		$startLine = $method->getStartLine();
-		$endLine   = $method->getEndLine();
+		$start_line = $method->getStartLine();
+		$end_line   = $method->getEndLine();
 
-		$source = file( $filename );
-		$methodSource = implode( "", array_slice( $source, $startLine - 1, $endLine - $startLine + 1 ) );
+		$source       = file( $filename );
+		$method_source = implode( '', array_slice( $source, $start_line - 1, $end_line - $start_line + 1 ) );
 
 		$this->assertStringContainsString(
-			"bulk_actions",
-			$methodSource,
-			"process_bulk_actions should define allowed bulk actions array"
+			'bulk_actions',
+			$method_source,
+			'process_bulk_actions should define allowed bulk actions array'
 		);
 
 		// Verify that the bulk_actions array definition exists with delete and retry
 		$this->assertMatchesRegularExpression(
 			'/\$bulk_actions\s*=\s*array/',
-			$methodSource,
-			"bulk_actions array should be defined"
+			$method_source,
+			'bulk_actions array should be defined'
 		);
 
 		// Verify that 'delete' and 'retry' are the valid bulk actions
 		$this->assertStringContainsString(
 			"'delete'",
-			$methodSource,
+			$method_source,
 			"'delete' should be in the allowed bulk actions"
 		);
 
 		$this->assertStringContainsString(
 			"'retry'",
-			$methodSource,
+			$method_source,
 			"'retry' should be in the allowed bulk actions"
 		);
 
 		// Verify the in_array check exists to filter non-bulk actions
 		$this->assertStringContainsString(
-			"in_array",
-			$methodSource,
-			"process_bulk_actions should use in_array to check if action is valid"
+			'in_array',
+			$method_source,
+			'process_bulk_actions should use in_array to check if action is valid'
 		);
 
 		// Verify that view action is filtered out (the return statement after in_array check)
 		$this->assertMatchesRegularExpression(
 			'/if\s*\(\s*!\s*\\\\in_array.*\$bulk_actions.*\)\s*\{[^}]*return/',
-			$methodSource,
+			$method_source,
 			"Non-bulk actions like 'view' should cause early return"
 		);
 	}
@@ -166,14 +166,14 @@ class RequestLogControllerTest extends TestCase {
 	 * @return void
 	 */
 	public function testValidBulkActionsAreDefinedCorrectly(): void {
-		$validBulkActions = array( 'delete', 'retry' );
-		$nonBulkActions   = array( 'view', 'edit', 'export' );
+		$valid_bulk_actions = array( 'delete', 'retry' );
+		$non_bulk_actions   = array( 'view', 'edit', 'export' );
 
 		// These are actions that should NOT trigger bulk processing
-		foreach ( $nonBulkActions as $action ) {
+		foreach ( $non_bulk_actions as $action ) {
 			$this->assertNotContains(
 				$action,
-				$validBulkActions,
+				$valid_bulk_actions,
 				"Action '{$action}' should NOT be a valid bulk action"
 			);
 		}
@@ -181,12 +181,12 @@ class RequestLogControllerTest extends TestCase {
 		// These are the only valid bulk actions
 		$this->assertCount(
 			2,
-			$validBulkActions,
+			$valid_bulk_actions,
 			'There should be exactly 2 valid bulk actions'
 		);
 
-		$this->assertContains( 'delete', $validBulkActions, 'delete should be a valid bulk action' );
-		$this->assertContains( 'retry', $validBulkActions, 'retry should be a valid bulk action' );
+		$this->assertContains( 'delete', $valid_bulk_actions, 'delete should be a valid bulk action' );
+		$this->assertContains( 'retry', $valid_bulk_actions, 'retry should be a valid bulk action' );
 	}
 
 	/**
@@ -207,15 +207,15 @@ class RequestLogControllerTest extends TestCase {
 	 * @return void
 	 */
 	public function testShouldLoadReturnsCorrectValue(): void {
-		$shouldLoad = $this->controller->should_load();
+		$should_load = $this->controller->should_load();
 
-		$this->assertIsBool( $shouldLoad, 'should_load should return a boolean' );
+		$this->assertIsBool( $should_load, 'should_load should return a boolean' );
 
 		// In test context with WordPress loaded as admin
 		if ( function_exists( 'is_admin' ) ) {
 			$this->assertEquals(
 				is_admin(),
-				$shouldLoad,
+				$should_load,
 				'should_load should match is_admin() result'
 			);
 		}
@@ -239,20 +239,20 @@ class RequestLogControllerTest extends TestCase {
 		$controller = RequestLogController::instance();
 
 		// Get the current value of list_table
-		$listTable = $property->getValue( $controller );
+		$list_table_val = $property->getValue( $controller );
 
 		// If list_table is null, process_bulk_actions should return early
 		// This is verified by checking the method source code
-		$method      = $reflection->getMethod( 'process_bulk_actions' );
-		$filename    = $method->getFileName();
-		$startLine   = $method->getStartLine();
-		$endLine     = $method->getEndLine();
-		$source      = file( $filename );
-		$methodSource = implode( '', array_slice( $source, $startLine - 1, $endLine - $startLine + 1 ) );
+		$method       = $reflection->getMethod( 'process_bulk_actions' );
+		$filename     = $method->getFileName();
+		$start_line    = $method->getStartLine();
+		$end_line      = $method->getEndLine();
+		$source       = file( $filename );
+		$method_source = implode( '', array_slice( $source, $start_line - 1, $end_line - $start_line + 1 ) );
 
 		$this->assertStringContainsString(
 			'if ( ! $this->list_table )',
-			$methodSource,
+			$method_source,
 			'process_bulk_actions should check if list_table is null and return early'
 		);
 	}
