@@ -2,14 +2,14 @@
 # This file is distributed under the Polyform-Noncommercial-1.0.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: CF7 to API 1.0.1\n"
-"Report-Msgid-Bugs-To: https://github.com/SilverAssist/contact-form-to-api/issues\n"
+"Project-Id-Version: CF7 to API 1.1.3\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/contact-form-to-api\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-02T16:19:53+00:00\n"
+"POT-Creation-Date: 2026-01-03T05:54:35+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: contact-form-to-api\n"
@@ -40,105 +40,121 @@ msgstr ""
 msgid "https://silverassist.com"
 msgstr ""
 
-#: contact-form-to-api.php:65
+#: contact-form-to-api.php:64
 msgid "Contact Form 7 to API: Missing or invalid Composer dependencies. Run \"composer install\"."
 msgstr ""
 
-#: includes/Admin/RequestLogController.php:116
-#: includes/Admin/RequestLogController.php:117
+#: includes/Admin/DashboardWidget.php:109
+msgid "CF7 API Status"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:143
+#: includes/Admin/RequestLogController.php:144
 #: includes/Admin/Views/RequestLogView.php:40
-#: includes/Admin/Views/SettingsView.php:251
+#: includes/Admin/Views/SettingsView.php:417
 msgid "API Logs"
 msgstr ""
 
-#: includes/Admin/RequestLogController.php:135
+#: includes/Admin/RequestLogController.php:162
 msgid "Logs per page"
 msgstr ""
 
-#: includes/Admin/RequestLogController.php:179
+#: includes/Admin/RequestLogController.php:212
+#: includes/Admin/RequestLogController.php:386
 msgid "Security check failed"
 msgstr ""
 
-#: includes/Admin/RequestLogController.php:289
+#: includes/Admin/RequestLogController.php:325
 msgid "Log entry not found."
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:54
+#: includes/Admin/RequestLogController.php:391
+msgid "You do not have sufficient permissions to access this page."
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:406
+msgid "Invalid export action."
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:65
 msgid "Form"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:55
-#: includes/Admin/Views/RequestLogView.php:141
-#: includes/ContactForm/Views/IntegrationView.php:405
+#: includes/Admin/RequestLogTable.php:66
+#: includes/Admin/Views/RequestLogView.php:142
+#: includes/ContactForm/Views/IntegrationView.php:501
+#: includes/Services/ExportService.php:261
 msgid "Endpoint"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:56
-#: includes/Admin/Views/RequestLogView.php:145
-#: includes/ContactForm/Views/IntegrationView.php:160
-#: includes/ContactForm/Views/IntegrationView.php:406
+#: includes/Admin/RequestLogTable.php:67
+#: includes/Admin/Views/RequestLogView.php:146
+#: includes/ContactForm/Views/IntegrationView.php:164
+#: includes/ContactForm/Views/IntegrationView.php:502
+#: includes/Services/ExportService.php:262
 msgid "Method"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:57
-#: includes/Admin/Views/RequestLogView.php:149
-#: includes/ContactForm/Views/IntegrationView.php:407
+#: includes/Admin/RequestLogTable.php:68
+#: includes/Admin/Views/RequestLogView.php:150
+#: includes/ContactForm/Views/IntegrationView.php:503
+#: includes/Services/ExportService.php:263
 msgid "Status"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:58
+#: includes/Admin/RequestLogTable.php:69
 msgid "Response"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:59
-#: includes/ContactForm/Views/IntegrationView.php:409
+#: includes/Admin/RequestLogTable.php:70
+#: includes/ContactForm/Views/IntegrationView.php:505
 msgid "Time (s)"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:60
-#: includes/ContactForm/Views/IntegrationView.php:410
+#: includes/Admin/RequestLogTable.php:71
+#: includes/ContactForm/Views/IntegrationView.php:506
 msgid "Retries"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:61
-#: includes/Admin/Views/RequestLogView.php:153
-#: includes/ContactForm/Views/IntegrationView.php:404
+#: includes/Admin/RequestLogTable.php:72
+#: includes/Admin/Views/RequestLogView.php:154
+#: includes/ContactForm/Views/IntegrationView.php:500
 msgid "Date"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:88
-#: includes/Admin/RequestLogTable.php:384
+#: includes/Admin/RequestLogTable.php:99
+#: includes/Admin/RequestLogTable.php:395
 msgid "Delete"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:89
-#: includes/Admin/RequestLogTable.php:367
+#: includes/Admin/RequestLogTable.php:100
+#: includes/Admin/RequestLogTable.php:378
 msgid "Retry"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:131
+#: includes/Admin/RequestLogTable.php:142
 msgid "All"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:139
+#: includes/Admin/RequestLogTable.php:150
 msgid "Success"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:147
+#: includes/Admin/RequestLogTable.php:158
 msgid "Errors"
 msgstr ""
 
 #. translators: %d: Form ID number
-#: includes/Admin/RequestLogTable.php:319
+#: includes/Admin/RequestLogTable.php:330
 #, php-format
 msgid "Form #%d"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:349
+#: includes/Admin/RequestLogTable.php:360
 msgid "View Details"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:444
+#: includes/Admin/RequestLogTable.php:455
 msgid "No API logs found."
 msgstr ""
 
@@ -176,81 +192,145 @@ msgstr ""
 msgid "Error connecting to update server."
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:47
-msgid "Search logs"
+#: includes/Admin/Views/DashboardWidgetView.php:38
+msgid "Last 24 Hours"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:80
-#: includes/ContactForm/Views/IntegrationView.php:360
-msgid "Total Requests"
+#: includes/Admin/Views/DashboardWidgetView.php:42
+msgid "Requests"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:84
-#: includes/ContactForm/Views/IntegrationView.php:364
-msgid "Successful"
+#: includes/Admin/Views/DashboardWidgetView.php:51
+msgid "View All Logs"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:89
-#: includes/ContactForm/Views/IntegrationView.php:371
-msgid "Failed"
+#: includes/Admin/Views/DashboardWidgetView.php:54
+#: includes/Core/Plugin.php:344
+msgid "Settings"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:93
-#: includes/ContactForm/Views/IntegrationView.php:375
+#: includes/Admin/Views/DashboardWidgetView.php:98
+msgid "Success Rate"
+msgstr ""
+
+#. translators: %d: average response time in milliseconds
+#: includes/Admin/Views/DashboardWidgetView.php:115
+#, php-format
+msgid "%d ms"
+msgstr ""
+
+#: includes/Admin/Views/DashboardWidgetView.php:118
+#: includes/Admin/Views/RequestLogView.php:94
+#: includes/ContactForm/Views/IntegrationView.php:471
 msgid "Avg Response Time"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:109
+#. translators: %d: number of errors
+#: includes/Admin/Views/DashboardWidgetView.php:136
+#, php-format
+msgid "Recent Errors (%d)"
+msgstr ""
+
+#: includes/Admin/Views/DashboardWidgetView.php:142
+msgid "No errors in the last 24 hours"
+msgstr ""
+
+#. translators: %d: number of errors
+#: includes/Admin/Views/DashboardWidgetView.php:150
+#, php-format
+msgid "%d errors require attention"
+msgstr ""
+
+#: includes/Admin/Views/DashboardWidgetView.php:174
+msgid "Unknown error"
+msgstr ""
+
+#: includes/Admin/Views/DashboardWidgetView.php:183
+msgid "View"
+msgstr ""
+
+#: includes/Admin/Views/DashboardWidgetView.php:197
+#: includes/Admin/Views/DashboardWidgetView.php:202
+msgid "Unknown Form"
+msgstr ""
+
+#: includes/Admin/Views/DashboardWidgetView.php:224
+msgid "ago"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:48
+msgid "Search logs"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:81
+#: includes/ContactForm/Views/IntegrationView.php:456
+msgid "Total Requests"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:85
+#: includes/ContactForm/Views/IntegrationView.php:460
+msgid "Successful"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:90
+#: includes/ContactForm/Views/IntegrationView.php:467
+msgid "Failed"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:110
 msgid "API Log Detail"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:113
+#: includes/Admin/Views/RequestLogView.php:114
 msgid "Back to Logs"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:138
+#: includes/Admin/Views/RequestLogView.php:139
 msgid "Request Information"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:157
+#: includes/Admin/Views/RequestLogView.php:158
 msgid "Execution Time"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:161
+#: includes/Admin/Views/RequestLogView.php:162
+#: includes/Services/ExportService.php:266
 msgid "Retry Count"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:181
+#: includes/Admin/Views/RequestLogView.php:182
 msgid "Request Headers"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:196
+#: includes/Admin/Views/RequestLogView.php:197
 msgid "Request Data"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:211
+#: includes/Admin/Views/RequestLogView.php:212
 msgid "Response Information"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:214
-#: includes/ContactForm/Views/IntegrationView.php:408
+#: includes/Admin/Views/RequestLogView.php:215
+#: includes/ContactForm/Views/IntegrationView.php:504
+#: includes/Services/ExportService.php:264
 msgid "Response Code"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:219
+#: includes/Admin/Views/RequestLogView.php:220
+#: includes/Services/ExportService.php:267
 msgid "Error Message"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:240
+#: includes/Admin/Views/RequestLogView.php:241
 msgid "Response Headers"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:258
+#: includes/Admin/Views/RequestLogView.php:259
 msgid "Response Data"
 msgstr ""
 
 #. translators: %d: number of deleted logs
-#: includes/Admin/Views/RequestLogView.php:278
+#: includes/Admin/Views/RequestLogView.php:279
 #, php-format
 msgid "%d log entry deleted."
 msgid_plural "%d log entries deleted."
@@ -258,290 +338,416 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of retried logs
-#: includes/Admin/Views/RequestLogView.php:301
+#: includes/Admin/Views/RequestLogView.php:302
 #, php-format
 msgid "%d log entry queued for retry."
 msgid_plural "%d log entries queued for retry."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Admin/Views/SettingsView.php:56
+#: includes/Admin/Views/RequestLogView.php:377
+msgid "Export as CSV"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:381
+msgid "Export as JSON"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:57
 msgid "How to Configure API Integration"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:82
+#: includes/Admin/Views/SettingsView.php:83
 msgid "Open your Contact Form 7 form"
 msgstr ""
 
 #. translators: %s: Link to Contact Forms page
-#: includes/Admin/Views/SettingsView.php:87
+#: includes/Admin/Views/SettingsView.php:88
 #, php-format
 msgid "Go to %s and select the form you want to integrate with an API."
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:107
+#: includes/Admin/Views/SettingsView.php:108
 msgid "Navigate to the API Integration tab"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:108
+#: includes/Admin/Views/SettingsView.php:109
 msgid "In the form editor, click on the \"API Integration\" tab to access the API settings."
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:111
+#: includes/Admin/Views/SettingsView.php:112
 msgid "Each form can have its own API endpoint and configuration."
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:128
+#: includes/Admin/Views/SettingsView.php:129
 msgid "Enable API Integration"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:129
+#: includes/Admin/Views/SettingsView.php:130
 msgid "Check the \"Send to API\" checkbox to enable the integration for this form."
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:145
+#: includes/Admin/Views/SettingsView.php:146
 msgid "Configure your API endpoint"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:146
+#: includes/Admin/Views/SettingsView.php:147
 msgid "Enter the following settings:"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:149
+#: includes/Admin/Views/SettingsView.php:150
 msgid "API URL:"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:150
+#: includes/Admin/Views/SettingsView.php:151
 msgid "The full URL of your API endpoint (e.g., https://api.example.com/leads)"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:153
+#: includes/Admin/Views/SettingsView.php:154
 msgid "HTTP Method:"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:154
+#: includes/Admin/Views/SettingsView.php:155
 msgid "Usually POST for form submissions"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:157
+#: includes/Admin/Views/SettingsView.php:158
 msgid "Input Type:"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:158
+#: includes/Admin/Views/SettingsView.php:159
 msgid "JSON or Form Data, depending on your API requirements"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:176
+#: includes/Admin/Views/SettingsView.php:177
 msgid "Map your form fields"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:177
+#: includes/Admin/Views/SettingsView.php:178
 msgid "Use the field mapping section to match your CF7 form fields with the API parameters."
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:184
+#: includes/Admin/Views/SettingsView.php:185
 msgid "Click on the mail tags to insert them into your field mapping."
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:201
+#: includes/Admin/Views/SettingsView.php:202
 msgid "Add authentication (if required)"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:202
+#: includes/Admin/Views/SettingsView.php:203
 msgid "If your API requires authentication, add the necessary headers:"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:222
+#: includes/Admin/Views/SettingsView.php:223
 msgid "Save and test"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:223
+#: includes/Admin/Views/SettingsView.php:224
 msgid "Save your form and submit a test entry. Check the API Logs to verify the submission was successful."
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:239
+#: includes/Admin/Views/SettingsView.php:241
+msgid "Available Hooks for Developers"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:244
+msgid "Use these hooks in your theme's functions.php or a custom plugin to extend the API integration functionality."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:266
+msgid "Filters"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:271
+msgid "Modify request arguments for GET requests."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:280
+msgid "Modify request arguments for POST requests."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:289
+msgid "Modify the API URL for GET requests."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:297
+msgid "Modify the API URL for POST requests."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:305
+msgid "Modify the complete record before sending to API."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:314
+msgid "Modify individual field values before adding to record."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:325
+msgid "Modify available mail tags for field mapping."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:334
+msgid "Modify the API response after sending."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:355
+#: includes/ContactForm/Views/IntegrationView.php:246
+msgid "Actions"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:360
+msgid "Triggered before sending data to the API."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:368
+msgid "Triggered after receiving API response."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:378
+msgid "Add custom content before the base fields in the integration panel."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:386
+msgid "Add custom content after the base fields in the integration panel."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:405
 msgid "Quick Links"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:245
+#: includes/Admin/Views/SettingsView.php:411
 msgid "Contact Forms"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:246
+#: includes/Admin/Views/SettingsView.php:412
 msgid "Manage your CF7 forms"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:252
+#: includes/Admin/Views/SettingsView.php:418
 msgid "View submission history"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:257
+#: includes/Admin/Views/SettingsView.php:423
 msgid "Documentation"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:258
+#: includes/Admin/Views/SettingsView.php:424
 msgid "Full plugin documentation"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:263
+#: includes/Admin/Views/SettingsView.php:429
 msgid "Support"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:264
+#: includes/Admin/Views/SettingsView.php:430
 msgid "Report issues or get help"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:282
+#: includes/Admin/Views/SettingsView.php:448
 msgid "Plugin Status"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:287
+#: includes/Admin/Views/SettingsView.php:453
 msgid "Plugin Version"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:291
+#: includes/Admin/Views/SettingsView.php:457
 msgid "Contact Form 7"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:296
+#: includes/Admin/Views/SettingsView.php:462
 msgid "Active"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:301
+#: includes/Admin/Views/SettingsView.php:467
 msgid "Not Active - Plugin requires Contact Form 7"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:307
+#: includes/Admin/Views/SettingsView.php:473
 msgid "PHP Version"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:311
+#: includes/Admin/Views/SettingsView.php:477
 msgid "WordPress Version"
 msgstr ""
 
-#: includes/ContactForm/Integration.php:170
-#: includes/ContactForm/Views/IntegrationView.php:63
+#: includes/ContactForm/Integration.php:194
+#: includes/ContactForm/Views/IntegrationView.php:65
 msgid "API Integration"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:107
+#: includes/ContactForm/Views/IntegrationView.php:111
 msgid "Send to API?"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:113
+#: includes/ContactForm/Views/IntegrationView.php:117
 msgid "Base URL"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:132
+#: includes/ContactForm/Views/IntegrationView.php:136
 msgid "Input type"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:135
+#: includes/ContactForm/Views/IntegrationView.php:139
 msgid "Parameters - GET/POST"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:138
+#: includes/ContactForm/Views/IntegrationView.php:142
 msgid "XML"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:141
+#: includes/ContactForm/Views/IntegrationView.php:145
 msgid "JSON"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:179
+#: includes/ContactForm/Views/IntegrationView.php:183
 msgid "Retry Configuration"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:180
+#: includes/ContactForm/Views/IntegrationView.php:184
 msgid "Configure automatic retry behavior for failed API requests."
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:184
+#: includes/ContactForm/Views/IntegrationView.php:188
 msgid "Maximum Retries"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:188
+#: includes/ContactForm/Views/IntegrationView.php:192
 msgid "Number of times to retry a failed request (0-10). Default: 3"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:193
+#: includes/ContactForm/Views/IntegrationView.php:197
 msgid "Retry Delay (seconds)"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:197
+#: includes/ContactForm/Views/IntegrationView.php:201
 msgid "Initial delay between retries in seconds (uses exponential backoff). Default: 2"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:203
+#: includes/ContactForm/Views/IntegrationView.php:207
 msgid "Retry on timeout errors"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:205
+#: includes/ContactForm/Views/IntegrationView.php:209
 msgid "Automatically retry when API request times out."
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:222
-#: includes/ContactForm/Views/IntegrationView.php:226
-msgid "Form fields"
+#: includes/ContactForm/Views/IntegrationView.php:233
+msgid "Authentication & Custom Headers"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:227
+#: includes/ContactForm/Views/IntegrationView.php:235
+msgid "Add custom HTTP headers for authentication or other purposes. Common examples:"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:244
+msgid "Header Name"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:245
+msgid "Header Value"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:257
+msgid "e.g., Authorization"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:264
+msgid "e.g., Bearer your-api-token"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:267
+msgid "Remove header"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:279
+msgid "Add Header"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:285
+msgid "Quick Add Authentication"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:286
+msgid "Click a preset to add common authentication headers:"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:289
+msgid "Bearer Token"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:292
+msgid "Basic Auth"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:295
+#: includes/ContactForm/Views/IntegrationView.php:323
 msgid "API Key"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:272
+#: includes/ContactForm/Views/IntegrationView.php:298
+msgid "Content-Type JSON"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:318
+#: includes/ContactForm/Views/IntegrationView.php:322
+msgid "Form fields"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:368
 msgid "XML Template"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:300
+#: includes/ContactForm/Views/IntegrationView.php:396
 msgid "JSON Template"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:334
+#: includes/ContactForm/Views/IntegrationView.php:430
 msgid "API Call Logs & Statistics"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:357
+#: includes/ContactForm/Views/IntegrationView.php:453
 msgid "Overall Statistics"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:376
+#: includes/ContactForm/Views/IntegrationView.php:472
 msgid "seconds"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:379
+#: includes/ContactForm/Views/IntegrationView.php:475
 msgid "Max Retries Used"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:397
+#: includes/ContactForm/Views/IntegrationView.php:493
 msgid "Recent API Calls (Last 5)"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:434
+#: includes/ContactForm/Views/IntegrationView.php:530
 msgid "No API calls logged yet. Submit a form to see logs here."
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:450
+#: includes/ContactForm/Views/IntegrationView.php:546
 msgid "Legacy Debug Info (Last Transmission)"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:454
+#: includes/ContactForm/Views/IntegrationView.php:550
 msgid "Called URL"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:457
+#: includes/ContactForm/Views/IntegrationView.php:553
 msgid "Params"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:460
+#: includes/ContactForm/Views/IntegrationView.php:556
 msgid "Remote server result"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:463
+#: includes/ContactForm/Views/IntegrationView.php:559
 msgid "Error logs"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:477
+#: includes/ContactForm/Views/IntegrationView.php:573
 msgid ""
 "*** THIS IS AN EXAMPLE ** USE YOUR XML ACCORDING TO YOUR API DOCUMENTATION **\n"
 "<update>\n"
@@ -557,7 +763,7 @@ msgid ""
 "</update>"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:501
+#: includes/ContactForm/Views/IntegrationView.php:597
 msgid ""
 "*** THIS IS AN EXAMPLE ** USE YOUR JSON ACCORDING TO YOUR API DOCUMENTATION **\n"
 "{ \"name\":\"[fullname]\", \"age\":30, \"car\":null }"
@@ -579,14 +785,26 @@ msgstr ""
 msgid "Contact Form 7 to API requires Contact Form 7 to be active."
 msgstr ""
 
-#: includes/Core/Plugin.php:344
-msgid "Settings"
-msgstr ""
-
-#: includes/Services/ApiClient.php:446
+#: includes/Services/ApiClient.php:509
 msgid "XML functions not available"
 msgstr ""
 
-#: includes/Services/ApiClient.php:453
+#: includes/Services/ApiClient.php:516
 msgid "XML Structure is incorrect"
+msgstr ""
+
+#: includes/Services/ExportService.php:259
+msgid "ID"
+msgstr ""
+
+#: includes/Services/ExportService.php:260
+msgid "Form ID"
+msgstr ""
+
+#: includes/Services/ExportService.php:265
+msgid "Execution Time (s)"
+msgstr ""
+
+#: includes/Services/ExportService.php:268
+msgid "Created At"
 msgstr ""
