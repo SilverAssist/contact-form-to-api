@@ -164,8 +164,9 @@ class Plugin implements LoadableInterface {
 					$this->components[] = $settings;
 				}
 			} catch ( \Exception $e ) {
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				\error_log( 'Contact Form to API: Failed to load Settings - ' . $e->getMessage() );
+				if ( \class_exists( DebugLogger::class ) ) {
+					DebugLogger::instance()->error( 'Failed to load Settings - ' . $e->getMessage() );
+				}
 			}
 		}
 

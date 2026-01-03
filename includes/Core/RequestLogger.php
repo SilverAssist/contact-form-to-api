@@ -16,6 +16,7 @@
 namespace SilverAssist\ContactFormToAPI\Core;
 
 use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
+use SilverAssist\ContactFormToAPI\Core\Settings;
 use WP_Error;
 
 \defined( 'ABSPATH' ) || exit;
@@ -655,9 +656,9 @@ class RequestLogger {
 	 */
 	private function is_logging_enabled(): bool {
 		// Try to get settings instance.
-		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Core\\Settings' ) ) {
+		if ( \class_exists( Settings::class ) ) {
 			try {
-				$settings = \SilverAssist\ContactFormToAPI\Core\Settings::instance();
+				$settings = Settings::instance();
 				return $settings->is_logging_enabled();
 			} catch ( \Exception $e ) {
 				// Settings not available, default to enabled.
