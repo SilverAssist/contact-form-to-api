@@ -18,7 +18,7 @@ use SilverAssist\ContactFormToAPI\Admin\Views\RequestLogView;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Services\ExportService;
 
-\defined( "ABSPATH" ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Class RequestLogController
@@ -382,7 +382,7 @@ class RequestLogController implements LoadableInterface {
 	 */
 	private function handle_export_action(): void {
 		// Verify nonce.
-		if ( ! isset( $_GET["_wpnonce"] ) || ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_GET["_wpnonce"] ) ), "cf7_api_export_logs" ) ) {
+		if ( ! isset( $_GET['_wpnonce'] ) || ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_GET['_wpnonce'] ) ), 'cf7_api_export_logs' ) ) {
 			\wp_die( \esc_html__( 'Security check failed', 'contact-form-to-api' ) );
 		}
 
@@ -391,14 +391,14 @@ class RequestLogController implements LoadableInterface {
 			\wp_die( \esc_html__( 'You do not have sufficient permissions to access this page.', 'contact-form-to-api' ) );
 		}
 
-		$action = \sanitize_text_field( \wp_unslash( $_GET["action"] ) );
+		$action = \sanitize_text_field( \wp_unslash( $_GET['action'] ) );
 
 		switch ( $action ) {
-			case "export_csv":
+			case 'export_csv':
 				$this->handle_export_csv();
 				break;
 
-			case "export_json":
+			case 'export_json':
 				$this->handle_export_json();
 				break;
 
@@ -419,13 +419,13 @@ class RequestLogController implements LoadableInterface {
 
 		$export_service = ExportService::instance();
 		$csv_content    = $export_service->export_csv( $logs );
-		$filename       = $export_service->get_export_filename( "csv" );
+		$filename       = $export_service->get_export_filename( 'csv' );
 
 		// Set headers for download.
-		\header( "Content-Type: text/csv; charset=utf-8" );
+		\header( 'Content-Type: text/csv; charset=utf-8' );
 		\header( "Content-Disposition: attachment; filename=\"{$filename}\"" );
-		\header( "Pragma: no-cache" );
-		\header( "Expires: 0" );
+		\header( 'Pragma: no-cache' );
+		\header( 'Expires: 0' );
 
 		echo $csv_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSV content is escaped via fputcsv() for CSV format.
 		exit;
@@ -443,13 +443,13 @@ class RequestLogController implements LoadableInterface {
 
 		$export_service = ExportService::instance();
 		$json_content   = $export_service->export_json( $logs );
-		$filename       = $export_service->get_export_filename( "json" );
+		$filename       = $export_service->get_export_filename( 'json' );
 
 		// Set headers for download.
-		\header( "Content-Type: application/json; charset=utf-8" );
+		\header( 'Content-Type: application/json; charset=utf-8' );
 		\header( "Content-Disposition: attachment; filename=\"{$filename}\"" );
-		\header( "Pragma: no-cache" );
-		\header( "Expires: 0" );
+		\header( 'Pragma: no-cache' );
+		\header( 'Expires: 0' );
 
 		echo $json_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON content is escaped via wp_json_encode() for JSON format.
 		exit;
@@ -464,33 +464,33 @@ class RequestLogController implements LoadableInterface {
 	 */
 	private function get_filtered_logs(): array {
 		global $wpdb;
-		$table_name = $wpdb->prefix . "cf7_api_logs";
+		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
 		// Build WHERE clause with same logic as RequestLogTable.
-		$where        = "1=1";
+		$where        = '1=1';
 		$where_values = array();
 
 		// Filter by status.
-		if ( isset( $_GET["status"] ) && "all" !== $_GET["status"] ) {
-			$status = \sanitize_text_field( \wp_unslash( $_GET["status"] ) );
-			if ( "error" === $status ) {
+		if ( isset( $_GET['status'] ) && 'all' !== $_GET['status'] ) {
+			$status = \sanitize_text_field( \wp_unslash( $_GET['status'] ) );
+			if ( 'error' === $status ) {
 				$where .= " AND status IN ('error', 'client_error', 'server_error')";
 			} else {
-				$where         .= " AND status = %s";
+				$where         .= ' AND status = %s';
 				$where_values[] = $status;
 			}
 		}
 
 		// Filter by form ID.
-		if ( isset( $_GET["form_id"] ) && ! empty( $_GET["form_id"] ) ) {
-			$where         .= " AND form_id = %d";
-			$where_values[] = \absint( $_GET["form_id"] );
+		if ( isset( $_GET['form_id'] ) && ! empty( $_GET['form_id'] ) ) {
+			$where         .= ' AND form_id = %d';
+			$where_values[] = \absint( $_GET['form_id'] );
 		}
 
 		// Search functionality.
-		if ( isset( $_GET["s"] ) && ! empty( $_GET["s"] ) ) {
-			$search         = "%" . $wpdb->esc_like( \sanitize_text_field( \wp_unslash( $_GET["s"] ) ) ) . "%";
-			$where         .= " AND (endpoint LIKE %s OR error_message LIKE %s)";
+		if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) {
+			$search         = '%' . $wpdb->esc_like( \sanitize_text_field( \wp_unslash( $_GET['s'] ) ) ) . '%';
+			$where         .= ' AND (endpoint LIKE %s OR error_message LIKE %s)';
 			$where_values[] = $search;
 			$where_values[] = $search;
 		}

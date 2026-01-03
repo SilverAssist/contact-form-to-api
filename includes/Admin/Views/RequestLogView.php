@@ -43,7 +43,7 @@ class RequestLogView {
 			<?php self::render_statistics(); ?>
 
 			<form method="get">
-				<input type="hidden" name="page" value="<?php echo \esc_attr( $_REQUEST["page"] ?? "" ); ?>" />
+				<input type="hidden" name="page" value="<?php echo \esc_attr( $_REQUEST['page'] ?? '' ); ?>" />
 				<?php
 				$list_table->search_box( \__( 'Search logs', 'contact-form-to-api' ), 'cf7-api-log' );
 				$list_table->display();
@@ -346,25 +346,25 @@ class RequestLogView {
 		);
 
 		// Preserve current filters.
-		if ( isset( $_GET["status"] ) && "all" !== $_GET["status"] ) {
-			$base_args["status"] = \sanitize_text_field( \wp_unslash( $_GET["status"] ) );
+		if ( isset( $_GET['status'] ) && 'all' !== $_GET['status'] ) {
+			$base_args['status'] = \sanitize_text_field( \wp_unslash( $_GET['status'] ) );
 		}
 
-		if ( isset( $_GET["form_id"] ) && ! empty( $_GET["form_id"] ) ) {
-			$base_args["form_id"] = \absint( $_GET["form_id"] );
+		if ( isset( $_GET['form_id'] ) && ! empty( $_GET['form_id'] ) ) {
+			$base_args['form_id'] = \absint( $_GET['form_id'] );
 		}
 
-		if ( isset( $_GET["s"] ) && ! empty( $_GET["s"] ) ) {
-			$base_args["s"] = \sanitize_text_field( \wp_unslash( $_GET["s"] ) );
+		if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) {
+			$base_args['s'] = \sanitize_text_field( \wp_unslash( $_GET['s'] ) );
 		}
 
 		// CSV export URL.
-		$csv_args = \array_merge( $base_args, array( "action" => "export_csv" ) );
-		$csv_url  = \add_query_arg( $csv_args, \admin_url( "admin.php" ) );
+		$csv_args = \array_merge( $base_args, array( 'action' => 'export_csv' ) );
+		$csv_url  = \add_query_arg( $csv_args, \admin_url( 'admin.php' ) );
 
 		// JSON export URL.
-		$json_args = \array_merge( $base_args, array( "action" => "export_json" ) );
-		$json_url  = \add_query_arg( $json_args, \admin_url( "admin.php" ) );
+		$json_args = \array_merge( $base_args, array( 'action' => 'export_json' ) );
+		$json_url  = \add_query_arg( $json_args, \admin_url( 'admin.php' ) );
 
 		$disabled_class = $has_logs ? '' : ' disabled';
 		$disabled_attr  = $has_logs ? '' : ' aria-disabled="true" tabindex="-1"';
