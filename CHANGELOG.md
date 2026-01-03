@@ -26,6 +26,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Multi-site Support**: Enhanced WordPress multisite compatibility
 - **Template System**: Pre-configured templates for popular APIs (Mailchimp, HubSpot, etc.)
 
+## [1.1.1] - 2026-01-02
+
+### Fixed
+- **CI/CD**: Corrected plugin name validation in release workflow (`CF7 to API` instead of `Contact Form 7 to API`)
+
+### Note
+- This is a re-release of v1.1.0 with CI workflow fixes. All features from v1.1.0 are included.
+
 ## [1.1.0] - 2026-01-02
 
 ### 🚀 Advanced Logging System

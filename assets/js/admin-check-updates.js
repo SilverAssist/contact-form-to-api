@@ -5,9 +5,9 @@
  * Called when user clicks the "Check Updates" button on the plugin card.
  *
  * @package ContactFormToAPI
- * @since 1.1.0
+ * @since 1.1.1
  * @author Silver Assist
- * @version     1.1.0
+ * @version     1.1.1
  * @license Polyform-Noncommercial-1.0.0
  */
 
