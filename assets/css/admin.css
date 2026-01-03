@@ -1177,3 +1177,126 @@ body.cf7-input-type-json .cf7_row[data-cf7index="params"] {
     margin-bottom: 8px !important;
   }
 }
+
+/* ==========================================
+   Developer Hooks Section
+   ========================================== */
+
+.cf7-api-hooks {
+  background: #fff;
+  padding: 25px;
+  border: 1px solid #c3c4c7;
+  border-radius: 4px;
+  margin-top: 30px;
+}
+
+.cf7-api-hooks > h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 15px 0;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+  font-size: 18px;
+  color: #1d2327;
+}
+
+.cf7-api-hooks > h2 .dashicons {
+  color: #2271b1;
+}
+
+.cf7-api-hooks-intro {
+  margin: 0 0 20px 0;
+  color: #646970;
+  font-size: 14px;
+}
+
+.cf7-api-hooks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 30px;
+}
+
+.cf7-api-hooks-column h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 20px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #2271b1;
+  font-size: 16px;
+  color: #1d2327;
+}
+
+.cf7-api-hooks-column h3 .dashicons {
+  color: #2271b1;
+  font-size: 18px;
+}
+
+.cf7-api-hook-item {
+  background: #f6f7f7;
+  border: 1px solid #dcdcde;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.cf7-api-hook-item:last-child {
+  margin-bottom: 0;
+}
+
+.cf7-api-hook-item h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+}
+
+.cf7-api-hook-item h4 code {
+  background: #2271b1;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 3px;
+  font-size: 13px;
+}
+
+.cf7-api-hook-item > p {
+  margin: 0 0 12px 0;
+  color: #50575e;
+  font-size: 13px;
+}
+
+.cf7-api-hook-item pre {
+  margin: 0;
+  padding: 12px;
+  background: #1d2327;
+  border-radius: 4px;
+  overflow-x: auto;
+}
+
+.cf7-api-hook-item pre code {
+  color: #f0f0f1;
+  font-size: 12px;
+  line-height: 1.5;
+  font-family: Consolas, Monaco, 'Andale Mono', monospace;
+  white-space: pre;
+}
+
+/* Responsive styles for hooks section */
+@media (max-width: 960px) {
+  .cf7-api-hooks-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .cf7-api-hooks {
+    padding: 15px;
+  }
+  
+  .cf7-api-hook-item pre {
+    padding: 10px;
+  }
+  
+  .cf7-api-hook-item pre code {
+    font-size: 11px;
+  }
+}

@@ -37,6 +37,7 @@ class SettingsView {
 		?>
 		<div class="cf7-api-settings-page">
 			<?php self::render_how_to_section(); ?>
+			<?php self::render_hooks_section(); ?>
 			<?php self::render_quick_links_section(); ?>
 			<?php self::render_status_section(); ?>
 		</div>
@@ -221,6 +222,171 @@ class SettingsView {
 			<div class="step-content">
 				<h3><?php \esc_html_e( 'Save and test', 'contact-form-to-api' ); ?></h3>
 				<p><?php \esc_html_e( 'Save your form and submit a test entry. Check the API Logs to verify the submission was successful.', 'contact-form-to-api' ); ?></p>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render available hooks section for developers
+	 *
+	 * @since 1.1.2
+	 * @return void
+	 */
+	public static function render_hooks_section(): void {
+		?>
+		<div class="cf7-api-section cf7-api-hooks">
+			<h2>
+				<span class="dashicons dashicons-editor-code"></span>
+				<?php \esc_html_e( 'Available Hooks for Developers', 'contact-form-to-api' ); ?>
+			</h2>
+			<p class="cf7-api-hooks-intro">
+				<?php \esc_html_e( 'Use these hooks in your theme\'s functions.php or a custom plugin to extend the API integration functionality.', 'contact-form-to-api' ); ?>
+			</p>
+
+			<div class="cf7-api-hooks-grid">
+				<?php self::render_filters_section(); ?>
+				<?php self::render_actions_section(); ?>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render filters documentation
+	 *
+	 * @since 1.1.2
+	 * @return void
+	 */
+	private static function render_filters_section(): void {
+		?>
+		<div class="cf7-api-hooks-column">
+			<h3>
+				<span class="dashicons dashicons-filter"></span>
+				<?php \esc_html_e( 'Filters', 'contact-form-to-api' ); ?>
+			</h3>
+
+			<div class="cf7-api-hook-item">
+				<h4><code>cf7_api_get_args</code></h4>
+				<p><?php \esc_html_e( 'Modify request arguments for GET requests.', 'contact-form-to-api' ); ?></p>
+				<pre><code>add_filter( 'cf7_api_get_args', function( $args ) {
+    $args['headers']['X-Custom'] = 'value';
+    return $args;
+});</code></pre>
+			</div>
+
+			<div class="cf7-api-hook-item">
+				<h4><code>cf7_api_post_args</code></h4>
+				<p><?php \esc_html_e( 'Modify request arguments for POST requests.', 'contact-form-to-api' ); ?></p>
+				<pre><code>add_filter( 'cf7_api_post_args', function( $args ) {
+    $args['timeout'] = 60;
+    return $args;
+});</code></pre>
+			</div>
+
+			<div class="cf7-api-hook-item">
+				<h4><code>cf7_api_get_url</code></h4>
+				<p><?php \esc_html_e( 'Modify the API URL for GET requests.', 'contact-form-to-api' ); ?></p>
+				<pre><code>add_filter( 'cf7_api_get_url', function( $url, $record ) {
+    return $url . '&source=website';
+}, 10, 2 );</code></pre>
+			</div>
+
+			<div class="cf7-api-hook-item">
+				<h4><code>cf7_api_post_url</code></h4>
+				<p><?php \esc_html_e( 'Modify the API URL for POST requests.', 'contact-form-to-api' ); ?></p>
+				<pre><code>add_filter( 'cf7_api_post_url', function( $url ) {
+    return str_replace( 'staging', 'prod', $url );
+});</code></pre>
+			</div>
+
+			<div class="cf7-api-hook-item">
+				<h4><code>cf7_api_create_record</code></h4>
+				<p><?php \esc_html_e( 'Modify the complete record before sending to API.', 'contact-form-to-api' ); ?></p>
+				<pre><code>add_filter( 'cf7_api_create_record', function( $record, $data, $map, $type, $template ) {
+    $record['fields']['timestamp'] = time();
+    return $record;
+}, 10, 5 );</code></pre>
+			</div>
+
+			<div class="cf7-api-hook-item">
+				<h4><code>cf7_api_set_record_value</code></h4>
+				<p><?php \esc_html_e( 'Modify individual field values before adding to record.', 'contact-form-to-api' ); ?></p>
+				<pre><code>add_filter( 'cf7_api_set_record_value', function( $value, $field_name ) {
+    if ( $field_name === 'phone' ) {
+        return preg_replace( '/[^0-9]/', '', $value );
+    }
+    return $value;
+}, 10, 2 );</code></pre>
+			</div>
+
+			<div class="cf7-api-hook-item">
+				<h4><code>cf7_api_collect_mail_tags</code></h4>
+				<p><?php \esc_html_e( 'Modify available mail tags for field mapping.', 'contact-form-to-api' ); ?></p>
+				<pre><code>add_filter( 'cf7_api_collect_mail_tags', function( $tags ) {
+    // Add custom tags or filter existing ones
+    return $tags;
+});</code></pre>
+			</div>
+
+			<div class="cf7-api-hook-item">
+				<h4><code>cf7_api_after_send_lead</code></h4>
+				<p><?php \esc_html_e( 'Modify the API response after sending.', 'contact-form-to-api' ); ?></p>
+				<pre><code>add_filter( 'cf7_api_after_send_lead', function( $result, $record ) {
+    // Log or modify the result
+    return $result;
+}, 10, 2 );</code></pre>
+			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render actions documentation
+	 *
+	 * @since 1.1.2
+	 * @return void
+	 */
+	private static function render_actions_section(): void {
+		?>
+		<div class="cf7-api-hooks-column">
+			<h3>
+				<span class="dashicons dashicons-controls-play"></span>
+				<?php \esc_html_e( 'Actions', 'contact-form-to-api' ); ?>
+			</h3>
+
+			<div class="cf7-api-hook-item">
+				<h4><code>cf7_api_before_send_to_api</code></h4>
+				<p><?php \esc_html_e( 'Triggered before sending data to the API.', 'contact-form-to-api' ); ?></p>
+				<pre><code>add_action( 'cf7_api_before_send_to_api', function( $record ) {
+    error_log( 'Sending to: ' . $record['url'] );
+});</code></pre>
+			</div>
+
+			<div class="cf7-api-hook-item">
+				<h4><code>cf7_api_after_send_to_api</code></h4>
+				<p><?php \esc_html_e( 'Triggered after receiving API response.', 'contact-form-to-api' ); ?></p>
+				<pre><code>add_action( 'cf7_api_after_send_to_api', function( $record, $response ) {
+    if ( is_wp_error( $response ) ) {
+        // Handle error
+    }
+}, 10, 2 );</code></pre>
+			</div>
+
+			<div class="cf7-api-hook-item">
+				<h4><code>cf7_api_before_base_fields</code></h4>
+				<p><?php \esc_html_e( 'Add custom content before the base fields in the integration panel.', 'contact-form-to-api' ); ?></p>
+				<pre><code>add_action( 'cf7_api_before_base_fields', function( $form ) {
+    echo '&lt;div class="my-notice"&gt;Custom notice&lt;/div&gt;';
+});</code></pre>
+			</div>
+
+			<div class="cf7-api-hook-item">
+				<h4><code>cf7_api_after_base_fields</code></h4>
+				<p><?php \esc_html_e( 'Add custom content after the base fields in the integration panel.', 'contact-form-to-api' ); ?></p>
+				<pre><code>add_action( 'cf7_api_after_base_fields', function( $form ) {
+    echo '&lt;div class="cf7_row"&gt;Custom field&lt;/div&gt;';
+});</code></pre>
 			</div>
 		</div>
 		<?php
