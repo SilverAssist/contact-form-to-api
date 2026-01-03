@@ -29,14 +29,6 @@ use SilverAssist\ContactFormToAPI\Core\Settings;
 class GlobalSettingsController implements LoadableInterface {
 
 	/**
-	 * Settings page slug
-	 *
-	 * @deprecated 1.2.0 Global settings are now embedded in the main CF7 to API tab.
-	 * @var string
-	 */
-	public const PAGE_SLUG = 'cf7-api-global-settings';
-
-	/**
 	 * Nonce action for settings form
 	 *
 	 * @var string
@@ -116,26 +108,6 @@ class GlobalSettingsController implements LoadableInterface {
 	 */
 	public function should_load(): bool {
 		return \is_admin();
-	}
-
-	/**
-	 * Register with Settings Hub
-	 *
-	 * @deprecated 1.2.0 Global settings are now embedded in the main CF7 to API tab.
-	 * @return void
-	 */
-	public function register_with_hub(): void {
-		// Deprecated: Settings are now embedded in SettingsView.
-	}
-
-	/**
-	 * Render settings page
-	 *
-	 * @deprecated 1.2.0 Global settings are now embedded in the main CF7 to API tab.
-	 * @return void
-	 */
-	public function render_settings_page(): void {
-		// Deprecated: Settings are now rendered via SettingsView.
 	}
 
 	/**
@@ -230,45 +202,6 @@ class GlobalSettingsController implements LoadableInterface {
 		if ( $retention_days > 0 ) {
 			\wp_schedule_event( \time(), 'daily', $hook );
 		}
-	}
-
-	/**
-	 * Get admin notices from query params
-	 *
-	 * @deprecated 1.2.0 Global settings are now embedded in the main CF7 to API tab.
-	 * @return array<int, array{type: string, message: string}> Array of notices.
-	 */
-	public function get_admin_notices(): array {
-		$notices = array();
-
-		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Reading GET parameter for display only.
-		if ( isset( $_GET['updated'] ) ) {
-			if ( '1' === $_GET['updated'] ) {
-				$notices[] = array(
-					'type'    => 'success',
-					'message' => \__( 'Settings saved successfully.', 'contact-form-to-api' ),
-				);
-			} else {
-				$notices[] = array(
-					'type'    => 'error',
-					'message' => \__( 'Failed to save settings. Please try again.', 'contact-form-to-api' ),
-				);
-			}
-		}
-		// phpcs:enable WordPress.Security.NonceVerification.Recommended
-
-		return $notices;
-	}
-
-	/**
-	 * Enqueue assets for settings page
-	 *
-	 * @deprecated 1.2.0 Global settings are now embedded in the main CF7 to API tab.
-	 * @param string $hook_suffix Current admin page hook.
-	 * @return void
-	 */
-	public function enqueue_assets( string $hook_suffix ): void {
-		// Deprecated: Assets are now loaded by SettingsPage controller.
 	}
 
 	/**

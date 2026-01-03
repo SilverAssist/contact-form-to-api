@@ -548,18 +548,6 @@ class SettingsView {
 	}
 
 	/**
-	 * Render available hooks section for developers
-	 *
-	 * @deprecated 1.2.0 Use the Developer Hooks link in Quick Links instead.
-	 * @since 1.1.2
-	 * @return void
-	 */
-	public static function render_hooks_section(): void {
-		// Section removed in 1.2.0 - hooks documentation moved to external wiki.
-		// Kept for backward compatibility but renders nothing.
-	}
-
-	/**
 	 * Render quick links section
 	 *
 	 * @return void
@@ -585,10 +573,10 @@ class SettingsView {
 					<span class="link-desc"><?php \esc_html_e( 'View submission history', 'contact-form-to-api' ); ?></span>
 				</a>
 
-				<a href="https://github.com/SilverAssist/contact-form-to-api/wiki/Developer-Hooks" target="_blank" rel="noopener noreferrer" class="cf7-api-link-card">
+				<a href="https://github.com/SilverAssist/contact-form-to-api/blob/main/docs/API_REFERENCE.md" target="_blank" rel="noopener noreferrer" class="cf7-api-link-card">
 					<span class="dashicons dashicons-editor-code"></span>
-					<span class="link-title"><?php \esc_html_e( 'Developer Hooks', 'contact-form-to-api' ); ?></span>
-					<span class="link-desc"><?php \esc_html_e( 'Filters and actions reference', 'contact-form-to-api' ); ?></span>
+					<span class="link-title"><?php \esc_html_e( 'API Reference', 'contact-form-to-api' ); ?></span>
+					<span class="link-desc"><?php \esc_html_e( 'Hooks, filters and actions', 'contact-form-to-api' ); ?></span>
 				</a>
 
 				<a href="https://github.com/SilverAssist/contact-form-to-api/wiki" target="_blank" rel="noopener noreferrer" class="cf7-api-link-card">
