@@ -124,7 +124,7 @@ All user-facing strings use WordPress i18n functions:
 - `__()` for translated strings
 - `esc_html_e()` for escaped output
 - `sprintf()` for dynamic content with translator comments
-- Text domain: CF7_API_TEXT_DOMAIN constant
+- Text domain: `'contact-form-to-api'` (literal string required for wp i18n extraction)
 
 Translator comments added for all sprintf placeholders explaining what each variable represents.
 

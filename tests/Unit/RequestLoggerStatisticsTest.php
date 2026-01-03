@@ -310,19 +310,29 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_get_recent_errors_returns_most_recent_first(): void {
-		$form_id = 123;
+		global $wpdb;
+		$form_id    = 123;
+		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// Create errors with different messages
+		// Create errors with explicit timestamps to ensure ordering
 		for ( $i = 1; $i <= 3; $i++ ) {
 			$log_id = $this->logger->start_request( $form_id, "https://example.com/api/error{$i}", 'POST', 'test data' );
 			$error  = new \WP_Error( 'http_request_failed', "Error message {$i}" );
 			$this->logger->complete_request( $error );
 
+			// Update timestamp directly for predictable ordering (older to newer)
+			$timestamp = gmdate( 'Y-m-d H:i:s', strtotime( "-" . ( 4 - $i ) . " minutes" ) );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->update(
+				$table_name,
+				array( 'created_at' => $timestamp ),
+				array( 'id' => $log_id ),
+				array( '%s' ),
+				array( '%d' )
+			);
+
 			// Reset logger
 			$this->logger = new RequestLogger();
-
-			// Small delay to ensure different timestamps
-			\sleep( 1 );
 		}
 
 		$recent_errors = $this->logger->get_recent_errors( 5 );

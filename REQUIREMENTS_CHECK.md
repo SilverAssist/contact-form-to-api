@@ -103,7 +103,7 @@ All requirements from the issue have been successfully implemented and tested.
 | Links navigate correctly | ✅ | admin_url() for proper links |
 | Only for manage_options | ✅ | should_load() checks capability |
 | Can be hidden | ✅ | WordPress Screen Options (default) |
-| All strings translatable | ✅ | 11 strings with CF7_API_TEXT_DOMAIN |
+| All strings translatable | ✅ | 11 strings with text domain 'contact-form-to-api' |
 | Responsive design | ✅ | CSS Grid + media queries |
 | PHPStan Level 8 | ✅ | Verified manually (syntax) |
 | PHPCS compliant | ✅ | Verified manually (syntax) |
