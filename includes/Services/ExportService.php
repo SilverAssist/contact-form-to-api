@@ -15,6 +15,7 @@
 namespace SilverAssist\ContactFormToAPI\Services;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
 
 \defined( "ABSPATH" ) || exit;
 
@@ -34,28 +35,6 @@ class ExportService implements LoadableInterface {
 	 * @var ExportService|null
 	 */
 	private static ?ExportService $instance = null;
-
-	/**
-	 * Sensitive field patterns to sanitize in exports
-	 *
-	 * @var array<string>
-	 */
-	private array $sensitive_patterns = array(
-		"password",
-		"passwd",
-		"secret",
-		"api_key",
-		"api-key",
-		"apikey",
-		"token",
-		"auth",
-		"authorization",
-		"bearer",
-		"ssn",
-		"social_security",
-		"credit_card",
-		"card_number",
-	);
 
 	/**
 	 * Get singleton instance
@@ -221,13 +200,8 @@ class ExportService implements LoadableInterface {
 		}
 
 		foreach ( $headers as $key => $value ) {
-			$key_lower = \strtolower( $key );
-
-			foreach ( $this->sensitive_patterns as $pattern ) {
-				if ( \strpos( $key_lower, $pattern ) !== false ) {
-					$headers[ $key ] = "***REDACTED***";
-					break;
-				}
+			if ( SensitiveDataPatterns::is_sensitive( $key ) ) {
+				$headers[ $key ] = "***REDACTED***";
 			}
 		}
 
@@ -262,17 +236,7 @@ class ExportService implements LoadableInterface {
 	 */
 	private function sanitize_array_recursive( array $data ): array {
 		foreach ( $data as $key => $value ) {
-			$key_lower = \strtolower( (string) $key );
-
-			$is_sensitive = false;
-			foreach ( $this->sensitive_patterns as $pattern ) {
-				if ( \strpos( $key_lower, $pattern ) !== false ) {
-					$is_sensitive = true;
-					break;
-				}
-			}
-
-			if ( $is_sensitive ) {
+			if ( SensitiveDataPatterns::is_sensitive( (string) $key ) ) {
 				$data[ $key ] = "***REDACTED***";
 			} elseif ( \is_array( $value ) ) {
 				$data[ $key ] = $this->sanitize_array_recursive( $value );
