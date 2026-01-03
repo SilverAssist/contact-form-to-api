@@ -6,14 +6,14 @@
  * @package SilverAssist\ContactFormToAPI
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.1.3
+ * @version 1.2.0
  * @license Polyform-Noncommercial-1.0.0
  *
  * @wordpress-plugin
  * Plugin Name: CF7 to API
  * Plugin URI: https://github.com/SilverAssist/contact-form-to-api
  * Description: Extend Contact Form 7 functionality by connecting forms to external APIs. Send form submissions to custom API endpoints with advanced configuration options.
- * Version: 1.1.3
+ * Version: 1.2.0
  * Requires at least: 6.5
  * Requires PHP: 8.2
  * Author: Silver Assist
@@ -31,7 +31,7 @@
 defined( 'ABSPATH' ) || exit;
 
 // Define plugin constants.
-define( 'CF7_API_VERSION', '1.1.2' );
+define( 'CF7_API_VERSION', '1.2.0' );
 define( 'CF7_API_FILE', __FILE__ );
 define( 'CF7_API_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CF7_API_URL', plugin_dir_url( __FILE__ ) );
