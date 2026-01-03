@@ -53,14 +53,17 @@ contact-form-to-api/
 │   ├── API_REFERENCE.md
 │   └── ADMIN_INTERFACE.md
 ├── includes/                      # Source code (PSR-4)
-│   ├── Admin/                     # Priority 30 - Admin components
+│   ├── Admin/                     # Priority 25-30 - Admin components
 │   │   ├── Loader.php            # Admin component loader
-│   │   ├── SettingsPage.php      # Settings Hub integration controller
+│   │   ├── SettingsPage.php      # Settings Hub registration (Priority 25)
+│   │   ├── GlobalSettingsController.php # Form handling only (Priority 26)
 │   │   ├── RequestLogController.php # Request logs admin controller
 │   │   ├── RequestLogTable.php   # WP_List_Table for logs
 │   │   └── Views/                # Separated view templates
 │   │       ├── RequestLogView.php    # Request log HTML rendering
-│   │       └── SettingsView.php      # Settings page HTML rendering
+│   │       ├── SettingsView.php      # Main settings page (renders ALL settings)
+│   │       ├── GlobalSettingsView.php # DEPRECATED - do not use
+│   │       └── DashboardWidgetView.php # Dashboard widget HTML
 │   ├── ContactForm/              # Priority 30 - CF7 Integration
 │   │   ├── Integration.php       # CF7 hooks and panel logic
 │   │   └── Views/
@@ -70,15 +73,18 @@ contact-form-to-api/
 │   │   │   └── LoadableInterface.php # Component contract
 │   │   ├── Activator.php         # Lifecycle management
 │   │   ├── RequestLogger.php     # API request/response DB logger
+│   │   ├── Settings.php          # Global settings singleton (stores all plugin settings)
+│   │   ├── SensitiveDataPatterns.php # Sensitive data detection patterns
 │   │   └── Plugin.php            # Main plugin controller
 │   ├── Services/                 # Priority 20 - Business logic services
 │   │   ├── Loader.php            # Services component loader
 │   │   ├── ApiClient.php         # HTTP client with retry logic
-│   │   └── CheckboxHandler.php   # Checkbox value processing
+│   │   ├── CheckboxHandler.php   # Checkbox value processing
+│   │   ├── EmailAlertService.php # Email alerts for high error rates
+│   │   └── ExportService.php     # Log export (CSV/JSON)
 │   └── Utils/                    # Priority 40 - Utility classes
 │       ├── DateFilterTrait.php   # Reusable date filtering for SQL queries
 │       ├── DebugLogger.php       # PSR-3 file logger for debugging
-│       ├── SensitiveDataPatterns.php # Sensitive data detection patterns
 │       └── StringHelper.php      # String manipulation utilities
 ├── languages/                     # Translation files
 │   ├── contact-form-to-api.pot
@@ -128,9 +134,46 @@ The plugin has two distinct logging systems:
 
 ### MVC Pattern in Admin
 Admin components follow MVC separation:
-- **Controllers**: `RequestLogController`, `SettingsPage` (routing, actions)
-- **Views**: `Views/RequestLogView`, `Views/SettingsView` (HTML rendering)
+- **Controllers**: `RequestLogController`, `SettingsPage`, `GlobalSettingsController` (routing, actions)
+- **Views**: `Views/RequestLogView`, `Views/SettingsView`, `Views/GlobalSettingsView` (HTML rendering)
 - **Models**: `RequestLogTable` (WP_List_Table data handling)
+
+### Settings Architecture (IMPORTANT)
+The plugin settings use a specific architecture that MUST be followed:
+
+**SettingsPage.php** (Priority 25):
+- Registers plugin with Settings Hub via `register_plugin()`
+- Calls `SettingsView::render_page()` to render the UI
+- Handles admin notices from query params
+- URL: `/wp-admin/admin.php?page=contact-form-to-api`
+
+**GlobalSettingsController.php** (Priority 26):
+- **DOES NOT register a tab** in Settings Hub
+- Only handles form submission via `admin_post_cf7_api_save_global_settings`
+- Handles AJAX requests (e.g., `cf7_api_send_test_email`)
+- Enqueues JavaScript for settings page functionality
+- Provides nonce methods: `get_nonce_action()`, `get_nonce_name()`
+
+**SettingsView.php**:
+- Renders ALL settings UI including Global Settings form
+- Calls `render_global_settings_section()` which includes:
+  - Retry Configuration
+  - Sensitive Data Patterns
+  - Logging Control
+  - Log Retention
+  - Email Alerts (if feature enabled)
+- Form posts to `admin-post.php` with action `cf7_api_save_global_settings`
+
+**GlobalSettingsView.php**:
+- **LEGACY/DEPRECATED** - DO NOT USE for new features
+- Originally rendered settings on a separate tab
+- Settings are now embedded in SettingsView
+
+**Adding New Settings**:
+1. Add setting to `Core/Settings.php` with getter method
+2. Add form field to `SettingsView::render_global_settings_section()` or create new `render_*_settings()` method
+3. Handle sanitization in `GlobalSettingsController::handle_save_settings()`
+4. DO NOT create separate tabs in Settings Hub for plugin features
 
 ## Core Components Architecture
 
