@@ -12,7 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### API Logs Enhancements
 - **AJAX Live Refresh**: Real-time statistics updates without page reload
 - **Retry Mechanism**: Execute retry for failed API requests from admin UI
-- **Export Logs**: Export logs to CSV/JSON formats
 - **Dashboard Widget**: Summary widget for WordPress dashboard
 - **Email Alerts**: Notifications when error rate exceeds threshold
 - **Performance Charts**: Visual trends and analytics with Chart.js
@@ -25,6 +24,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Form Builder Integration**: Visual field mapping interface
 - **Multi-site Support**: Enhanced WordPress multisite compatibility
 - **Template System**: Pre-configured templates for popular APIs (Mailchimp, HubSpot, etc.)
+
+## [1.2.0] - 2026-01-03
+
+### 🚀 Export Logs Feature
+
+#### Added
+- **CSV Export**: Export API request logs to CSV format with Excel-compatible UTF-8 BOM
+- **JSON Export**: Export API request logs to JSON format with pretty printing
+- **Export Buttons**: Added export buttons to the API Logs admin page
+- **Disabled State**: Export buttons are visually disabled when no logs exist
+- **SensitiveDataPatterns**: New centralized class for managing sensitive field patterns
+  * Consolidates all sensitive data detection logic
+  * Used by both `RequestLogger` and `ExportService`
+  * Supports headers (Authorization, API keys) and data fields (passwords, tokens, secrets)
+
+#### Fixed
+- **Headers Already Sent**: Fixed export triggering "headers already sent" error
+  * Export actions now handled in `admin_init` hook before any output
+- **PHP 8.4+ Compatibility**: Added `$escape` parameter to `fputcsv()` calls
+- **PHPCS Compliance**: Fixed double quotes to single quotes per WordPress standards
+
+#### Changed
+- **RequestLogger**: Now uses `SensitiveDataPatterns` for consistent data sanitization
+- **ExportService**: Excludes sensitive fields from CSV export entirely (security by design)
+- **Quality Checks Script**: Fixed `WP_TESTS_DIR` path consistency for local testing
+
+#### Developer Experience
+- **run-quality-checks.sh**: Now properly exports `WP_TESTS_DIR` before installation
+- **copilot-instructions.md**: Updated string quotation standards to follow WordPress coding standards
 
 ## [1.1.3] - 2026-01-03
 
