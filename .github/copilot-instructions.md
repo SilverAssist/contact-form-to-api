@@ -62,7 +62,6 @@ contact-form-to-api/
 │   │   └── Views/                # Separated view templates
 │   │       ├── RequestLogView.php    # Request log HTML rendering
 │   │       ├── SettingsView.php      # Main settings page (renders ALL settings)
-│   │       ├── GlobalSettingsView.php # DEPRECATED - do not use
 │   │       └── DashboardWidgetView.php # Dashboard widget HTML
 │   ├── ContactForm/              # Priority 30 - CF7 Integration
 │   │   ├── Integration.php       # CF7 hooks and panel logic
@@ -135,7 +134,7 @@ The plugin has two distinct logging systems:
 ### MVC Pattern in Admin
 Admin components follow MVC separation:
 - **Controllers**: `RequestLogController`, `SettingsPage`, `GlobalSettingsController` (routing, actions)
-- **Views**: `Views/RequestLogView`, `Views/SettingsView`, `Views/GlobalSettingsView` (HTML rendering)
+- **Views**: `Views/RequestLogView`, `Views/SettingsView`, `Views/DashboardWidgetView` (HTML rendering)
 - **Models**: `RequestLogTable` (WP_List_Table data handling)
 
 ### Settings Architecture (IMPORTANT)
@@ -163,11 +162,6 @@ The plugin settings use a specific architecture that MUST be followed:
   - Log Retention
   - Email Alerts (if feature enabled)
 - Form posts to `admin-post.php` with action `cf7_api_save_global_settings`
-
-**GlobalSettingsView.php**:
-- **LEGACY/DEPRECATED** - DO NOT USE for new features
-- Originally rendered settings on a separate tab
-- Settings are now embedded in SettingsView
 
 **Adding New Settings**:
 1. Add setting to `Core/Settings.php` with getter method

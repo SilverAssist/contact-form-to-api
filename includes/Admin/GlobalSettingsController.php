@@ -2,8 +2,8 @@
 /**
  * Global Settings Controller
  *
- * Handles the global settings page for plugin-wide configuration.
- * Manages settings form submission and delegates rendering to GlobalSettingsView.
+ * Handles global settings form submission and AJAX requests.
+ * Does NOT register any admin pages - that's handled by SettingsPage.
  *
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Admin
