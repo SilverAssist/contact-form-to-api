@@ -68,6 +68,7 @@ class Activator {
 		// Clear any scheduled cron events.
 		\wp_clear_scheduled_hook( 'cf7_api_cleanup' );
 		\wp_clear_scheduled_hook( 'cf7_api_cleanup_old_logs' );
+		\wp_clear_scheduled_hook( 'cf7_api_check_alerts' );
 
 		// Clear cached data.
 		\wp_cache_flush();
@@ -270,6 +271,9 @@ class Activator {
 				if ( $retention_days > 0 && ! \wp_next_scheduled( 'cf7_api_cleanup_old_logs' ) ) {
 					\wp_schedule_event( \time(), 'daily', 'cf7_api_cleanup_old_logs' );
 				}
+
+				// Note: Email alert cron is scheduled when user enables alerts in settings.
+				// Default is disabled, so we don't schedule here.
 			}
 		}
 	}

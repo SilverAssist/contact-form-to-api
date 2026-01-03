@@ -70,7 +70,7 @@ Settings are stored in WordPress options table:
 
 1. **`Core\Settings`** - Settings model with defaults and type-safe accessors
 2. **`Admin\GlobalSettingsController`** - Form handling and validation
-3. **`Admin\Views\GlobalSettingsView`** - HTML rendering
+3. **`Admin\Views\SettingsView`** - HTML rendering (includes global settings section)
 4. **`Core\Plugin`** - WP-Cron registration and cleanup execution
 5. **`Core\Activator`** - Default settings initialization on activation
 

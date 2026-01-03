@@ -347,6 +347,7 @@ class SettingsView {
 				<?php self::render_sensitive_patterns_settings( $settings ); ?>
 				<?php self::render_logging_settings( $settings ); ?>
 				<?php self::render_log_retention_settings( $settings ); ?>
+				<?php self::render_email_alerts_settings( $settings ); ?>
 
 				<?php \submit_button( \__( 'Save Settings', 'contact-form-to-api' ) ); ?>
 			</form>
@@ -539,6 +540,168 @@ class SettingsView {
 						</select>
 						<p class="description">
 							<?php \esc_html_e( 'Logs older than this period will be automatically deleted daily via WP-Cron.', 'contact-form-to-api' ); ?>
+						</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<?php
+	}
+
+	/**
+	 * Render email alerts settings
+	 *
+	 * @param Settings $settings Settings instance.
+	 * @return void
+	 */
+	private static function render_email_alerts_settings( Settings $settings ): void {
+		$alerts_enabled   = $settings->is_alerts_enabled();
+		$alert_recipients = $settings->get_alert_recipients();
+		$error_threshold  = $settings->get_alert_error_threshold();
+		$rate_threshold   = $settings->get_alert_rate_threshold();
+		$check_interval   = $settings->get_alert_check_interval();
+		$cooldown_hours   = $settings->get_alert_cooldown_hours();
+		?>
+		<h3><?php \esc_html_e( 'Email Alerts', 'contact-form-to-api' ); ?></h3>
+		<table class="form-table" role="presentation">
+			<tbody>
+				<tr>
+					<th scope="row">
+						<?php \esc_html_e( 'Enable alerts', 'contact-form-to-api' ); ?>
+					</th>
+					<td>
+						<fieldset>
+							<label>
+								<input type="checkbox" 
+									id="alerts_enabled" 
+									name="alerts_enabled" 
+									value="1" 
+									<?php \checked( $alerts_enabled ); ?>>
+								<?php \esc_html_e( 'Send email alerts when API error rate exceeds thresholds', 'contact-form-to-api' ); ?>
+							</label>
+						</fieldset>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="alert_recipients">
+							<?php \esc_html_e( 'Recipients', 'contact-form-to-api' ); ?>
+						</label>
+					</th>
+					<td>
+						<input type="text" 
+							id="alert_recipients" 
+							name="alert_recipients" 
+							value="<?php echo \esc_attr( $alert_recipients ); ?>" 
+							class="regular-text"
+							placeholder="<?php \esc_attr_e( 'admin@example.com', 'contact-form-to-api' ); ?>">
+						<p class="description">
+							<?php \esc_html_e( 'Comma-separated email addresses to receive alerts.', 'contact-form-to-api' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="alert_error_threshold">
+							<?php \esc_html_e( 'Error count threshold', 'contact-form-to-api' ); ?>
+						</label>
+					</th>
+					<td>
+						<input type="number" 
+							id="alert_error_threshold" 
+							name="alert_error_threshold" 
+							value="<?php echo \esc_attr( (string) $error_threshold ); ?>" 
+							min="1" 
+							max="100" 
+							class="small-text">
+						<span><?php \esc_html_e( 'errors per hour', 'contact-form-to-api' ); ?></span>
+						<p class="description">
+							<?php \esc_html_e( 'Alert when errors exceed this count per hour.', 'contact-form-to-api' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="alert_rate_threshold">
+							<?php \esc_html_e( 'Error rate threshold', 'contact-form-to-api' ); ?>
+						</label>
+					</th>
+					<td>
+						<input type="number" 
+							id="alert_rate_threshold" 
+							name="alert_rate_threshold" 
+							value="<?php echo \esc_attr( (string) $rate_threshold ); ?>" 
+							min="1" 
+							max="100" 
+							class="small-text">
+						<span>%</span>
+						<p class="description">
+							<?php \esc_html_e( 'Alert when error percentage exceeds this value.', 'contact-form-to-api' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="alert_check_interval">
+							<?php \esc_html_e( 'Check interval', 'contact-form-to-api' ); ?>
+						</label>
+					</th>
+					<td>
+						<select id="alert_check_interval" name="alert_check_interval">
+							<option value="hourly" <?php \selected( $check_interval, 'hourly' ); ?>>
+								<?php \esc_html_e( 'Every hour', 'contact-form-to-api' ); ?>
+							</option>
+							<option value="twicehourly" <?php \selected( $check_interval, 'twicehourly' ); ?>>
+								<?php \esc_html_e( 'Every 30 minutes', 'contact-form-to-api' ); ?>
+							</option>
+						</select>
+						<p class="description">
+							<?php \esc_html_e( 'How often to check error rates.', 'contact-form-to-api' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="alert_cooldown_hours">
+							<?php \esc_html_e( 'Cooldown period', 'contact-form-to-api' ); ?>
+						</label>
+					</th>
+					<td>
+						<select id="alert_cooldown_hours" name="alert_cooldown_hours">
+							<option value="1" <?php \selected( $cooldown_hours, 1 ); ?>>
+								<?php \esc_html_e( '1 hour', 'contact-form-to-api' ); ?>
+							</option>
+							<option value="2" <?php \selected( $cooldown_hours, 2 ); ?>>
+								<?php \esc_html_e( '2 hours', 'contact-form-to-api' ); ?>
+							</option>
+							<option value="4" <?php \selected( $cooldown_hours, 4 ); ?>>
+								<?php \esc_html_e( '4 hours', 'contact-form-to-api' ); ?>
+							</option>
+							<option value="8" <?php \selected( $cooldown_hours, 8 ); ?>>
+								<?php \esc_html_e( '8 hours', 'contact-form-to-api' ); ?>
+							</option>
+							<option value="24" <?php \selected( $cooldown_hours, 24 ); ?>>
+								<?php \esc_html_e( '24 hours', 'contact-form-to-api' ); ?>
+							</option>
+						</select>
+						<p class="description">
+							<?php \esc_html_e( 'Minimum time between alert emails.', 'contact-form-to-api' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<?php \esc_html_e( 'Test email', 'contact-form-to-api' ); ?>
+					</th>
+					<td>
+						<button type="button" 
+							id="cf7-api-send-test-email" 
+							class="button button-secondary">
+							<?php \esc_html_e( 'Send Test Email', 'contact-form-to-api' ); ?>
+						</button>
+						<span id="cf7-api-test-email-result" style="margin-left: 10px;"></span>
+						<p class="description">
+							<?php \esc_html_e( 'Send a test email to verify configuration.', 'contact-form-to-api' ); ?>
 						</p>
 					</td>
 				</tr>

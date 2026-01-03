@@ -53,14 +53,16 @@ contact-form-to-api/
 │   ├── API_REFERENCE.md
 │   └── ADMIN_INTERFACE.md
 ├── includes/                      # Source code (PSR-4)
-│   ├── Admin/                     # Priority 30 - Admin components
+│   ├── Admin/                     # Priority 25-30 - Admin components
 │   │   ├── Loader.php            # Admin component loader
-│   │   ├── SettingsPage.php      # Settings Hub integration controller
+│   │   ├── SettingsPage.php      # Settings Hub registration (Priority 25)
+│   │   ├── GlobalSettingsController.php # Form handling only (Priority 26)
 │   │   ├── RequestLogController.php # Request logs admin controller
 │   │   ├── RequestLogTable.php   # WP_List_Table for logs
 │   │   └── Views/                # Separated view templates
 │   │       ├── RequestLogView.php    # Request log HTML rendering
-│   │       └── SettingsView.php      # Settings page HTML rendering
+│   │       ├── SettingsView.php      # Main settings page (renders ALL settings)
+│   │       └── DashboardWidgetView.php # Dashboard widget HTML
 │   ├── ContactForm/              # Priority 30 - CF7 Integration
 │   │   ├── Integration.php       # CF7 hooks and panel logic
 │   │   └── Views/
@@ -70,15 +72,18 @@ contact-form-to-api/
 │   │   │   └── LoadableInterface.php # Component contract
 │   │   ├── Activator.php         # Lifecycle management
 │   │   ├── RequestLogger.php     # API request/response DB logger
+│   │   ├── Settings.php          # Global settings singleton (stores all plugin settings)
+│   │   ├── SensitiveDataPatterns.php # Sensitive data detection patterns
 │   │   └── Plugin.php            # Main plugin controller
 │   ├── Services/                 # Priority 20 - Business logic services
 │   │   ├── Loader.php            # Services component loader
 │   │   ├── ApiClient.php         # HTTP client with retry logic
-│   │   └── CheckboxHandler.php   # Checkbox value processing
+│   │   ├── CheckboxHandler.php   # Checkbox value processing
+│   │   ├── EmailAlertService.php # Email alerts for high error rates
+│   │   └── ExportService.php     # Log export (CSV/JSON)
 │   └── Utils/                    # Priority 40 - Utility classes
 │       ├── DateFilterTrait.php   # Reusable date filtering for SQL queries
 │       ├── DebugLogger.php       # PSR-3 file logger for debugging
-│       ├── SensitiveDataPatterns.php # Sensitive data detection patterns
 │       └── StringHelper.php      # String manipulation utilities
 ├── languages/                     # Translation files
 │   ├── contact-form-to-api.pot
@@ -128,9 +133,41 @@ The plugin has two distinct logging systems:
 
 ### MVC Pattern in Admin
 Admin components follow MVC separation:
-- **Controllers**: `RequestLogController`, `SettingsPage` (routing, actions)
-- **Views**: `Views/RequestLogView`, `Views/SettingsView` (HTML rendering)
+- **Controllers**: `RequestLogController`, `SettingsPage`, `GlobalSettingsController` (routing, actions)
+- **Views**: `Views/RequestLogView`, `Views/SettingsView`, `Views/DashboardWidgetView` (HTML rendering)
 - **Models**: `RequestLogTable` (WP_List_Table data handling)
+
+### Settings Architecture (IMPORTANT)
+The plugin settings use a specific architecture that MUST be followed:
+
+**SettingsPage.php** (Priority 25):
+- Registers plugin with Settings Hub via `register_plugin()`
+- Calls `SettingsView::render_page()` to render the UI
+- Handles admin notices from query params
+- URL: `/wp-admin/admin.php?page=contact-form-to-api`
+
+**GlobalSettingsController.php** (Priority 26):
+- **DOES NOT register a tab** in Settings Hub
+- Only handles form submission via `admin_post_cf7_api_save_global_settings`
+- Handles AJAX requests (e.g., `cf7_api_send_test_email`)
+- Enqueues JavaScript for settings page functionality
+- Provides nonce methods: `get_nonce_action()`, `get_nonce_name()`
+
+**SettingsView.php**:
+- Renders ALL settings UI including Global Settings form
+- Calls `render_global_settings_section()` which includes:
+  - Retry Configuration
+  - Sensitive Data Patterns
+  - Logging Control
+  - Log Retention
+  - Email Alerts (if feature enabled)
+- Form posts to `admin-post.php` with action `cf7_api_save_global_settings`
+
+**Adding New Settings**:
+1. Add setting to `Core/Settings.php` with getter method
+2. Add form field to `SettingsView::render_global_settings_section()` or create new `render_*_settings()` method
+3. Handle sanitization in `GlobalSettingsController::handle_save_settings()`
+4. DO NOT create separate tabs in Settings Hub for plugin features
 
 ## Core Components Architecture
 
@@ -997,7 +1034,7 @@ EOF
 - The `path` and `line` should match the original comment's location
 - Always pipe to `| cat` to avoid paging issues
 
-**Example Workflow**:
+**Example Workflow (REST API)**:
 ```bash
 # 1. Get comment IDs
 gh api repos/SilverAssist/contact-form-to-api/pulls/29/comments --jq '.[] | "ID: \(.id) | File: \(.path):\(.original_line)"' | cat
@@ -1016,4 +1053,87 @@ gh api repos/SilverAssist/contact-form-to-api/pulls/29/comments -X POST --input 
   "in_reply_to": 2659078318
 }
 EOF
+```
+
+### Using GraphQL API for Review Threads (Recommended)
+The GraphQL API provides better access to review threads and is more reliable for replying to Copilot Code Review comments:
+
+```bash
+# Get all review thread IDs with their comments
+gh api graphql -f query='
+query {
+  repository(owner: "SilverAssist", name: "contact-form-to-api") {
+    pullRequest(number: 30) {
+      reviewThreads(first: 20) {
+        nodes {
+          id
+          path
+          isResolved
+          comments(first: 1) {
+            nodes {
+              id
+              body
+            }
+          }
+        }
+      }
+    }
+  }
+}' | cat
+```
+
+**Reply to a specific review thread using GraphQL**:
+```bash
+gh api graphql -f query='
+mutation {
+  addPullRequestReviewThreadReply(input: {
+    pullRequestReviewThreadId: "PRRT_kwDONqY9Pc6XXXXXXX",
+    body: "Fixed in commit abc1234. Description of the fix."
+  }) {
+    comment {
+      id
+      body
+    }
+  }
+}' | cat
+```
+
+**Why GraphQL over REST API**:
+- Review thread IDs (`PRRT_...`) are more reliable for Copilot Code Review comments
+- No need to provide `commit_id`, `path`, or `line` - the thread ID handles all context
+- Simpler mutation structure for replies
+- Better support for multi-line review comments
+
+**Example GraphQL Workflow**:
+```bash
+# 1. Get all review thread IDs
+gh api graphql -f query='
+query {
+  repository(owner: "SilverAssist", name: "contact-form-to-api") {
+    pullRequest(number: 30) {
+      reviewThreads(first: 20) {
+        nodes {
+          id
+          path
+          comments(first: 1) {
+            nodes {
+              body
+            }
+          }
+        }
+      }
+    }
+  }
+}' | cat
+
+# 2. Reply to each thread (repeat for each thread ID)
+gh api graphql -f query='
+mutation {
+  addPullRequestReviewThreadReply(input: {
+    pullRequestReviewThreadId: "PRRT_kwDONqY9Pc6ABC123",
+    body: "Fixed in commit abc1234. Added proper validation."
+  }) {
+    comment { id }
+  }
+}' | cat
 ```
