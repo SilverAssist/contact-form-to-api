@@ -67,6 +67,7 @@ class Activator {
 	public static function deactivate(): void {
 		// Clear any scheduled cron events.
 		\wp_clear_scheduled_hook( 'cf7_api_cleanup' );
+		\wp_clear_scheduled_hook( 'cf7_api_cleanup_old_logs' );
 
 		// Clear cached data.
 		\wp_cache_flush();
@@ -244,6 +245,7 @@ class Activator {
 	 * @return void
 	 */
 	private static function init_default_settings(): void {
+		// Legacy settings (kept for backward compatibility).
 		$default_settings = array(
 			'debug_mode'         => false,
 			'log_errors'         => true,
@@ -254,6 +256,21 @@ class Activator {
 		// Only set defaults if settings don't exist.
 		if ( \get_option( 'cf7_api_settings' ) === false ) {
 			\update_option( 'cf7_api_settings', $default_settings );
+		}
+
+		// Initialize global settings using Settings class.
+		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Core\\Settings' ) ) {
+			if ( \get_option( 'cf7_api_global_settings' ) === false ) {
+				$settings = \SilverAssist\ContactFormToAPI\Core\Settings::instance();
+				$settings->init();
+				\update_option( 'cf7_api_global_settings', $settings::get_defaults() );
+
+				// Schedule daily log cleanup if retention is enabled.
+				$retention_days = $settings->get_log_retention_days();
+				if ( $retention_days > 0 ) {
+					\wp_schedule_event( \time(), 'daily', 'cf7_api_cleanup_old_logs' );
+				}
+			}
 		}
 	}
 }

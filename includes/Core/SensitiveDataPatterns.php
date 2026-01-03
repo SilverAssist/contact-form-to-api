@@ -68,11 +68,12 @@ final class SensitiveDataPatterns {
 	 * Get all sensitive patterns as array
 	 *
 	 * Returns all defined sensitive patterns for use in data redaction.
+	 * Includes both default patterns and custom patterns from settings.
 	 *
 	 * @return array<string> Array of sensitive field patterns.
 	 */
 	public static function get_all(): array {
-		return array(
+		$default_patterns = array(
 			self::PASSWORD,
 			self::PASSWD,
 			self::SECRET,
@@ -88,6 +89,23 @@ final class SensitiveDataPatterns {
 			self::CREDIT_CARD,
 			self::CARD_NUMBER,
 		);
+
+		// Merge with custom patterns from settings if available.
+		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Core\\Settings' ) ) {
+			try {
+				$settings        = \SilverAssist\ContactFormToAPI\Core\Settings::instance();
+				$custom_patterns = $settings->get_sensitive_patterns();
+				if ( \is_array( $custom_patterns ) ) {
+					$default_patterns = \array_merge( $default_patterns, $custom_patterns );
+				}
+			} catch ( \Exception $e ) {
+				// Settings not available, use defaults only.
+				unset( $e );
+			}
+		}
+
+		// Remove duplicates and return.
+		return \array_unique( $default_patterns );
 	}
 
 	/**

@@ -412,6 +412,12 @@ class SettingsView {
 					<span class="link-desc"><?php \esc_html_e( 'Manage your CF7 forms', 'contact-form-to-api' ); ?></span>
 				</a>
 
+				<a href="<?php echo \esc_url( \admin_url( 'admin.php?page=cf7-api-global-settings' ) ); ?>" class="cf7-api-link-card">
+					<span class="dashicons dashicons-admin-settings"></span>
+					<span class="link-title"><?php \esc_html_e( 'Global Settings', 'contact-form-to-api' ); ?></span>
+					<span class="link-desc"><?php \esc_html_e( 'Configure plugin-wide settings', 'contact-form-to-api' ); ?></span>
+				</a>
+
 				<a href="<?php echo \esc_url( \admin_url( 'admin.php?page=cf7-api-logs' ) ); ?>" class="cf7-api-link-card">
 					<span class="dashicons dashicons-list-view"></span>
 					<span class="link-title"><?php \esc_html_e( 'API Logs', 'contact-form-to-api' ); ?></span>

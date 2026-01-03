@@ -92,6 +92,11 @@ class RequestLogger {
 	 * @return int|false Log entry ID or false on failure
 	 */
 	public function start_request( int $form_id, string $endpoint, string $method, $request_data, array $request_headers = array(), ?int $retry_of = null ) {
+		// Check if logging is enabled via settings.
+		if ( ! $this->is_logging_enabled() ) {
+			return false;
+		}
+
 		global $wpdb;
 
 		$this->start_time = \microtime( true );
@@ -640,5 +645,71 @@ class RequestLogger {
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return (int) ( $count ?: 0 );
+	}
+
+	/**
+	 * Check if logging is enabled via settings
+	 *
+	 * @since 1.2.0
+	 * @return bool
+	 */
+	private function is_logging_enabled(): bool {
+		// Try to get settings instance.
+		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Core\\Settings' ) ) {
+			try {
+				$settings = \SilverAssist\ContactFormToAPI\Core\Settings::instance();
+				return $settings->is_logging_enabled();
+			} catch ( \Exception $e ) {
+				// Settings not available, default to enabled.
+				unset( $e );
+			}
+		}
+
+		// Default to enabled if settings not available.
+		return true;
+	}
+
+	/**
+	 * Get maximum manual retries from settings
+	 *
+	 * @since 1.2.0
+	 * @return int
+	 */
+	public static function get_max_manual_retries(): int {
+		// Try to get from settings first.
+		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Core\\Settings' ) ) {
+			try {
+				$settings = \SilverAssist\ContactFormToAPI\Core\Settings::instance();
+				return $settings->get_max_manual_retries();
+			} catch ( \Exception $e ) {
+				// Settings not available, use constant.
+				unset( $e );
+			}
+		}
+
+		// Fallback to constant.
+		return self::MAX_MANUAL_RETRIES;
+	}
+
+	/**
+	 * Get maximum retries per hour from settings
+	 *
+	 * @since 1.2.0
+	 * @return int
+	 */
+	public static function get_max_retries_per_hour(): int {
+		// Try to get from settings first.
+		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Core\\Settings' ) ) {
+			try {
+				$settings = \SilverAssist\ContactFormToAPI\Core\Settings::instance();
+				return $settings->get_max_retries_per_hour();
+			} catch ( \Exception $e ) {
+				// Settings not available, use constant.
+				unset( $e );
+			}
+		}
+
+		// Fallback to constant.
+		return self::MAX_RETRIES_PER_HOUR;
 	}
 }
