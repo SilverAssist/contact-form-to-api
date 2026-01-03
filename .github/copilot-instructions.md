@@ -402,13 +402,31 @@ Activator::create_tables();
 
 ## 🚨 CRITICAL CODING STANDARDS - MANDATORY COMPLIANCE
 
-### String Quotation Standards
-- **MANDATORY**: ALL strings in PHP and JavaScript MUST use double quotes: `"string"`
-- **i18n Functions**: ALL WordPress i18n functions MUST use double quotes: `__("Text", "contact-form-to-api")`, `esc_html_e("Text", "contact-form-to-api")`
-- **FORBIDDEN**: Single quotes for strings: `'string'` or `__('text', 'domain')`
-- **Exception**: Only use single quotes inside double-quoted strings when necessary
-- **SQL Queries**: Use double quotes for string literals in SQL: `WHERE option_value = "1"`
-- **sprintf() Placeholders**: When using `sprintf()` with positional placeholders like `%1$d`, escape the `$` to prevent PHP variable interpretation: `"Query complexity %1\$d exceeds maximum %2\$d"`
+### String Quotation Standards (WordPress Coding Standards)
+The WordPress Coding Standards (enforced by PHPCS with `WordPress-Extra` ruleset) require specific quotation rules:
+
+- **Single quotes for simple strings**: Use single quotes for strings that don't require variable interpolation or special characters: `'string'`
+- **Double quotes for interpolation**: Use double quotes ONLY when string interpolation is needed: `"prefix_{$variable}"`
+- **Double quotes for special characters**: Use double quotes when strings contain escape sequences: `"\n"`, `"\t"`
+- **Array keys**: Use single quotes for array keys: `$array['key']`
+- **i18n Functions**: Use single quotes for text domain: `__('Text', 'contact-form-to-api')`
+
+**Examples**:
+```php
+// ✅ CORRECT - Single quotes for simple strings
+$status = 'active';
+$key = 'api_key';
+$message = __('Error occurred', 'contact-form-to-api');
+
+// ✅ CORRECT - Double quotes for interpolation
+$path = "includes/{$directory}/file.php";
+$log = "User {$user_id} logged in";
+
+// ❌ WRONG - Double quotes without interpolation (PHPCS error)
+$status = "active";  // Should be 'active'
+```
+
+**PHPCS Rule**: `Squiz.Strings.DoubleQuoteUsage.NotRequired` - Strings that don't require double quotes must use single quotes.
 
 ### Documentation Requirements
 - **PHP**: Complete PHPDoc documentation for ALL classes, methods, and properties
@@ -417,18 +435,17 @@ Activator::create_tables();
 - **English only**: All documentation must be in English for international collaboration
 
 ### WordPress i18n Standards
-- **Text domain**: `"contact-form-to-api"` - MANDATORY for all i18n functions
-- **ALL user-facing strings**: Must use WordPress i18n functions with double quotes
-- **Functions**: `__("text", "contact-form-to-api")`, `esc_html_e("text", "contact-form-to-api")`, etc.
+- **Text domain**: `'contact-form-to-api'` - MANDATORY for all i18n functions (single quotes)
+- **ALL user-facing strings**: Must use WordPress i18n functions
+- **Functions**: `__('text', 'contact-form-to-api')`, `esc_html_e('text', 'contact-form-to-api')`, etc.
 - **JavaScript i18n**: Pass translated strings from PHP via `wp_localize_script()`
 - **Forbidden**: Hardcoded user-facing strings without translation functions
 
 #### sprintf() Placeholder Standards
-- **Simple placeholders**: Use `%d`, `%s`, `%f` for sequential arguments: `sprintf(__("Found %d items", "domain"), $count)`
-- **Positional placeholders**: Use `%1\$d`, `%2\$s` with escaped `$` for non-sequential: `__("Value %1\$d exceeds limit %2\$d", "domain")`
+- **Simple placeholders**: Use `%d`, `%s`, `%f` for sequential arguments: `sprintf(__('Found %d items', 'contact-form-to-api'), $count)`
+- **Positional placeholders**: Use `%1$d`, `%2$s` for non-sequential (with single quotes, no escaping needed): `__('Value %1$d exceeds limit %2$d', 'contact-form-to-api')`
 - **Translator comments**: ALWAYS add comments for placeholders: `/* translators: %d: number of items found */`
-- **Multiple placeholders**: Use positional numbering for clarity: `%1\$d` for first, `%2\$s` for second, etc.
-- **Escaping requirement**: In double-quoted strings, escape `$` in placeholders to prevent variable interpretation
+- **Multiple placeholders**: Use positional numbering for clarity: `%1$d` for first, `%2$s` for second, etc.
 
 ## Modern PHP 8.2+ Conventions
 
