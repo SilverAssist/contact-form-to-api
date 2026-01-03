@@ -93,6 +93,7 @@ class ExportService implements LoadableInterface {
 	 */
 	public function export_csv( array $logs ): string {
 		// Create memory stream for CSV generation.
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- Using php://temp memory stream, not filesystem.
 		$output = \fopen( 'php://temp', 'r+' );
 
 		if ( false === $output ) {
@@ -100,6 +101,7 @@ class ExportService implements LoadableInterface {
 		}
 
 		// Add UTF-8 BOM for Excel compatibility.
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fwrite -- Writing to memory stream, not filesystem.
 		\fwrite( $output, "\xEF\xBB\xBF" );
 
 		// Write headers.
@@ -127,6 +129,7 @@ class ExportService implements LoadableInterface {
 		// Get CSV content.
 		\rewind( $output );
 		$csv = \stream_get_contents( $output );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Closing memory stream, not filesystem.
 		\fclose( $output );
 
 		return $csv !== false ? $csv : '';
