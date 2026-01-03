@@ -14,10 +14,8 @@
 
 namespace SilverAssist\ContactFormToAPI\Admin;
 
-use SilverAssist\ContactFormToAPI\Admin\Views\GlobalSettingsView;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\Settings;
-use SilverAssist\SettingsHub\SettingsHub;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -33,9 +31,10 @@ class GlobalSettingsController implements LoadableInterface {
 	/**
 	 * Settings page slug
 	 *
+	 * @deprecated 1.2.0 Global settings are now embedded in the main CF7 to API tab.
 	 * @var string
 	 */
-	private const PAGE_SLUG = 'cf7-api-global-settings';
+	public const PAGE_SLUG = 'cf7-api-global-settings';
 
 	/**
 	 * Nonce action for settings form
@@ -95,14 +94,8 @@ class GlobalSettingsController implements LoadableInterface {
 			return;
 		}
 
-		// Register with Settings Hub if available.
-		\add_action( 'admin_menu', array( $this, 'register_with_hub' ), 5 );
-
-		// Handle form submission.
+		// Handle form submission (settings form is now embedded in SettingsView).
 		\add_action( 'admin_post_cf7_api_save_global_settings', array( $this, 'handle_save_settings' ) );
-
-		// Enqueue assets.
-		\add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
 		$this->initialized = true;
 	}
@@ -122,51 +115,27 @@ class GlobalSettingsController implements LoadableInterface {
 	 * @return bool
 	 */
 	public function should_load(): bool {
-		return \is_admin() && \class_exists( SettingsHub::class );
+		return \is_admin();
 	}
 
 	/**
 	 * Register with Settings Hub
 	 *
+	 * @deprecated 1.2.0 Global settings are now embedded in the main CF7 to API tab.
 	 * @return void
 	 */
 	public function register_with_hub(): void {
-		if ( ! \class_exists( SettingsHub::class ) ) {
-			return;
-		}
-
-		$hub = SettingsHub::get_instance();
-
-		// Register as a submenu item under the main plugin settings.
-		$hub->register_plugin(
-			self::PAGE_SLUG,
-			\__( 'Global Settings', 'contact-form-to-api' ),
-			array( $this, 'render_settings_page' ),
-			array(
-				'description' => \__( 'Configure plugin-wide settings for retry limits, logging, and data patterns.', 'contact-form-to-api' ),
-				'version'     => CF7_API_VERSION,
-				'capability'  => 'manage_options',
-				'tab_title'   => \__( 'Global Settings', 'contact-form-to-api' ),
-			)
-		);
+		// Deprecated: Settings are now embedded in SettingsView.
 	}
 
 	/**
 	 * Render settings page
 	 *
-	 * Delegates to GlobalSettingsView for HTML rendering.
-	 *
+	 * @deprecated 1.2.0 Global settings are now embedded in the main CF7 to API tab.
 	 * @return void
 	 */
 	public function render_settings_page(): void {
-		if ( ! \current_user_can( 'manage_options' ) ) {
-			return;
-		}
-
-		$settings = Settings::instance();
-		$notices  = $this->get_admin_notices();
-
-		GlobalSettingsView::render_page( $settings, $notices );
+		// Deprecated: Settings are now rendered via SettingsView.
 	}
 
 	/**
@@ -203,10 +172,10 @@ class GlobalSettingsController implements LoadableInterface {
 		// Schedule or unschedule log cleanup based on retention setting.
 		$this->update_cleanup_schedule( $new_settings['log_retention_days'] );
 
-		// Redirect with success/error message.
+		// Redirect back to the main settings page with success/error message.
 		$redirect_url = \add_query_arg(
 			array(
-				'page'    => self::PAGE_SLUG,
+				'page'    => 'cf7-api-settings',
 				'updated' => $success ? '1' : '0',
 			),
 			\admin_url( 'admin.php' )
@@ -266,9 +235,10 @@ class GlobalSettingsController implements LoadableInterface {
 	/**
 	 * Get admin notices from query params
 	 *
+	 * @deprecated 1.2.0 Global settings are now embedded in the main CF7 to API tab.
 	 * @return array<int, array{type: string, message: string}> Array of notices.
 	 */
-	private function get_admin_notices(): array {
+	public function get_admin_notices(): array {
 		$notices = array();
 
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Reading GET parameter for display only.
@@ -293,26 +263,12 @@ class GlobalSettingsController implements LoadableInterface {
 	/**
 	 * Enqueue assets for settings page
 	 *
+	 * @deprecated 1.2.0 Global settings are now embedded in the main CF7 to API tab.
 	 * @param string $hook_suffix Current admin page hook.
 	 * @return void
 	 */
 	public function enqueue_assets( string $hook_suffix ): void {
-		// Check if we're on the global settings page.
-		$allowed_hooks = array(
-			'silver-assist_page_' . self::PAGE_SLUG,
-		);
-
-		if ( ! \in_array( $hook_suffix, $allowed_hooks, true ) ) {
-			return;
-		}
-
-		// Enqueue settings page styles (reuse existing).
-		\wp_enqueue_style(
-			'cf7-api-settings',
-			CF7_API_URL . 'assets/css/settings-page.css',
-			array(),
-			CF7_API_VERSION
-		);
+		// Deprecated: Assets are now loaded by SettingsPage controller.
 	}
 
 	/**

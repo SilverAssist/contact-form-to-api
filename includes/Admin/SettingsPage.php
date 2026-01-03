@@ -201,7 +201,35 @@ class SettingsPage implements LoadableInterface {
 	 * @return void
 	 */
 	public function render_settings_page(): void {
-		SettingsView::render_page();
+		$notices = $this->get_admin_notices();
+		SettingsView::render_page( $notices );
+	}
+
+	/**
+	 * Get admin notices from query params
+	 *
+	 * @return array<int, array{type: string, message: string}> Array of notices.
+	 */
+	private function get_admin_notices(): array {
+		$notices = array();
+
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Reading GET parameter for display only.
+		if ( isset( $_GET['updated'] ) ) {
+			if ( '1' === $_GET['updated'] ) {
+				$notices[] = array(
+					'type'    => 'success',
+					'message' => \__( 'Settings saved successfully.', 'contact-form-to-api' ),
+				);
+			} else {
+				$notices[] = array(
+					'type'    => 'error',
+					'message' => \__( 'Failed to save settings. Please try again.', 'contact-form-to-api' ),
+				);
+			}
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+		return $notices;
 	}
 
 	/**

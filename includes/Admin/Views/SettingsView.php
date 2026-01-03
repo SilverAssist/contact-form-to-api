@@ -14,6 +14,9 @@
 
 namespace SilverAssist\ContactFormToAPI\Admin\Views;
 
+use SilverAssist\ContactFormToAPI\Admin\GlobalSettingsController;
+use SilverAssist\ContactFormToAPI\Core\Settings;
+
 \defined( 'ABSPATH' ) || exit;
 
 /**
@@ -28,16 +31,19 @@ class SettingsView {
 	/**
 	 * Render the main settings page
 	 *
+	 * @param array<int, array{type: string, message: string}> $notices Admin notices to display.
 	 * @return void
 	 */
-	public static function render_page(): void {
+	public static function render_page( array $notices = array() ): void {
 		if ( ! \current_user_can( 'manage_options' ) ) {
 			return;
 		}
 		?>
 		<div class="cf7-api-settings-page">
+			<?php self::render_accordion_styles(); ?>
+			<?php self::render_notices( $notices ); ?>
+			<?php self::render_global_settings_section(); ?>
 			<?php self::render_how_to_section(); ?>
-			<?php self::render_hooks_section(); ?>
 			<?php self::render_quick_links_section(); ?>
 			<?php self::render_status_section(); ?>
 		</div>
@@ -45,26 +51,114 @@ class SettingsView {
 	}
 
 	/**
-	 * Render How To documentation section
+	 * Render admin notices
+	 *
+	 * @param array<int, array{type: string, message: string}> $notices Array of notices.
+	 * @return void
+	 */
+	private static function render_notices( array $notices ): void {
+		foreach ( $notices as $notice ) {
+			$type    = \sanitize_html_class( $notice['type'] );
+			$message = $notice['message'];
+			?>
+			<div class="notice notice-<?php echo \esc_attr( $type ); ?> is-dismissible">
+				<p><?php echo \esc_html( $message ); ?></p>
+			</div>
+			<?php
+		}
+	}
+
+	/**
+	 * Render accordion styles
+	 *
+	 * @return void
+	 */
+	private static function render_accordion_styles(): void {
+		?>
+		<style>
+			.cf7-api-accordion-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				cursor: pointer;
+				padding: 12px 15px;
+				background: #f6f7f7;
+				border: 1px solid #c3c4c7;
+				border-radius: 4px;
+				margin-bottom: 0;
+				transition: background-color 0.2s ease;
+			}
+			.cf7-api-accordion-header:hover {
+				background: #f0f0f1;
+			}
+			.cf7-api-accordion-header h2 {
+				margin: 0;
+				padding: 0;
+				font-size: 14px;
+				line-height: 1.4;
+			}
+			.cf7-api-accordion-toggle {
+				font-size: 20px;
+				transition: transform 0.2s ease;
+			}
+			.cf7-api-accordion-content {
+				display: none;
+				border: 1px solid #c3c4c7;
+				border-top: none;
+				border-radius: 0 0 4px 4px;
+				padding: 20px;
+				background: #fff;
+			}
+			.cf7-api-accordion.is-open .cf7-api-accordion-content {
+				display: block;
+			}
+			.cf7-api-accordion.is-open .cf7-api-accordion-toggle {
+				transform: rotate(180deg);
+			}
+			.cf7-api-accordion.is-open .cf7-api-accordion-header {
+				border-radius: 4px 4px 0 0;
+			}
+		</style>
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				var accordionHeaders = document.querySelectorAll('.cf7-api-accordion-header');
+				accordionHeaders.forEach(function(header) {
+					header.addEventListener('click', function() {
+						var accordion = this.closest('.cf7-api-accordion');
+						accordion.classList.toggle('is-open');
+					});
+				});
+			});
+		</script>
+		<?php
+	}
+
+	/**
+	 * Render How To documentation section (accordion, collapsed by default)
 	 *
 	 * @return void
 	 */
 	public static function render_how_to_section(): void {
 		?>
-		<div class="cf7-api-section cf7-api-how-to">
-			<h2>
-				<span class="dashicons dashicons-book-alt"></span>
-				<?php \esc_html_e( 'How to Configure API Integration', 'contact-form-to-api' ); ?>
-			</h2>
+		<div class="cf7-api-section cf7-api-accordion">
+			<div class="cf7-api-accordion-header">
+				<h2>
+					<span class="dashicons dashicons-book-alt"></span>
+					<?php \esc_html_e( 'How to Configure API Integration', 'contact-form-to-api' ); ?>
+				</h2>
+				<span class="cf7-api-accordion-toggle dashicons dashicons-arrow-down-alt2"></span>
+			</div>
 
-			<div class="cf7-api-steps">
-				<?php self::render_step_1(); ?>
-				<?php self::render_step_2(); ?>
-				<?php self::render_step_3(); ?>
-				<?php self::render_step_4(); ?>
-				<?php self::render_step_5(); ?>
-				<?php self::render_step_6(); ?>
-				<?php self::render_step_7(); ?>
+			<div class="cf7-api-accordion-content">
+				<div class="cf7-api-steps">
+					<?php self::render_step_1(); ?>
+					<?php self::render_step_2(); ?>
+					<?php self::render_step_3(); ?>
+					<?php self::render_step_4(); ?>
+					<?php self::render_step_5(); ?>
+					<?php self::render_step_6(); ?>
+					<?php self::render_step_7(); ?>
+				</div>
 			</div>
 		</div>
 		<?php
@@ -228,168 +322,241 @@ class SettingsView {
 	}
 
 	/**
+	 * Render global settings section
+	 *
+	 * @since 1.2.0
+	 * @return void
+	 */
+	private static function render_global_settings_section(): void {
+		$settings = Settings::instance();
+		?>
+		<div class="cf7-api-section">
+			<h2>
+				<span class="dashicons dashicons-admin-settings"></span>
+				<?php \esc_html_e( 'Global Settings', 'contact-form-to-api' ); ?>
+			</h2>
+			<p class="description">
+				<?php \esc_html_e( 'Configure plugin-wide settings for retry limits, sensitive data patterns, logging control, and log retention.', 'contact-form-to-api' ); ?>
+			</p>
+
+			<form method="post" action="<?php echo \esc_url( \admin_url( 'admin-post.php' ) ); ?>">
+				<input type="hidden" name="action" value="cf7_api_save_global_settings">
+				<?php \wp_nonce_field( GlobalSettingsController::get_nonce_action(), GlobalSettingsController::get_nonce_name() ); ?>
+
+				<?php self::render_retry_settings( $settings ); ?>
+				<?php self::render_sensitive_patterns_settings( $settings ); ?>
+				<?php self::render_logging_settings( $settings ); ?>
+				<?php self::render_log_retention_settings( $settings ); ?>
+
+				<?php \submit_button( \__( 'Save Settings', 'contact-form-to-api' ) ); ?>
+			</form>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Render retry configuration settings
+	 *
+	 * @param Settings $settings Settings instance.
+	 * @return void
+	 */
+	private static function render_retry_settings( Settings $settings ): void {
+		$max_manual_retries   = $settings->get_max_manual_retries();
+		$max_retries_per_hour = $settings->get_max_retries_per_hour();
+		?>
+		<h3><?php \esc_html_e( 'Retry Configuration', 'contact-form-to-api' ); ?></h3>
+		<table class="form-table" role="presentation">
+			<tbody>
+				<tr>
+					<th scope="row">
+						<label for="max_manual_retries">
+							<?php \esc_html_e( 'Maximum retries per entry', 'contact-form-to-api' ); ?>
+						</label>
+					</th>
+					<td>
+						<input type="number" 
+							id="max_manual_retries"
+							name="max_manual_retries"
+							value="<?php echo \esc_attr( $max_manual_retries ); ?>"
+							min="0" 
+							max="10" 
+							class="small-text">
+						<p class="description">
+							<?php \esc_html_e( 'Maximum number of times a single failed request can be manually retried.', 'contact-form-to-api' ); ?>
+						</p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="max_retries_per_hour">
+							<?php \esc_html_e( 'Maximum retries per hour', 'contact-form-to-api' ); ?>
+						</label>
+					</th>
+					<td>
+						<input type="number" 
+							id="max_retries_per_hour"
+							name="max_retries_per_hour"
+							value="<?php echo \esc_attr( $max_retries_per_hour ); ?>"
+							min="0" 
+							max="100" 
+							class="small-text">
+						<p class="description">
+							<?php \esc_html_e( 'Global rate limit for all retry attempts across all requests.', 'contact-form-to-api' ); ?>
+						</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<?php
+	}
+
+	/**
+	 * Render sensitive data patterns settings
+	 *
+	 * @param Settings $settings Settings instance.
+	 * @return void
+	 */
+	private static function render_sensitive_patterns_settings( Settings $settings ): void {
+		$patterns      = $settings->get_sensitive_patterns();
+		$patterns_text = \implode( "\n", $patterns );
+		?>
+		<h3><?php \esc_html_e( 'Sensitive Data Patterns', 'contact-form-to-api' ); ?></h3>
+		<table class="form-table" role="presentation">
+			<tbody>
+				<tr>
+					<th scope="row">
+						<label for="sensitive_patterns">
+							<?php \esc_html_e( 'Field patterns to anonymize', 'contact-form-to-api' ); ?>
+						</label>
+					</th>
+					<td>
+						<textarea 
+							id="sensitive_patterns"
+							name="sensitive_patterns"
+							rows="6" 
+							cols="50" 
+							class="large-text code"><?php echo \esc_textarea( $patterns_text ); ?></textarea>
+						<p class="description">
+							<?php \esc_html_e( 'Enter one pattern per line. Fields containing these patterns will be redacted (e.g., password, token, secret, api_key).', 'contact-form-to-api' ); ?>
+						</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<?php
+	}
+
+	/**
+	 * Render logging control settings
+	 *
+	 * @param Settings $settings Settings instance.
+	 * @return void
+	 */
+	private static function render_logging_settings( Settings $settings ): void {
+		$logging_enabled = $settings->is_logging_enabled();
+		?>
+		<h3><?php \esc_html_e( 'Logging', 'contact-form-to-api' ); ?></h3>
+		<table class="form-table" role="presentation">
+			<tbody>
+				<tr>
+					<th scope="row">
+						<?php \esc_html_e( 'Enable logging', 'contact-form-to-api' ); ?>
+					</th>
+					<td>
+						<fieldset>
+							<label>
+								<input type="checkbox"
+									id="logging_enabled"
+									name="logging_enabled"
+									value="1"
+									<?php \checked( $logging_enabled ); ?>>
+								<?php \esc_html_e( 'Enable API request logging', 'contact-form-to-api' ); ?>
+							</label>
+							<p class="description">
+								<?php \esc_html_e( 'When disabled, API requests will not be logged. Useful for GDPR compliance or performance optimization.', 'contact-form-to-api' ); ?>
+							</p>
+						</fieldset>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<?php
+	}
+
+	/**
+	 * Render log retention settings
+	 *
+	 * @param Settings $settings Settings instance.
+	 * @return void
+	 */
+	private static function render_log_retention_settings( Settings $settings ): void {
+		$retention_days = $settings->get_log_retention_days();
+		?>
+		<h3><?php \esc_html_e( 'Log Retention', 'contact-form-to-api' ); ?></h3>
+		<table class="form-table" role="presentation">
+			<tbody>
+				<tr>
+					<th scope="row">
+						<label for="log_retention_days">
+							<?php \esc_html_e( 'Delete logs older than', 'contact-form-to-api' ); ?>
+						</label>
+					</th>
+					<td>
+						<select id="log_retention_days" name="log_retention_days">
+							<option value="0" <?php \selected( $retention_days, 0 ); ?>>
+								<?php \esc_html_e( 'Never (keep all logs)', 'contact-form-to-api' ); ?>
+							</option>
+							<option value="7" <?php \selected( $retention_days, 7 ); ?>>
+								<?php
+								/* translators: %d: number of days */
+								echo \esc_html( \sprintf( \__( '%d days', 'contact-form-to-api' ), 7 ) );
+								?>
+							</option>
+							<option value="14" <?php \selected( $retention_days, 14 ); ?>>
+								<?php
+								/* translators: %d: number of days */
+								echo \esc_html( \sprintf( \__( '%d days', 'contact-form-to-api' ), 14 ) );
+								?>
+							</option>
+							<option value="30" <?php \selected( $retention_days, 30 ); ?>>
+								<?php
+								/* translators: %d: number of days */
+								echo \esc_html( \sprintf( \__( '%d days', 'contact-form-to-api' ), 30 ) );
+								?>
+							</option>
+							<option value="60" <?php \selected( $retention_days, 60 ); ?>>
+								<?php
+								/* translators: %d: number of days */
+								echo \esc_html( \sprintf( \__( '%d days', 'contact-form-to-api' ), 60 ) );
+								?>
+							</option>
+							<option value="90" <?php \selected( $retention_days, 90 ); ?>>
+								<?php
+								/* translators: %d: number of days */
+								echo \esc_html( \sprintf( \__( '%d days', 'contact-form-to-api' ), 90 ) );
+								?>
+							</option>
+						</select>
+						<p class="description">
+							<?php \esc_html_e( 'Logs older than this period will be automatically deleted daily via WP-Cron.', 'contact-form-to-api' ); ?>
+						</p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<?php
+	}
+
+	/**
 	 * Render available hooks section for developers
 	 *
+	 * @deprecated 1.2.0 Use the Developer Hooks link in Quick Links instead.
 	 * @since 1.1.2
 	 * @return void
 	 */
 	public static function render_hooks_section(): void {
-		?>
-		<div class="cf7-api-section cf7-api-hooks">
-			<h2>
-				<span class="dashicons dashicons-editor-code"></span>
-				<?php \esc_html_e( 'Available Hooks for Developers', 'contact-form-to-api' ); ?>
-			</h2>
-			<p class="cf7-api-hooks-intro">
-				<?php \esc_html_e( 'Use these hooks in your theme\'s functions.php or a custom plugin to extend the API integration functionality.', 'contact-form-to-api' ); ?>
-			</p>
-
-			<div class="cf7-api-hooks-grid">
-				<?php self::render_filters_section(); ?>
-				<?php self::render_actions_section(); ?>
-			</div>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render filters documentation
-	 *
-	 * @since 1.1.2
-	 * @return void
-	 */
-	private static function render_filters_section(): void {
-		?>
-		<div class="cf7-api-hooks-column">
-			<h3>
-				<span class="dashicons dashicons-filter"></span>
-				<?php \esc_html_e( 'Filters', 'contact-form-to-api' ); ?>
-			</h3>
-
-			<div class="cf7-api-hook-item">
-				<h4><code>cf7_api_get_args</code></h4>
-				<p><?php \esc_html_e( 'Modify request arguments for GET requests.', 'contact-form-to-api' ); ?></p>
-				<pre><code>add_filter( 'cf7_api_get_args', function( $args ) {
-    $args['headers']['X-Custom'] = 'value';
-    return $args;
-});</code></pre>
-			</div>
-
-			<div class="cf7-api-hook-item">
-				<h4><code>cf7_api_post_args</code></h4>
-				<p><?php \esc_html_e( 'Modify request arguments for POST requests.', 'contact-form-to-api' ); ?></p>
-				<pre><code>add_filter( 'cf7_api_post_args', function( $args ) {
-    $args['timeout'] = 60;
-    return $args;
-});</code></pre>
-			</div>
-
-			<div class="cf7-api-hook-item">
-				<h4><code>cf7_api_get_url</code></h4>
-				<p><?php \esc_html_e( 'Modify the API URL for GET requests.', 'contact-form-to-api' ); ?></p>
-				<pre><code>add_filter( 'cf7_api_get_url', function( $url, $record ) {
-    return $url . '&source=website';
-}, 10, 2 );</code></pre>
-			</div>
-
-			<div class="cf7-api-hook-item">
-				<h4><code>cf7_api_post_url</code></h4>
-				<p><?php \esc_html_e( 'Modify the API URL for POST requests.', 'contact-form-to-api' ); ?></p>
-				<pre><code>add_filter( 'cf7_api_post_url', function( $url ) {
-    return str_replace( 'staging', 'prod', $url );
-});</code></pre>
-			</div>
-
-			<div class="cf7-api-hook-item">
-				<h4><code>cf7_api_create_record</code></h4>
-				<p><?php \esc_html_e( 'Modify the complete record before sending to API.', 'contact-form-to-api' ); ?></p>
-				<pre><code>add_filter( 'cf7_api_create_record', function( $record, $data, $map, $type, $template ) {
-    $record['fields']['timestamp'] = time();
-    return $record;
-}, 10, 5 );</code></pre>
-			</div>
-
-			<div class="cf7-api-hook-item">
-				<h4><code>cf7_api_set_record_value</code></h4>
-				<p><?php \esc_html_e( 'Modify individual field values before adding to record.', 'contact-form-to-api' ); ?></p>
-				<pre><code>add_filter( 'cf7_api_set_record_value', function( $value, $field_name ) {
-    if ( $field_name === 'phone' ) {
-        return preg_replace( '/[^0-9]/', '', $value );
-    }
-    return $value;
-}, 10, 2 );</code></pre>
-			</div>
-
-			<div class="cf7-api-hook-item">
-				<h4><code>cf7_api_collect_mail_tags</code></h4>
-				<p><?php \esc_html_e( 'Modify available mail tags for field mapping.', 'contact-form-to-api' ); ?></p>
-				<pre><code>add_filter( 'cf7_api_collect_mail_tags', function( $tags ) {
-    // Add custom tags or filter existing ones
-    return $tags;
-});</code></pre>
-			</div>
-
-			<div class="cf7-api-hook-item">
-				<h4><code>cf7_api_after_send_lead</code></h4>
-				<p><?php \esc_html_e( 'Modify the API response after sending.', 'contact-form-to-api' ); ?></p>
-				<pre><code>add_filter( 'cf7_api_after_send_lead', function( $result, $record ) {
-    // Log or modify the result
-    return $result;
-}, 10, 2 );</code></pre>
-			</div>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render actions documentation
-	 *
-	 * @since 1.1.2
-	 * @return void
-	 */
-	private static function render_actions_section(): void {
-		?>
-		<div class="cf7-api-hooks-column">
-			<h3>
-				<span class="dashicons dashicons-controls-play"></span>
-				<?php \esc_html_e( 'Actions', 'contact-form-to-api' ); ?>
-			</h3>
-
-			<div class="cf7-api-hook-item">
-				<h4><code>cf7_api_before_send_to_api</code></h4>
-				<p><?php \esc_html_e( 'Triggered before sending data to the API.', 'contact-form-to-api' ); ?></p>
-				<pre><code>add_action( 'cf7_api_before_send_to_api', function( $record ) {
-    error_log( 'Sending to: ' . $record['url'] );
-});</code></pre>
-			</div>
-
-			<div class="cf7-api-hook-item">
-				<h4><code>cf7_api_after_send_to_api</code></h4>
-				<p><?php \esc_html_e( 'Triggered after receiving API response.', 'contact-form-to-api' ); ?></p>
-				<pre><code>add_action( 'cf7_api_after_send_to_api', function( $record, $response ) {
-    if ( is_wp_error( $response ) ) {
-        // Handle error
-    }
-}, 10, 2 );</code></pre>
-			</div>
-
-			<div class="cf7-api-hook-item">
-				<h4><code>cf7_api_before_base_fields</code></h4>
-				<p><?php \esc_html_e( 'Add custom content before the base fields in the integration panel.', 'contact-form-to-api' ); ?></p>
-				<pre><code>add_action( 'cf7_api_before_base_fields', function( $form ) {
-    echo '&lt;div class="my-notice"&gt;Custom notice&lt;/div&gt;';
-});</code></pre>
-			</div>
-
-			<div class="cf7-api-hook-item">
-				<h4><code>cf7_api_after_base_fields</code></h4>
-				<p><?php \esc_html_e( 'Add custom content after the base fields in the integration panel.', 'contact-form-to-api' ); ?></p>
-				<pre><code>add_action( 'cf7_api_after_base_fields', function( $form ) {
-    echo '&lt;div class="cf7_row"&gt;Custom field&lt;/div&gt;';
-});</code></pre>
-			</div>
-		</div>
-		<?php
+		// Section removed in 1.2.0 - hooks documentation moved to external wiki.
+		// Kept for backward compatibility but renders nothing.
 	}
 
 	/**
@@ -412,16 +579,16 @@ class SettingsView {
 					<span class="link-desc"><?php \esc_html_e( 'Manage your CF7 forms', 'contact-form-to-api' ); ?></span>
 				</a>
 
-				<a href="<?php echo \esc_url( \admin_url( 'admin.php?page=cf7-api-global-settings' ) ); ?>" class="cf7-api-link-card">
-					<span class="dashicons dashicons-admin-settings"></span>
-					<span class="link-title"><?php \esc_html_e( 'Global Settings', 'contact-form-to-api' ); ?></span>
-					<span class="link-desc"><?php \esc_html_e( 'Configure plugin-wide settings', 'contact-form-to-api' ); ?></span>
-				</a>
-
 				<a href="<?php echo \esc_url( \admin_url( 'admin.php?page=cf7-api-logs' ) ); ?>" class="cf7-api-link-card">
 					<span class="dashicons dashicons-list-view"></span>
 					<span class="link-title"><?php \esc_html_e( 'API Logs', 'contact-form-to-api' ); ?></span>
 					<span class="link-desc"><?php \esc_html_e( 'View submission history', 'contact-form-to-api' ); ?></span>
+				</a>
+
+				<a href="https://github.com/SilverAssist/contact-form-to-api/wiki/Developer-Hooks" target="_blank" rel="noopener noreferrer" class="cf7-api-link-card">
+					<span class="dashicons dashicons-editor-code"></span>
+					<span class="link-title"><?php \esc_html_e( 'Developer Hooks', 'contact-form-to-api' ); ?></span>
+					<span class="link-desc"><?php \esc_html_e( 'Filters and actions reference', 'contact-form-to-api' ); ?></span>
 				</a>
 
 				<a href="https://github.com/SilverAssist/contact-form-to-api/wiki" target="_blank" rel="noopener noreferrer" class="cf7-api-link-card">
