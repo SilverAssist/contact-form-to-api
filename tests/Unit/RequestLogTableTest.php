@@ -224,7 +224,6 @@ class RequestLogTableTest extends TestCase {
 
 		$this->assertEquals( 'AND DATE(created_at) = CURDATE()', $result['clause'] );
 		$this->assertEquals( array(), $result['values'] );
-
 	}
 
 	/**
@@ -243,7 +242,6 @@ class RequestLogTableTest extends TestCase {
 
 		$this->assertEquals( 'AND DATE(created_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)', $result['clause'] );
 		$this->assertEquals( array(), $result['values'] );
-
 	}
 
 	/**
@@ -262,7 +260,6 @@ class RequestLogTableTest extends TestCase {
 
 		$this->assertEquals( 'AND created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)', $result['clause'] );
 		$this->assertEquals( array(), $result['values'] );
-
 	}
 
 	/**
@@ -281,7 +278,6 @@ class RequestLogTableTest extends TestCase {
 
 		$this->assertEquals( 'AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)', $result['clause'] );
 		$this->assertEquals( array(), $result['values'] );
-
 	}
 
 	/**
@@ -300,7 +296,6 @@ class RequestLogTableTest extends TestCase {
 
 		$this->assertEquals( 'AND MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())', $result['clause'] );
 		$this->assertEquals( array(), $result['values'] );
-
 	}
 
 	/**
@@ -321,7 +316,6 @@ class RequestLogTableTest extends TestCase {
 
 		$this->assertEquals( 'AND DATE(created_at) BETWEEN %s AND %s', $result['clause'] );
 		$this->assertEquals( array( '2026-01-01', '2026-01-31' ), $result['values'] );
-
 	}
 
 	/**
@@ -340,6 +334,5 @@ class RequestLogTableTest extends TestCase {
 
 		$this->assertEquals( '', $result['clause'], 'Should return empty clause for invalid filter' );
 		$this->assertEquals( array(), $result['values'], 'Should return empty values for invalid filter' );
-
 	}
 }
