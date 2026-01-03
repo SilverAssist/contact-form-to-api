@@ -8,7 +8,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Admin
  * @since 1.1.0
- * @version 1.1.3
+ * @version 1.2.0
  * @author Silver Assist
  */
 
@@ -17,6 +17,7 @@ namespace SilverAssist\ContactFormToAPI\Admin;
 use SilverAssist\ContactFormToAPI\Admin\Views\RequestLogView;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Services\ExportService;
+use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -29,6 +30,8 @@ use SilverAssist\ContactFormToAPI\Services\ExportService;
  * @since 1.1.0
  */
 class RequestLogController implements LoadableInterface {
+
+	use DateFilterTrait;
 
 	/**
 	 * Singleton instance
@@ -371,6 +374,19 @@ class RequestLogController implements LoadableInterface {
 			CF7_API_VERSION,
 			true
 		);
+
+		// Localize script with translated strings.
+		\wp_localize_script(
+			'cf7-api-log-admin',
+			'cf7ApiAdmin',
+			array(
+				'confirmDelete'     => \__( 'Are you sure you want to delete this log entry?', 'contact-form-to-api' ),
+				'selectItems'       => \__( 'Please select at least one item.', 'contact-form-to-api' ),
+				'confirmBulkDelete' => \__( 'Are you sure you want to delete the selected log entries?', 'contact-form-to-api' ),
+				'dateStartBeforeEnd' => \__( 'Start date must be before or equal to end date.', 'contact-form-to-api' ),
+				'dateEndAfterStart'  => \__( 'End date must be after or equal to start date.', 'contact-form-to-api' ),
+			)
+		);
 	}
 
 	/**
@@ -501,6 +517,14 @@ class RequestLogController implements LoadableInterface {
 			$where         .= ' AND (endpoint LIKE %s OR error_message LIKE %s)';
 			$where_values[] = $search;
 			$where_values[] = $search;
+		}
+
+		// Apply date filter using shared trait method.
+		$params      = $this->get_date_filter_params();
+		$date_filter = $this->build_date_filter_clause( $params['filter'], $params['start'], $params['end'] );
+		if ( ! empty( $date_filter['clause'] ) ) {
+			$where         .= ' ' . $date_filter['clause'];
+			$where_values   = \array_merge( $where_values, $date_filter['values'] );
 		}
 
 		// Prepare WHERE clause.

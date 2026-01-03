@@ -76,7 +76,9 @@ contact-form-to-api/
 │   │   ├── ApiClient.php         # HTTP client with retry logic
 │   │   └── CheckboxHandler.php   # Checkbox value processing
 │   └── Utils/                    # Priority 40 - Utility classes
+│       ├── DateFilterTrait.php   # Reusable date filtering for SQL queries
 │       ├── DebugLogger.php       # PSR-3 file logger for debugging
+│       ├── SensitiveDataPatterns.php # Sensitive data detection patterns
 │       └── StringHelper.php      # String manipulation utilities
 ├── languages/                     # Translation files
 │   ├── contact-form-to-api.pot
@@ -368,6 +370,44 @@ Activator::create_tables();
 - `warning(string $message, array $context = []): void` - Warning level
 - `error(string $message, array $context = []): void` - Error level
 - `log(string $level, string $message, array $context = []): void` - Generic log
+
+### includes/Utils/DateFilterTrait.php - Date Filtering Trait
+**Purpose**: Reusable date filtering logic for SQL queries
+**Pattern**: PHP Trait (used by RequestLogTable and RequestLogController)
+**Since**: 1.2.0
+
+**Key Methods**:
+- `build_date_filter_clause(string $filter, string $start, string $end): array` - Build SQL clause for date filters
+- `build_custom_date_range_clause(string $start, string $end): array` - Build custom date range clause
+- `is_valid_date_format(string $date): bool` - Validate Y-m-d date format
+- `get_date_filter_params(): array` - Get sanitized date filter params from $_GET
+
+**Supported Filters**:
+- `today` - Current day only
+- `yesterday` - Previous day only
+- `7days` - Last 7 days
+- `30days` - Last 30 days
+- `month` - Current month
+- `custom` - Custom date range (start/end)
+
+**Return Format**:
+```php
+array{
+    'clause' => 'AND DATE(created_at) BETWEEN %s AND %s',
+    'values' => ['2026-01-01', '2026-01-31']
+}
+```
+
+### includes/Utils/SensitiveDataPatterns.php - Sensitive Data Detection
+**Purpose**: Centralized patterns for detecting and masking sensitive data
+**Pattern**: Static utility class
+**Since**: 1.2.0
+
+**Key Methods**:
+- `get_header_patterns(): array` - Get patterns for sensitive headers
+- `get_data_patterns(): array` - Get patterns for sensitive data fields
+- `is_sensitive_header(string $header): bool` - Check if header is sensitive
+- `is_sensitive_field(string $field): bool` - Check if field is sensitive
 
 ### includes/Utils/StringHelper.php - String Utilities
 **Purpose**: String manipulation utilities for field mapping

@@ -39,7 +39,9 @@ SilverAssist\ContactFormToAPI\
 │   ├── ApiClient.php               # HTTP client with retry logic
 │   └── CheckboxHandler.php         # Checkbox value processing
 └── Utils\                          # Priority 40 - Utility classes
+    ├── DateFilterTrait.php         # Reusable date filtering for SQL queries
     ├── DebugLogger.php             # PSR-3 file logger for debugging
+    ├── SensitiveDataPatterns.php   # Sensitive data detection patterns
     └── StringHelper.php            # String manipulation utilities
 ```
 
@@ -674,6 +676,8 @@ Render logs and statistics display.
 
 Admin interface controller for viewing API request/response logs.
 
+**Uses**: `DateFilterTrait` (since 1.2.0)
+
 #### Methods
 
 ##### `handle_page_request(): void`
@@ -682,7 +686,7 @@ Route to appropriate view based on request.
 
 ##### `show_logs_list(): void`
 
-Display logs list table.
+Display logs list table with date filtering support.
 
 ##### `show_log_detail(int $log_id): void`
 
@@ -695,6 +699,41 @@ Display single log detail.
 ##### `process_bulk_actions(): void`
 
 Handle bulk delete/export actions.
+
+### Admin\RequestLogTable
+
+WP_List_Table implementation for displaying API request logs.
+
+**Extends**: `WP_List_Table`
+**Uses**: `DateFilterTrait` (since 1.2.0)
+
+#### Methods
+
+##### `get_date_filter_clause(): array`
+
+Get SQL clause for date filtering based on current request parameters.
+
+**Return**: `array{clause: string, values: array}` SQL clause and prepared statement values
+
+##### `prepare_items(): void`
+
+Prepare log items for display with filtering, sorting, and pagination.
+
+##### `get_columns(): array`
+
+Define table columns.
+
+##### `get_sortable_columns(): array`
+
+Define sortable columns.
+
+##### `column_default(array $item, string $column_name): string`
+
+Render default column content.
+
+##### `column_status(array $item): string`
+
+Render status column with color-coded badges.
 
 ### Admin\Views\RequestLogView
 
@@ -714,6 +753,16 @@ Main page rendering.
 ##### `render_statistics(array $stats): void`
 
 Render statistics cards.
+
+##### `render_date_filter(): void`
+
+Render date filter UI with preset options and custom range picker. (Since 1.2.0)
+
+**Features**:
+- Preset filters: Today, Yesterday, Last 7 Days, Last 30 Days, This Month
+- Custom date range with HTML5 date inputs
+- Clear filter button when filter is active
+- Persists filter selection via URL parameters
 
 ##### `render_detail(array $log): void`
 
@@ -785,6 +834,125 @@ Generic log method.
 - `string $message` - Log message
 - `array $context` - Context data
 
+### Utils\DateFilterTrait
+
+Reusable trait for date filtering logic in SQL queries. Used by `RequestLogTable` and `RequestLogController` to avoid code duplication.
+
+**Since**: 1.2.0
+
+#### Methods
+
+##### `build_date_filter_clause(string $filter, string $start = '', string $end = ''): array`
+
+Build SQL clause for date filtering based on filter type.
+
+**Parameters**:
+
+- `string $filter` - Filter type: 'today', 'yesterday', '7days', '30days', 'month', 'custom'
+- `string $start` - Start date for custom range (Y-m-d format)
+- `string $end` - End date for custom range (Y-m-d format)
+
+**Return**: `array{clause: string, values: array<int, string>}` SQL clause and prepared statement values
+
+**Supported Filters**:
+
+| Filter | SQL Generated |
+|--------|---------------|
+| `today` | `DATE(created_at) = CURDATE()` |
+| `yesterday` | `DATE(created_at) = DATE_SUB(CURDATE(), INTERVAL 1 DAY)` |
+| `7days` | `created_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)` |
+| `30days` | `created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)` |
+| `month` | `MONTH(created_at) = MONTH(CURDATE()) AND YEAR(created_at) = YEAR(CURDATE())` |
+| `custom` | `DATE(created_at) BETWEEN %s AND %s` |
+
+**Example**:
+
+```php
+use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
+
+class MyClass {
+    use DateFilterTrait;
+    
+    public function get_filtered_data(): array {
+        $params = $this->get_date_filter_params();
+        $filter = $this->build_date_filter_clause(
+            $params['filter'],
+            $params['start'],
+            $params['end']
+        );
+        
+        // Use $filter['clause'] and $filter['values'] in SQL query
+    }
+}
+```
+
+##### `build_custom_date_range_clause(string $start, string $end): array`
+
+Build clause for custom date range.
+
+**Parameters**:
+
+- `string $start` - Start date (Y-m-d format)
+- `string $end` - End date (Y-m-d format)
+
+**Return**: `array{clause: string, values: array<int, string>}` SQL clause and values
+
+##### `is_valid_date_format(string $date): bool`
+
+Validate date format (Y-m-d).
+
+**Parameters**:
+
+- `string $date` - Date string to validate
+
+**Return**: `bool` True if valid, false otherwise
+
+##### `get_date_filter_params(): array`
+
+Get sanitized date filter parameters from $_GET request.
+
+**Return**: `array{filter: string, start: string, end: string}` Sanitized filter parameters
+
+### Utils\SensitiveDataPatterns
+
+Centralized class for managing sensitive field patterns. Used by `RequestLogger` and `ExportService` for data sanitization.
+
+**Since**: 1.2.0
+
+#### Methods
+
+##### `get_header_patterns(): array`
+
+Get patterns for sensitive HTTP headers.
+
+**Return**: `array` Array of header patterns (Authorization, API keys, etc.)
+
+##### `get_data_patterns(): array`
+
+Get patterns for sensitive data fields.
+
+**Return**: `array` Array of field patterns (passwords, tokens, secrets, etc.)
+
+##### `is_sensitive_header(string $header): bool`
+
+Check if a header name is sensitive.
+
+**Parameters**:
+
+- `string $header` - Header name to check
+
+**Return**: `bool` True if sensitive
+
+##### `is_sensitive_field(string $field): bool`
+
+Check if a field name is sensitive.
+
+**Parameters**:
+
+- `string $field` - Field name to check
+
+**Return**: `bool` True if sensitive
+
 ### Utils\StringHelper
 
 String manipulation utilities for field mapping.
@@ -827,7 +995,7 @@ Case-insensitive field comparison.
 ### Plugin Information
 
 ```php
-CF7_API_VERSION           // "1.0.0"
+CF7_API_VERSION           // "1.2.0"
 CF7_API_PLUGIN_FILE       // Main plugin file path (__FILE__)
 CF7_API_PLUGIN_DIR        // Plugin directory path (plugin_dir_path(__FILE__))
 CF7_API_PLUGIN_URL        // Plugin URL (plugin_dir_url(__FILE__))

@@ -14,7 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Retry Mechanism**: Execute retry for failed API requests from admin UI
 - **Email Alerts**: Notifications when error rate exceeds threshold
 - **Performance Charts**: Visual trends and analytics with Chart.js
-- **Advanced Date Filters**: Filter logs by custom date ranges
 
 #### API Integration
 - **GraphQL API Support**: Native support for GraphQL endpoints
@@ -27,6 +26,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2026-01-03
 
 ### Added
+- **Advanced Date Range Filters**: Filter logs by custom date ranges (#19)
+  * Preset filters: Today, Yesterday, Last 7 Days, Last 30 Days, This Month
+  * Custom date range picker with HTML5 date inputs
+  * Client-side date validation with error alerts
+  * Filters persist across pagination via URL parameters
+  * Statistics update to reflect filtered date range
+  * All UI strings are translatable (i18n ready)
+- **DateFilterTrait**: Centralized trait for date filtering logic
+  * Shared between `RequestLogTable` and `RequestLogController`
+  * Eliminates code duplication (DRY principle)
+  * Methods: `build_date_filter_clause()`, `build_custom_date_range_clause()`, `is_valid_date_format()`, `get_date_filter_params()`
 - **Dashboard Widget**: Summary widget for WordPress dashboard displaying API request statistics (#23)
   * At-a-glance statistics: total requests, success rate, and average response time (last 24 hours)
   * Recent errors list showing last 5 failed requests with timestamps and error messages
@@ -61,9 +71,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **RequestLogger**: Now uses `SensitiveDataPatterns` for consistent data sanitization
 - **ExportService**: Excludes sensitive fields from CSV export entirely (security by design)
+- `RequestLogTable` now uses `DateFilterTrait` for date filtering
+- `RequestLogController` now uses `DateFilterTrait` for statistics date filtering
+- Replaced inline styles with CSS classes for better maintainability
 - Moved `Dashboard Widget` and `Export Logs` from planned features to released
 - All new code follows WordPress coding standards (PHPCS WordPress-Extra)
 - PHPStan Level 8 compliance for all new classes
+
+### Security
+- Fixed potential XSS vulnerability in URL construction using `add_query_arg()`
+- Proper date validation before SQL query construction
 
 ## [1.1.3] - 2026-01-03
 

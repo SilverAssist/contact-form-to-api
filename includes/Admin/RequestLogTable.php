@@ -8,11 +8,13 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Admin
  * @since 1.1.0
- * @version 1.1.3
+ * @version 1.2.0
  * @author Silver Assist
  */
 
 namespace SilverAssist\ContactFormToAPI\Admin;
+
+use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -29,6 +31,8 @@ if ( ! \class_exists( 'WP_List_Table' ) ) {
  * @since 1.1.0
  */
 class RequestLogTable extends \WP_List_Table {
+
+	use DateFilterTrait;
 
 	/**
 	 * Constructor
@@ -235,6 +239,13 @@ class RequestLogTable extends \WP_List_Table {
 			$where         .= ' AND (endpoint LIKE %s OR error_message LIKE %s)';
 			$where_values[] = $search;
 			$where_values[] = $search;
+		}
+
+		// Apply date filter.
+		$date_filter = $this->get_date_filter_clause();
+		if ( ! empty( $date_filter['clause'] ) ) {
+			$where         .= ' ' . $date_filter['clause'];
+			$where_values   = \array_merge( $where_values, $date_filter['values'] );
 		}
 
 		// Prepare WHERE clause.
@@ -444,6 +455,32 @@ class RequestLogTable extends \WP_List_Table {
 			\esc_attr( $status ),
 			\esc_html( $label )
 		);
+	}
+
+	/**
+	 * Get date filter clause for SQL query
+	 *
+	 * Builds WHERE clause for date filtering based on GET parameters.
+	 * Supports preset filters and custom date ranges.
+	 *
+	 * @return array{clause: string, values: array<int, string>} SQL clause and prepared statement values.
+	 */
+	private function get_date_filter_clause(): array {
+		$params = $this->get_date_filter_params();
+		return $this->build_date_filter_clause( $params['filter'], $params['start'], $params['end'] );
+	}
+
+	/**
+	 * Validate date format (wrapper for trait method)
+	 *
+	 * Checks if date string is in Y-m-d format.
+	 * Kept for backward compatibility with tests.
+	 *
+	 * @param string $date Date string to validate.
+	 * @return bool True if valid, false otherwise.
+	 */
+	public function validate_date_format( string $date ): bool {
+		return $this->is_valid_date_format( $date );
 	}
 
 	/**
