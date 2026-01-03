@@ -37,18 +37,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Capability-based visibility (only visible to users with `manage_options`)
   * Can be hidden via WordPress Screen Options
 - **Export Logs Feature**: Export API request logs in multiple formats (#20)
-  * CSV export with all log fields for spreadsheet analysis
-  * JSON export with full structured data for developer tools
+  * CSV export with all log fields for spreadsheet analysis (UTF-8 BOM for Excel)
+  * JSON export with full structured data with pretty printing
   * Filter-aware exports (respects current search and status filters)
   * Secure file handling with proper HTTP headers
   * Disabled state for export buttons when no logs exist
+  * Export limit of 10,000 records to prevent memory exhaustion
+- **SensitiveDataPatterns**: New centralized class for managing sensitive field patterns
+  * Consolidates all sensitive data detection logic
+  * Used by both `RequestLogger` and `ExportService`
+  * Supports headers (Authorization, API keys) and data fields (passwords, tokens, secrets)
 - **RequestLogger Statistics Methods**: New methods for dashboard analytics
   * `get_count_last_hours()`: Count requests in time window with optional status filter
   * `get_success_rate_last_hours()`: Calculate success percentage
   * `get_avg_response_time_last_hours()`: Average response time in milliseconds
   * `get_recent_errors()`: Retrieve most recent failed requests
 
+### Fixed
+- **Headers Already Sent**: Fixed export triggering "headers already sent" error
+  * Export actions now handled in `admin_init` hook before any output
+- **PHP 8.4+ Compatibility**: Added `$escape` parameter to `fputcsv()` calls
+
 ### Changed
+- **RequestLogger**: Now uses `SensitiveDataPatterns` for consistent data sanitization
+- **ExportService**: Excludes sensitive fields from CSV export entirely (security by design)
 - Moved `Dashboard Widget` and `Export Logs` from planned features to released
 - All new code follows WordPress coding standards (PHPCS WordPress-Extra)
 - PHPStan Level 8 compliance for all new classes
@@ -104,7 +116,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 - Added test environment setup instructions to copilot-instructions.md
 - WordPress Test Suite configuration guide
-- Local by Flywheel MySQL socket setup instructions
 
 ## [1.1.1] - 2026-01-02
 

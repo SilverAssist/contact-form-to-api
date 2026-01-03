@@ -324,6 +324,28 @@
 	color: #000;
 }
 
+/* Export Buttons */
+.cf7-api-export-buttons {
+	display: inline-block;
+	margin-left: 10px;
+}
+
+.cf7-api-export-buttons .button-group {
+	display: inline-flex;
+	gap: 5px;
+}
+
+.cf7-api-export-buttons .button .dashicons {
+	vertical-align: middle;
+	margin-right: 3px;
+}
+
+.cf7-api-export-buttons .button.disabled {
+	pointer-events: none;
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
 /* Search Box */
 .search-box {
 	float: right;

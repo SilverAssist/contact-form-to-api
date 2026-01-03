@@ -16,6 +16,7 @@ namespace SilverAssist\ContactFormToAPI\Admin;
 
 use SilverAssist\ContactFormToAPI\Admin\Views\RequestLogView;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Services\ExportService;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -84,7 +85,33 @@ class RequestLogController implements LoadableInterface {
 		\add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		\add_filter( 'set-screen-option', array( $this, 'set_screen_option' ), 10, 3 );
 
+		// Handle exports early before any output is sent.
+		\add_action( 'admin_init', array( $this, 'maybe_handle_export' ) );
+
 		$this->initialized = true;
+	}
+
+	/**
+	 * Handle export requests early (before any output)
+	 *
+	 * This must run on admin_init to send headers before WordPress outputs anything.
+	 *
+	 * @return void
+	 */
+	public function maybe_handle_export(): void {
+		// Only handle on our page.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce is verified in handle_export_action().
+		if ( ! isset( $_GET['page'] ) || 'cf7-api-logs' !== $_GET['page'] ) {
+			return;
+		}
+
+		// Check for export actions.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce is verified in handle_export_action().
+		if ( ! isset( $_GET['action'] ) || ! \in_array( $_GET['action'], array( 'export_csv', 'export_json' ), true ) ) {
+			return;
+		}
+
+		$this->handle_export_action();
 	}
 
 	/**
@@ -247,6 +274,9 @@ class RequestLogController implements LoadableInterface {
 	/**
 	 * Handle page request - routes to appropriate view
 	 *
+	 * Note: Export actions are handled earlier via admin_init hook
+	 * to prevent "headers already sent" errors.
+	 *
 	 * @return void
 	 */
 	public function handle_page_request(): void {
@@ -341,5 +371,154 @@ class RequestLogController implements LoadableInterface {
 			CF7_API_VERSION,
 			true
 		);
+	}
+
+	/**
+	 * Handle export action
+	 *
+	 * Routes to appropriate export handler based on action.
+	 *
+	 * @return void
+	 */
+	private function handle_export_action(): void {
+		// Verify nonce.
+		if ( ! isset( $_GET['_wpnonce'] ) || ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_GET['_wpnonce'] ) ), 'cf7_api_export_logs' ) ) {
+			\wp_die( \esc_html__( 'Security check failed', 'contact-form-to-api' ) );
+		}
+
+		// Verify capability.
+		if ( ! \current_user_can( 'manage_options' ) ) {
+			\wp_die( \esc_html__( 'You do not have sufficient permissions to access this page.', 'contact-form-to-api' ) );
+		}
+
+		$action = \sanitize_text_field( \wp_unslash( $_GET['action'] ) );
+
+		switch ( $action ) {
+			case 'export_csv':
+				$this->handle_export_csv();
+				break;
+
+			case 'export_json':
+				$this->handle_export_json();
+				break;
+
+			default:
+				\wp_die( \esc_html__( 'Invalid export action.', 'contact-form-to-api' ) );
+		}
+	}
+
+	/**
+	 * Handle CSV export
+	 *
+	 * Exports logs to CSV format with current filters applied.
+	 *
+	 * @return void
+	 */
+	private function handle_export_csv(): void {
+		$logs = $this->get_filtered_logs();
+
+		$export_service = ExportService::instance();
+		$csv_content    = $export_service->export_csv( $logs );
+		$filename       = $export_service->get_export_filename( 'csv' );
+
+		// Set headers for download.
+		\header( 'Content-Type: text/csv; charset=utf-8' );
+		\header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+		\header( 'Pragma: no-cache' );
+		\header( 'Expires: 0' );
+
+		echo $csv_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSV content is escaped via fputcsv() for CSV format.
+		exit;
+	}
+
+	/**
+	 * Handle JSON export
+	 *
+	 * Exports logs to JSON format with current filters applied.
+	 *
+	 * @return void
+	 */
+	private function handle_export_json(): void {
+		$logs = $this->get_filtered_logs();
+
+		$export_service = ExportService::instance();
+		$json_content   = $export_service->export_json( $logs );
+		$filename       = $export_service->get_export_filename( 'json' );
+
+		// Set headers for download.
+		\header( 'Content-Type: application/json; charset=utf-8' );
+		\header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+		\header( 'Pragma: no-cache' );
+		\header( 'Expires: 0' );
+
+		echo $json_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON content is escaped via wp_json_encode() for JSON format.
+		exit;
+	}
+
+	/**
+	 * Maximum number of logs to export
+	 *
+	 * Prevents memory exhaustion on large datasets.
+	 */
+	private const EXPORT_LIMIT = 10000;
+
+	/**
+	 * Get filtered logs for export
+	 *
+	 * Retrieves logs matching current filters with a reasonable limit to prevent memory issues.
+	 * Maximum of 10,000 records can be exported at once.
+	 *
+	 * @return array<int, array<string, mixed>> Array of log entries.
+	 */
+	private function get_filtered_logs(): array {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'cf7_api_logs';
+
+		// Build WHERE clause with same logic as RequestLogTable.
+		$where        = '1=1';
+		$where_values = array();
+
+		// Filter by status.
+		if ( isset( $_GET['status'] ) && 'all' !== $_GET['status'] ) {
+			$status = \sanitize_text_field( \wp_unslash( $_GET['status'] ) );
+			if ( 'error' === $status ) {
+				$where .= " AND status IN ('error', 'client_error', 'server_error')";
+			} else {
+				$where         .= ' AND status = %s';
+				$where_values[] = $status;
+			}
+		}
+
+		// Filter by form ID.
+		if ( isset( $_GET['form_id'] ) && ! empty( $_GET['form_id'] ) ) {
+			$where         .= ' AND form_id = %d';
+			$where_values[] = \absint( $_GET['form_id'] );
+		}
+
+		// Search functionality.
+		if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) {
+			$search         = '%' . $wpdb->esc_like( \sanitize_text_field( \wp_unslash( $_GET['s'] ) ) ) . '%';
+			$where         .= ' AND (endpoint LIKE %s OR error_message LIKE %s)';
+			$where_values[] = $search;
+			$where_values[] = $search;
+		}
+
+		// Prepare WHERE clause.
+		if ( ! empty( $where_values ) ) {
+			$where = $wpdb->prepare( $where, ...$where_values );
+		}
+
+		// Get logs matching filters with limit to prevent memory exhaustion.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property.
+		$logs = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$table_name} WHERE {$where} ORDER BY created_at DESC LIMIT %d",
+				self::EXPORT_LIMIT
+			),
+			ARRAY_A
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return $logs ?: array();
 	}
 }

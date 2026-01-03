@@ -44,6 +44,17 @@ class RequestLogTable extends \WP_List_Table {
 	}
 
 	/**
+	 * Get total items count
+	 *
+	 * Returns the total number of items after prepare_items() has been called.
+	 *
+	 * @return int Total number of items.
+	 */
+	public function get_total_items(): int {
+		return (int) $this->get_pagination_arg( 'total_items' );
+	}
+
+	/**
 	 * Get columns
 	 *
 	 * @return array<string, string>
