@@ -371,6 +371,19 @@ class RequestLogController implements LoadableInterface {
 			CF7_API_VERSION,
 			true
 		);
+
+		// Localize script with translated strings.
+		\wp_localize_script(
+			'cf7-api-log-admin',
+			'cf7ApiAdmin',
+			array(
+				'confirmDelete'     => \__( 'Are you sure you want to delete this log entry?', 'contact-form-to-api' ),
+				'selectItems'       => \__( 'Please select at least one item.', 'contact-form-to-api' ),
+				'confirmBulkDelete' => \__( 'Are you sure you want to delete the selected log entries?', 'contact-form-to-api' ),
+				'dateStartBeforeEnd' => \__( 'Start date must be before or equal to end date.', 'contact-form-to-api' ),
+				'dateEndAfterStart'  => \__( 'End date must be after or equal to start date.', 'contact-form-to-api' ),
+			)
+		);
 	}
 
 	/**

@@ -103,7 +103,7 @@
 				const endDate = $dateEnd.val();
 
 				if (startDate && endDate && startDate > endDate) {
-					alert("Start date must be before or equal to end date.");
+					alert(window.cf7ApiAdmin?.dateStartBeforeEnd || "Start date must be before or equal to end date.");
 					$(this).val("");
 					return;
 				}
@@ -114,7 +114,7 @@
 				const endDate = $(this).val();
 
 				if (startDate && endDate && startDate > endDate) {
-					alert("End date must be after or equal to start date.");
+					alert(window.cf7ApiAdmin?.dateEndAfterStart || "End date must be after or equal to start date.");
 					$(this).val("");
 					return;
 				}
