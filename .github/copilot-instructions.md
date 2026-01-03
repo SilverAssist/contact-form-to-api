@@ -107,7 +107,6 @@ contact-form-to-api/
 ├── phpunit.xml                   # PHPUnit configuration
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
-├── HEADER-STANDARDS.md
 └── README.md
 ```
 
@@ -728,17 +727,85 @@ on:
 
 **Output**: `contact-form-to-api-{version}.zip`
 
-### scripts/update-version.sh
+### scripts/update-version-simple.sh
 **Purpose**: Update version across all files
 
 **Updates**:
-- Main plugin file header
-- Plugin constant
-- package.json (if exists)
-- All @version PHPDoc tags
-- composer.json version
+- Main plugin file header (`Version:` and `CF7_API_VERSION` constant)
+- All PHP files `@version` tags in `includes/`
+- CSS files `@version` tags in `assets/css/`
+- JavaScript files `@version` tags in `assets/js/`
+- Shell scripts `@version` tags in `scripts/`
+- README.md version references (if applicable)
 
-**Validation**: Checks version consistency
+**Usage**:
+```bash
+# Interactive mode (prompts for confirmation)
+./scripts/update-version-simple.sh 1.2.0
+
+# Non-interactive mode (for CI/CD)
+./scripts/update-version-simple.sh 1.2.0 --no-confirm
+
+# Force update all files even if version matches
+./scripts/update-version-simple.sh 1.2.0 --no-confirm --force
+```
+
+### scripts/check-versions.sh
+**Purpose**: Verify version consistency across all plugin files
+
+**Checks**:
+- Main plugin file header and constant
+- All PHP files in `includes/`
+- CSS files in `assets/css/`
+- JavaScript files in `assets/js/`
+- Shell scripts in `scripts/`
+
+**Usage**:
+```bash
+./scripts/check-versions.sh
+```
+
+## 🚨 MANDATORY: Use Scripts - No Manual Changes
+
+### Critical Rule: ALWAYS Use Automation Scripts
+**NEVER make manual changes** to version numbers, file headers, or any content that is managed by automation scripts. This ensures consistency and prevents human error.
+
+### Version Management
+- **ALWAYS** use `./scripts/update-version-simple.sh` to update versions
+- **ALWAYS** use `./scripts/check-versions.sh` to verify version consistency
+- **NEVER** manually edit `@version` tags in any file
+- **NEVER** manually edit the `Version:` header in the main plugin file
+- **NEVER** manually edit the `CF7_API_VERSION` constant
+
+**Correct workflow for version updates**:
+```bash
+# 1. Update all versions using the script
+./scripts/update-version-simple.sh 1.2.0 --no-confirm --force
+
+# 2. Verify all versions are consistent
+./scripts/check-versions.sh
+
+# 3. Review changes
+git diff
+
+# 4. Commit changes
+git add -A && git commit -m "chore: Bump version to 1.2.0"
+```
+
+### Quality Checks
+- **ALWAYS** use `./scripts/run-quality-checks.sh` before committing
+- **NEVER** skip quality checks assuming code is correct
+
+### Release Process
+- **ALWAYS** use `./scripts/build-release.sh` to create releases
+- **NEVER** manually create ZIP files or release packages
+
+### Why This Matters
+1. **Consistency**: Scripts ensure ALL files are updated uniformly
+2. **Error Prevention**: Eliminates typos and forgotten files
+3. **Audit Trail**: Git history shows script-driven changes
+4. **CI/CD Compatibility**: Scripts work in automated pipelines
+5. **Script Validation**: Using scripts validates they work correctly
 
 ## Plugin Constants - MANDATORY USAGE
 
