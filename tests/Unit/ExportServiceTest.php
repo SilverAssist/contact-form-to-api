@@ -182,11 +182,16 @@ class ExportServiceTest extends TestCase {
 	}
 
 	/**
-	 * Test that sensitive data is sanitized in CSV export
+	 * Test that sensitive data is not exposed in CSV export
+	 *
+	 * Note: CSV format intentionally excludes request_headers, request_data,
+	 * response_headers, and response_data fields for simplicity.
+	 * This test verifies that even if those fields were present in the log,
+	 * they don't appear in the CSV output.
 	 *
 	 * @return void
 	 */
-	public function testSensitiveDataSanitizedInCsv(): void {
+	public function testSensitiveDataNotExposedInCsv(): void {
 		$sample_logs = array(
 			array(
 				'id'              => 1,
@@ -216,10 +221,17 @@ class ExportServiceTest extends TestCase {
 
 		$csv = $this->export_service->export_csv( $sample_logs );
 
-		// Check that sensitive data is redacted.
+		// CSV format excludes sensitive fields by design.
+		// Verify that sensitive data from request_headers/request_data is not exposed.
 		$this->assertStringNotContainsString( 'secret_token_123', $csv, 'CSV should not contain bearer token' );
 		$this->assertStringNotContainsString( 'supersecret123', $csv, 'CSV should not contain password' );
-		$this->assertStringContainsString( '***REDACTED***', $csv, 'CSV should contain redaction marker' );
+		$this->assertStringNotContainsString( 'Authorization', $csv, 'CSV should not contain Authorization header' );
+		$this->assertStringNotContainsString( 'request_headers', $csv, 'CSV should not expose request_headers field' );
+		$this->assertStringNotContainsString( 'request_data', $csv, 'CSV should not expose request_data field' );
+
+		// Verify the CSV still contains expected basic data.
+		$this->assertStringContainsString( '123', $csv, 'CSV should contain form_id' );
+		$this->assertStringContainsString( 'https://api.example.com/submit', $csv, 'CSV should contain endpoint' );
 	}
 
 	/**
