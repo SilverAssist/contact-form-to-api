@@ -404,7 +404,7 @@ class RequestLogController implements LoadableInterface {
 		\header( "Pragma: no-cache" );
 		\header( "Expires: 0" );
 
-		echo $csv_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSV content is properly escaped.
+		echo $csv_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- CSV content is escaped via fputcsv() for CSV format.
 		exit;
 	}
 
@@ -428,7 +428,7 @@ class RequestLogController implements LoadableInterface {
 		\header( "Pragma: no-cache" );
 		\header( "Expires: 0" );
 
-		echo $json_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON content is properly escaped.
+		echo $json_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JSON content is escaped via wp_json_encode() for JSON format.
 		exit;
 	}
 
@@ -478,10 +478,12 @@ class RequestLogController implements LoadableInterface {
 		}
 
 		// Get all logs matching filters (no limit for export).
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property.
 		$logs = $wpdb->get_results(
 			"SELECT * FROM {$table_name} WHERE {$where} ORDER BY created_at DESC",
 			ARRAY_A
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $logs ?: array();
 	}
