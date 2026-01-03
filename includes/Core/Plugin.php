@@ -14,7 +14,10 @@
 
 namespace SilverAssist\ContactFormToAPI\Core;
 
+use SilverAssist\ContactFormToAPI\Admin\Loader as AdminLoader;
+use SilverAssist\ContactFormToAPI\ContactForm\Integration;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Services\Loader as ServicesLoader;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 use SilverAssist\WpGithubUpdater\Updater;
 use SilverAssist\WpGithubUpdater\UpdaterConfig;
@@ -186,9 +189,9 @@ class Plugin implements LoadableInterface {
 		}
 
 		// Load Services Loader (priority 20 - Services).
-		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Services\\Loader' ) ) {
+		if ( \class_exists( ServicesLoader::class ) ) {
 			try {
-				$services_loader = \SilverAssist\ContactFormToAPI\Services\Loader::instance();
+				$services_loader = ServicesLoader::instance();
 				if ( $services_loader->should_load() ) {
 					$services_loader->init();
 					$this->components[] = $services_loader;
@@ -199,9 +202,9 @@ class Plugin implements LoadableInterface {
 		}
 
 		// Load ContactForm integration (priority 20 - Services).
-		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\ContactForm\\Integration' ) ) {
+		if ( \class_exists( Integration::class ) ) {
 			try {
-				$integration = \SilverAssist\ContactFormToAPI\ContactForm\Integration::instance();
+				$integration = Integration::instance();
 				if ( $integration->should_load() ) {
 					$integration->init();
 					$this->components[] = $integration;
@@ -213,9 +216,9 @@ class Plugin implements LoadableInterface {
 
 		// Load Admin Loader (priority 30 - Admin components).
 		// The Admin\Loader manages SettingsPage and RequestLogController internally.
-		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Admin\\Loader' ) ) {
+		if ( \class_exists( AdminLoader::class ) ) {
 			try {
-				$admin_loader = \SilverAssist\ContactFormToAPI\Admin\Loader::instance();
+				$admin_loader = AdminLoader::instance();
 				if ( $admin_loader->should_load() ) {
 					$admin_loader->init();
 					$this->components[] = $admin_loader;

@@ -259,9 +259,9 @@ class Activator {
 		}
 
 		// Initialize global settings using Settings class.
-		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Core\\Settings' ) ) {
+		if ( \class_exists( Settings::class ) ) {
 			if ( \get_option( 'cf7_api_global_settings' ) === false ) {
-				$settings = \SilverAssist\ContactFormToAPI\Core\Settings::instance();
+				$settings = Settings::instance();
 				$settings->init();
 				\update_option( 'cf7_api_global_settings', $settings::get_defaults() );
 

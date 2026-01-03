@@ -678,9 +678,9 @@ class RequestLogger {
 	 */
 	public static function get_max_manual_retries(): int {
 		// Try to get from settings first.
-		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Core\\Settings' ) ) {
+		if ( \class_exists( Settings::class ) ) {
 			try {
-				$settings = \SilverAssist\ContactFormToAPI\Core\Settings::instance();
+				$settings = Settings::instance();
 				return $settings->get_max_manual_retries();
 			} catch ( \Exception $e ) {
 				// Settings not available, use constant.
@@ -700,9 +700,9 @@ class RequestLogger {
 	 */
 	public static function get_max_retries_per_hour(): int {
 		// Try to get from settings first.
-		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Core\\Settings' ) ) {
+		if ( \class_exists( Settings::class ) ) {
 			try {
-				$settings = \SilverAssist\ContactFormToAPI\Core\Settings::instance();
+				$settings = Settings::instance();
 				return $settings->get_max_retries_per_hour();
 			} catch ( \Exception $e ) {
 				// Settings not available, use constant.

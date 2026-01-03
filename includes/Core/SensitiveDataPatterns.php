@@ -91,9 +91,9 @@ final class SensitiveDataPatterns {
 		);
 
 		// Merge with custom patterns from settings if available.
-		if ( \class_exists( '\\SilverAssist\\ContactFormToAPI\\Core\\Settings' ) ) {
+		if ( \class_exists( Settings::class ) ) {
 			try {
-				$settings         = \SilverAssist\ContactFormToAPI\Core\Settings::instance();
+				$settings         = Settings::instance();
 				$custom_patterns  = $settings->get_sensitive_patterns();
 				$default_patterns = \array_merge( $default_patterns, $custom_patterns );
 			} catch ( \Exception $e ) {
