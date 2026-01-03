@@ -85,7 +85,33 @@ class RequestLogController implements LoadableInterface {
 		\add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		\add_filter( 'set-screen-option', array( $this, 'set_screen_option' ), 10, 3 );
 
+		// Handle exports early before any output is sent.
+		\add_action( 'admin_init', array( $this, 'maybe_handle_export' ) );
+
 		$this->initialized = true;
+	}
+
+	/**
+	 * Handle export requests early (before any output)
+	 *
+	 * This must run on admin_init to send headers before WordPress outputs anything.
+	 *
+	 * @return void
+	 */
+	public function maybe_handle_export(): void {
+		// Only handle on our page.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce is verified in handle_export_action().
+		if ( ! isset( $_GET['page'] ) || 'cf7-api-logs' !== $_GET['page'] ) {
+			return;
+		}
+
+		// Check for export actions.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce is verified in handle_export_action().
+		if ( ! isset( $_GET['action'] ) || ! \in_array( $_GET['action'], array( 'export_csv', 'export_json' ), true ) ) {
+			return;
+		}
+
+		$this->handle_export_action();
 	}
 
 	/**
@@ -248,6 +274,9 @@ class RequestLogController implements LoadableInterface {
 	/**
 	 * Handle page request - routes to appropriate view
 	 *
+	 * Note: Export actions are handled earlier via admin_init hook
+	 * to prevent "headers already sent" errors.
+	 *
 	 * @return void
 	 */
 	public function handle_page_request(): void {
@@ -255,15 +284,9 @@ class RequestLogController implements LoadableInterface {
 			$this->list_table = new RequestLogTable();
 		}
 
-		// Check for export actions.
-		if ( isset( $_GET["action"] ) && \in_array( $_GET["action"], array( "export_csv", "export_json" ), true ) ) {
-			$this->handle_export_action();
-			return;
-		}
-
 		// Check for single log view.
-		if ( isset( $_GET["action"] ) && "view" === $_GET["action"] && isset( $_GET["log_id"] ) ) {
-			$this->show_log_detail( \absint( $_GET["log_id"] ) );
+		if ( isset( $_GET['action'] ) && 'view' === $_GET['action'] && isset( $_GET['log_id'] ) ) {
+			$this->show_log_detail( \absint( $_GET['log_id'] ) );
 			return;
 		}
 
