@@ -340,8 +340,9 @@ class RequestLogView {
 		$has_logs = $total_items > 0;
 
 		// Build export URLs with nonce and current filters.
+		$page      = isset( $_GET['page'] ) ? \sanitize_text_field( \wp_unslash( $_GET['page'] ) ) : 'cf7-api-logs';
 		$base_args = array(
-			'page'     => $_REQUEST['page'] ?? 'cf7-api-logs',
+			'page'     => $page,
 			'_wpnonce' => \wp_create_nonce( 'cf7_api_export_logs' ),
 		);
 
@@ -368,16 +369,15 @@ class RequestLogView {
 
 		$disabled_class = $has_logs ? '' : ' disabled';
 		$disabled_attr  = $has_logs ? '' : ' aria-disabled="true" tabindex="-1"';
-		$disabled_style = $has_logs ? '' : ' pointer-events: none; opacity: 0.5;';
 		?>
-		<div class="cf7-api-export-buttons" style="display: inline-block; margin-left: 10px;">
+		<div class="cf7-api-export-buttons">
 			<div class="button-group">
-				<a href="<?php echo $has_logs ? \esc_url( $csv_url ) : '#'; ?>" class="button<?php echo \esc_attr( $disabled_class ); ?>" style="<?php echo \esc_attr( $disabled_style ); ?>"<?php echo $disabled_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static string. ?>>
-					<span class="dashicons dashicons-download" style="vertical-align: middle;"></span>
+				<a href="<?php echo $has_logs ? \esc_url( $csv_url ) : '#'; ?>" class="button<?php echo \esc_attr( $disabled_class ); ?>"<?php echo $disabled_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static string. ?>>
+					<span class="dashicons dashicons-download"></span>
 					<?php \esc_html_e( 'Export as CSV', 'contact-form-to-api' ); ?>
 				</a>
-				<a href="<?php echo $has_logs ? \esc_url( $json_url ) : '#'; ?>" class="button<?php echo \esc_attr( $disabled_class ); ?>" style="<?php echo \esc_attr( $disabled_style ); ?>"<?php echo $disabled_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static string. ?>>
-					<span class="dashicons dashicons-download" style="vertical-align: middle;"></span>
+				<a href="<?php echo $has_logs ? \esc_url( $json_url ) : '#'; ?>" class="button<?php echo \esc_attr( $disabled_class ); ?>"<?php echo $disabled_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static string. ?>>
+					<span class="dashicons dashicons-download"></span>
 					<?php \esc_html_e( 'Export as JSON', 'contact-form-to-api' ); ?>
 				</a>
 			</div>

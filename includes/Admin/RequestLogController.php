@@ -423,7 +423,7 @@ class RequestLogController implements LoadableInterface {
 
 		// Set headers for download.
 		\header( 'Content-Type: text/csv; charset=utf-8' );
-		\header( "Content-Disposition: attachment; filename=\"{$filename}\"" );
+		\header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 		\header( 'Pragma: no-cache' );
 		\header( 'Expires: 0' );
 
@@ -447,7 +447,7 @@ class RequestLogController implements LoadableInterface {
 
 		// Set headers for download.
 		\header( 'Content-Type: application/json; charset=utf-8' );
-		\header( "Content-Disposition: attachment; filename=\"{$filename}\"" );
+		\header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 		\header( 'Pragma: no-cache' );
 		\header( 'Expires: 0' );
 
@@ -456,9 +456,17 @@ class RequestLogController implements LoadableInterface {
 	}
 
 	/**
+	 * Maximum number of logs to export
+	 *
+	 * Prevents memory exhaustion on large datasets.
+	 */
+	private const EXPORT_LIMIT = 10000;
+
+	/**
 	 * Get filtered logs for export
 	 *
-	 * Retrieves all logs matching current filters (no pagination).
+	 * Retrieves logs matching current filters with a reasonable limit to prevent memory issues.
+	 * Maximum of 10,000 records can be exported at once.
 	 *
 	 * @return array<int, array<string, mixed>> Array of log entries.
 	 */
@@ -500,10 +508,13 @@ class RequestLogController implements LoadableInterface {
 			$where = $wpdb->prepare( $where, ...$where_values );
 		}
 
-		// Get all logs matching filters (no limit for export).
+		// Get logs matching filters with limit to prevent memory exhaustion.
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property.
 		$logs = $wpdb->get_results(
-			"SELECT * FROM {$table_name} WHERE {$where} ORDER BY created_at DESC",
+			$wpdb->prepare(
+				"SELECT * FROM {$table_name} WHERE {$where} ORDER BY created_at DESC LIMIT %d",
+				self::EXPORT_LIMIT
+			),
 			ARRAY_A
 		);
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
