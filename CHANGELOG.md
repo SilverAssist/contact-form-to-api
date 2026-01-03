@@ -38,6 +38,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * `qs_cf7_api_post_url` → `cf7_api_post_url`
   * `qs_cf7_api_get_url` → `cf7_api_get_url`
   * `qs_cf7_collect_mail_tags` → `cf7_api_collect_mail_tags`
+- **Developer Hooks Documentation**: New documentation section in settings page
+  * Complete list of available filters with code examples
+  * Complete list of available actions with code examples
+  * Only documents new `cf7_api_*` hooks (legacy hooks work but are not promoted)
 - **Unit Tests**: Added tests for RequestLogController bulk action validation
 
 ### Fixed
