@@ -82,12 +82,12 @@ class RequestLogView {
 					<span class="stat-number"><?php echo \esc_html( \number_format_i18n( $stats['total_requests'] ) ); ?></span>
 					<span class="stat-label"><?php \esc_html_e( 'Total Requests', 'contact-form-to-api' ); ?></span>
 				</div>
-				<div class="stat-box success">
+				<div class="stat-box stat-success">
 					<span class="stat-number"><?php echo \esc_html( \number_format_i18n( $stats['successful_requests'] ) ); ?></span>
 					<span class="stat-label"><?php \esc_html_e( 'Successful', 'contact-form-to-api' ); ?></span>
 					<span class="stat-percentage"><?php echo \esc_html( $success_rate ); ?>%</span>
 				</div>
-				<div class="stat-box error">
+				<div class="stat-box stat-error">
 					<span class="stat-number"><?php echo \esc_html( \number_format_i18n( $stats['failed_requests'] ) ); ?></span>
 					<span class="stat-label"><?php \esc_html_e( 'Failed', 'contact-form-to-api' ); ?></span>
 				</div>

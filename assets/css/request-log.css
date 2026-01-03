@@ -9,7 +9,7 @@
 
 /* Utility Classes */
 .cf7-api-hidden {
-	display: none;
+	display: none !important;
 }
 
 /* Statistics Summary */
@@ -35,12 +35,12 @@
 	border: 1px solid #dcdcde;
 }
 
-.stat-box.success {
+.stat-box.stat-success {
 	background: #d7f5d7;
 	border-color: #00a32a;
 }
 
-.stat-box.error {
+.stat-box.stat-error {
 	background: #ffd6d6;
 	border-color: #d63638;
 }
