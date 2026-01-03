@@ -965,3 +965,55 @@ gh pr status | cat
 # View PR details
 gh pr view <pr-number> | cat
 ```
+
+### Responding to PR Review Comments
+When the PR has review comments from Copilot Code Review or other reviewers, use these commands to list and respond to them:
+
+```bash
+# List all review comments with their IDs and file locations
+gh api repos/<owner>/<repo>/pulls/<pr-number>/comments --jq '.[] | "ID: \(.id) | File: \(.path):\(.line // .original_line)"' | cat
+
+# Get full details of a specific comment
+gh api repos/<owner>/<repo>/pulls/<pr-number>/comments --jq '.[] | select(.id == <comment-id>)' | cat
+
+# Get all commits in the PR (needed for commit_id when replying)
+gh api repos/<owner>/<repo>/pulls/<pr-number>/commits --jq '.[].sha' | cat
+
+# Reply to a review comment (use the LATEST commit SHA from the PR)
+gh api repos/<owner>/<repo>/pulls/<pr-number>/comments -X POST --input - <<EOF | cat
+{
+  "body": "Fixed in commit <short-sha>. <description of the fix>",
+  "commit_id": "<full-40-char-commit-sha-from-pr>",
+  "path": "<file-path-from-comment>",
+  "line": <line-number-from-comment>,
+  "in_reply_to": <original-comment-id>
+}
+EOF
+```
+
+**Important Notes for Replying to Review Comments**:
+- The `commit_id` MUST be a full 40-character SHA that belongs to the PR (use the commits endpoint to get valid SHAs)
+- The `in_reply_to` field links your reply to the original comment thread
+- The `path` and `line` should match the original comment's location
+- Always pipe to `| cat` to avoid paging issues
+
+**Example Workflow**:
+```bash
+# 1. Get comment IDs
+gh api repos/SilverAssist/contact-form-to-api/pulls/29/comments --jq '.[] | "ID: \(.id) | File: \(.path):\(.original_line)"' | cat
+
+# 2. Get valid commit SHA from PR
+gh api repos/SilverAssist/contact-form-to-api/pulls/29/commits --jq '.[].sha' | cat
+# Output: 2c714cbb93edfbf923c70d29815974ce9f00e91b (use the latest one)
+
+# 3. Reply to comment
+gh api repos/SilverAssist/contact-form-to-api/pulls/29/comments -X POST --input - <<EOF | cat
+{
+  "body": "Fixed in commit 85e5d7f. Added wp_next_scheduled() check before scheduling the cron event.",
+  "commit_id": "2c714cbb93edfbf923c70d29815974ce9f00e91b",
+  "path": "includes/Core/Activator.php",
+  "line": 270,
+  "in_reply_to": 2659078318
+}
+EOF
+```
