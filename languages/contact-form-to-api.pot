@@ -808,3 +808,81 @@ msgstr ""
 #: includes/Services/ExportService.php:268
 msgid "Created At"
 msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:112
+msgid "Date Filter"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:117
+msgid "All Time"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:120
+msgid "Today"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:123
+msgid "Yesterday"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:126
+msgid "Last 7 Days"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:129
+msgid "Last 30 Days"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:132
+msgid "This Month"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:135
+msgid "Custom Range"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:141
+msgid "From"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:146
+msgid "To"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:152
+msgid "Apply Filter"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:157
+msgid "Clear Filter"
+msgstr ""
+
+#. translators: %1$s: start date, %2$s: end date
+#: includes/Admin/Views/RequestLogView.php:180
+#, php-format
+msgid "Custom Range: %1$s to %2$s"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:182
+msgid "now"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:368
+msgid "Are you sure you want to delete this log entry?"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:369
+msgid "Please select at least one item."
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:370
+msgid "Are you sure you want to delete the selected log entries?"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:371
+msgid "Start date must be before or equal to end date."
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:372
+msgid "End date must be after or equal to start date."
+msgstr ""
