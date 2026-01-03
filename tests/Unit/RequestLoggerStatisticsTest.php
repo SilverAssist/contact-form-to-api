@@ -321,7 +321,7 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 			$this->logger->complete_request( $error );
 
 			// Update timestamp directly for predictable ordering (older to newer)
-			$timestamp = gmdate( 'Y-m-d H:i:s', strtotime( "-" . ( 4 - $i ) . " minutes" ) );
+			$timestamp = gmdate( 'Y-m-d H:i:s', strtotime( '-' . ( 4 - $i ) . ' minutes' ) );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->update(
 				$table_name,
