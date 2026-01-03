@@ -15,6 +15,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Core;
 
+use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
 use WP_Error;
 
 \defined( 'ABSPATH' ) || exit;
@@ -48,27 +49,6 @@ class RequestLogger {
 	 * @var float|null
 	 */
 	private ?float $start_time = null;
-
-	/**
-	 * Sensitive field patterns to anonymize
-	 *
-	 * @var array<string>
-	 */
-	private array $sensitive_patterns = array(
-		'password',
-		'passwd',
-		'secret',
-		'api_key',
-		'api-key',
-		'apikey',
-		'token',
-		'auth',
-		'authorization',
-		'ssn',
-		'social_security',
-		'credit_card',
-		'card_number',
-	);
 
 	/**
 	 * Constructor
@@ -246,18 +226,7 @@ class RequestLogger {
 		// If array, anonymize recursively
 		if ( \is_array( $data ) ) {
 			foreach ( $data as $key => $value ) {
-				$key_lower = \strtolower( $key );
-
-				// Check if key matches sensitive pattern
-				$is_sensitive = false;
-				foreach ( $this->sensitive_patterns as $pattern ) {
-					if ( \strpos( $key_lower, $pattern ) !== false ) {
-						$is_sensitive = true;
-						break;
-					}
-				}
-
-				if ( $is_sensitive ) {
+				if ( SensitiveDataPatterns::is_sensitive( $key ) ) {
 					$data[ $key ] = '***REDACTED***';
 				} elseif ( \is_array( $value ) ) {
 					$data[ $key ] = $this->anonymize_data( $value );
@@ -284,18 +253,7 @@ class RequestLogger {
 
 		$anonymized = array();
 		foreach ( $headers as $key => $value ) {
-			$key_lower = \strtolower( $key );
-
-			// Check if header is sensitive
-			$is_sensitive = false;
-			foreach ( $this->sensitive_patterns as $pattern ) {
-				if ( \strpos( $key_lower, $pattern ) !== false ) {
-					$is_sensitive = true;
-					break;
-				}
-			}
-
-			$anonymized[ $key ] = $is_sensitive ? '***REDACTED***' : $value;
+			$anonymized[ $key ] = SensitiveDataPatterns::is_sensitive( $key ) ? '***REDACTED***' : $value;
 		}
 
 		return $anonymized;

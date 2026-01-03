@@ -103,6 +103,7 @@ class Loader implements LoadableInterface {
 		$service_classes = array(
 			ApiClient::class,
 			CheckboxHandler::class,
+			ExportService::class,
 		);
 
 		foreach ( $service_classes as $service_class ) {

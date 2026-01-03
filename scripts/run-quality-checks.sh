@@ -111,8 +111,13 @@ setup_wordpress_tests() {
         return 0
     fi
     
+    # Set consistent directory for WordPress Test Suite
+    export WP_TESTS_DIR="/tmp/wordpress-tests-lib"
+    export WP_CORE_DIR="/tmp/wordpress"
+    
     print_info "Installing WordPress Test Suite (version: $WP_VERSION)..."
     print_info "Database: $DB_NAME @ $DB_HOST"
+    print_info "WP Tests Dir: $WP_TESTS_DIR"
     
     # Drop existing database if it exists and create new one
     if [[ -z "$DB_PASS" ]]; then
