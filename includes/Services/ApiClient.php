@@ -106,12 +106,15 @@ class ApiClient implements LoadableInterface {
 	 * Register legacy hook aliases for backward compatibility
 	 *
 	 * Maps old qs_cf7_api_* hooks to new cf7_api_* hooks.
+	 * Uses priority 5 to run BEFORE user hooks (priority 10), allowing
+	 * user code that hooks into qs_cf7_api_* to still work.
 	 *
 	 * @since 1.1.2
 	 * @return void
 	 */
 	private function register_legacy_hooks(): void {
 		// Legacy: qs_cf7_api_get_args -> cf7_api_get_args.
+		// Priority 5 so it runs before default (10), applying legacy hooks first.
 		\add_filter(
 			'cf7_api_get_args',
 			function ( $args ) {
@@ -122,10 +125,10 @@ class ApiClient implements LoadableInterface {
 		);
 
 		// Legacy: qs_cf7_api_post_args (new) with fallback to qs_cf7_api_get_args.
+		// The original plugin used qs_cf7_api_get_args for both GET and POST.
 		\add_filter(
 			'cf7_api_post_args',
 			function ( $args ) {
-				// The original plugin used qs_cf7_api_get_args for both GET and POST.
 				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
 				return \apply_filters( 'qs_cf7_api_get_args', $args );
 			},
@@ -179,6 +182,11 @@ class ApiClient implements LoadableInterface {
 	 * @return array<string, mixed>|WP_Error Response data or error.
 	 */
 	public function send( array $request_config ) {
+		// Ensure hooks are registered before sending.
+		if ( ! $this->initialized ) {
+			$this->init();
+		}
+
 		$url          = $request_config['url'] ?? '';
 		$method       = strtoupper( $request_config['method'] ?? 'GET' );
 		$body         = $request_config['body'] ?? null;
