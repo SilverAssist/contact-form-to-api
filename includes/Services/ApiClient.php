@@ -238,7 +238,7 @@ class ApiClient implements LoadableInterface {
 	 * Replays a failed API request from log history.
 	 * Creates a new log entry linked to the original via retry_of.
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @param int $log_id Original log entry ID to retry
 	 * @return array<string, mixed> Result with success status and details
 	 */

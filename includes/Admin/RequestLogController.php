@@ -16,6 +16,8 @@ namespace SilverAssist\ContactFormToAPI\Admin;
 
 use SilverAssist\ContactFormToAPI\Admin\Views\RequestLogView;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Core\RequestLogger;
+use SilverAssist\ContactFormToAPI\Services\ApiClient;
 use SilverAssist\ContactFormToAPI\Services\ExportService;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
 
@@ -267,8 +269,8 @@ class RequestLogController implements LoadableInterface {
 	 * @return void
 	 */
 	private function handle_retry_action( array $log_ids ): void {
-		$logger     = new \SilverAssist\ContactFormToAPI\Core\RequestLogger();
-		$api_client = \SilverAssist\ContactFormToAPI\Services\ApiClient::instance();
+		$logger     = new RequestLogger();
+		$api_client = ApiClient::instance();
 
 		$success_count = 0;
 		$failed_count  = 0;

@@ -539,7 +539,7 @@ class RequestLogger {
 	 *
 	 * Retrieves a single log entry for detailed inspection.
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @param int $log_id Log entry ID
 	 * @return array<string, mixed>|null Log entry data or null if not found
 	 */
@@ -565,7 +565,7 @@ class RequestLogger {
 	 * Retrieves complete request data needed to replay a failed API request.
 	 * Returns null if log entry doesn't exist or is not retryable.
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @param int $log_id Log entry ID to retry
 	 * @return array<string, mixed>|null Request data or null if not retryable
 	 */
@@ -606,7 +606,7 @@ class RequestLogger {
 	 *
 	 * Counts how many times a specific log entry has been retried.
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @param int $log_id Original log entry ID
 	 * @return int Number of retry attempts
 	 */

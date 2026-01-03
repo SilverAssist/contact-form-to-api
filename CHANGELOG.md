@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### API Logs Enhancements
 - **AJAX Live Refresh**: Real-time statistics updates without page reload
-- **Retry Mechanism**: Execute retry for failed API requests from admin UI
 - **Email Alerts**: Notifications when error rate exceeds threshold
 - **Performance Charts**: Visual trends and analytics with Chart.js
 
@@ -26,6 +25,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.2.0] - 2026-01-03
 
 ### Added
+- **Retry Failed Requests from Admin UI**: Manual retry mechanism for failed API requests (#XX)
+  * Retry button on log detail page for failed requests (error, client_error, server_error statuses)
+  * Bulk retry action in logs list table for multiple failed requests
+  * Rate limiting: Maximum 3 retries per log entry, 10 retries per hour globally
+  * New log entries created for retries, linked to original via `retry_of` column
+  * Retry information displayed on detail page (shows if entry is a retry and retry count)
+  * Comprehensive admin notices for retry results (success, failed, skipped, rate limit)
+  * Confirmation dialogs for single and bulk retry actions
+  * All retry-related UI strings are translatable (i18n ready)
+- **Database Schema Enhancement**: Added `retry_of` column to `cf7_api_logs` table
+  * Links retry attempts to original failed requests
+  * Indexed for performance on retry tracking queries
+  * Automatically added via `dbDelta()` on existing installations
+- **RequestLogger New Methods**: Enhanced logging capabilities for retry functionality
+  * `get_log()`: Retrieve single log entry by ID
+  * `get_request_for_retry()`: Extract complete request data for replay
+  * `count_retries()`: Count retry attempts for a specific log entry
+  * `start_request()`: Now accepts optional `$retry_of` parameter to link retries
+- **ApiClient Retry Method**: New `retry_from_log()` method
+  * Replays failed requests from log history
+  * Preserves original request data (URL, method, headers, body)
+  * Automatically detects content type from headers
+  * Returns detailed result with success status and new log ID
 - **Advanced Date Range Filters**: Filter logs by custom date ranges (#19)
   * Preset filters: Today, Yesterday, Last 7 Days, Last 30 Days, This Month
   * Custom date range picker with HTML5 date inputs
