@@ -104,7 +104,7 @@ class ExportService implements LoadableInterface {
 
 		// Write headers.
 		$headers = $this->get_csv_headers();
-		\fputcsv( $output, $headers );
+		\fputcsv( $output, $headers, ',', '"', '\\' );
 
 		// Write data rows.
 		foreach ( $logs as $log ) {
@@ -121,7 +121,7 @@ class ExportService implements LoadableInterface {
 				$sanitized['error_message'] ?? '',
 				$sanitized['created_at'],
 			);
-			\fputcsv( $output, $row );
+			\fputcsv( $output, $row, ',', '"', '\\' );
 		}
 
 		// Get CSV content.
