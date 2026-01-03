@@ -11,7 +11,7 @@
 # @package ContactFormToAPI
 # @since 1.0.0
 # @author Silver Assist
-# @version     1.1.1
+# @version     1.1.3
 ###############################################################################
 
 # Colors for output
@@ -117,12 +117,18 @@ echo ""
 # 2. Check PHP files
 print_status "Checking PHP source files..."
 
-if [ -d "${PROJECT_ROOT}/src" ]; then
+# Check includes/ directory (current structure)
+if [ -d "${PROJECT_ROOT}/includes" ]; then
+    find "${PROJECT_ROOT}/includes" -name "*.php" -type f | while read -r php_file; do
+        check_file_version "$php_file" "PHP file"
+    done
+# Fallback to src/ directory (legacy structure)
+elif [ -d "${PROJECT_ROOT}/src" ]; then
     find "${PROJECT_ROOT}/src" -name "*.php" -type f | while read -r php_file; do
         check_file_version "$php_file" "PHP file"
     done
 else
-    print_warning "Source directory (src/) not found"
+    print_warning "Source directory (includes/ or src/) not found"
 fi
 
 echo ""
@@ -190,30 +196,9 @@ fi
 
 echo ""
 
-# 6. Check HEADER-STANDARDS.md for version references
+# 6. Check README.md for version references
 print_status "Checking documentation files..."
 
-if [ -f "${PROJECT_ROOT}/HEADER-STANDARDS.md" ]; then
-    # Check for version references in HEADER-STANDARDS.md (first 50 lines to catch the main version reference)
-    DOC_VERSION=$(head -50 "${PROJECT_ROOT}/HEADER-STANDARDS.md" | grep "Current project version:" | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+" | head -1)
-    
-    if [ -n "$DOC_VERSION" ]; then
-        TOTAL_FILES=$((TOTAL_FILES + 1))
-        if [ "$DOC_VERSION" = "$MAIN_VERSION" ]; then
-            print_success "✓ Documentation: HEADER-STANDARDS.md ($DOC_VERSION)"
-            CONSISTENT_FILES=$((CONSISTENT_FILES + 1))
-        else
-            print_error "✗ Documentation: HEADER-STANDARDS.md ($DOC_VERSION) - Expected: $MAIN_VERSION"
-            INCONSISTENT_FILES=$((INCONSISTENT_FILES + 1))
-        fi
-    else
-        print_warning "No version reference found in HEADER-STANDARDS.md"
-    fi
-else
-    print_warning "HEADER-STANDARDS.md not found"
-fi
-
-# Check README.md for version references
 if [ -f "${PROJECT_ROOT}/README.md" ]; then
     README_VERSIONS=$(grep -o "Version: [0-9]\+\.[0-9]\+\.[0-9]\+" "${PROJECT_ROOT}/README.md" | cut -d' ' -f2)
     
@@ -238,7 +223,7 @@ if [ -f "${PROJECT_ROOT}/README.md" ]; then
         print_status "No version references found in README.md"
     fi
 else
-    print_warning "README.md not found"
+    print_status "README.md not found"
 fi
 
 echo ""

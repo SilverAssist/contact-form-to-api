@@ -12,7 +12,7 @@
 # @package ContactFormToAPI
 # @since 1.0.0
 # @author Silver Assist
-# @version     1.1.1
+# @version     1.1.3
 ###############################################################################
 
 # Colors for output
@@ -52,15 +52,17 @@ fi
 if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
     echo "Contact Form 7 to API - Version Update Script"
     echo ""
-    echo "Usage: $0 <new-version> [--no-confirm]"
+    echo "Usage: $0 <new-version> [--no-confirm] [--force]"
     echo ""
     echo "Arguments:"
     echo "  <new-version>    New version in semantic versioning format (e.g., 1.0.3)"
     echo "  --no-confirm     Skip confirmation prompts (useful for CI/CD)"
+    echo "  --force          Force update all files even if version matches"
     echo ""
     echo "Examples:"
     echo "  $0 1.0.3"
     echo "  $0 1.0.3 --no-confirm"
+    echo "  $0 1.0.3 --no-confirm --force"
     echo ""
     echo "This script updates version numbers across all plugin files including:"
     echo "  • Main plugin file header and constants"
@@ -74,15 +76,24 @@ fi
 
 NEW_VERSION="$1"
 NO_CONFIRM=false
+FORCE_UPDATE=false
 
 # Parse arguments
-if [ $# -eq 2 ] && [ "$2" = "--no-confirm" ]; then
-    NO_CONFIRM=true
-elif [ $# -gt 1 ] && [ "$2" != "--no-confirm" ]; then
-    print_error "Invalid argument: $2"
-    echo "Usage: $0 <new-version> [--no-confirm]"
-    exit 1
-fi
+for arg in "${@:2}"; do
+    case "$arg" in
+        --no-confirm)
+            NO_CONFIRM=true
+            ;;
+        --force)
+            FORCE_UPDATE=true
+            ;;
+        *)
+            print_error "Invalid argument: $arg"
+            echo "Usage: $0 <new-version> [--no-confirm] [--force]"
+            exit 1
+            ;;
+    esac
+done
 
 # Validate version format
 if ! [[ $NEW_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -115,8 +126,10 @@ print_status "New version: ${NEW_VERSION}"
 
 # Check if versions are the same
 if [ "$CURRENT_VERSION" = "$NEW_VERSION" ]; then
-    print_warning "Current version and new version are the same (${NEW_VERSION})"
-    if [ "$NO_CONFIRM" = false ]; then
+    if [ "$FORCE_UPDATE" = true ]; then
+        print_status "Force update enabled - updating all files to version ${NEW_VERSION}"
+    elif [ "$NO_CONFIRM" = false ]; then
+        print_warning "Current version and new version are the same (${NEW_VERSION})"
         echo ""
         read -p "$(echo -e ${YELLOW}[CONFIRM]${NC} Continue anyway? [y/N]: )" -n 1 -r
         echo ""
@@ -126,6 +139,7 @@ if [ "$CURRENT_VERSION" = "$NEW_VERSION" ]; then
         fi
     else
         print_status "Same version detected in CI mode - exiting successfully (no changes needed)"
+        print_status "Use --force to update all files even when version matches"
         exit 0
     fi
 else
@@ -222,174 +236,109 @@ print_success "Main plugin file processing completed"
 # 2. Update PHP files
 print_status "Updating PHP files..."
 
-# Get all PHP files with @version tags
-php_files=""
+php_update_count=0
+php_dir=""
+
+# Determine which directory contains PHP files
 if [ -d "${PROJECT_ROOT}/includes" ]; then
-    for php_file in $(find "${PROJECT_ROOT}/includes" -name "*.php" 2>/dev/null); do
-        if [ -f "$php_file" ] && grep -q "@version" "$php_file"; then
-            php_files="$php_files $php_file"
-        fi
-    done
+    php_dir="${PROJECT_ROOT}/includes"
 elif [ -d "${PROJECT_ROOT}/src" ]; then
-    # Legacy fallback for old structure
-    for php_file in $(find "${PROJECT_ROOT}/src" -name "*.php" 2>/dev/null); do
-        if [ -f "$php_file" ] && grep -q "@version" "$php_file"; then
-            php_files="$php_files $php_file"
-        fi
-    done
+    php_dir="${PROJECT_ROOT}/src"
 fi
 
-# Update each PHP file
-if [ -n "$php_files" ]; then
-    php_update_count=0
-    for php_file in $php_files; do
-        file_name=$(basename "$php_file")
-        
-        update_file "$php_file" \
-            "s/\\@version [0-9]+\\.[0-9]+\\.[0-9]+/\\@version ${NEW_VERSION}/g" \
-            "$file_name"
-        
-        php_update_count=$((php_update_count + 1))
-    done
+if [ -n "$php_dir" ]; then
+    # Find and update ALL PHP files in the directory
+    while IFS= read -r php_file; do
+        if [ -f "$php_file" ]; then
+            file_name=$(basename "$php_file")
+            update_file "$php_file" \
+                "s/\\@version [0-9]+\\.[0-9]+\\.[0-9]+/\\@version ${NEW_VERSION}/g" \
+                "$file_name"
+            php_update_count=$((php_update_count + 1))
+        fi
+    done < <(find "$php_dir" -name "*.php" -type f 2>/dev/null)
     
-    print_success "PHP files processed ($php_update_count files)"
+    if [ $php_update_count -gt 0 ]; then
+        print_success "PHP files processed ($php_update_count files)"
+    else
+        print_status "No PHP files found in $php_dir"
+    fi
 else
-    print_warning "No PHP files with @version tags found in includes/ directory"
+    print_warning "No PHP source directory found (includes/ or src/)"
 fi
 
 # 3. Update CSS files  
 print_status "Updating CSS files..."
 
-# Get all CSS files with @version tags
-css_files=""
+css_update_count=0
 if [ -d "${PROJECT_ROOT}/assets/css" ]; then
     for css_file in "${PROJECT_ROOT}/assets/css"/*.css; do
-        if [ -f "$css_file" ] && grep -q "@version" "$css_file"; then
-            css_files="$css_files $css_file"
+        if [ -f "$css_file" ]; then
+            file_name=$(basename "$css_file")
+            # Update @version tags in CSS files
+            update_file "$css_file" \
+                "s/\\@version [0-9]+\\.[0-9]+\\.[0-9]+/\\@version ${NEW_VERSION}/g" \
+                "$file_name"
+            css_update_count=$((css_update_count + 1))
         fi
     done
-fi
-
-# Update each CSS file
-if [ -n "$css_files" ]; then
-    css_update_count=0
-    for css_file in $css_files; do
-        file_name=$(basename "$css_file")
-        
-        update_file "$css_file" \
-            "s/\\@version [0-9]+\\.[0-9]+\\.[0-9]+/\\@version ${NEW_VERSION}/g" \
-            "$file_name"
-        
-        css_update_count=$((css_update_count + 1))
-    done
-    
-    print_success "CSS files processed ($css_update_count files)"
-else
-    if [ -d "${PROJECT_ROOT}/assets/css" ]; then
-        print_status "No CSS files with @version tags found"
+    if [ $css_update_count -gt 0 ]; then
+        print_success "CSS files processed ($css_update_count files)"
     else
-        print_warning "CSS directory not found"
+        print_status "No CSS files found"
     fi
+else
+    print_warning "CSS directory not found"
 fi
 
 # 4. Update JavaScript files
 print_status "Updating JavaScript files..."
 
-# Get all JavaScript files with @version tags
-js_files=""
+js_update_count=0
 if [ -d "${PROJECT_ROOT}/assets/js" ]; then
     for js_file in "${PROJECT_ROOT}/assets/js"/*.js; do
-        if [ -f "$js_file" ] && grep -q "@version" "$js_file"; then
-            js_files="$js_files $js_file"
+        if [ -f "$js_file" ]; then
+            file_name=$(basename "$js_file")
+            # Update @version tags in JS files
+            update_file "$js_file" \
+                "s/\\@version [0-9]+\\.[0-9]+\\.[0-9]+/\\@version ${NEW_VERSION}/g" \
+                "$file_name"
+            js_update_count=$((js_update_count + 1))
         fi
     done
-fi
-
-# Update each JavaScript file
-if [ -n "$js_files" ]; then
-    js_update_count=0
-    for js_file in $js_files; do
-        file_name=$(basename "$js_file")
-        
-        update_file "$js_file" \
-            "s/\\@version [0-9]+\\.[0-9]+\\.[0-9]+/\\@version ${NEW_VERSION}/g" \
-            "$file_name"
-        
-        js_update_count=$((js_update_count + 1))
-    done
-    
-    print_success "JavaScript files processed ($js_update_count files)"
-else
-    if [ -d "${PROJECT_ROOT}/assets/js" ]; then
-        print_status "No JavaScript files with @version tags found"
+    if [ $js_update_count -gt 0 ]; then
+        print_success "JavaScript files processed ($js_update_count files)"
     else
-        print_warning "JavaScript directory not found"
+        print_status "No JavaScript files found"
     fi
-fi
-
-# 5. Update HEADER-STANDARDS.md
-print_status "Updating header standards documentation..."
-
-if [ -f "${PROJECT_ROOT}/HEADER-STANDARDS.md" ]; then
-    # Update Version: entries (both in main section and examples)
-    update_file "${PROJECT_ROOT}/HEADER-STANDARDS.md" \
-        "s/Version: [0-9]+\\.[0-9]+\\.[0-9]+/Version: ${NEW_VERSION}/g" \
-        "header standards version references"
-    
-    # Update @version entries in examples and code blocks
-    update_file "${PROJECT_ROOT}/HEADER-STANDARDS.md" \
-        "s/\\@version [0-9]+\\.[0-9]+\\.[0-9]+/\\@version ${NEW_VERSION}/g" \
-        "header standards @version tags"
-    
-    # Update * Version: entries in examples (with asterisk)
-    update_file "${PROJECT_ROOT}/HEADER-STANDARDS.md" \
-        "s/\\* Version: [0-9]+\\.[0-9]+\\.[0-9]+/\\* Version: ${NEW_VERSION}/g" \
-        "header standards example version references"
-    
-    # Update documentation text references
-    if grep -q "Use both.*@version [0-9]\+\.[0-9]\+\.[0-9]\+" "${PROJECT_ROOT}/HEADER-STANDARDS.md" 2>/dev/null; then
-        update_file "${PROJECT_ROOT}/HEADER-STANDARDS.md" \
-            "s/(Use both.*@version )[0-9]+\\.[0-9]+\\.[0-9]+/\\1${NEW_VERSION}/g" \
-            "header standards documentation text"
-    fi
-    
-    print_success "Header standards documentation processed"
 else
-    print_warning "HEADER-STANDARDS.md not found"
+    print_warning "JavaScript directory not found"
 fi
 
-# 6. Update version scripts
+# 5. Update version scripts
 print_status "Updating version scripts..."
 
-# Get all script files with @version tags
-script_files=""
+script_update_count=0
 if [ -d "${PROJECT_ROOT}/scripts" ]; then
     for script_file in "${PROJECT_ROOT}/scripts"/*.sh; do
-        if [ -f "$script_file" ] && grep -q "@version" "$script_file"; then
-            script_files="$script_files $script_file"
+        if [ -f "$script_file" ]; then
+            script_name=$(basename "$script_file")
+            update_file "$script_file" \
+                "s/\\@version [0-9]+\\.[0-9]+\\.[0-9]+/\\@version ${NEW_VERSION}/g" \
+                "$script_name"
+            script_update_count=$((script_update_count + 1))
         fi
     done
-fi
-
-# Update each script file
-if [ -n "$script_files" ]; then
-    script_update_count=0
-    for script_file in $script_files; do
-        script_name=$(basename "$script_file")
-        
-        update_file "$script_file" \
-            "s/\\@version [0-9]+\\.[0-9]+\\.[0-9]+/\\@version ${NEW_VERSION}/g" \
-            "$script_name"
-        
-        script_update_count=$((script_update_count + 1))
-    done
-    
-    print_success "Version scripts processed ($script_update_count files)"
+    if [ $script_update_count -gt 0 ]; then
+        print_success "Version scripts processed ($script_update_count files)"
+    else
+        print_status "No script files found"
+    fi
 else
-    print_warning "No script files with @version tags found in scripts/ directory"
+    print_warning "Scripts directory not found"
 fi
 
-# 7. Update README.md if it contains version references
+# 6. Update README.md if it contains version references
 print_status "Checking README.md for version references..."
 
 if [ -f "${PROJECT_ROOT}/README.md" ]; then
@@ -435,9 +384,8 @@ echo "  • Main plugin file: contact-form-to-api.php"
 echo "  • PHP files: includes/**/*.php"
 echo "  • CSS files: assets/css/*.css"
 echo "  • JavaScript files: assets/js/*.js"
-echo "  • Header standards: HEADER-STANDARDS.md"
 echo "  • Documentation: README.md (if applicable)"
-echo "  • Update scripts: scripts/*.sh"
+echo "  • Version scripts: scripts/*.sh"
 echo ""
 print_status "Next steps:"
 echo "  1. Verify changes: ./scripts/check-versions.sh"

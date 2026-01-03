@@ -10,7 +10,7 @@
  * @subpackage ContactForm
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.1.1
+ * @version 1.1.3
  */
 
 namespace SilverAssist\ContactFormToAPI\ContactForm;
