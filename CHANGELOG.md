@@ -79,11 +79,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Consolidates all sensitive data detection logic
   * Used by both `RequestLogger` and `ExportService`
   * Supports headers (Authorization, API keys) and data fields (passwords, tokens, secrets)
+  * Now reads custom patterns from global settings
 - **RequestLogger Statistics Methods**: New methods for dashboard analytics
   * `get_count_last_hours()`: Count requests in time window with optional status filter
   * `get_success_rate_last_hours()`: Calculate success percentage
   * `get_avg_response_time_last_hours()`: Average response time in milliseconds
   * `get_recent_errors()`: Retrieve most recent failed requests
+- **Global Plugin Settings Page**: Centralized configuration for plugin-wide settings (#28)
+  * New `Core\Settings` singleton class for settings management
+  * New `Admin\GlobalSettingsController` and `Admin\Views\GlobalSettingsView` for admin UI
+  * **Retry Configuration**: Configure `max_manual_retries` and `max_retries_per_hour` from admin
+  * **Sensitive Data Patterns**: Add custom field patterns for anonymization (project-specific)
+  * **Logging Control**: Toggle API request logging on/off (useful for GDPR compliance)
+  * **Log Retention**: Auto-delete logs older than X days via WP-Cron (7, 14, 30, 60, 90 days or never)
+  * Settings Hub integration for unified admin experience
+  * All settings persist to `cf7_api_global_settings` option
+  * Sensible defaults with graceful fallbacks
+  * All UI strings are translatable (i18n ready)
 
 ### Fixed
 - **Headers Already Sent**: Fixed export triggering "headers already sent" error
@@ -92,7 +104,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **RequestLogger**: Now uses `SensitiveDataPatterns` for consistent data sanitization
+- **RequestLogger**: Retry limits now read from global settings instead of hardcoded constants
+- **RequestLogger**: Respects `logging_enabled` setting (can be disabled globally)
+- **SensitiveDataPatterns**: Merges custom patterns from global settings with built-in defaults
 - **ExportService**: Excludes sensitive fields from CSV export entirely (security by design)
+- **Plugin.php**: Registers daily cron job for log cleanup based on retention settings
+- **Activator.php**: Initializes default global settings on plugin activation
+- Refactored FQCN to `use` statements across Core classes for better readability
 - `RequestLogTable` now uses `DateFilterTrait` for date filtering
 - `RequestLogController` now uses `DateFilterTrait` for statistics date filtering
 - Replaced inline styles with CSS classes for better maintainability
