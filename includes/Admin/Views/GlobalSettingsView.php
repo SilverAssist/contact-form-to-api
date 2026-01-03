@@ -314,7 +314,7 @@ class GlobalSettingsView {
 	/**
 	 * Render email alerts section
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @param Settings $settings Settings instance.
 	 * @return void
 	 */

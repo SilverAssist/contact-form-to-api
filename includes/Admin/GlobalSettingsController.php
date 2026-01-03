@@ -16,6 +16,7 @@ namespace SilverAssist\ContactFormToAPI\Admin;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\Settings;
+use SilverAssist\ContactFormToAPI\Services\EmailAlertService;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -119,7 +120,7 @@ class GlobalSettingsController implements LoadableInterface {
 	/**
 	 * Enqueue admin assets
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @param string $hook_suffix Current admin page hook.
 	 * @return void
 	 */
@@ -264,7 +265,7 @@ class GlobalSettingsController implements LoadableInterface {
 	/**
 	 * Update email alert schedule
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @param bool   $enabled  Whether alerts are enabled.
 	 * @param string $interval Check interval (hourly, twicehourly).
 	 * @return void
@@ -296,7 +297,7 @@ class GlobalSettingsController implements LoadableInterface {
 	/**
 	 * Handle test email AJAX request
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @return void
 	 */
 	public function handle_test_email(): void {
@@ -317,11 +318,11 @@ class GlobalSettingsController implements LoadableInterface {
 		}
 
 		// Send test email.
-		if ( ! \class_exists( 'SilverAssist\\ContactFormToAPI\\Services\\EmailAlertService' ) ) {
+		if ( ! \class_exists( EmailAlertService::class ) ) {
 			\wp_send_json_error( array( 'message' => \__( 'Email service not available', 'contact-form-to-api' ) ) );
 		}
 
-		$alert_service = \SilverAssist\ContactFormToAPI\Services\EmailAlertService::instance();
+		$alert_service = EmailAlertService::instance();
 		$sent          = $alert_service->send_test_email( $recipient );
 
 		if ( $sent ) {

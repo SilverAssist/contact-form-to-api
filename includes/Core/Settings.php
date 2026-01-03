@@ -259,7 +259,7 @@ class Settings implements LoadableInterface {
 	/**
 	 * Check if email alerts are enabled
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @return bool
 	 */
 	public function is_alerts_enabled(): bool {
@@ -269,7 +269,7 @@ class Settings implements LoadableInterface {
 	/**
 	 * Get alert recipients
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @return string Comma-separated email addresses.
 	 */
 	public function get_alert_recipients(): string {
@@ -279,7 +279,7 @@ class Settings implements LoadableInterface {
 	/**
 	 * Get error count threshold
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @return int Number of errors per hour to trigger alert.
 	 */
 	public function get_alert_error_threshold(): int {
@@ -289,7 +289,7 @@ class Settings implements LoadableInterface {
 	/**
 	 * Get error rate threshold
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @return int Error percentage to trigger alert.
 	 */
 	public function get_alert_rate_threshold(): int {
@@ -299,7 +299,7 @@ class Settings implements LoadableInterface {
 	/**
 	 * Get alert check interval
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @return string Cron interval ('hourly', 'twicehourly').
 	 */
 	public function get_alert_check_interval(): string {
@@ -309,7 +309,7 @@ class Settings implements LoadableInterface {
 	/**
 	 * Get alert cooldown hours
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @return int Hours between alerts.
 	 */
 	public function get_alert_cooldown_hours(): int {
@@ -319,7 +319,7 @@ class Settings implements LoadableInterface {
 	/**
 	 * Get timestamp of last alert sent
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @return int Unix timestamp.
 	 */
 	public function get_alert_last_sent(): int {
@@ -329,7 +329,7 @@ class Settings implements LoadableInterface {
 	/**
 	 * Update last alert sent timestamp
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @param int $timestamp Unix timestamp.
 	 * @return bool True on success, false on failure.
 	 */

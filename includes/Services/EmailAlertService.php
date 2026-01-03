@@ -7,8 +7,8 @@
  *
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Services
- * @since 1.3.0
- * @version 1.3.0
+ * @since 1.2.0
+ * @version 1.2.0
  * @author Silver Assist
  */
 
@@ -26,7 +26,7 @@ use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
  *
  * Monitors API error rates and sends email notifications when thresholds are exceeded.
  *
- * @since 1.3.0
+ * @since 1.2.0
  */
 class EmailAlertService implements LoadableInterface {
 
@@ -100,7 +100,7 @@ class EmailAlertService implements LoadableInterface {
 	 *
 	 * Main method called by cron job to check if alerts should be sent.
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @return void
 	 */
 	public function check_and_alert(): void {
@@ -129,7 +129,7 @@ class EmailAlertService implements LoadableInterface {
 	/**
 	 * Check if in cooldown period
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @param Settings $settings Settings instance.
 	 * @return bool True if in cooldown, false otherwise.
 	 */
@@ -154,7 +154,7 @@ class EmailAlertService implements LoadableInterface {
 	 *
 	 * Retrieves error statistics for the last hour.
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @return array<string, mixed> Statistics array with errors, total, error_rate.
 	 */
 	private function get_hourly_stats(): array {
@@ -179,7 +179,7 @@ class EmailAlertService implements LoadableInterface {
 	/**
 	 * Determine if alert should be sent
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @param array<string, mixed> $stats    Statistics array.
 	 * @param Settings             $settings Settings instance.
 	 * @return bool True if alert should be sent, false otherwise.
@@ -197,7 +197,7 @@ class EmailAlertService implements LoadableInterface {
 	/**
 	 * Send alert email
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @param array<string, mixed> $stats    Statistics array.
 	 * @param Settings             $settings Settings instance.
 	 * @return void
@@ -251,7 +251,7 @@ class EmailAlertService implements LoadableInterface {
 	/**
 	 * Build email body HTML
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @param array<string, mixed> $stats Statistics array.
 	 * @return string HTML email body.
 	 */
@@ -328,7 +328,7 @@ class EmailAlertService implements LoadableInterface {
 	 *
 	 * Public method for testing email configuration from admin interface.
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @param string $recipient Email address to send test to.
 	 * @return bool True if email sent successfully, false otherwise.
 	 */

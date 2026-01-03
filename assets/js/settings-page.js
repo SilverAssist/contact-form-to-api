@@ -4,8 +4,8 @@
  * Handles interactive functionality for the Global Settings page.
  *
  * @package SilverAssist\ContactFormToAPI
- * @since 1.3.0
- * @version 1.3.0
+ * @since 1.2.0
+ * @version 1.2.0
  */
 
 (function ($) {
@@ -21,7 +21,7 @@
 	/**
 	 * Initialize test email button functionality
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @return {void}
 	 */
 	function initTestEmailButton() {
@@ -83,7 +83,7 @@
 	/**
 	 * Show result message
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @param {jQuery} element Result element.
 	 * @param {string} type    Message type (success or error).
 	 * @param {string} message Message text.

@@ -17,6 +17,7 @@ namespace SilverAssist\ContactFormToAPI\Core;
 use SilverAssist\ContactFormToAPI\Admin\Loader as AdminLoader;
 use SilverAssist\ContactFormToAPI\ContactForm\Integration;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Services\EmailAlertService;
 use SilverAssist\ContactFormToAPI\Services\Loader as ServicesLoader;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 use SilverAssist\WpGithubUpdater\Updater;
@@ -469,17 +470,17 @@ class Plugin implements LoadableInterface {
 	 *
 	 * Scheduled via WP-Cron to run at configured intervals.
 	 *
-	 * @since 1.3.0
+	 * @since 1.2.0
 	 * @return void
 	 */
 	public function check_email_alerts(): void {
 		// Only run if EmailAlertService is available.
-		if ( ! \class_exists( 'SilverAssist\\ContactFormToAPI\\Services\\EmailAlertService' ) ) {
+		if ( ! \class_exists( EmailAlertService::class ) ) {
 			return;
 		}
 
 		// Get service instance and check alerts.
-		$alert_service = \SilverAssist\ContactFormToAPI\Services\EmailAlertService::instance();
+		$alert_service = EmailAlertService::instance();
 		$alert_service->check_and_alert();
 	}
 }
