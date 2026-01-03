@@ -13,14 +13,11 @@ $plugin_root = dirname( __DIR__ );
 if ( ! defined( 'ABSPATH' ) ) {
 	define( 'ABSPATH', $plugin_root . '/' );
 }
-if ( ! defined( 'CF7_API_TEXT_DOMAIN' ) ) {
-	define( 'CF7_API_TEXT_DOMAIN', 'contact-form-to-api' );
-}
 if ( ! defined( 'CF7_API_URL' ) ) {
 	define( 'CF7_API_URL', 'http://example.com/wp-content/plugins/contact-form-to-api/' );
 }
 if ( ! defined( 'CF7_API_VERSION' ) ) {
-	define( 'CF7_API_VERSION', '1.1.3' );
+	define( 'CF7_API_VERSION', '1.2.0' );
 }
 
 echo "=== Manual Class Verification ===\n\n";

@@ -7,8 +7,8 @@
  *
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Admin
- * @since 1.1.3
- * @version 1.1.3
+ * @since 1.2.0
+ * @version 1.2.0
  * @author Silver Assist
  */
 
@@ -25,7 +25,7 @@ use SilverAssist\ContactFormToAPI\Core\RequestLogger;
  *
  * Registers and manages the CF7 API Status dashboard widget.
  *
- * @since 1.1.3
+ * @since 1.2.0
  */
 class DashboardWidget implements LoadableInterface {
 
@@ -106,7 +106,7 @@ class DashboardWidget implements LoadableInterface {
 	public function register_widget(): void {
 		\wp_add_dashboard_widget(
 			'cf7_api_dashboard_widget',
-			\__( 'CF7 API Status', CF7_API_TEXT_DOMAIN ),
+			\__( 'CF7 API Status', 'contact-form-to-api' ),
 			array( $this, 'render' ),
 			null,
 			null,

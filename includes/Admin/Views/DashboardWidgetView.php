@@ -7,8 +7,8 @@
  *
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Admin\Views
- * @since 1.1.3
- * @version 1.1.3
+ * @since 1.2.0
+ * @version 1.2.0
  * @author Silver Assist
  */
 
@@ -21,7 +21,7 @@ namespace SilverAssist\ContactFormToAPI\Admin\Views;
  *
  * Provides static methods for rendering dashboard widget HTML.
  *
- * @since 1.1.3
+ * @since 1.2.0
  */
 class DashboardWidgetView {
 
@@ -35,11 +35,11 @@ class DashboardWidgetView {
 		?>
 		<div class="cf7-dashboard-widget">
 			<div class="cf7-widget-header">
-				<h3><?php \esc_html_e( 'Last 24 Hours', CF7_API_TEXT_DOMAIN ); ?></h3>
+				<h3><?php \esc_html_e( 'Last 24 Hours', 'contact-form-to-api' ); ?></h3>
 			</div>
 
 			<div class="cf7-widget-stats">
-				<?php self::render_stat_card( 'requests', $stats['total_24h'], \__( 'Requests', CF7_API_TEXT_DOMAIN ) ); ?>
+				<?php self::render_stat_card( 'requests', $stats['total_24h'], \__( 'Requests', 'contact-form-to-api' ) ); ?>
 				<?php self::render_success_rate_card( $stats['success_rate'] ); ?>
 				<?php self::render_response_time_card( $stats['avg_response_time'] ); ?>
 			</div>
@@ -48,10 +48,10 @@ class DashboardWidgetView {
 
 			<div class="cf7-widget-actions">
 				<a href="<?php echo \esc_url( \admin_url( 'admin.php?page=cf7-api-logs' ) ); ?>" class="button">
-					<?php \esc_html_e( 'View All Logs', CF7_API_TEXT_DOMAIN ); ?>
+					<?php \esc_html_e( 'View All Logs', 'contact-form-to-api' ); ?>
 				</a>
 				<a href="<?php echo \esc_url( \admin_url( 'admin.php?page=wpcf7' ) ); ?>" class="button">
-					<?php \esc_html_e( 'Settings', CF7_API_TEXT_DOMAIN ); ?>
+					<?php \esc_html_e( 'Settings', 'contact-form-to-api' ); ?>
 				</a>
 			</div>
 		</div>
@@ -95,7 +95,7 @@ class DashboardWidgetView {
 		?>
 		<div class="<?php echo \esc_attr( $class ); ?>">
 			<div class="cf7-stat-value"><?php echo \esc_html( \number_format_i18n( $success_rate, 1 ) ); ?>%</div>
-			<div class="cf7-stat-label"><?php \esc_html_e( 'Success Rate', CF7_API_TEXT_DOMAIN ); ?></div>
+			<div class="cf7-stat-label"><?php \esc_html_e( 'Success Rate', 'contact-form-to-api' ); ?></div>
 		</div>
 		<?php
 	}
@@ -112,10 +112,10 @@ class DashboardWidgetView {
 			<div class="cf7-stat-value">
 				<?php
 				/* translators: %d: average response time in milliseconds */
-				echo \esc_html( \sprintf( \__( '%d ms', CF7_API_TEXT_DOMAIN ), (int) $avg_time ) );
+				echo \esc_html( \sprintf( \__( '%d ms', 'contact-form-to-api' ), (int) $avg_time ) );
 				?>
 			</div>
-			<div class="cf7-stat-label"><?php \esc_html_e( 'Avg Response Time', CF7_API_TEXT_DOMAIN ); ?></div>
+			<div class="cf7-stat-label"><?php \esc_html_e( 'Avg Response Time', 'contact-form-to-api' ); ?></div>
 		</div>
 		<?php
 	}
@@ -133,13 +133,13 @@ class DashboardWidgetView {
 			<h4>
 				<?php
 				/* translators: %d: number of errors */
-				echo \esc_html( \sprintf( \__( 'Recent Errors (%d)', CF7_API_TEXT_DOMAIN ), $error_count ) );
+				echo \esc_html( \sprintf( \__( 'Recent Errors (%d)', 'contact-form-to-api' ), $error_count ) );
 				?>
 			</h4>
 
 			<?php if ( empty( $recent_errors ) ) : ?>
 				<p class="cf7-no-errors">
-					<?php \esc_html_e( 'No errors in the last 24 hours', CF7_API_TEXT_DOMAIN ); ?>
+					<?php \esc_html_e( 'No errors in the last 24 hours', 'contact-form-to-api' ); ?>
 					<span class="dashicons dashicons-yes-alt"></span>
 				</p>
 			<?php else : ?>
@@ -147,7 +147,7 @@ class DashboardWidgetView {
 					<div class="cf7-error-alert">
 						<?php
 						/* translators: %d: number of errors */
-						echo \esc_html( \sprintf( \__( '%d errors require attention', CF7_API_TEXT_DOMAIN ), $error_count ) );
+						echo \esc_html( \sprintf( \__( '%d errors require attention', 'contact-form-to-api' ), $error_count ) );
 						?>
 					</div>
 				<?php endif; ?>
@@ -171,7 +171,7 @@ class DashboardWidgetView {
 	private static function render_error_item( array $error ): void {
 		$form_id   = isset( $error['form_id'] ) ? (int) $error['form_id'] : 0;
 		$form_name = self::get_form_name( $form_id );
-		$error_msg = isset( $error['error_message'] ) ? $error['error_message'] : \__( 'Unknown error', CF7_API_TEXT_DOMAIN );
+		$error_msg = isset( $error['error_message'] ) ? $error['error_message'] : \__( 'Unknown error', 'contact-form-to-api' );
 		$time_ago  = self::time_ago( $error['created_at'] ?? '' );
 		$log_url   = \admin_url( 'admin.php?page=cf7-api-logs&action=view&log_id=' . ( $error['id'] ?? 0 ) );
 		?>
@@ -180,7 +180,7 @@ class DashboardWidgetView {
 			<?php echo \esc_html( self::truncate( $error_msg, 60 ) ); ?>
 			<span class="cf7-error-time"><?php echo \esc_html( $time_ago ); ?></span>
 			<a href="<?php echo \esc_url( $log_url ); ?>" class="cf7-error-link">
-				<?php \esc_html_e( 'View', CF7_API_TEXT_DOMAIN ); ?>
+				<?php \esc_html_e( 'View', 'contact-form-to-api' ); ?>
 			</a>
 		</li>
 		<?php
@@ -194,12 +194,12 @@ class DashboardWidgetView {
 	 */
 	private static function get_form_name( int $form_id ): string {
 		if ( $form_id <= 0 ) {
-			return \__( 'Unknown Form', CF7_API_TEXT_DOMAIN );
+			return \__( 'Unknown Form', 'contact-form-to-api' );
 		}
 
 		$form = \get_post( $form_id );
-		if ( ! $form ) {
-			return \__( 'Unknown Form', CF7_API_TEXT_DOMAIN );
+		if ( ! $form instanceof \WP_Post ) {
+			return \__( 'Unknown Form', 'contact-form-to-api' );
 		}
 
 		return $form->post_title;
@@ -221,7 +221,7 @@ class DashboardWidgetView {
 			return '';
 		}
 
-		return \human_time_diff( $timestamp, \current_time( 'timestamp' ) ) . ' ' . \__( 'ago', CF7_API_TEXT_DOMAIN );
+		return \human_time_diff( $timestamp, \current_time( 'timestamp' ) ) . ' ' . \__( 'ago', 'contact-form-to-api' );
 	}
 
 	/**

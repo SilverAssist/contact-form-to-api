@@ -439,7 +439,7 @@ class RequestLogger {
 	 * Retrieves the count of API requests in the specified time window.
 	 * Optionally filter by status.
 	 *
-	 * @since 1.1.3
+	 * @since 1.2.0
 	 * @param int         $hours  Number of hours to look back
 	 * @param string|null $status Optional status filter ('success', 'error', etc.)
 	 * @return int Number of requests
@@ -476,7 +476,7 @@ class RequestLogger {
 	 *
 	 * Calculates the percentage of successful requests in the specified time window.
 	 *
-	 * @since 1.1.3
+	 * @since 1.2.0
 	 * @param int $hours Number of hours to look back
 	 * @return float Success rate as a percentage (0-100)
 	 */
@@ -510,7 +510,7 @@ class RequestLogger {
 	 * Calculates the average execution time in milliseconds for requests
 	 * in the specified time window.
 	 *
-	 * @since 1.1.3
+	 * @since 1.2.0
 	 * @param int $hours Number of hours to look back
 	 * @return float Average response time in milliseconds
 	 */
@@ -542,7 +542,7 @@ class RequestLogger {
 	 *
 	 * Retrieves the most recent failed API requests for quick diagnostics.
 	 *
-	 * @since 1.1.3
+	 * @since 1.2.0
 	 * @param int $limit Maximum number of errors to retrieve
 	 * @return array<int, array<string, mixed>> Array of error log entries
 	 */

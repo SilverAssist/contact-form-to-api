@@ -5,8 +5,8 @@
  * Tests for the new dashboard statistics methods in RequestLogger class.
  *
  * @package SilverAssist\ContactFormToAPI\Tests
- * @since   1.1.3
- * @version 1.1.3
+ * @since   1.2.0
+ * @version 1.2.0
  * @author  Silver Assist
  */
 
