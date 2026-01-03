@@ -16,24 +16,56 @@ Complete API reference for Contact Form 7 to API plugin, documenting all hooks, 
 
 ```
 SilverAssist\ContactFormToAPI\
-├── Core\
+├── Admin\                          # Priority 30 - Admin components
+│   ├── Loader.php                  # Admin component loader
+│   ├── SettingsPage.php            # Settings Hub integration controller
+│   ├── RequestLogController.php    # Request logs admin controller
+│   ├── RequestLogTable.php         # WP_List_Table for logs
+│   └── Views\                      # Separated view templates
+│       ├── RequestLogView.php      # Request log HTML rendering
+│       └── SettingsView.php        # Settings page HTML rendering
+├── ContactForm\                    # Priority 30 - CF7 Integration
+│   ├── Integration.php             # CF7 hooks and panel logic
+│   └── Views\
+│       └── IntegrationView.php     # CF7 panel HTML rendering
+├── Core\                           # Priority 10 - Core components
 │   ├── Interfaces\
-│   │   └── LoadableInterface
-│   ├── Activator
-│   ├── Plugin
-│   └── Updater
-└── ContactForm\
-    └── Integration
+│   │   └── LoadableInterface.php   # Component contract
+│   ├── Activator.php               # Lifecycle management
+│   ├── RequestLogger.php           # API request/response DB logger
+│   └── Plugin.php                  # Main plugin controller
+├── Services\                       # Priority 20 - Business logic services
+│   ├── Loader.php                  # Services component loader
+│   ├── ApiClient.php               # HTTP client with retry logic
+│   └── CheckboxHandler.php         # Checkbox value processing
+└── Utils\                          # Priority 40 - Utility classes
+    ├── DebugLogger.php             # PSR-3 file logger for debugging
+    └── StringHelper.php            # String manipulation utilities
 ```
 
 ### Component Loading
 
 All components implement `LoadableInterface` with priority-based loading:
 
-- **Priority 10**: Core components (Plugin, Activator)
-- **Priority 20**: Services (API handlers)
-- **Priority 30**: Admin components (Integration)
-- **Priority 40**: Utilities
+- **Priority 10**: Core components (Plugin, Activator, RequestLogger)
+- **Priority 20**: Services (ApiClient, CheckboxHandler)
+- **Priority 30**: Admin & ContactForm (SettingsPage, RequestLogController, Integration)
+- **Priority 40**: Utilities (DebugLogger, StringHelper)
+
+### Dual Logger Architecture
+
+The plugin has two distinct logging systems:
+
+- **`Core\RequestLogger`**: Database-backed logger for API request/response tracking (shown in admin UI)
+- **`Utils\DebugLogger`**: PSR-3 compliant file logger for plugin debugging (dev/troubleshooting)
+
+### MVC Pattern in Admin
+
+Admin components follow MVC separation:
+
+- **Controllers**: `RequestLogController`, `SettingsPage` (routing, actions)
+- **Views**: `Views/RequestLogView`, `Views/SettingsView` (HTML rendering)
+- **Models**: `RequestLogTable` (WP_List_Table data handling)
 
 ## Hooks and Filters
 
@@ -267,44 +299,12 @@ Filter form tags before processing in API integration panel.
 
 ## Classes
 
-#### `cf7_api_collect_mail_tags`
-
-Filter form tags collection before rendering admin panel.
-
-**Parameters**:
-
-- `array $tags` - Array of form tags from `scan_form_tags()`
-- `\WPCF7_ContactForm $form` - CF7 form object
-- `array $args` - Filter arguments (include/exclude tag types)
-
-**Return**: `array` Filtered array of form tags
-
-**Usage**: This filter allows modification of the form tags list used in the admin panel for field mapping, XML templates, and JSON templates. Useful for adding custom tags or filtering out specific field types.
-
-**Example**:
-
-```php
-\add_filter("cf7_api_collect_mail_tags", function($tags, $form, $args) {
-    // Add custom dynamic tag
-    $tags[] = (object) [
-        "type" => "text",
-        "name" => "custom_user_id"
-    ];
-    
-    // Filter out file upload fields
-    $tags = array_filter($tags, function($tag) {
-        return $tag->type !== "file";
-    });
-    
-    return $tags;
-}, 10, 3);
-```
-
-## Classes
-
 ### Core\Plugin
 
-Main plugin controller implementing singleton pattern.
+Main plugin controller implementing singleton pattern and LoadableInterface.
+
+**Implements**: `LoadableInterface`
+**Singleton**: `instance()` method, private constructor
 
 #### Methods
 
@@ -324,65 +324,268 @@ $plugin = Plugin::instance();
 
 ##### `init(): void`
 
-Initialize plugin components.
+Initialize plugin and load all components.
 
-##### `get_version(): string`
+##### `load_components(): void`
 
-Get current plugin version.
+Load all plugin components based on priority.
 
-**Return**: `string` Version number
+##### `init_updater(): void`
 
-**Example**:
+Configure GitHub updater (via `silverassist/wp-github-updater` package).
 
-```php
-$version = Plugin::instance()->get_version();
-// Returns: "1.0.0"
-```
+##### `get_priority(): int`
+
+Get component loading priority.
+
+**Return**: `int` Returns 10 (Core priority)
+
+##### `should_load(): bool`
+
+Check WordPress version and dependencies.
+
+**Return**: `bool` Whether component should load
 
 ### Core\Activator
 
-Handles plugin activation, deactivation, and lifecycle.
+Handles plugin activation, deactivation, and lifecycle management.
 
 #### Methods
 
 ##### `activate(): void`
 
-Plugin activation handler.
+Plugin activation handler. Creates database tables and sets default options.
 
 **Example**:
 
 ```php
-\register_activation_hook(CF7_API_FILE, [
-    'SilverAssist\ContactFormToAPI\Core\Activator',
-    'activate'
+\register_activation_hook(CF7_API_PLUGIN_FILE, [
+    "SilverAssist\ContactFormToAPI\Core\Activator",
+    "activate"
 ]);
 ```
 
 ##### `deactivate(): void`
 
-Plugin deactivation handler.
+Plugin deactivation handler. Cleans up scheduled events.
+
+##### `uninstall(): void`
+
+Plugin uninstallation handler. Removes all plugin data (called from uninstall.php).
 
 ##### `create_tables(): void`
 
-Create database tables (if needed).
+Create database tables. Public static for test reuse.
 
-### Core\Updater
+**Example**:
 
-Manages GitHub-based plugin updates.
+```php
+// In wpSetUpBeforeClass() - BEFORE data insertion
+Activator::create_tables();
+// This avoids MySQL implicit COMMIT issues
+```
+
+### Core\RequestLogger
+
+Database-backed logging for API requests/responses.
+
+**Implements**: `LoadableInterface`
+**Singleton**: `instance()` method, private constructor
+**Storage**: Custom database table `{prefix}cf7_api_logs`
+
+#### Methods
+
+##### `instance(): RequestLogger`
+
+Get singleton instance.
+
+##### `log(array $data): int|false`
+
+Log request/response to database.
+
+**Parameters**:
+
+- `array $data` - Log data including request/response details
+
+**Return**: `int|false` Log entry ID or false on failure
+
+##### `get_logs(array $args = []): array`
+
+Retrieve logs with filtering and pagination.
+
+**Parameters**:
+
+- `array $args` - Query arguments (per_page, page, orderby, order, search)
+
+**Return**: `array` Array of log entries
+
+##### `get_log(int $id): array|null`
+
+Get single log entry by ID.
+
+**Parameters**:
+
+- `int $id` - Log entry ID
+
+**Return**: `array|null` Log entry or null if not found
+
+##### `delete_logs(array $ids): int`
+
+Delete log entries by IDs.
+
+**Parameters**:
+
+- `array $ids` - Array of log IDs to delete
+
+**Return**: `int` Number of deleted entries
+
+##### `get_statistics(): array`
+
+Get log statistics for dashboard display.
+
+**Return**: `array` Statistics data (total, success, errors, last_request)
+
+### Core\Interfaces\LoadableInterface
+
+Interface for loadable components with priority-based loading.
 
 #### Methods
 
 ##### `init(): void`
 
-Initialize GitHub updater integration.
+Initialize the component (register hooks, set up functionality).
 
-##### `check_for_update(): void`
+##### `get_priority(): int`
 
-Check for available updates.
+Get component loading priority.
+
+**Return**: `int` Priority (10=Core, 20=Services, 30=Admin, 40=Utils)
+
+##### `should_load(): bool`
+
+Determine if component should load (conditional loading logic).
+
+**Return**: `bool` Whether to load component
+
+### Services\ApiClient
+
+Centralized HTTP client with retry logic and logging.
+
+**Implements**: `LoadableInterface`
+**Singleton**: `instance()` method, private constructor
+**Priority**: 20 (Services layer)
+
+#### Methods
+
+##### `instance(): ApiClient`
+
+Get singleton instance.
+
+##### `request(string $url, array $config): array`
+
+Execute HTTP request with full configuration.
+
+**Parameters**:
+
+- `string $url` - API endpoint URL
+- `array $config` - Request configuration (method, headers, body, timeout, etc.)
+
+**Return**: `array` Response data with status, body, and headers
+
+##### `post(string $url, array $data, array $headers = []): array`
+
+Execute POST request shortcut.
+
+**Parameters**:
+
+- `string $url` - API endpoint URL
+- `array $data` - POST data
+- `array $headers` - Optional headers
+
+**Return**: `array` Response data
+
+##### `get(string $url, array $params = [], array $headers = []): array`
+
+Execute GET request shortcut.
+
+**Parameters**:
+
+- `string $url` - API endpoint URL
+- `array $params` - Query parameters
+- `array $headers` - Optional headers
+
+**Return**: `array` Response data
+
+##### `get_priority(): int`
+
+Get component loading priority.
+
+**Return**: `int` Returns 20 (Services priority)
+
+##### `should_load(): bool`
+
+Always returns true (service always available).
+
+**Return**: `bool` Always true
+
+**Features**:
+
+- Retry logic with exponential backoff
+- Request/response logging via Core\RequestLogger
+- Authentication header handling (Bearer, Basic, API Key)
+- Configurable timeout and SSL verification
+- Error categorization and handling
+
+### Services\CheckboxHandler
+
+Handle CF7 checkbox values for API submission.
+
+#### Methods
+
+##### `is_checkbox_value(mixed $value): bool`
+
+Check if value represents a checkbox field.
+
+**Parameters**:
+
+- `mixed $value` - Value to check
+
+**Return**: `bool` True if value represents checkbox
+
+##### `is_checkbox_checked(mixed $value): bool`
+
+Determine if checkbox is in checked state.
+
+**Parameters**:
+
+- `mixed $value` - Checkbox value
+
+**Return**: `bool` True if checkbox is checked
+
+##### `convert_checkbox_value(mixed $value, array $options = []): mixed`
+
+Convert checkbox value to API-friendly format.
+
+**Parameters**:
+
+- `mixed $value` - Original checkbox value
+- `array $options` - Conversion options
+
+**Return**: `mixed` Converted value
+
+**Conversion Options**:
+
+- `true_value` - Value for checked state (default: "1")
+- `false_value` - Value for unchecked state (default: "0")
+- `format` - Output format: "boolean", "string", "integer"
 
 ### ContactForm\Integration
 
-Contact Form 7 integration handler.
+Contact Form 7 integration handler implementing LoadableInterface.
+
+**Implements**: `LoadableInterface`
+**Singleton**: `instance()` method, private constructor
+**Priority**: 30 (Admin priority)
 
 #### Methods
 
@@ -394,91 +597,283 @@ Get singleton instance.
 
 Initialize CF7 integration hooks.
 
-##### `add_editor_panel(array $panels): array`
+Registers hooks for:
+- `wpcf7_editor_panels` - Add API Integration panel
+- `wpcf7_before_send_mail` - Process form submission
+- Admin enqueue scripts/styles
 
-Add API Integration panel to CF7 editor.
+##### `render_integration_panel(): void`
 
-**Parameters**:
-
-- `array $panels` - Existing editor panels
-
-**Return**: `array` Modified panels array
-
-##### `save_form_settings(WPCF7_ContactForm $contact_form): void`
-
-Save API settings for form.
-
-**Parameters**:
-
-- `\WPCF7_ContactForm $contact_form` - CF7 form object
-
-##### `send_to_api(WPCF7_ContactForm $contact_form): void`
-
-Send form submission to configured API.
-
-**Parameters**:
-
-- `\WPCF7_ContactForm $contact_form` - CF7 form object
-
-### Core\Interfaces\LoadableInterface
-
-Interface for loadable components.
-
-#### Methods
-
-##### `init(): void`
-
-Initialize the component.
+Render API integration panel. Delegates to IntegrationView.
 
 ##### `get_priority(): int`
 
 Get component loading priority.
 
-**Return**: `int` Priority (10-40)
+**Return**: `int` Returns 30 (Admin priority)
 
 ##### `should_load(): bool`
 
-Determine if component should load.
+Check if component should load.
 
-**Return**: `bool` Whether to load component
+**Return**: `bool` Returns `is_admin()` (admin-only functionality)
+
+**CF7 Integration Features**:
+
+- **Editor Tab**: Adds custom "API Integration" tab to CF7 form editor
+- **Field Mapping**: Dynamic mapping between CF7 fields and API parameters
+- **Multiple Formats**: GET/POST params, JSON, XML payloads
+- **HTTP Methods**: GET, POST, PUT, PATCH support
+- **Authentication**: Bearer tokens, Basic Auth, API keys, custom headers
+- **Error Handling**: Comprehensive logging and retry mechanisms
+- **Debug Mode**: Detailed logging for troubleshooting
+
+### ContactForm\Views\IntegrationView
+
+HTML rendering for CF7 API Integration panel.
+
+#### Methods
+
+##### `render_panel(...): void`
+
+Main panel rendering with all sections.
+
+##### `render_base_fields(): void`
+
+Render URL and enable checkbox.
+
+##### `render_input_type_field(): void`
+
+Render input type selector.
+
+##### `render_method_field(): void`
+
+Render HTTP method selector.
+
+##### `render_retry_config(): void`
+
+Render retry configuration section.
+
+##### `render_params_mapping(): void`
+
+Render field mapping table.
+
+##### `render_xml_template(): void`
+
+Render XML template editor.
+
+##### `render_json_template(): void`
+
+Render JSON template editor.
+
+##### `render_debug_section(): void`
+
+Render logs and statistics display.
+
+### Admin\RequestLogController
+
+Admin interface controller for viewing API request/response logs.
+
+#### Methods
+
+##### `handle_page_request(): void`
+
+Route to appropriate view based on request.
+
+##### `show_logs_list(): void`
+
+Display logs list table.
+
+##### `show_log_detail(int $log_id): void`
+
+Display single log detail.
+
+**Parameters**:
+
+- `int $log_id` - Log entry ID
+
+##### `process_bulk_actions(): void`
+
+Handle bulk delete/export actions.
+
+### Admin\Views\RequestLogView
+
+HTML rendering for request logs pages.
+
+#### Methods
+
+##### `render_page(RequestLogTable $table, array $statistics): void`
+
+Main page rendering.
+
+**Parameters**:
+
+- `RequestLogTable $table` - WP_List_Table instance
+- `array $statistics` - Statistics data
+
+##### `render_statistics(array $stats): void`
+
+Render statistics cards.
+
+##### `render_detail(array $log): void`
+
+Render single log detail view.
+
+##### `render_notices(array $notices): void`
+
+Render admin notices.
+
+### Admin\Views\SettingsView
+
+HTML rendering for Settings Hub documentation page.
+
+#### Methods
+
+##### `render_page(): void`
+
+Main settings page rendering.
+
+##### `render_how_to_section(): void`
+
+Render usage instructions.
+
+##### `render_quick_links_section(): void`
+
+Render quick navigation links.
+
+##### `render_status_section(): void`
+
+Render plugin status display.
+
+### Utils\DebugLogger
+
+PSR-3 compliant file logger for plugin debugging.
+
+**Implements**: `LoadableInterface`
+**Singleton**: `instance()` method, private constructor
+**Storage**: File at `wp-content/uploads/cf7-to-api-debug.log`
+
+#### Methods
+
+##### `instance(): DebugLogger`
+
+Get singleton instance.
+
+##### `debug(string $message, array $context = []): void`
+
+Log debug level message.
+
+##### `info(string $message, array $context = []): void`
+
+Log info level message.
+
+##### `warning(string $message, array $context = []): void`
+
+Log warning level message.
+
+##### `error(string $message, array $context = []): void`
+
+Log error level message.
+
+##### `log(string $level, string $message, array $context = []): void`
+
+Generic log method.
+
+**Parameters**:
+
+- `string $level` - Log level (debug, info, warning, error)
+- `string $message` - Log message
+- `array $context` - Context data
+
+### Utils\StringHelper
+
+String manipulation utilities for field mapping.
+
+#### Methods
+
+##### `kebab_to_camel(string $string): string`
+
+Convert kebab-case to camelCase.
+
+**Parameters**:
+
+- `string $string` - Input string in kebab-case
+
+**Return**: `string` String in camelCase
+
+##### `camel_to_kebab(string $string): string`
+
+Convert camelCase to kebab-case.
+
+**Parameters**:
+
+- `string $string` - Input string in camelCase
+
+**Return**: `string` String in kebab-case
+
+##### `fields_match(string $field1, string $field2): bool`
+
+Case-insensitive field comparison.
+
+**Parameters**:
+
+- `string $field1` - First field name
+- `string $field2` - Second field name
+
+**Return**: `bool` True if fields match
 
 ## Constants
 
 ### Plugin Information
 
 ```php
-CF7_API_VERSION        // "1.0.0"
-CF7_API_FILE           // Main plugin file path
-CF7_API_DIR            // Plugin directory path
-CF7_API_URL            // Plugin URL
-CF7_API_BASENAME       // Plugin basename
-CF7_API_TEXT_DOMAIN    // "contact-form-to-api"
+CF7_API_VERSION           // "1.0.0"
+CF7_API_PLUGIN_FILE       // Main plugin file path (__FILE__)
+CF7_API_PLUGIN_DIR        // Plugin directory path (plugin_dir_path(__FILE__))
+CF7_API_PLUGIN_URL        // Plugin URL (plugin_dir_url(__FILE__))
+CF7_API_PLUGIN_BASENAME   // Plugin basename (plugin_basename(__FILE__))
 ```
 
 ### Requirements
 
 ```php
-CF7_API_MIN_PHP_VERSION  // "8.2"
-CF7_API_MIN_WP_VERSION   // "6.5"
+CF7_API_MIN_PHP_VERSION   // "8.2"
+CF7_API_MIN_WP_VERSION    // "6.5"
 ```
+
+### Text Domain
+
+The text domain `"contact-form-to-api"` should be used as a **literal string** in all i18n functions:
+
+```php
+\__("Text", "contact-form-to-api");           // Correct
+\esc_html__("Text", "contact-form-to-api");   // Correct
+```
+
+> **Note**: WordPress i18n extraction tools require literal strings, not constants or variables.
 
 ### Usage Examples
 
 ```php
 // Get plugin directory
-$plugin_dir = CF7_API_DIR;
+$plugin_dir = CF7_API_PLUGIN_DIR;
 
 // Get plugin URL
-$plugin_url = CF7_API_URL;
+$plugin_url = CF7_API_PLUGIN_URL;
 
 // Load asset
 \wp_enqueue_script(
     "cf7-api-admin",
-    CF7_API_URL . "assets/js/admin.js",
+    CF7_API_PLUGIN_URL . "assets/js/admin.js",
     ["jquery"],
     CF7_API_VERSION,
     true
 );
+
+// Check plugin version
+if (version_compare(CF7_API_VERSION, "2.0.0", ">=")) {
+    // Use new API features
+}
 ```
 
 ## Integration Examples
@@ -628,6 +1023,13 @@ function custom_cf7_api_integration() {
 
 ## Testing
 
+### Test Helpers
+
+The plugin provides test helpers for WordPress Test Suite:
+
+- **`Tests\Helpers\TestCase`**: Base test case class
+- **`Tests\Helpers\CF7TestCase`**: CF7-specific test utilities
+
 ### Unit Testing
 
 ```php
@@ -650,6 +1052,38 @@ class CustomIntegrationTest extends CF7TestCase {
     }
 }
 ```
+
+### Database Table Testing
+
+```php
+use SilverAssist\ContactFormToAPI\Core\Activator;
+use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
+
+class RequestLoggerTest extends TestCase {
+    public static function wpSetUpBeforeClass(): void {
+        // Create tables BEFORE any data insertion
+        Activator::create_tables();
+    }
+    
+    public function test_log_creation(): void {
+        $logger = RequestLogger::instance();
+        $log_id = $logger->log([
+            "form_id" => 123,
+            "url" => "https://api.example.com/endpoint",
+            "status" => 200
+        ]);
+        
+        $this->assertIsInt($log_id);
+    }
+}
+```
+
+## Required Packages
+
+The plugin relies on these SilverAssist packages:
+
+- **`silverassist/wp-github-updater ^1.2`**: Automatic updates from GitHub releases
+- **`silverassist/wp-settings-hub ^1.1`**: Unified settings interface
 
 ## Resources
 

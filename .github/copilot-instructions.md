@@ -153,7 +153,6 @@ define("CF7_API_PLUGIN_FILE", __FILE__);
 define("CF7_API_PLUGIN_DIR", plugin_dir_path(__FILE__));
 define("CF7_API_PLUGIN_URL", plugin_dir_url(__FILE__));
 define("CF7_API_PLUGIN_BASENAME", plugin_basename(__FILE__));
-define("CF7_API_TEXT_DOMAIN", "contact-form-to-api");
 define("CF7_API_MIN_PHP_VERSION", "8.2");
 define("CF7_API_MIN_WP_VERSION", "6.5");
 ```
@@ -460,7 +459,7 @@ Activator::create_tables();
 ### WordPress Integration Standards
 - **Hooks**: Use `\add_action("init", [$this, "method"])` with array callbacks
 - **i18n**: All user-facing strings use `\__()`, `\esc_html__()`, `\_e()`, `\esc_html_e()`
-- **Text Domain**: `CF7_API_TEXT_DOMAIN` constant (value: `"contact-form-to-api"`)
+- **Text Domain**: ALWAYS use literal string `'contact-form-to-api'` (required for i18n extraction tools)
 - **Sanitization**: Use `\sanitize_text_field()`, `\sanitize_email()`, etc.
 - **Escaping**: Use `\esc_html()`, `\esc_attr()`, `\esc_url()` for output
 - **Nonces**: Verify with `\wp_verify_nonce()` for forms
@@ -819,7 +818,6 @@ define("CF7_API_FILE", __FILE__);
 define("CF7_API_DIR", plugin_dir_path(__FILE__));
 define("CF7_API_URL", plugin_dir_url(__FILE__));
 define("CF7_API_BASENAME", plugin_basename(__FILE__));
-define("CF7_API_TEXT_DOMAIN", "contact-form-to-api");
 
 // System requirements
 define("CF7_API_MIN_PHP_VERSION", "8.2");
@@ -827,9 +825,10 @@ define("CF7_API_MIN_WP_VERSION", "6.5");
 ```
 
 ### Mandatory Constant Usage Rules
-- **Text Domain**: ALWAYS use `CF7_API_TEXT_DOMAIN` for i18n functions
-  - ✅ Correct: `\__("Text", CF7_API_TEXT_DOMAIN)`
-  - ❌ Wrong: `\__("Text", "contact-form-to-api")`
+- **Text Domain**: ALWAYS use literal string `'contact-form-to-api'` for i18n functions
+  - ✅ Correct: `\__("Text", 'contact-form-to-api')`
+  - ❌ Wrong: `\__("Text", $variable)` or `\__("Text", CONSTANT)`
+  - **Reason**: WordPress i18n extraction tools (wp i18n make-pot) cannot parse variables/constants
 
 - **Plugin Version**: ALWAYS use `CF7_API_VERSION` for version references
   - ✅ Correct: `CF7_API_VERSION`
