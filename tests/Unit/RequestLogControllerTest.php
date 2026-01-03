@@ -7,8 +7,8 @@
  * including bulk actions handling and view actions.
  *
  * @package SilverAssist\ContactFormToAPI\Tests
- * @since   1.1.1
- * @version 1.0.0
+ * @since   1.1.2
+ * @version 1.1.2
  * @author  Silver Assist
  */
 

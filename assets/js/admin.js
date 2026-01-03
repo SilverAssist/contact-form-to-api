@@ -7,7 +7,7 @@
  * @package ContactFormToAPI
  * @since 1.0.0
  * @author Silver Assist
- * @version     1.1.1
+ * @version     1.1.2
  * @license Polyform-Noncommercial-1.0.0
  */
 
@@ -432,7 +432,7 @@
     /**
      * Setup custom headers functionality
      *
-     * @since 1.1.1
+     * @since 1.1.2
      * @return {void}
      */
     setupCustomHeaders() {
@@ -443,7 +443,7 @@
     /**
      * Add a new header row to the custom headers table
      *
-     * @since 1.1.1
+     * @since 1.1.2
      * @return {void}
      */
     addHeaderRow() {
@@ -481,7 +481,7 @@
     /**
      * Remove a header row from the custom headers table
      *
-     * @since 1.1.1
+     * @since 1.1.2
      * @param {jQuery} $button The clicked remove button
      * @return {void}
      */
@@ -511,7 +511,7 @@
     /**
      * Add a preset header from the quick add buttons
      *
-     * @since 1.1.1
+     * @since 1.1.2
      * @param {jQuery} $button The clicked preset button
      * @return {void}
      */
@@ -554,7 +554,7 @@
     /**
      * Reindex header rows to ensure proper array indexing
      *
-     * @since 1.1.1
+     * @since 1.1.2
      * @return {void}
      */
     reindexHeaders() {

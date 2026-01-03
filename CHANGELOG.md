@@ -26,6 +26,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Multi-site Support**: Enhanced WordPress multisite compatibility
 - **Template System**: Pre-configured templates for popular APIs (Mailchimp, HubSpot, etc.)
 
+## [1.1.2] - 2026-01-02
+
+### Added
+- **Custom Headers Support**: Add custom HTTP headers directly from the CF7 integration panel
+  * Dynamic add/remove header rows
+  * Quick preset buttons for common authentication types (Bearer Token, Basic Auth, API Key, Content-Type JSON)
+  * Headers are stored per-form and sent with each API request
+- **Legacy Hook Compatibility**: Backward compatibility for `qs_cf7_api_*` hooks
+  * `qs_cf7_api_get_args` → `cf7_api_get_args`
+  * `qs_cf7_api_post_url` → `cf7_api_post_url`
+  * `qs_cf7_api_get_url` → `cf7_api_get_url`
+  * `qs_cf7_collect_mail_tags` → `cf7_api_collect_mail_tags`
+- **Unit Tests**: Added tests for RequestLogController bulk action validation
+
+### Fixed
+- **Log View Action**: Fixed "Security check failed" error when viewing log details
+  * The `action=view` URL parameter was incorrectly triggering bulk action nonce verification
+  * Now properly skips non-bulk actions (`view`) and only validates `delete` and `retry` actions
+
+### Documentation
+- Added test environment setup instructions to copilot-instructions.md
+- WordPress Test Suite configuration guide
+- Local by Flywheel MySQL socket setup instructions
+
 ## [1.1.1] - 2026-01-02
 
 ### Fixed

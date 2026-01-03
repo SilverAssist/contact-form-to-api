@@ -107,7 +107,7 @@ class ApiClient implements LoadableInterface {
 	 *
 	 * Maps old qs_cf7_api_* hooks to new cf7_api_* hooks.
 	 *
-	 * @since 1.1.1
+	 * @since 1.1.2
 	 * @return void
 	 */
 	private function register_legacy_hooks(): void {

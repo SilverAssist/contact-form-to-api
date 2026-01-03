@@ -214,7 +214,7 @@ class IntegrationView {
 	/**
 	 * Render authentication/custom headers section
 	 *
-	 * @since 1.1.1
+	 * @since 1.1.2
 	 * @param array<int, array<string, string>> $custom_headers Custom HTTP headers
 	 * @return void
 	 */

@@ -131,7 +131,7 @@ class Integration implements LoadableInterface {
 	 *
 	 * Maps old qs_cf7_* hooks to new cf7_api_* hooks.
 	 *
-	 * @since 1.1.1
+	 * @since 1.1.2
 	 * @return void
 	 */
 	private function register_legacy_hooks(): void {
