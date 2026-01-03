@@ -276,9 +276,9 @@ class RequestLogController implements LoadableInterface {
 		$failed_count  = 0;
 		$skipped_count = 0;
 
-		// Rate limiting constants
-		$max_retries_per_entry = RequestLogger::MAX_MANUAL_RETRIES;
-		$max_retries_per_hour  = RequestLogger::MAX_RETRIES_PER_HOUR;
+		// Rate limiting from settings
+		$max_retries_per_entry = RequestLogger::get_max_manual_retries();
+		$max_retries_per_hour  = RequestLogger::get_max_retries_per_hour();
 
 		// Check global rate limit (hourly)
 		$recent_retries = $this->count_recent_retries( 1 ); // Last 1 hour
