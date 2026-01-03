@@ -527,13 +527,6 @@ export WP_CORE_DIR="/tmp/wordpress"
 ./vendor/bin/phpunit --testsuite "Unit Tests"
 ```
 
-#### Local Sites (Flywheel/Local) Configuration
-For Local by Flywheel environments, you may need to use the site's MySQL socket:
-```bash
-# Find your Local site's MySQL socket
-export WP_TESTS_DB_HOST="localhost:/Users/username/Library/Application Support/Local/run/XXXXXX/mysql/mysqld.sock"
-```
-
 #### Troubleshooting Test Environment
 - **"WordPress Test Suite not found"**: Set `WP_TESTS_DIR` environment variable
 - **"Database connection failed"**: Verify MySQL credentials and that test database exists

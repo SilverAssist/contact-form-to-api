@@ -77,7 +77,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Documentation
 - Added test environment setup instructions to copilot-instructions.md
 - WordPress Test Suite configuration guide
-- Local by Flywheel MySQL socket setup instructions
 
 ## [1.1.1] - 2026-01-02
 
