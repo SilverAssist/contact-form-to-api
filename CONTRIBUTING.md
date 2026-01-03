@@ -311,10 +311,11 @@ CF7_API_FILE           // Main plugin file
 CF7_API_DIR            // Plugin directory path
 CF7_API_URL            // Plugin URL
 CF7_API_BASENAME       // Plugin basename
-CF7_API_TEXT_DOMAIN    // Text domain
 CF7_API_MIN_PHP_VERSION
 CF7_API_MIN_WP_VERSION
 ```
+
+**i18n Text Domain**: Always use literal string `'contact-form-to-api'` (not a constant) for WordPress i18n extraction tools.
 
 ## Resources
 

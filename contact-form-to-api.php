@@ -36,7 +36,6 @@ define( 'CF7_API_FILE', __FILE__ );
 define( 'CF7_API_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CF7_API_URL', plugin_dir_url( __FILE__ ) );
 define( 'CF7_API_BASENAME', plugin_basename( __FILE__ ) );
-define( 'CF7_API_TEXT_DOMAIN', 'contact-form-to-api' );
 
 // Minimum requirements.
 define( 'CF7_API_MIN_PHP_VERSION', '8.2' );
