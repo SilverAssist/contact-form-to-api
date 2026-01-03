@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Multi-site Support**: Enhanced WordPress multisite compatibility
 - **Template System**: Pre-configured templates for popular APIs (Mailchimp, HubSpot, etc.)
 
+## [1.2.1] - 2026-01-03
+
+### Fixed
+- **CSS Class Conflicts**: Renamed generic `.success` and `.error` classes to `.stat-success` and `.stat-error` to prevent external JavaScript from manipulating stat boxes
+- **CSS Specificity**: Added `!important` to `.cf7-api-hidden` utility class to ensure it overrides other display rules
+
 ## [1.2.0] - 2026-01-03
 
 ### Added
