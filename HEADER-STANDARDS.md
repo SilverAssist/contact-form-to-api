@@ -10,7 +10,7 @@ All PHP, CSS, JavaScript, and other code files must include standardized headers
 
 **Important**: Version numbers in this document are managed automatically by the `update-version-simple.sh` script. Never manually edit version numbers in this file - they will be overwritten during the next version update.
 
-Current project version: **1.0.1**
+Current project version: **1.1.0**
 
 ## File Header Standards
 

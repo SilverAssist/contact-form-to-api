@@ -7,7 +7,7 @@
  * @package ContactFormToAPI
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.0.1
+ * @version     1.1.0
  * @license Polyform-Noncommercial-1.0.0
  */
 
