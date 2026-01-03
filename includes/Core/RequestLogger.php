@@ -390,4 +390,136 @@ class RequestLogger {
 			'max_retries'         => 0,
 		);
 	}
+
+	/**
+	 * Get count of logs in the last N hours
+	 *
+	 * Retrieves the count of API requests in the specified time window.
+	 * Optionally filter by status.
+	 *
+	 * @since 1.2.0
+	 * @param int         $hours  Number of hours to look back
+	 * @param string|null $status Optional status filter ('success', 'error', etc.)
+	 * @return int Number of requests
+	 */
+	public function get_count_last_hours( int $hours, ?string $status = null ): int {
+		global $wpdb;
+
+		$status_condition = '';
+
+		if ( $status ) {
+			// Handle different status types.
+			if ( 'error' === $status ) {
+				// Count all error types.
+				$status_condition = " AND status IN ('error', 'client_error', 'server_error')";
+			} else {
+				$status_condition = $wpdb->prepare( ' AND status = %s', $status );
+			}
+		}
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared -- table_name is a safe class property, status_condition is prepared above.
+		$count = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$this->table_name} WHERE created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)" . $status_condition,
+				$hours
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+
+		return (int) ( $count ?: 0 );
+	}
+
+	/**
+	 * Get success rate for the last N hours
+	 *
+	 * Calculates the percentage of successful requests in the specified time window.
+	 *
+	 * @since 1.2.0
+	 * @param int $hours Number of hours to look back
+	 * @return float Success rate as a percentage (0-100)
+	 */
+	public function get_success_rate_last_hours( int $hours ): float {
+		global $wpdb;
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
+		$stats = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT 
+					COUNT(*) as total,
+					SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) as successful
+				FROM {$this->table_name}
+				WHERE created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)",
+				$hours
+			),
+			ARRAY_A
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		if ( ! $stats || 0 === (int) $stats['total'] ) {
+			return 0.0;
+		}
+
+		return round( ( (int) $stats['successful'] / (int) $stats['total'] ) * 100, 2 );
+	}
+
+	/**
+	 * Get average response time for the last N hours
+	 *
+	 * Calculates the average execution time in milliseconds for requests
+	 * in the specified time window.
+	 *
+	 * @since 1.2.0
+	 * @param int $hours Number of hours to look back
+	 * @return float Average response time in milliseconds
+	 */
+	public function get_avg_response_time_last_hours( int $hours ): float {
+		global $wpdb;
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
+		$avg = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT AVG(execution_time) 
+				FROM {$this->table_name}
+				WHERE created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)
+				AND execution_time IS NOT NULL",
+				$hours
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		if ( ! $avg ) {
+			return 0.0;
+		}
+
+		// Convert seconds to milliseconds and round to 0 decimal places
+		return round( (float) $avg * 1000, 0 );
+	}
+
+	/**
+	 * Get recent error logs
+	 *
+	 * Retrieves the most recent failed API requests for quick diagnostics.
+	 *
+	 * @since 1.2.0
+	 * @param int $limit Maximum number of errors to retrieve
+	 * @return array<int, array<string, mixed>> Array of error log entries
+	 */
+	public function get_recent_errors( int $limit = 5 ): array {
+		global $wpdb;
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$this->table_name} 
+				WHERE status IN ('error', 'client_error', 'server_error')
+				ORDER BY created_at DESC 
+				LIMIT %d",
+				$limit
+			),
+			ARRAY_A
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return $results ?: array();
+	}
 }

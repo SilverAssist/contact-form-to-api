@@ -1,0 +1,237 @@
+/**
+ * Dashboard Widget Styles
+ *
+ * Styles for the CF7 API Status dashboard widget.
+ *
+ * @package SilverAssist\ContactFormToAPI
+ * @since 1.1.3
+ * @version 1.1.3
+ * @author Silver Assist
+ */
+
+/* Widget Container */
+.cf7-dashboard-widget {
+	padding: 0;
+}
+
+.cf7-widget-header {
+	margin-bottom: 15px;
+	border-bottom: 1px solid #dcdcde;
+	padding-bottom: 10px;
+}
+
+.cf7-widget-header h3 {
+	margin: 0;
+	font-size: 14px;
+	font-weight: 600;
+	color: #50575e;
+}
+
+/* Statistics Cards */
+.cf7-widget-stats {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 12px;
+	margin-bottom: 20px;
+}
+
+.cf7-stat-card {
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+	padding: 15px;
+	text-align: center;
+	transition: all 0.2s ease;
+}
+
+.cf7-stat-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cf7-stat-value {
+	font-size: 28px;
+	font-weight: 700;
+	line-height: 1.2;
+	margin-bottom: 5px;
+	color: #1d2327;
+}
+
+.cf7-stat-label {
+	font-size: 12px;
+	color: #646970;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+/* Success Rate Colors */
+.cf7-stat-success-rate.success-high {
+	background: #e7f5ec;
+	border-color: #68de7c;
+}
+
+.cf7-stat-success-rate.success-high .cf7-stat-value {
+	color: #00a32a;
+}
+
+.cf7-stat-success-rate.success-medium {
+	background: #fcf9e8;
+	border-color: #f0c930;
+}
+
+.cf7-stat-success-rate.success-medium .cf7-stat-value {
+	color: #996800;
+}
+
+.cf7-stat-success-rate.success-low {
+	background: #fcf0f1;
+	border-color: #f86368;
+}
+
+.cf7-stat-success-rate.success-low .cf7-stat-value {
+	color: #d63638;
+}
+
+/* Recent Errors Section */
+.cf7-widget-errors {
+	margin: 20px 0;
+	padding-top: 15px;
+	border-top: 1px solid #dcdcde;
+}
+
+.cf7-widget-errors h4 {
+	margin: 0 0 12px 0;
+	font-size: 13px;
+	font-weight: 600;
+	color: #50575e;
+}
+
+.cf7-error-alert {
+	background: #fcf0f1;
+	border-left: 4px solid #d63638;
+	padding: 10px 12px;
+	margin-bottom: 12px;
+	font-size: 13px;
+	color: #50575e;
+}
+
+.cf7-no-errors {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	padding: 20px;
+	background: #e7f5ec;
+	border-radius: 4px;
+	color: #00a32a;
+	font-size: 13px;
+	margin: 0;
+}
+
+.cf7-no-errors .dashicons {
+	color: #00a32a;
+	font-size: 20px;
+	width: 20px;
+	height: 20px;
+}
+
+.cf7-error-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.cf7-error-item {
+	padding: 10px 12px;
+	margin-bottom: 8px;
+	background: #f6f7f7;
+	border-left: 3px solid #d63638;
+	border-radius: 3px;
+	font-size: 13px;
+	line-height: 1.6;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.cf7-error-item strong {
+	color: #1d2327;
+}
+
+.cf7-error-time {
+	color: #646970;
+	font-size: 12px;
+	margin-left: auto;
+}
+
+.cf7-error-link {
+	font-size: 12px;
+	text-decoration: none;
+	color: #2271b1;
+}
+
+.cf7-error-link:hover {
+	color: #135e96;
+	text-decoration: underline;
+}
+
+/* Action Links */
+.cf7-widget-actions {
+	display: flex;
+	gap: 10px;
+	margin-top: 15px;
+	padding-top: 15px;
+	border-top: 1px solid #dcdcde;
+}
+
+.cf7-widget-actions .button {
+	flex: 1;
+	text-align: center;
+	justify-content: center;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 782px) {
+	.cf7-widget-stats {
+		grid-template-columns: 1fr;
+	}
+
+	.cf7-stat-value {
+		font-size: 24px;
+	}
+
+	.cf7-widget-actions {
+		flex-direction: column;
+	}
+
+	.cf7-error-item {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.cf7-error-time {
+		margin-left: 0;
+	}
+}
+
+/* Dark Mode Support (WordPress 5.7+) */
+@media (prefers-color-scheme: dark) {
+	body.admin-color-auto .cf7-stat-card {
+		background: #1e1e1e;
+		border-color: #3c3c3c;
+	}
+
+	body.admin-color-auto .cf7-stat-value {
+		color: #f0f0f1;
+	}
+
+	body.admin-color-auto .cf7-error-item {
+		background: #1e1e1e;
+	}
+
+	body.admin-color-auto .cf7-widget-header h3,
+	body.admin-color-auto .cf7-widget-errors h4 {
+		color: #f0f0f1;
+	}
+}

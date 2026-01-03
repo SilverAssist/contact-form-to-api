@@ -108,5 +108,13 @@ class Loader implements LoadableInterface {
 				$request_log_controller->init();
 			}
 		}
+
+		// Initialize Dashboard Widget.
+		if ( \class_exists( DashboardWidget::class ) ) {
+			$dashboard_widget = DashboardWidget::instance();
+			if ( $dashboard_widget->should_load() ) {
+				$dashboard_widget->init();
+			}
+		}
 	}
 }

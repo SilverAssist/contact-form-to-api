@@ -12,7 +12,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### API Logs Enhancements
 - **AJAX Live Refresh**: Real-time statistics updates without page reload
 - **Retry Mechanism**: Execute retry for failed API requests from admin UI
-- **Dashboard Widget**: Summary widget for WordPress dashboard
 - **Email Alerts**: Notifications when error rate exceeds threshold
 - **Performance Charts**: Visual trends and analytics with Chart.js
 - **Advanced Date Filters**: Filter logs by custom date ranges
@@ -27,32 +26,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.2.0] - 2026-01-03
 
-### 🚀 Export Logs Feature
-
-#### Added
-- **CSV Export**: Export API request logs to CSV format with Excel-compatible UTF-8 BOM
-- **JSON Export**: Export API request logs to JSON format with pretty printing
-- **Export Buttons**: Added export buttons to the API Logs admin page
-- **Disabled State**: Export buttons are visually disabled when no logs exist
+### Added
+- **Dashboard Widget**: Summary widget for WordPress dashboard displaying API request statistics (#23)
+  * At-a-glance statistics: total requests, success rate, and average response time (last 24 hours)
+  * Recent errors list showing last 5 failed requests with timestamps and error messages
+  * Quick action links to "View All Logs" and "Settings" pages
+  * Color-coded success rate indicator (green ≥90%, yellow 70-90%, red <70%)
+  * Error count badge with warning indicator
+  * Responsive design for all viewport sizes
+  * Capability-based visibility (only visible to users with `manage_options`)
+  * Can be hidden via WordPress Screen Options
+- **Export Logs Feature**: Export API request logs in multiple formats (#20)
+  * CSV export with all log fields for spreadsheet analysis (UTF-8 BOM for Excel)
+  * JSON export with full structured data with pretty printing
+  * Filter-aware exports (respects current search and status filters)
+  * Secure file handling with proper HTTP headers
+  * Disabled state for export buttons when no logs exist
+  * Export limit of 10,000 records to prevent memory exhaustion
 - **SensitiveDataPatterns**: New centralized class for managing sensitive field patterns
   * Consolidates all sensitive data detection logic
   * Used by both `RequestLogger` and `ExportService`
   * Supports headers (Authorization, API keys) and data fields (passwords, tokens, secrets)
+- **RequestLogger Statistics Methods**: New methods for dashboard analytics
+  * `get_count_last_hours()`: Count requests in time window with optional status filter
+  * `get_success_rate_last_hours()`: Calculate success percentage
+  * `get_avg_response_time_last_hours()`: Average response time in milliseconds
+  * `get_recent_errors()`: Retrieve most recent failed requests
 
-#### Fixed
+### Fixed
 - **Headers Already Sent**: Fixed export triggering "headers already sent" error
   * Export actions now handled in `admin_init` hook before any output
 - **PHP 8.4+ Compatibility**: Added `$escape` parameter to `fputcsv()` calls
-- **PHPCS Compliance**: Fixed double quotes to single quotes per WordPress standards
 
-#### Changed
+### Changed
 - **RequestLogger**: Now uses `SensitiveDataPatterns` for consistent data sanitization
 - **ExportService**: Excludes sensitive fields from CSV export entirely (security by design)
-- **Quality Checks Script**: Fixed `WP_TESTS_DIR` path consistency for local testing
-
-#### Developer Experience
-- **run-quality-checks.sh**: Now properly exports `WP_TESTS_DIR` before installation
-- **copilot-instructions.md**: Updated string quotation standards to follow WordPress coding standards
+- Moved `Dashboard Widget` and `Export Logs` from planned features to released
+- All new code follows WordPress coding standards (PHPCS WordPress-Extra)
+- PHPStan Level 8 compliance for all new classes
 
 ## [1.1.3] - 2026-01-03
 
