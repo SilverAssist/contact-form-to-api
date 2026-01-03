@@ -41,6 +41,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **Release Workflow**: Quality checks now run before release validation
   * PHPCS, PHPStan, and PHPUnit must pass before a release can be created
+- **Version Scripts**: Improved `update-version-simple.sh` and `check-versions.sh`
+  * Added `--force` flag to update all files even when version matches
+  * Fixed script to properly update all PHP, CSS, JS, and shell script files
+  * Removed HEADER-STANDARDS.md dependency (moved to copilot-instructions.md)
+
+### Documentation
+- **Copilot Instructions**: Added mandatory script usage instructions
+  * Detailed documentation for version update and check scripts
+  * Critical rules: ALWAYS use scripts, NEVER make manual changes
 
 ## [1.1.2] - 2026-01-02
 
