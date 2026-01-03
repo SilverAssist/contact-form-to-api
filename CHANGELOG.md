@@ -26,6 +26,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Multi-site Support**: Enhanced WordPress multisite compatibility
 - **Template System**: Pre-configured templates for popular APIs (Mailchimp, HubSpot, etc.)
 
+## [1.1.3] - 2026-01-03
+
+### Fixed
+- **Legacy Hooks Initialization**: Ensure legacy hooks (`qs_cf7_api_*`) are registered before API requests
+  * Fixed issue where hooks weren't being called if ApiClient was instantiated directly
+  * Auto-initialization check added to `ApiClient::send()` method
+- **PHPCS/PHPStan Compliance**: Resolved coding standard and static analysis issues
+  * Fixed double quotes to single quotes in hook names
+  * Added phpcs:ignore for legacy hook names (backward compatibility)
+  * Removed redundant `is_array()` check flagged by PHPStan
+  * Converted test variables to snake_case format
+
+### Changed
+- **Release Workflow**: Quality checks now run before release validation
+  * PHPCS, PHPStan, and PHPUnit must pass before a release can be created
+
 ## [1.1.2] - 2026-01-02
 
 ### Added
