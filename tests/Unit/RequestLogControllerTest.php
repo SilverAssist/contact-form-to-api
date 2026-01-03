@@ -112,11 +112,11 @@ class RequestLogControllerTest extends TestCase {
 		// Verify that the method checks for valid bulk actions before processing
 
 		// Get the file and read the method contents
-		$filename  = $method->getFileName();
+		$filename   = $method->getFileName();
 		$start_line = $method->getStartLine();
 		$end_line   = $method->getEndLine();
 
-		$source       = file( $filename );
+		$source        = file( $filename );
 		$method_source = implode( '', array_slice( $source, $start_line - 1, $end_line - $start_line + 1 ) );
 
 		$this->assertStringContainsString(
@@ -243,11 +243,11 @@ class RequestLogControllerTest extends TestCase {
 
 		// If list_table is null, process_bulk_actions should return early
 		// This is verified by checking the method source code
-		$method       = $reflection->getMethod( 'process_bulk_actions' );
-		$filename     = $method->getFileName();
+		$method        = $reflection->getMethod( 'process_bulk_actions' );
+		$filename      = $method->getFileName();
 		$start_line    = $method->getStartLine();
 		$end_line      = $method->getEndLine();
-		$source       = file( $filename );
+		$source        = file( $filename );
 		$method_source = implode( '', array_slice( $source, $start_line - 1, $end_line - $start_line + 1 ) );
 
 		$this->assertStringContainsString(

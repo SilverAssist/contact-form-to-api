@@ -179,7 +179,7 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		$log_id = $this->logger->start_request( $form_id, 'https://example.com/api/1', 'POST', 'test data' );
+		$log_id   = $this->logger->start_request( $form_id, 'https://example.com/api/1', 'POST', 'test data' );
 		$response = array(
 			'response' => array( 'code' => 200 ),
 			'body'     => \json_encode( array( 'success' => true ) ),
@@ -189,7 +189,7 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 		$wpdb->update( $table_name, array( 'execution_time' => 0.1 ), array( 'id' => $log_id ), array( '%f' ), array( '%d' ) );
 
 		$this->logger = new RequestLogger();
-		$log_id = $this->logger->start_request( $form_id, 'https://example.com/api/2', 'POST', 'test data' );
+		$log_id       = $this->logger->start_request( $form_id, 'https://example.com/api/2', 'POST', 'test data' );
 		$this->logger->complete_request( $response );
 		// Update execution time to 0.3 seconds (300ms)
 		$wpdb->update( $table_name, array( 'execution_time' => 0.3 ), array( 'id' => $log_id ), array( '%f' ), array( '%d' ) );

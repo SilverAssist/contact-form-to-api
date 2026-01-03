@@ -447,26 +447,26 @@ class RequestLogger {
 	public function get_count_last_hours( int $hours, ?string $status = null ): int {
 		global $wpdb;
 
-		$sql = "SELECT COUNT(*) FROM {$this->table_name} WHERE created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)";
+		$status_condition = '';
 
 		if ( $status ) {
-			// Handle different status types
+			// Handle different status types.
 			if ( 'error' === $status ) {
-				// Count all error types
-				$sql .= " AND status IN ('error', 'client_error', 'server_error')";
+				// Count all error types.
+				$status_condition = " AND status IN ('error', 'client_error', 'server_error')";
 			} else {
-				$sql .= $wpdb->prepare( ' AND status = %s', $status );
+				$status_condition = $wpdb->prepare( ' AND status = %s', $status );
 			}
 		}
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared -- table_name is a safe class property, status_condition is prepared above.
 		$count = $wpdb->get_var(
 			$wpdb->prepare(
-				$sql,
+				"SELECT COUNT(*) FROM {$this->table_name} WHERE created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)" . $status_condition,
 				$hours
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
 
 		return (int) ( $count ?: 0 );
 	}
