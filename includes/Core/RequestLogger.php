@@ -18,7 +18,7 @@ namespace SilverAssist\ContactFormToAPI\Core;
 use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
 use WP_Error;
 
-\defined( "ABSPATH" ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Class RequestLogger

@@ -17,7 +17,7 @@ namespace SilverAssist\ContactFormToAPI\Services;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
 
-\defined( "ABSPATH" ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Class ExportService
@@ -93,10 +93,10 @@ class ExportService implements LoadableInterface {
 	 */
 	public function export_csv( array $logs ): string {
 		// Create memory stream for CSV generation.
-		$output = \fopen( "php://temp", "r+" );
+		$output = \fopen( 'php://temp', 'r+' );
 
 		if ( false === $output ) {
-			return "";
+			return '';
 		}
 
 		// Add UTF-8 BOM for Excel compatibility.
@@ -110,16 +110,16 @@ class ExportService implements LoadableInterface {
 		foreach ( $logs as $log ) {
 			$sanitized = $this->sanitize_for_export( $log );
 			$row       = array(
-				$sanitized["id"],
-				$sanitized["form_id"],
-				$sanitized["endpoint"],
-				$sanitized["method"],
-				$sanitized["status"],
-				$sanitized["response_code"] ?? "",
-				$sanitized["execution_time"] ?? "",
-				$sanitized["retry_count"] ?? "0",
-				$sanitized["error_message"] ?? "",
-				$sanitized["created_at"],
+				$sanitized['id'],
+				$sanitized['form_id'],
+				$sanitized['endpoint'],
+				$sanitized['method'],
+				$sanitized['status'],
+				$sanitized['response_code'] ?? '',
+				$sanitized['execution_time'] ?? '',
+				$sanitized['retry_count'] ?? '0',
+				$sanitized['error_message'] ?? '',
+				$sanitized['created_at'],
 			);
 			\fputcsv( $output, $row );
 		}
@@ -129,7 +129,7 @@ class ExportService implements LoadableInterface {
 		$csv = \stream_get_contents( $output );
 		\fclose( $output );
 
-		return $csv !== false ? $csv : "";
+		return $csv !== false ? $csv : '';
 	}
 
 	/**
@@ -149,7 +149,7 @@ class ExportService implements LoadableInterface {
 
 		$json = \wp_json_encode( $sanitized_logs, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
 
-		return $json !== false ? $json : "[]";
+		return $json !== false ? $json : '[]';
 	}
 
 	/**
@@ -164,23 +164,23 @@ class ExportService implements LoadableInterface {
 		$sanitized = $log;
 
 		// Sanitize request headers.
-		if ( isset( $sanitized["request_headers"] ) ) {
-			$sanitized["request_headers"] = $this->sanitize_headers_field( $sanitized["request_headers"] );
+		if ( isset( $sanitized['request_headers'] ) ) {
+			$sanitized['request_headers'] = $this->sanitize_headers_field( $sanitized['request_headers'] );
 		}
 
 		// Sanitize request data.
-		if ( isset( $sanitized["request_data"] ) ) {
-			$sanitized["request_data"] = $this->sanitize_data_field( $sanitized["request_data"] );
+		if ( isset( $sanitized['request_data'] ) ) {
+			$sanitized['request_data'] = $this->sanitize_data_field( $sanitized['request_data'] );
 		}
 
 		// Sanitize response headers.
-		if ( isset( $sanitized["response_headers"] ) ) {
-			$sanitized["response_headers"] = $this->sanitize_headers_field( $sanitized["response_headers"] );
+		if ( isset( $sanitized['response_headers'] ) ) {
+			$sanitized['response_headers'] = $this->sanitize_headers_field( $sanitized['response_headers'] );
 		}
 
 		// Sanitize response data.
-		if ( isset( $sanitized["response_data"] ) ) {
-			$sanitized["response_data"] = $this->sanitize_data_field( $sanitized["response_data"] );
+		if ( isset( $sanitized['response_data'] ) ) {
+			$sanitized['response_data'] = $this->sanitize_data_field( $sanitized['response_data'] );
 		}
 
 		return $sanitized;
@@ -201,7 +201,7 @@ class ExportService implements LoadableInterface {
 
 		foreach ( $headers as $key => $value ) {
 			if ( SensitiveDataPatterns::is_sensitive( $key ) ) {
-				$headers[ $key ] = "***REDACTED***";
+				$headers[ $key ] = '***REDACTED***';
 			}
 		}
 
@@ -237,7 +237,7 @@ class ExportService implements LoadableInterface {
 	private function sanitize_array_recursive( array $data ): array {
 		foreach ( $data as $key => $value ) {
 			if ( SensitiveDataPatterns::is_sensitive( (string) $key ) ) {
-				$data[ $key ] = "***REDACTED***";
+				$data[ $key ] = '***REDACTED***';
 			} elseif ( \is_array( $value ) ) {
 				$data[ $key ] = $this->sanitize_array_recursive( $value );
 			}
@@ -253,16 +253,16 @@ class ExportService implements LoadableInterface {
 	 */
 	private function get_csv_headers(): array {
 		return array(
-			\__( "ID", CF7_API_TEXT_DOMAIN ),
-			\__( "Form ID", CF7_API_TEXT_DOMAIN ),
-			\__( "Endpoint", CF7_API_TEXT_DOMAIN ),
-			\__( "Method", CF7_API_TEXT_DOMAIN ),
-			\__( "Status", CF7_API_TEXT_DOMAIN ),
-			\__( "Response Code", CF7_API_TEXT_DOMAIN ),
-			\__( "Execution Time (s)", CF7_API_TEXT_DOMAIN ),
-			\__( "Retry Count", CF7_API_TEXT_DOMAIN ),
-			\__( "Error Message", CF7_API_TEXT_DOMAIN ),
-			\__( "Created At", CF7_API_TEXT_DOMAIN ),
+			\__( 'ID', 'contact-form-to-api' ),
+			\__( 'Form ID', 'contact-form-to-api' ),
+			\__( 'Endpoint', 'contact-form-to-api' ),
+			\__( 'Method', 'contact-form-to-api' ),
+			\__( 'Status', 'contact-form-to-api' ),
+			\__( 'Response Code', 'contact-form-to-api' ),
+			\__( 'Execution Time (s)', 'contact-form-to-api' ),
+			\__( 'Retry Count', 'contact-form-to-api' ),
+			\__( 'Error Message', 'contact-form-to-api' ),
+			\__( 'Created At', 'contact-form-to-api' ),
 		);
 	}
 
@@ -275,7 +275,7 @@ class ExportService implements LoadableInterface {
 	 * @return string Filename.
 	 */
 	public function get_export_filename( string $format ): string {
-		$timestamp = \gmdate( "Y-m-d_H-i-s" );
+		$timestamp = \gmdate( 'Y-m-d_H-i-s' );
 		return "cf7-api-logs_{$timestamp}.{$format}";
 	}
 }

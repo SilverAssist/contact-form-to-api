@@ -37,7 +37,7 @@ class RequestLogView {
 	public static function render_page( RequestLogTable $list_table ): void {
 		?>
 		<div class="wrap">
-			<h1 class="wp-heading-inline"><?php \esc_html_e( "API Logs", CF7_API_TEXT_DOMAIN ); ?></h1>
+			<h1 class="wp-heading-inline"><?php \esc_html_e( 'API Logs', 'contact-form-to-api' ); ?></h1>
 			<?php self::render_export_buttons(); ?>
 
 			<?php self::render_statistics(); ?>
@@ -45,7 +45,7 @@ class RequestLogView {
 			<form method="get">
 				<input type="hidden" name="page" value="<?php echo \esc_attr( $_REQUEST["page"] ?? "" ); ?>" />
 				<?php
-				$list_table->search_box( \__( "Search logs", CF7_API_TEXT_DOMAIN ), "cf7-api-log" );
+				$list_table->search_box( \__( 'Search logs', 'contact-form-to-api' ), 'cf7-api-log' );
 				$list_table->display();
 				?>
 			</form>
@@ -368,11 +368,11 @@ class RequestLogView {
 			<div class="button-group">
 				<a href="<?php echo \esc_url( $csv_url ); ?>" class="button">
 					<span class="dashicons dashicons-download" style="vertical-align: middle;"></span>
-					<?php \esc_html_e( "Export as CSV", CF7_API_TEXT_DOMAIN ); ?>
+					<?php \esc_html_e( 'Export as CSV', 'contact-form-to-api' ); ?>
 				</a>
 				<a href="<?php echo \esc_url( $json_url ); ?>" class="button">
 					<span class="dashicons dashicons-download" style="vertical-align: middle;"></span>
-					<?php \esc_html_e( "Export as JSON", CF7_API_TEXT_DOMAIN ); ?>
+					<?php \esc_html_e( 'Export as JSON', 'contact-form-to-api' ); ?>
 				</a>
 			</div>
 		</div>

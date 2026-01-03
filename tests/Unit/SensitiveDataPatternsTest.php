@@ -29,8 +29,8 @@ class SensitiveDataPatternsTest extends TestCase {
 	 */
 	public function testSensitiveDataPatternsClassExists(): void {
 		$this->assertTrue(
-			\class_exists( "SilverAssist\\ContactFormToAPI\\Core\\SensitiveDataPatterns" ),
-			"SensitiveDataPatterns class should exist in the Core namespace"
+			\class_exists( 'SilverAssist\\ContactFormToAPI\\Core\\SensitiveDataPatterns' ),
+			'SensitiveDataPatterns class should exist in the Core namespace'
 		);
 	}
 
@@ -42,8 +42,8 @@ class SensitiveDataPatternsTest extends TestCase {
 	public function testGetAllReturnsArray(): void {
 		$patterns = SensitiveDataPatterns::get_all();
 
-		$this->assertIsArray( $patterns, "get_all() should return an array" );
-		$this->assertNotEmpty( $patterns, "get_all() should return non-empty array" );
+		$this->assertIsArray( $patterns, 'get_all() should return an array' );
+		$this->assertNotEmpty( $patterns, 'get_all() should return non-empty array' );
 	}
 
 	/**
@@ -55,20 +55,20 @@ class SensitiveDataPatternsTest extends TestCase {
 		$patterns = SensitiveDataPatterns::get_all();
 
 		$expected_patterns = array(
-			"password",
-			"passwd",
-			"secret",
-			"api_key",
-			"api-key",
-			"apikey",
-			"token",
-			"auth",
-			"authorization",
-			"bearer",
-			"ssn",
-			"social_security",
-			"credit_card",
-			"card_number",
+			'password',
+			'passwd',
+			'secret',
+			'api_key',
+			'api-key',
+			'apikey',
+			'token',
+			'auth',
+			'authorization',
+			'bearer',
+			'ssn',
+			'social_security',
+			'credit_card',
+			'card_number',
 		);
 
 		foreach ( $expected_patterns as $expected ) {
@@ -86,20 +86,20 @@ class SensitiveDataPatternsTest extends TestCase {
 	 * @return void
 	 */
 	public function testConstantsDefinedCorrectly(): void {
-		$this->assertEquals( "password", SensitiveDataPatterns::PASSWORD );
-		$this->assertEquals( "passwd", SensitiveDataPatterns::PASSWD );
-		$this->assertEquals( "secret", SensitiveDataPatterns::SECRET );
-		$this->assertEquals( "api_key", SensitiveDataPatterns::API_KEY );
-		$this->assertEquals( "api-key", SensitiveDataPatterns::API_KEY_HYPHEN );
-		$this->assertEquals( "apikey", SensitiveDataPatterns::APIKEY );
-		$this->assertEquals( "token", SensitiveDataPatterns::TOKEN );
-		$this->assertEquals( "auth", SensitiveDataPatterns::AUTH );
-		$this->assertEquals( "authorization", SensitiveDataPatterns::AUTHORIZATION );
-		$this->assertEquals( "bearer", SensitiveDataPatterns::BEARER );
-		$this->assertEquals( "ssn", SensitiveDataPatterns::SSN );
-		$this->assertEquals( "social_security", SensitiveDataPatterns::SOCIAL_SECURITY );
-		$this->assertEquals( "credit_card", SensitiveDataPatterns::CREDIT_CARD );
-		$this->assertEquals( "card_number", SensitiveDataPatterns::CARD_NUMBER );
+		$this->assertEquals( 'password', SensitiveDataPatterns::PASSWORD );
+		$this->assertEquals( 'passwd', SensitiveDataPatterns::PASSWD );
+		$this->assertEquals( 'secret', SensitiveDataPatterns::SECRET );
+		$this->assertEquals( 'api_key', SensitiveDataPatterns::API_KEY );
+		$this->assertEquals( 'api-key', SensitiveDataPatterns::API_KEY_HYPHEN );
+		$this->assertEquals( 'apikey', SensitiveDataPatterns::APIKEY );
+		$this->assertEquals( 'token', SensitiveDataPatterns::TOKEN );
+		$this->assertEquals( 'auth', SensitiveDataPatterns::AUTH );
+		$this->assertEquals( 'authorization', SensitiveDataPatterns::AUTHORIZATION );
+		$this->assertEquals( 'bearer', SensitiveDataPatterns::BEARER );
+		$this->assertEquals( 'ssn', SensitiveDataPatterns::SSN );
+		$this->assertEquals( 'social_security', SensitiveDataPatterns::SOCIAL_SECURITY );
+		$this->assertEquals( 'credit_card', SensitiveDataPatterns::CREDIT_CARD );
+		$this->assertEquals( 'card_number', SensitiveDataPatterns::CARD_NUMBER );
 	}
 
 	/**
@@ -109,16 +109,16 @@ class SensitiveDataPatternsTest extends TestCase {
 	 */
 	public function testIsSensitiveDetectsSensitiveFields(): void {
 		$sensitive_fields = array(
-			"user_password",
-			"api_key",
-			"Authorization",
-			"Bearer-Token",
-			"secret_key",
-			"credit_card_number",
-			"ssn_number",
-			"user_passwd",
-			"auth_token",
-			"apikey_value",
+			'user_password',
+			'api_key',
+			'Authorization',
+			'Bearer-Token',
+			'secret_key',
+			'credit_card_number',
+			'ssn_number',
+			'user_passwd',
+			'auth_token',
+			'apikey_value',
 		);
 
 		foreach ( $sensitive_fields as $field ) {
@@ -136,16 +136,16 @@ class SensitiveDataPatternsTest extends TestCase {
 	 */
 	public function testIsSensitiveIgnoresNonSensitiveFields(): void {
 		$non_sensitive_fields = array(
-			"username",
-			"email",
-			"name",
-			"address",
-			"phone",
-			"user_id",
-			"status",
-			"created_at",
-			"updated_at",
-			"message",
+			'username',
+			'email',
+			'name',
+			'address',
+			'phone',
+			'user_id',
+			'status',
+			'created_at',
+			'updated_at',
+			'message',
 		);
 
 		foreach ( $non_sensitive_fields as $field ) {
@@ -162,18 +162,18 @@ class SensitiveDataPatternsTest extends TestCase {
 	 * @return void
 	 */
 	public function testIsSensitiveCaseInsensitive(): void {
-		$this->assertTrue( SensitiveDataPatterns::is_sensitive( "PASSWORD" ) );
-		$this->assertTrue( SensitiveDataPatterns::is_sensitive( "Password" ) );
-		$this->assertTrue( SensitiveDataPatterns::is_sensitive( "password" ) );
-		$this->assertTrue( SensitiveDataPatterns::is_sensitive( "PaSsWoRd" ) );
+		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'PASSWORD' ) );
+		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'Password' ) );
+		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'password' ) );
+		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'PaSsWoRd' ) );
 
-		$this->assertTrue( SensitiveDataPatterns::is_sensitive( "API_KEY" ) );
-		$this->assertTrue( SensitiveDataPatterns::is_sensitive( "Api_Key" ) );
-		$this->assertTrue( SensitiveDataPatterns::is_sensitive( "api_key" ) );
+		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'API_KEY' ) );
+		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'Api_Key' ) );
+		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'api_key' ) );
 
-		$this->assertTrue( SensitiveDataPatterns::is_sensitive( "AUTHORIZATION" ) );
-		$this->assertTrue( SensitiveDataPatterns::is_sensitive( "Authorization" ) );
-		$this->assertTrue( SensitiveDataPatterns::is_sensitive( "authorization" ) );
+		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'AUTHORIZATION' ) );
+		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'Authorization' ) );
+		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'authorization' ) );
 	}
 
 	/**
@@ -183,10 +183,10 @@ class SensitiveDataPatternsTest extends TestCase {
 	 */
 	public function testIsSensitivePartialMatches(): void {
 		// Should match if pattern is contained in field name
-		$this->assertTrue( SensitiveDataPatterns::is_sensitive( "user_password_hash" ) );
-		$this->assertTrue( SensitiveDataPatterns::is_sensitive( "my_secret_value" ) );
-		$this->assertTrue( SensitiveDataPatterns::is_sensitive( "access_token_expires" ) );
-		$this->assertTrue( SensitiveDataPatterns::is_sensitive( "bearer_auth_header" ) );
+		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'user_password_hash' ) );
+		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'my_secret_value' ) );
+		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'access_token_expires' ) );
+		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'bearer_auth_header' ) );
 	}
 
 	/**
@@ -195,12 +195,12 @@ class SensitiveDataPatternsTest extends TestCase {
 	 * @return void
 	 */
 	public function testClassCannotBeInstantiated(): void {
-		$reflection = new \ReflectionClass( SensitiveDataPatterns::class );
+		$reflection  = new \ReflectionClass( SensitiveDataPatterns::class );
 		$constructor = $reflection->getConstructor();
 
 		$this->assertTrue(
 			$constructor->isPrivate(),
-			"Constructor should be private to prevent instantiation"
+			'Constructor should be private to prevent instantiation'
 		);
 	}
 
@@ -210,13 +210,13 @@ class SensitiveDataPatternsTest extends TestCase {
 	 * @return void
 	 */
 	public function testNoDuplicatePatterns(): void {
-		$patterns = SensitiveDataPatterns::get_all();
+		$patterns        = SensitiveDataPatterns::get_all();
 		$unique_patterns = \array_unique( $patterns );
 
 		$this->assertSame(
 			\count( $patterns ),
 			\count( $unique_patterns ),
-			"Patterns array should not contain duplicates"
+			'Patterns array should not contain duplicates'
 		);
 	}
 
@@ -228,19 +228,19 @@ class SensitiveDataPatternsTest extends TestCase {
 	public function testPatternsMatchRequestLoggerRequirements(): void {
 		// These are the patterns that were originally in RequestLogger
 		$original_patterns = array(
-			"password",
-			"passwd",
-			"secret",
-			"api_key",
-			"api-key",
-			"apikey",
-			"token",
-			"auth",
-			"authorization",
-			"ssn",
-			"social_security",
-			"credit_card",
-			"card_number",
+			'password',
+			'passwd',
+			'secret',
+			'api_key',
+			'api-key',
+			'apikey',
+			'token',
+			'auth',
+			'authorization',
+			'ssn',
+			'social_security',
+			'credit_card',
+			'card_number',
 		);
 
 		$current_patterns = SensitiveDataPatterns::get_all();
@@ -262,20 +262,20 @@ class SensitiveDataPatternsTest extends TestCase {
 	public function testPatternsMatchExportServiceRequirements(): void {
 		// These are the patterns that were originally in ExportService
 		$original_patterns = array(
-			"password",
-			"passwd",
-			"secret",
-			"api_key",
-			"api-key",
-			"apikey",
-			"token",
-			"auth",
-			"authorization",
-			"bearer", // ExportService had this extra pattern
-			"ssn",
-			"social_security",
-			"credit_card",
-			"card_number",
+			'password',
+			'passwd',
+			'secret',
+			'api_key',
+			'api-key',
+			'apikey',
+			'token',
+			'auth',
+			'authorization',
+			'bearer', // ExportService had this extra pattern
+			'ssn',
+			'social_security',
+			'credit_card',
+			'card_number',
 		);
 
 		$current_patterns = SensitiveDataPatterns::get_all();

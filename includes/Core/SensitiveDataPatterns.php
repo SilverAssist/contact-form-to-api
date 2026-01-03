@@ -14,7 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Core;
 
-\defined( "ABSPATH" ) || exit;
+\defined( 'ABSPATH' ) || exit;
 
 /**
  * Class SensitiveDataPatterns
@@ -29,40 +29,40 @@ final class SensitiveDataPatterns {
 	/**
 	 * Password-related patterns
 	 */
-	public const PASSWORD = "password";
-	public const PASSWD = "passwd";
+	public const PASSWORD = 'password';
+	public const PASSWD   = 'passwd';
 
 	/**
 	 * Secret and token patterns
 	 */
-	public const SECRET = "secret";
-	public const TOKEN = "token";
-	public const BEARER = "bearer";
+	public const SECRET = 'secret';
+	public const TOKEN  = 'token';
+	public const BEARER = 'bearer';
 
 	/**
 	 * API key patterns
 	 */
-	public const API_KEY = "api_key";
-	public const API_KEY_HYPHEN = "api-key";
-	public const APIKEY = "apikey";
+	public const API_KEY        = 'api_key';
+	public const API_KEY_HYPHEN = 'api-key';
+	public const APIKEY         = 'apikey';
 
 	/**
 	 * Authentication patterns
 	 */
-	public const AUTH = "auth";
-	public const AUTHORIZATION = "authorization";
+	public const AUTH          = 'auth';
+	public const AUTHORIZATION = 'authorization';
 
 	/**
 	 * Personal identification patterns
 	 */
-	public const SSN = "ssn";
-	public const SOCIAL_SECURITY = "social_security";
+	public const SSN             = 'ssn';
+	public const SOCIAL_SECURITY = 'social_security';
 
 	/**
 	 * Payment card patterns
 	 */
-	public const CREDIT_CARD = "credit_card";
-	public const CARD_NUMBER = "card_number";
+	public const CREDIT_CARD = 'credit_card';
+	public const CARD_NUMBER = 'card_number';
 
 	/**
 	 * Get all sensitive patterns as array

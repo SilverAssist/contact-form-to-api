@@ -360,12 +360,12 @@ class RequestLogController implements LoadableInterface {
 	private function handle_export_action(): void {
 		// Verify nonce.
 		if ( ! isset( $_GET["_wpnonce"] ) || ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_GET["_wpnonce"] ) ), "cf7_api_export_logs" ) ) {
-			\wp_die( \esc_html__( "Security check failed", CF7_API_TEXT_DOMAIN ) );
+			\wp_die( \esc_html__( 'Security check failed', 'contact-form-to-api' ) );
 		}
 
 		// Verify capability.
-		if ( ! \current_user_can( "manage_options" ) ) {
-			\wp_die( \esc_html__( "You do not have sufficient permissions to access this page.", CF7_API_TEXT_DOMAIN ) );
+		if ( ! \current_user_can( 'manage_options' ) ) {
+			\wp_die( \esc_html__( 'You do not have sufficient permissions to access this page.', 'contact-form-to-api' ) );
 		}
 
 		$action = \sanitize_text_field( \wp_unslash( $_GET["action"] ) );
@@ -380,7 +380,7 @@ class RequestLogController implements LoadableInterface {
 				break;
 
 			default:
-				\wp_die( \esc_html__( "Invalid export action.", CF7_API_TEXT_DOMAIN ) );
+				\wp_die( \esc_html__( 'Invalid export action.', 'contact-form-to-api' ) );
 		}
 	}
 
