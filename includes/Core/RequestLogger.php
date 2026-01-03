@@ -29,6 +29,23 @@ use WP_Error;
  * @since 1.1.0
  */
 class RequestLogger {
+
+	/**
+	 * Maximum number of manual retries allowed per log entry
+	 *
+	 * @since 1.2.0
+	 * @var int
+	 */
+	public const MAX_MANUAL_RETRIES = 3;
+
+	/**
+	 * Maximum number of retries allowed per hour (global rate limit)
+	 *
+	 * @since 1.2.0
+	 * @var int
+	 */
+	public const MAX_RETRIES_PER_HOUR = 10;
+
 	/**
 	 * Table name for logs
 	 *
@@ -71,9 +88,10 @@ class RequestLogger {
 	 * @param string                 $method          HTTP method (GET, POST, etc.)
 	 * @param mixed                  $request_data    Request body data
 	 * @param array<string, string>  $request_headers Request headers
+	 * @param int|null               $retry_of        Original log ID if this is a retry
 	 * @return int|false Log entry ID or false on failure
 	 */
-	public function start_request( int $form_id, string $endpoint, string $method, $request_data, array $request_headers = array() ) {
+	public function start_request( int $form_id, string $endpoint, string $method, $request_data, array $request_headers = array(), ?int $retry_of = null ) {
 		global $wpdb;
 
 		$this->start_time = \microtime( true );
@@ -86,19 +104,29 @@ class RequestLogger {
 		$prepared_data    = \is_string( $anonymized_data ) ? $anonymized_data : \wp_json_encode( $anonymized_data );
 		$prepared_headers = \wp_json_encode( $anonymized_headers );
 
+		$insert_data = array(
+			'form_id'         => $form_id,
+			'endpoint'        => $endpoint,
+			'method'          => $method,
+			'status'          => 'pending',
+			'request_data'    => $prepared_data,
+			'request_headers' => $prepared_headers,
+			'retry_count'     => 0,
+			'created_at'      => \current_time( 'mysql' ),
+		);
+
+		$format = array( '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%s' );
+
+		// Add retry_of if this is a retry attempt
+		if ( null !== $retry_of ) {
+			$insert_data['retry_of'] = $retry_of;
+			$format[]                = '%d';
+		}
+
 		$result = $wpdb->insert(
 			$this->table_name,
-			array(
-				'form_id'         => $form_id,
-				'endpoint'        => $endpoint,
-				'method'          => $method,
-				'status'          => 'pending',
-				'request_data'    => $prepared_data,
-				'request_headers' => $prepared_headers,
-				'retry_count'     => 0,
-				'created_at'      => \current_time( 'mysql' ),
-			),
-			array( '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%s' )
+			$insert_data,
+			$format
 		);
 
 		if ( $result ) {
@@ -521,5 +549,96 @@ class RequestLogger {
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $results ?: array();
+	}
+
+	/**
+	 * Get log entry by ID
+	 *
+	 * Retrieves a single log entry for detailed inspection.
+	 *
+	 * @since 1.2.0
+	 * @param int $log_id Log entry ID
+	 * @return array<string, mixed>|null Log entry data or null if not found
+	 */
+	public function get_log( int $log_id ): ?array {
+		global $wpdb;
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
+		$log = $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM {$this->table_name} WHERE id = %d",
+				$log_id
+			),
+			ARRAY_A
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return $log ?: null;
+	}
+
+	/**
+	 * Get request data for retry
+	 *
+	 * Retrieves complete request data needed to replay a failed API request.
+	 * Returns null if log entry doesn't exist or is not retryable.
+	 *
+	 * @since 1.2.0
+	 * @param int $log_id Log entry ID to retry
+	 * @return array<string, mixed>|null Request data or null if not retryable
+	 */
+	public function get_request_for_retry( int $log_id ): ?array {
+		$log = $this->get_log( $log_id );
+
+		if ( ! $log ) {
+			return null;
+		}
+
+		// Only retry failed requests (pending excluded as they haven't completed yet)
+		$retryable_statuses = array( 'error', 'client_error', 'server_error' );
+		if ( ! \in_array( $log['status'], $retryable_statuses, true ) ) {
+			return null;
+		}
+
+		// Decode JSON data
+		$request_headers = \json_decode( $log['request_headers'], true );
+		$request_data    = \json_decode( $log['request_data'], true );
+
+		// If request_data is not valid JSON, use the raw string
+		if ( null === $request_data && 'null' !== \strtolower( (string) $log['request_data'] ) ) {
+			$request_data = $log['request_data'];
+		}
+
+		return array(
+			'url'             => $log['endpoint'],
+			'method'          => $log['method'],
+			'headers'         => \is_array( $request_headers ) ? $request_headers : array(),
+			'body'            => $request_data,
+			'form_id'         => (int) $log['form_id'],
+			'original_log_id' => $log_id,
+		);
+	}
+
+	/**
+	 * Count retries for a specific log entry
+	 *
+	 * Counts how many times a specific log entry has been retried.
+	 *
+	 * @since 1.2.0
+	 * @param int $log_id Original log entry ID
+	 * @return int Number of retry attempts
+	 */
+	public function count_retries( int $log_id ): int {
+		global $wpdb;
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
+		$count = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$this->table_name} WHERE retry_of = %d",
+				$log_id
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return (int) ( $count ?: 0 );
 	}
 }

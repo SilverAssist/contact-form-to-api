@@ -194,6 +194,7 @@ class ApiClient implements LoadableInterface {
 		$content_type = $request_config['content_type'] ?? 'params';
 		$form_id      = $request_config['form_id'] ?? 0;
 		$retry_config = $request_config['retry_config'] ?? array();
+		$retry_of     = $request_config['retry_of'] ?? null;
 
 		// Build request arguments.
 		$args = $this->build_request_args( $method, $body, $headers, $content_type );
@@ -213,7 +214,8 @@ class ApiClient implements LoadableInterface {
 				$url,
 				$method,
 				$args['body'] ?? '',
-				$args['headers'] ?? array()
+				$args['headers'] ?? array(),
+				$retry_of
 			);
 		}
 
@@ -228,6 +230,93 @@ class ApiClient implements LoadableInterface {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Retry request from log entry
+	 *
+	 * Replays a failed API request from log history.
+	 * Creates a new log entry linked to the original via retry_of.
+	 *
+	 * @since 1.2.0
+	 * @param int $log_id Original log entry ID to retry
+	 * @return array<string, mixed> Result with success status and details
+	 */
+	public function retry_from_log( int $log_id ): array {
+		$logger = $this->get_api_logger();
+
+		if ( ! $logger ) {
+			return array(
+				'success' => false,
+				'error'   => \__( 'Logger not available', 'contact-form-to-api' ),
+			);
+		}
+
+		$request_data = $logger->get_request_for_retry( $log_id );
+
+		if ( ! $request_data ) {
+			return array(
+				'success' => false,
+				'error'   => \__( 'Invalid or non-retryable log entry', 'contact-form-to-api' ),
+			);
+		}
+
+		// Build request configuration with retry_of set
+		$config = array(
+			'url'      => $request_data['url'],
+			'method'   => $request_data['method'],
+			'body'     => $request_data['body'],
+			'headers'  => $request_data['headers'],
+			'form_id'  => $request_data['form_id'],
+			'retry_of' => $request_data['original_log_id'],
+		);
+
+		// Determine content type based on Content-Type header
+		// Determine content type based on Content-Type header (case-insensitive lookup per RFC 7230)
+		$content_type        = 'params';
+		$content_type_header = null;
+
+		if ( ! empty( $request_data['headers'] ) && \is_array( $request_data['headers'] ) ) {
+			foreach ( $request_data['headers'] as $header_name => $header_value ) {
+				if ( \strtolower( (string) $header_name ) === 'content-type' ) {
+					$content_type_header = $header_value;
+					break;
+				}
+			}
+		}
+
+		if ( null !== $content_type_header ) {
+			$ct = (string) $content_type_header;
+			if ( \stripos( $ct, 'application/json' ) !== false ) {
+				$content_type = 'json';
+			} elseif ( \stripos( $ct, 'text/xml' ) !== false || \stripos( $ct, 'application/xml' ) !== false ) {
+				$content_type = 'xml';
+			}
+		}
+
+		$config['content_type'] = $content_type;
+
+		// Send the retry request
+		$response = $this->send( $config );
+
+		// Determine success based on response
+		if ( \is_wp_error( $response ) ) {
+			return array(
+				'success' => false,
+				'error'   => $response->get_error_message(),
+				'log_id'  => null,
+			);
+		}
+
+		$response_code = \wp_remote_retrieve_response_code( $response );
+		$is_success    = $response_code >= 200 && $response_code < 300;
+
+		return array(
+			'success'       => $is_success,
+			'response_code' => $response_code,
+			'retry_of'      => $log_id,
+			'log_id'        => null, // Note: log_id is private in RequestLogger, use get_last_log_id() when available
+		);
 	}
 
 	/**
