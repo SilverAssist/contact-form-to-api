@@ -168,7 +168,7 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
 		// Delete logs from test forms (form_id starting with 999)
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$wpdb->query( "DELETE FROM {$table_name} WHERE form_id >= 99900" );
 	}
 
@@ -182,7 +182,7 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		return $wpdb->get_results(
 			$wpdb->prepare(
 				"SELECT * FROM {$table_name} WHERE form_id = %d ORDER BY id DESC",
@@ -220,7 +220,10 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 			$form_id,
 			'https://api.example.com/webhook',
 			'POST',
-			array( 'name' => 'Test User', 'email' => 'test@example.com' ),
+			array(
+				'name'  => 'Test User',
+				'email' => 'test@example.com',
+			),
 			array( 'Content-Type' => 'application/json' )
 		);
 
@@ -229,7 +232,10 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 
 		// Simulate response
 		$response = array(
-			'response' => array( 'code' => 200, 'message' => 'OK' ),
+			'response' => array(
+				'code'    => 200,
+				'message' => 'OK',
+			),
 			'body'     => '{"success":true}',
 			'headers'  => array( 'content-type' => 'application/json' ),
 		);
@@ -424,7 +430,10 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 			array(
 				'url'          => 'https://api.example.com/test',
 				'method'       => 'POST',
-				'body'         => array( 'name' => 'Test', 'email' => 'test@example.com' ),
+				'body'         => array(
+					'name'  => 'Test',
+					'email' => 'test@example.com',
+				),
 				'headers'      => array( 'X-Custom-Header' => 'value' ),
 				'content_type' => 'json',
 				'form_id'      => $form_id,
@@ -623,7 +632,10 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 
 		// Complete with specific response
 		$response = array(
-			'response' => array( 'code' => 201, 'message' => 'Created' ),
+			'response' => array(
+				'code'    => 201,
+				'message' => 'Created',
+			),
 			'body'     => '{"id":12345,"status":"created"}',
 			'headers'  => array(
 				'content-type' => 'application/json',

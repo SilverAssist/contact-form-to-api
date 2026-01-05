@@ -60,6 +60,11 @@
         <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 
+    <!-- Allow interpolated table names in test queries (table names are not user input) -->
+    <rule ref="WordPress.DB.PreparedSQL.InterpolatedNotPrepared">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
     <!-- Allow non-strict in_array for backward compatibility -->
     <rule ref="WordPress.PHP.StrictInArray.MissingTrueStrict">
         <exclude-pattern>includes/ContactForm/Integration.php</exclude-pattern>
