@@ -79,7 +79,7 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		$form_id  = 123;
 		$endpoint = 'https://example.com/api/endpoint';
 		$method   = 'POST';
-		
+
 		// Test data with sensitive fields
 		$data = array(
 			'firstName'    => 'Miguel',
@@ -88,7 +88,7 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 			'primaryPhone' => '3191234567',
 			'postalCode'   => '25003',
 		);
-		
+
 		$headers = array( 'Content-Type' => 'application/json' );
 
 		// Start request logging
@@ -106,7 +106,7 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		// Verify that sensitive data is NOT redacted in storage
 		$this->assertSame( 'test@test.com', $stored_data['primaryEmail'], 'Email should be stored without redaction' );
 		$this->assertSame( '3191234567', $stored_data['primaryPhone'], 'Phone should be stored without redaction' );
-		
+
 		// Verify non-sensitive data is also stored correctly
 		$this->assertSame( 'Miguel', $stored_data['firstName'] );
 		$this->assertSame( 'Colmenares', $stored_data['lastName'] );
@@ -123,7 +123,7 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		$endpoint = 'https://example.com/api/endpoint';
 		$method   = 'POST';
 		$data     = array( 'name' => 'Test' );
-		
+
 		// Headers with sensitive authorization data
 		$headers = array(
 			'Content-Type'  => 'application/json',
@@ -146,7 +146,7 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		// Verify authorization header is redacted
 		$this->assertSame( '***REDACTED***', $stored_headers['Authorization'], 'Authorization header should be redacted at storage' );
 		$this->assertSame( '***REDACTED***', $stored_headers['X-API-Key'], 'API key header should be redacted at storage' );
-		
+
 		// Verify non-sensitive headers are preserved
 		$this->assertSame( 'application/json', $stored_headers['Content-Type'] );
 	}
@@ -169,11 +169,13 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		// Anonymize the data using static method
 		$anonymized = RequestLogger::anonymize_data( $data );
 
-		// Verify sensitive fields are redacted
-		$this->assertSame( '***REDACTED***', $anonymized['primaryEmail'] );
-		$this->assertSame( '***REDACTED***', $anonymized['primaryPhone'] );
+		// Verify sensitive fields are redacted (only password and api_key are in default patterns)
 		$this->assertSame( '***REDACTED***', $anonymized['password'] );
 		$this->assertSame( '***REDACTED***', $anonymized['api_key'] );
+
+		// Verify email and phone are NOT redacted (not in default patterns)
+		$this->assertSame( 'test@test.com', $anonymized['primaryEmail'] );
+		$this->assertSame( '3191234567', $anonymized['primaryPhone'] );
 
 		// Verify non-sensitive fields are preserved
 		$this->assertSame( 'Miguel', $anonymized['firstName'] );
@@ -188,8 +190,9 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 	public function test_anonymize_data_handles_nested_arrays(): void {
 		$data = array(
 			'user' => array(
-				'name'  => 'John',
-				'email' => 'john@example.com',
+				'name'     => 'John',
+				'email'    => 'john@example.com',
+				'password' => 'secret123',
 			),
 			'meta' => array(
 				'phone'  => '1234567890',
@@ -200,9 +203,12 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		// Anonymize the data using static method
 		$anonymized = RequestLogger::anonymize_data( $data );
 
-		// Verify nested sensitive fields are redacted
-		$this->assertSame( '***REDACTED***', $anonymized['user']['email'] );
-		$this->assertSame( '***REDACTED***', $anonymized['meta']['phone'] );
+		// Verify nested sensitive fields are redacted (only password is in default patterns)
+		$this->assertSame( '***REDACTED***', $anonymized['user']['password'] );
+
+		// Verify email and phone are NOT redacted (not in default patterns)
+		$this->assertSame( 'john@example.com', $anonymized['user']['email'] );
+		$this->assertSame( '1234567890', $anonymized['meta']['phone'] );
 
 		// Verify non-sensitive fields are preserved
 		$this->assertSame( 'John', $anonymized['user']['name'] );
@@ -218,14 +224,14 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		$form_id  = 123;
 		$endpoint = 'https://example.com/api/endpoint';
 		$method   = 'POST';
-		
+
 		// Test data with sensitive fields
 		$data = array(
 			'firstName'    => 'Miguel',
 			'primaryEmail' => 'test@test.com',
 			'primaryPhone' => '3191234567',
 		);
-		
+
 		$headers = array( 'Content-Type' => 'application/json' );
 
 		// Start request logging
@@ -243,7 +249,7 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		// Verify that retry data contains original values
 		$body = $retry_data['body'];
 		$this->assertIsArray( $body );
-		
+
 		$this->assertSame( 'test@test.com', $body['primaryEmail'], 'Retry should use original email' );
 		$this->assertSame( '3191234567', $body['primaryPhone'], 'Retry should use original phone' );
 		$this->assertSame( 'Miguel', $body['firstName'] );
@@ -274,7 +280,7 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 				'message'      => 'Success',
 			)
 		);
-		
+
 		$mock_response = array(
 			'response' => array(
 				'code'    => 200,
@@ -298,7 +304,7 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		// Verify that sensitive data is NOT redacted in storage
 		$this->assertSame( 'response@example.com', $stored_response['user_email'], 'Response email should be stored without redaction' );
 		$this->assertSame( '9876543210', $stored_response['contact_phone'], 'Response phone should be stored without redaction' );
-		
+
 		// Verify non-sensitive data is also stored correctly
 		$this->assertSame( true, $stored_response['success'] );
 		$this->assertSame( 'Success', $stored_response['message'] );
@@ -348,7 +354,7 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		// Verify authorization headers are redacted
 		$this->assertSame( '***REDACTED***', $stored_headers['x-auth-token'], 'Auth token header should be redacted at storage' );
 		$this->assertSame( '***REDACTED***', $stored_headers['authorization'], 'Authorization header should be redacted at storage' );
-		
+
 		// Verify non-sensitive headers are preserved
 		$this->assertSame( 'application/json', $stored_headers['content-type'] );
 	}
