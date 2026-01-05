@@ -159,29 +159,26 @@ class EncryptionService implements LoadableInterface {
 			return $plaintext;
 		}
 
+		// Keep original plaintext for error handling (before sodium_memzero).
+		$original_plaintext = $plaintext;
+
 		try {
 			// Generate unique nonce for this encryption.
 			$nonce = \random_bytes( SODIUM_CRYPTO_SECRETBOX_NONCEBYTES );
 
 			// Encrypt with authenticated encryption.
+			// Note: sodium_crypto_secretbox always returns string, throws SodiumException on failure.
 			$ciphertext = \sodium_crypto_secretbox( $plaintext, $nonce, $this->get_key() );
-
-			// Handle encryption failure (should not happen with valid key).
-			if ( false === $ciphertext ) {
-				throw new \RuntimeException( 'Sodium encryption failed' );
-			}
 
 			// Prepend nonce to ciphertext and encode.
 			$encrypted = \base64_encode( $nonce . $ciphertext );
 
-			// Clear sensitive data from memory (do this before return).
-			// Note: sodium_memzero modifies vars by reference, so we use a copy for the return.
-			$result = $encrypted;
+			// Clear sensitive data from memory.
 			\sodium_memzero( $plaintext );
 			\sodium_memzero( $nonce );
 			\sodium_memzero( $ciphertext );
 
-			return $result;
+			return $encrypted;
 
 		} catch ( \Exception $e ) {
 			// Log encryption failure (without sensitive data).
@@ -189,8 +186,8 @@ class EncryptionService implements LoadableInterface {
 				DebugLogger::instance()->error( 'Encryption failed: ' . $e->getMessage() );
 			}
 
-			// Return plaintext if encryption fails (graceful degradation).
-			return $plaintext;
+			// Return original plaintext if encryption fails (graceful degradation).
+			return $original_plaintext;
 		}
 	}
 
