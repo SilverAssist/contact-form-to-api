@@ -7,27 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- **Database-Level Encryption for Sensitive Request Data** (#33): Encrypt API logs at rest using libsodium
-  * New `EncryptionService` class using libsodium (Sodium) authenticated encryption
-  * XSalsa20 stream cipher with Poly1305 MAC for data integrity
-  * HKDF key derivation from WordPress `AUTH_KEY` constant
-  * Encrypted fields: `request_data`, `request_headers`, `response_data`, `response_headers`
-  * New `encryption_version` column in database (0=plaintext, 1=encrypted)
-  * Transparent decryption via `RequestLogger::decrypt_log_fields()` method
-  * Encryption settings in Global Settings page with status indicator
-  * Statistics showing encrypted vs unencrypted logs count
-  * Graceful degradation: falls back to plaintext if Sodium unavailable
-  * Backward compatible with existing unencrypted logs
-
-### Fixed
-- **Data Anonymization Breaking Retry Functionality** (#31): Moved sensitive data anonymization from storage layer to presentation layer
-  * Original form data now stored in database (needed for retry functionality)
-  * Authorization headers still redacted at storage (security requirement)
-  * UI views anonymize data at render time using `RequestLogger::anonymize_data()`
-  * Export functionality continues to anonymize data correctly
-  * Backward compatible with existing anonymized logs
-
 ### Planned Features
 
 #### Medium Priority
@@ -43,6 +22,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Multi-site Support**: Enhanced WordPress multisite compatibility
   * Network-wide settings management
   * Per-site configuration overrides
+
+## [1.3.0] - 2026-01-05
+
+### Added
+- **Database-Level Encryption for Sensitive Request Data** (#33): Encrypt API logs at rest using libsodium
+  * New `EncryptionService` class using libsodium (Sodium) authenticated encryption
+  * XSalsa20 stream cipher with Poly1305 MAC for data integrity
+  * HKDF key derivation from WordPress `AUTH_KEY` constant
+  * Secure fallback key generation stored in `wp_options` if `AUTH_KEY` unavailable
+  * Encrypted fields: `request_data`, `request_headers`, `response_data`, `response_headers`
+  * New `encryption_version` column in database (0=plaintext, 1=encrypted)
+  * Transparent decryption via `RequestLogger::decrypt_log_fields()` method
+  * Encryption settings in Global Settings page with status indicator
+  * Statistics showing encrypted vs unencrypted logs count
+  * Graceful degradation: falls back to plaintext if Sodium unavailable
+  * Backward compatible with existing unencrypted logs
+
+### Fixed
+- **Data Anonymization Breaking Retry Functionality** (#31): Moved sensitive data anonymization from storage layer to presentation layer
+  * Original form data now stored in database (needed for retry functionality)
+  * Authorization headers still redacted at storage (security requirement)
+  * UI views anonymize data at render time using `RequestLogger::anonymize_data()`
+  * Export functionality continues to anonymize data correctly
+  * Backward compatible with existing anonymized logs
 
 ## [1.2.1] - 2026-01-03
 

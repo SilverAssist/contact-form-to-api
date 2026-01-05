@@ -8,7 +8,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Core
  * @since 1.2.0
- * @version 1.2.1
+ * @version 1.3.0
  * @author Silver Assist
  */
 
@@ -342,7 +342,7 @@ class Settings implements LoadableInterface {
 	/**
 	 * Check if encryption is enabled
 	 *
-	 * @since 1.4.0
+	 * @since 1.3.0
 	 * @return bool
 	 */
 	public function is_encryption_enabled(): bool {

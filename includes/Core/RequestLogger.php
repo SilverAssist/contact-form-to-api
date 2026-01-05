@@ -9,7 +9,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Core
  * @since 1.1.0
- * @version 1.2.1
+ * @version 1.3.0
  * @author Silver Assist
  */
 
@@ -762,7 +762,7 @@ class RequestLogger {
 	 *
 	 * Decrypts encrypted log fields for viewing in admin or exports.
 	 *
-	 * @since 1.4.0
+	 * @since 1.3.0
 	 * @param array<string, mixed> $log Log entry data.
 	 * @return array<string, mixed> Log entry with decrypted fields.
 	 */

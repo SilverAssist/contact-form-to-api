@@ -8,7 +8,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Admin\Views
  * @since 1.1.0
- * @version 1.2.1
+ * @version 1.3.0
  * @author Silver Assist
  */
 
@@ -553,7 +553,7 @@ class SettingsView {
 	/**
 	 * Render encryption settings
 	 *
-	 * @since 1.4.0
+	 * @since 1.3.0
 	 * @param Settings $settings Settings instance.
 	 * @return void
 	 */
@@ -655,7 +655,7 @@ value="1"
 	 *
 	 * Retrieves statistics about encrypted vs unencrypted logs.
 	 *
-	 * @since 1.4.0
+	 * @since 1.3.0
 	 * @return array{total: int, encrypted: int, unencrypted: int} Statistics array.
 	 */
 	private static function get_encryption_statistics(): array {
