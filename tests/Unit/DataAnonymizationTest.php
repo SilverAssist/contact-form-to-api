@@ -95,9 +95,10 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		$log_id = $this->logger->start_request( $form_id, $endpoint, $method, $data, $headers );
 		$this->assertIsInt( $log_id );
 
-		// Retrieve log from database
+		// Retrieve log from database and decrypt if needed
 		$log = $this->logger->get_log( $log_id );
 		$this->assertNotNull( $log );
+		$log = $this->logger->decrypt_log_fields( $log );
 
 		// Decode request data
 		$stored_data = \json_decode( $log['request_data'], true );
@@ -135,9 +136,10 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		$log_id = $this->logger->start_request( $form_id, $endpoint, $method, $data, $headers );
 		$this->assertIsInt( $log_id );
 
-		// Retrieve log from database
+		// Retrieve log from database and decrypt if needed
 		$log = $this->logger->get_log( $log_id );
 		$this->assertNotNull( $log );
+		$log = $this->logger->decrypt_log_fields( $log );
 
 		// Decode request headers
 		$stored_headers = \json_decode( $log['request_headers'], true );
@@ -293,9 +295,10 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		// Complete request with response
 		$this->logger->complete_request( $mock_response, 0 );
 
-		// Retrieve log from database
+		// Retrieve log from database and decrypt if needed
 		$log = $this->logger->get_log( $log_id );
 		$this->assertNotNull( $log );
+		$log = $this->logger->decrypt_log_fields( $log );
 
 		// Decode response data
 		$stored_response = \json_decode( $log['response_data'], true );
@@ -343,9 +346,10 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		// Complete request with response
 		$this->logger->complete_request( $mock_response, 0 );
 
-		// Retrieve log from database
+		// Retrieve log from database and decrypt if needed
 		$log = $this->logger->get_log( $log_id );
 		$this->assertNotNull( $log );
+		$log = $this->logger->decrypt_log_fields( $log );
 
 		// Decode response headers
 		$stored_headers = \json_decode( $log['response_headers'], true );
