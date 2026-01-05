@@ -550,29 +550,21 @@ class SettingsView {
 		<?php
 	}
 
-/**
- * Render encryption settings
- *
- * @since 1.4.0
- * @param Settings $settings Settings instance.
- * @return void
- */
+	/**
+	 * Render encryption settings
+	 *
+	 * @since 1.4.0
+	 * @param Settings $settings Settings instance.
+	 * @return void
+	 */
+	private static function render_encryption_settings( Settings $settings ): void {
+		$encryption_enabled = $settings->is_encryption_enabled();
+		$sodium_available   = EncryptionService::is_sodium_available();
 
-/**
- * Render encryption settings
- *
- * @since 1.4.0
- * @param Settings $settings Settings instance.
- * @return void
- */
-private static function render_encryption_settings( Settings $settings ): void {
-$encryption_enabled = $settings->is_encryption_enabled();
-$sodium_available   = EncryptionService::is_sodium_available();
-
-// Get encryption statistics.
-$stats = self::get_encryption_statistics();
-?>
-<h3>
+		// Get encryption statistics.
+		$stats = self::get_encryption_statistics();
+		?>
+		<h3>
 <span class="dashicons dashicons-lock"></span>
 <?php \esc_html_e( 'Database Encryption', 'contact-form-to-api' ); ?>
 </h3>
