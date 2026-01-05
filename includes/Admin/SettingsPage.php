@@ -32,13 +32,6 @@ use SilverAssist\SettingsHub\SettingsHub;
 class SettingsPage implements LoadableInterface {
 
 	/**
-	 * Plugin slug for settings hub
-	 *
-	 * @var string
-	 */
-	private const SLUG = 'contact-form-to-api';
-
-	/**
 	 * Singleton instance
 	 *
 	 * @var SettingsPage|null
@@ -133,7 +126,7 @@ class SettingsPage implements LoadableInterface {
 
 		// Register plugin with the hub.
 		$hub->register_plugin(
-			self::SLUG,
+			Plugin::SLUG,
 			\__( 'Contact Form 7 to API', 'contact-form-to-api' ),
 			array( $this, 'render_settings_page' ),
 			array(
@@ -241,8 +234,8 @@ class SettingsPage implements LoadableInterface {
 	public function enqueue_assets( string $hook_suffix ): void {
 		// Check for both standalone and Settings Hub contexts.
 		$allowed_hooks = array(
-			'settings_page_' . self::SLUG,
-			'silver-assist_page_' . self::SLUG,
+			'settings_page_' . Plugin::SLUG,
+			'silver-assist_page_' . Plugin::SLUG,
 		);
 
 		if ( ! \in_array( $hook_suffix, $allowed_hooks, true ) ) {
@@ -250,7 +243,7 @@ class SettingsPage implements LoadableInterface {
 		}
 
 		\wp_enqueue_style(
-			self::SLUG . '-settings',
+			Plugin::SLUG . '-settings',
 			CF7_API_URL . 'assets/css/settings-page.css',
 			array(),
 			CF7_API_VERSION

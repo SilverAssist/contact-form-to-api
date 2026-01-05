@@ -105,3 +105,4 @@ phpcs.xml.bak
 # Backup files
 license.txt
 readme.html
+scripts/test-api-submission.sh

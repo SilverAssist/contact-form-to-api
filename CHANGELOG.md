@@ -23,6 +23,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Network-wide settings management
   * Per-site configuration overrides
 
+## [1.3.1] - 2026-01-05
+
+### Added
+- **Integration Tests for Form Submission Logging**: Comprehensive test suite validating API logging functionality
+  * 19 new integration tests in `FormSubmissionLoggingTest.php`
+  * Mock HTTP responses via WordPress `pre_http_request` filter
+  * Tests for success, error, retry counts, execution time, and HTTP status codes
+- **API Testing Script**: Shell script for manual API submission testing (`scripts/test-api-submission.sh`)
+
+### Fixed
+- **Settings Page Redirect URL** (#37): Fixed incorrect redirect after saving global settings
+  * Changed redirect from `?page=cf7-api-settings` to `?page=contact-form-to-api`
+- **API Logs Menu Visibility**: Hide "API Logs" submenu when logging is disabled in global settings
+  * Prevents user confusion when logging is turned off
+  * Added access blocking for direct URL access to logs page
+  * Added blocking for CSV export when logging is disabled
+- **Form Integration Panel UX**: Hide "Recent API Calls" and "Statistics" sections when logging is disabled
+  * Shows informative notice with link to Global Settings to enable logging
+  * Prevents confusion from showing stale logs when new logs aren't being captured
+
+### Changed
+- **RequestLogController**: Added logging status checks throughout the controller
+  * New `is_logging_enabled()` private method
+  * Menu registration checks logging status before adding submenu
+  * Page request handler blocks access when logging disabled
+  * Export handler blocks exports when logging disabled
+
 ## [1.3.0] - 2026-01-05
 
 ### Added

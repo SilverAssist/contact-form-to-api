@@ -14,6 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\ContactForm\Views;
 
+use SilverAssist\ContactFormToAPI\Core\Settings;
 use WPCF7_ContactForm;
 use WPCF7_FormTag;
 
@@ -424,13 +425,31 @@ class IntegrationView {
 	 * @return void
 	 */
 	private static function render_debug_section( array $recent_logs, array $statistics, array $debug_info ): void {
+		// Check if logging is enabled globally
+		$logging_enabled = Settings::instance()->get( 'logging_enabled', false );
+
 		?>
 		<fieldset>
 			<div class="cf7_row">
 				<h3><?php \esc_html_e( 'API Call Logs & Statistics', 'contact-form-to-api' ); ?></h3>
 
-				<?php self::render_statistics( $statistics ); ?>
-				<?php self::render_recent_logs( $recent_logs ); ?>
+				<?php if ( ! $logging_enabled ) : ?>
+					<div class="notice notice-warning inline" style="margin: 10px 0;">
+						<p>
+							<?php
+							printf(
+								/* translators: %s: URL to settings page */
+								\esc_html__( 'Logging is currently disabled. Enable it in %s to track API calls.', 'contact-form-to-api' ),
+								'<a href="' . \esc_url( \admin_url( 'admin.php?page=contact-form-to-api' ) ) . '">' . \esc_html__( 'Global Settings', 'contact-form-to-api' ) . '</a>'
+							);
+							?>
+						</p>
+					</div>
+				<?php else : ?>
+					<?php self::render_statistics( $statistics ); ?>
+					<?php self::render_recent_logs( $recent_logs ); ?>
+				<?php endif; ?>
+
 				<?php self::render_legacy_debug( $debug_info ); ?>
 			</div>
 		</fieldset>

@@ -8,7 +8,7 @@
  *
  * @package SilverAssist\ContactFormToAPI\Tests
  * @since   1.1.2
- * @version 1.1.2
+ * @version 1.3.0
  * @author  Silver Assist
  */
 
@@ -17,7 +17,6 @@ namespace SilverAssist\ContactFormToAPI\Tests\Unit;
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 use SilverAssist\ContactFormToAPI\Admin\RequestLogController;
 use ReflectionClass;
-use ReflectionMethod;
 
 /**
  * Test cases for the RequestLogController class
@@ -254,6 +253,95 @@ class RequestLogControllerTest extends TestCase {
 			'if ( ! $this->list_table )',
 			$method_source,
 			'process_bulk_actions should check if list_table is null and return early'
+		);
+	}
+
+	/**
+	 * Test that is_logging_enabled method exists
+	 *
+	 * @return void
+	 */
+	public function testIsLoggingEnabledMethodExists(): void {
+		$reflection = new ReflectionClass( RequestLogController::class );
+
+		$this->assertTrue(
+			$reflection->hasMethod( 'is_logging_enabled' ),
+			'RequestLogController should have is_logging_enabled method'
+		);
+
+		$method = $reflection->getMethod( 'is_logging_enabled' );
+		$this->assertTrue(
+			$method->isPrivate(),
+			'is_logging_enabled should be a private method'
+		);
+	}
+
+	/**
+	 * Test that register_menu checks logging status
+	 *
+	 * @return void
+	 */
+	public function testRegisterMenuChecksLoggingStatus(): void {
+		$reflection    = new ReflectionClass( RequestLogController::class );
+		$method        = $reflection->getMethod( 'register_menu' );
+		$filename      = $method->getFileName();
+		$start_line    = $method->getStartLine();
+		$end_line      = $method->getEndLine();
+		$source        = file( $filename );
+		$method_source = implode( '', array_slice( $source, $start_line - 1, $end_line - $start_line + 1 ) );
+
+		$this->assertStringContainsString(
+			'is_logging_enabled',
+			$method_source,
+			'register_menu should check if logging is enabled'
+		);
+	}
+
+	/**
+	 * Test that handle_page_request blocks access when logging is disabled
+	 *
+	 * @return void
+	 */
+	public function testHandlePageRequestBlocksAccessWhenLoggingDisabled(): void {
+		$reflection    = new ReflectionClass( RequestLogController::class );
+		$method        = $reflection->getMethod( 'handle_page_request' );
+		$filename      = $method->getFileName();
+		$start_line    = $method->getStartLine();
+		$end_line      = $method->getEndLine();
+		$source        = file( $filename );
+		$method_source = implode( '', array_slice( $source, $start_line - 1, $end_line - $start_line + 1 ) );
+
+		$this->assertStringContainsString(
+			'is_logging_enabled',
+			$method_source,
+			'handle_page_request should check if logging is enabled'
+		);
+
+		$this->assertStringContainsString(
+			'wp_die',
+			$method_source,
+			'handle_page_request should call wp_die when logging is disabled'
+		);
+	}
+
+	/**
+	 * Test that maybe_handle_export checks logging status
+	 *
+	 * @return void
+	 */
+	public function testMaybeHandleExportChecksLoggingStatus(): void {
+		$reflection    = new ReflectionClass( RequestLogController::class );
+		$method        = $reflection->getMethod( 'maybe_handle_export' );
+		$filename      = $method->getFileName();
+		$start_line    = $method->getStartLine();
+		$end_line      = $method->getEndLine();
+		$source        = file( $filename );
+		$method_source = implode( '', array_slice( $source, $start_line - 1, $end_line - $start_line + 1 ) );
+
+		$this->assertStringContainsString(
+			'is_logging_enabled',
+			$method_source,
+			'maybe_handle_export should check if logging is enabled'
 		);
 	}
 }

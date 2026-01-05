@@ -17,6 +17,7 @@ namespace SilverAssist\ContactFormToAPI\Admin;
 use SilverAssist\ContactFormToAPI\Admin\Views\RequestLogView;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\RequestLogger;
+use SilverAssist\ContactFormToAPI\Core\Settings;
 use SilverAssist\ContactFormToAPI\Services\ApiClient;
 use SilverAssist\ContactFormToAPI\Services\ExportService;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
@@ -110,6 +111,11 @@ class RequestLogController implements LoadableInterface {
 			return;
 		}
 
+		// Don't allow exports if logging is disabled.
+		if ( ! $this->is_logging_enabled() ) {
+			return;
+		}
+
 		// Check for export actions.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Nonce is verified in handle_export_action().
 		if ( ! isset( $_GET['action'] ) || ! \in_array( $_GET['action'], array( 'export_csv', 'export_json' ), true ) ) {
@@ -140,9 +146,16 @@ class RequestLogController implements LoadableInterface {
 	/**
 	 * Register admin menu
 	 *
+	 * Only registers the menu if logging is enabled in settings.
+	 *
 	 * @return void
 	 */
 	public function register_menu(): void {
+		// Don't show API Logs menu if logging is disabled.
+		if ( ! $this->is_logging_enabled() ) {
+			return;
+		}
+
 		$hook = \add_submenu_page(
 			'wpcf7',
 			\__( 'API Logs', 'contact-form-to-api' ),
@@ -154,6 +167,24 @@ class RequestLogController implements LoadableInterface {
 
 		\add_action( "load-{$hook}", array( $this, 'screen_options' ) );
 		\add_action( "load-{$hook}", array( $this, 'process_bulk_actions' ) );
+	}
+
+	/**
+	 * Check if logging is enabled
+	 *
+	 * @return bool
+	 */
+	private function is_logging_enabled(): bool {
+		if ( \class_exists( Settings::class ) ) {
+			try {
+				$settings = Settings::instance();
+				return $settings->is_logging_enabled();
+			} catch ( \Exception $e ) {
+				// Settings not available, default to enabled.
+				unset( $e );
+			}
+		}
+		return true;
 	}
 
 	/**
@@ -369,6 +400,15 @@ class RequestLogController implements LoadableInterface {
 	 * @return void
 	 */
 	public function handle_page_request(): void {
+		// Prevent access if logging is disabled.
+		if ( ! $this->is_logging_enabled() ) {
+			\wp_die(
+				\esc_html__( 'API logging is disabled. Enable it in the plugin settings to view logs.', 'contact-form-to-api' ),
+				\esc_html__( 'Logging Disabled', 'contact-form-to-api' ),
+				array( 'back_link' => true )
+			);
+		}
+
 		if ( ! $this->list_table ) {
 			$this->list_table = new RequestLogTable();
 		}
