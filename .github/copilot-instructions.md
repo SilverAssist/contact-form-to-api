@@ -47,11 +47,9 @@ contact-form-to-api/
 │       ├── admin.js               # CF7 admin scripts (ES6+)
 │       ├── admin-check-updates.js # GitHub updater button
 │       └── api-log-admin.js       # Request logs interactions
-├── docs/                          # Documentation
-│   ├── WORKFLOWS.md
-│   ├── RELEASE_PROCESS.md
-│   ├── API_REFERENCE.md
-│   └── ADMIN_INTERFACE.md
+├── docs/                          # Documentation (user-facing)
+│   ├── API_REFERENCE.md          # Hooks, filters, and developer reference
+│   └── USER_GUIDE.md             # Complete user documentation
 ├── includes/                      # Source code (PSR-4)
 │   ├── Admin/                     # Priority 25-30 - Admin components
 │   │   ├── Loader.php            # Admin component loader
