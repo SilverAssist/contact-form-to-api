@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Database-Level Encryption for Sensitive Request Data** (#33): Encrypt API logs at rest using libsodium
+  * New `EncryptionService` class using libsodium (Sodium) authenticated encryption
+  * XSalsa20 stream cipher with Poly1305 MAC for data integrity
+  * HKDF key derivation from WordPress `AUTH_KEY` constant
+  * Encrypted fields: `request_data`, `request_headers`, `response_data`, `response_headers`
+  * New `encryption_version` column in database (0=plaintext, 1=encrypted)
+  * Transparent decryption via `RequestLogger::decrypt_log_fields()` method
+  * Encryption settings in Global Settings page with status indicator
+  * Statistics showing encrypted vs unencrypted logs count
+  * Graceful degradation: falls back to plaintext if Sodium unavailable
+  * Backward compatible with existing unencrypted logs
+
 ### Fixed
 - **Data Anonymization Breaking Retry Functionality** (#31): Moved sensitive data anonymization from storage layer to presentation layer
   * Original form data now stored in database (needed for retry functionality)
@@ -16,13 +29,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Backward compatible with existing anonymized logs
 
 ### Planned Features
-
-#### High Priority
-- **Database Encryption**: Encrypt sensitive request data at rest using Sodium (#33)
-  * AES-256 encryption for stored form data
-  * Transparent decryption for authorized admin operations (retry, view details)
-  * Configurable per-field encryption based on sensitive data patterns
-  * Backward compatible with existing unencrypted logs
 
 #### Medium Priority
 - **Performance Charts**: Visual trends and analytics dashboard with Chart.js
