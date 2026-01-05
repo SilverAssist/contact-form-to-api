@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned Features
 
+#### Security & Privacy
+- **Database Encryption**: Encrypt sensitive request data at rest using WordPress salts
+  * AES-256 encryption for stored form data
+  * Transparent decryption for authorized admin operations (retry, view details)
+  * Configurable per-field encryption based on sensitive data patterns
+  * Backward compatible with existing unencrypted logs
+
 #### API Logs Enhancements
 - **AJAX Live Refresh**: Real-time statistics updates without page reload
 - **Performance Charts**: Visual trends and analytics with Chart.js
