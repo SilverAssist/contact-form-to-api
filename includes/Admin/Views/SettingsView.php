@@ -658,21 +658,27 @@ echo \esc_html( \sprintf( \__( 'You have %d legacy unencrypted logs. Consider ru
  * @since 1.4.0
  * @return array{total: int, encrypted: int, unencrypted: int} Statistics array.
  */
-private static function get_encryption_statistics(): array {
-global $wpdb;
-$table_name = $wpdb->prefix . 'cf7_api_logs';
+	private static function get_encryption_statistics(): array {
+	global $wpdb;
+	$table_name = $wpdb->prefix . 'cf7_api_logs';
+	
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	$total_logs     = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
+	$encrypted_logs = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name} WHERE encryption_version > 0" );
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+	
+	return array(
+	'total'       => $total_logs,
+	'encrypted'   => $encrypted_logs,
+	'unencrypted' => $total_logs - $encrypted_logs,
+	);
+	}
 
-// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-$total_logs     = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
-$encrypted_logs = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name} WHERE encryption_version > 0" );
-// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-
-return array(
-'total'       => $total_logs,
-'encrypted'   => $encrypted_logs,
-'unencrypted' => $total_logs - $encrypted_logs,
-);
-}
+	/**
+	 * Render email alerts settings
+	 *
+	 * @param Settings $settings Settings instance.
+	 * @return void
 	 */
 	private static function render_email_alerts_settings( Settings $settings ): void {
 		$alerts_enabled   = $settings->is_alerts_enabled();
