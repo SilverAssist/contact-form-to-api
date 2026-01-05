@@ -97,8 +97,6 @@ Export filtered logs as:
 - **CSV**: Spreadsheet format for analysis
 - **JSON**: Developer-friendly format
 
-> **For developers**: See [ADMIN_INTERFACE.md](ADMIN_INTERFACE.md) for technical details including hooks, filters, and database schema.
-
 ---
 
 ## Date Range Filters
