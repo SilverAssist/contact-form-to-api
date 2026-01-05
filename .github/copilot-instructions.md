@@ -792,9 +792,51 @@ on:
 
 **Process**:
 1. Run quality checks
-2. Build release package
-3. Create GitHub release
-4. Upload release assets
+2. Validate version consistency (`check-versions.sh`)
+3. Build release package
+4. Create GitHub release
+5. Upload release assets (ZIP, checksums)
+
+### ⚠️ CRITICAL: Immutable Tags and Releases
+
+**GitHub enforces immutability** on tags and releases in this repository. Once a tag is used (even if the release fails), it **CANNOT be reused**.
+
+**If a release workflow fails**:
+1. **DO NOT** try to delete and recreate the same tag
+2. **DO NOT** manually create a release with the same version
+3. **INCREMENT the version** (e.g., v1.3.1 → v1.3.2 → v1.3.3)
+4. Update all version tags using `./scripts/update-version-simple.sh`
+5. Commit, push, and create a new tag
+
+**Common failure scenarios**:
+- **Version consistency check fails**: Run `./scripts/update-version-simple.sh X.Y.Z` to update all `@version` tags
+- **"Cannot upload assets to immutable release"**: A manual release was created; increment version
+- **"Cannot create ref due to creations being restricted"**: Tag was previously used; increment version
+
+**Correct release workflow**:
+```bash
+# 1. Update all versions
+./scripts/update-version-simple.sh 1.3.4
+
+# 2. Update CHANGELOG.md with new version section
+
+# 3. Update CF7_API_VERSION constant in contact-form-to-api.php
+
+# 4. Verify consistency
+./scripts/check-versions.sh
+
+# 5. Commit and push
+git add -A
+git commit -m "chore: bump version to 1.3.4 for release"
+git push origin main
+
+# 6. Create and push tag (triggers release workflow)
+git tag v1.3.4
+git push origin v1.3.4
+
+# 7. Monitor workflow
+gh run list --workflow=release.yml --limit 3
+```
 
 ## Build and Release Scripts
 
