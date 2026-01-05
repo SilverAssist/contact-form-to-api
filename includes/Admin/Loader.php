@@ -7,7 +7,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Admin
  * @since 1.1.0
- * @version 1.3.1
+ * @version 1.3.2
  * @author Silver Assist
  */
 

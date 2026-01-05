@@ -23,6 +23,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Network-wide settings management
   * Per-site configuration overrides
 
+## [1.3.2] - 2026-01-05
+
+### Fixed
+- **Release workflow**: Updated all @version tags to match plugin version (fixes CI version consistency check)
+
 ## [1.3.1] - 2026-01-05
 
 ### Added
