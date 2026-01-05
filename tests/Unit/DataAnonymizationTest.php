@@ -276,10 +276,10 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 		// Mock response with sensitive data
 		$response_body = \wp_json_encode(
 			array(
-				'success'      => true,
-				'user_email'   => 'response@example.com',
+				'success'       => true,
+				'user_email'    => 'response@example.com',
 				'contact_phone' => '9876543210',
-				'message'      => 'Success',
+				'message'       => 'Success',
 			)
 		);
 
@@ -337,9 +337,9 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 			),
 			'body'     => '{"success":true}',
 			'headers'  => array(
-				'content-type'     => 'application/json',
-				'x-auth-token'     => 'response-token-12345',
-				'authorization'    => 'Bearer response-bearer',
+				'content-type'  => 'application/json',
+				'x-auth-token'  => 'response-token-12345',
+				'authorization' => 'Bearer response-bearer',
 			),
 		);
 

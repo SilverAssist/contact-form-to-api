@@ -167,6 +167,7 @@ class EncryptionService implements LoadableInterface {
 			$ciphertext = \sodium_crypto_secretbox( $plaintext, $nonce, $this->get_key() );
 
 			// Prepend nonce to ciphertext and encode.
+			/** @var string $encrypted */
 			$encrypted = \base64_encode( $nonce . $ciphertext );
 
 			// Clear sensitive data from memory.

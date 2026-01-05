@@ -227,11 +227,13 @@ class EncryptionServiceTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_encrypt_json_array(): void {
-		$data = \wp_json_encode( array(
-			'name'  => 'Test User',
-			'email' => 'test@example.com',
-			'phone' => '555-0123',
-		) );
+		$data = \wp_json_encode(
+			array(
+				'name'  => 'Test User',
+				'email' => 'test@example.com',
+				'phone' => '555-0123',
+			)
+		);
 
 		$encrypted = $this->service->encrypt( $data );
 		$decrypted = $this->service->decrypt( $encrypted );
@@ -265,10 +267,12 @@ class EncryptionServiceTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_encrypt_performance(): void {
-		$data = \wp_json_encode( array(
-			'email'   => 'test@example.com',
-			'message' => \str_repeat( 'x', 1000 ),
-		) );
+		$data = \wp_json_encode(
+			array(
+				'email'   => 'test@example.com',
+				'message' => \str_repeat( 'x', 1000 ),
+			)
+		);
 
 		$iterations = 100;
 		$start      = \microtime( true );
@@ -293,10 +297,12 @@ class EncryptionServiceTest extends WP_UnitTestCase {
 	 * @return void
 	 */
 	public function test_decrypt_performance(): void {
-		$data      = \wp_json_encode( array(
-			'email'   => 'test@example.com',
-			'message' => \str_repeat( 'x', 1000 ),
-		) );
+		$data      = \wp_json_encode(
+			array(
+				'email'   => 'test@example.com',
+				'message' => \str_repeat( 'x', 1000 ),
+			)
+		);
 		$encrypted = $this->service->encrypt( $data );
 
 		$iterations = 100;

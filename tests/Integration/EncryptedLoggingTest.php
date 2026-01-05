@@ -210,10 +210,12 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		// Mock response with sensitive data.
 		$response = array(
 			'response' => array( 'code' => 200 ),
-			'body'     => \wp_json_encode( array(
-				'user_id' => 12345,
-				'token'   => 'secret_token_12345',
-			) ),
+			'body'     => \wp_json_encode(
+				array(
+					'user_id' => 12345,
+					'token'   => 'secret_token_12345',
+				)
+			),
 			'headers'  => array(),
 		);
 
@@ -298,9 +300,11 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
 		// Insert a legacy plaintext log directly.
-		$plaintext_data = \wp_json_encode( array(
-			'email' => 'legacy@example.com',
-		) );
+		$plaintext_data = \wp_json_encode(
+			array(
+				'email' => 'legacy@example.com',
+			)
+		);
 
 		$wpdb->insert(
 			$table_name,

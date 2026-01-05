@@ -114,21 +114,21 @@ class Settings implements LoadableInterface {
 	 */
 	public static function get_defaults(): array {
 		return array(
-			'max_manual_retries'      => 3,
-			'max_retries_per_hour'    => 10,
-			'sensitive_patterns'      => array( 'password', 'token', 'secret', 'api_key', 'apikey', 'api-key' ),
-			'logging_enabled'         => true,
-			'log_retention_days'      => 30,
+			'max_manual_retries'    => 3,
+			'max_retries_per_hour'  => 10,
+			'sensitive_patterns'    => array( 'password', 'token', 'secret', 'api_key', 'apikey', 'api-key' ),
+			'logging_enabled'       => true,
+			'log_retention_days'    => 30,
 			// Email alert settings.
-			'alerts_enabled'          => false,
-			'alert_recipients'        => \get_option( 'admin_email' ),
-			'alert_error_threshold'   => 10,
-			'alert_rate_threshold'    => 20,
-			'alert_check_interval'    => 'hourly',
-			'alert_cooldown_hours'    => 4,
-			'alert_last_sent'         => 0,
+			'alerts_enabled'        => false,
+			'alert_recipients'      => \get_option( 'admin_email' ),
+			'alert_error_threshold' => 10,
+			'alert_rate_threshold'  => 20,
+			'alert_check_interval'  => 'hourly',
+			'alert_cooldown_hours'  => 4,
+			'alert_last_sent'       => 0,
 			// Encryption settings.
-			'encryption_enabled'      => true,
+			'encryption_enabled'    => true,
 		);
 	}
 
