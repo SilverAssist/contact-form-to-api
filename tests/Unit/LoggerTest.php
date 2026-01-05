@@ -212,6 +212,7 @@ class LoggerTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name   = $wpdb->prefix . 'cf7_api_logs';
 		$log          = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		$log          = $this->logger->decrypt_log_fields( $log );
 		$request_data = json_decode( $log['request_data'], true );
 
 		// All fields should be stored as-is (not redacted)
@@ -390,6 +391,7 @@ class LoggerTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name      = $wpdb->prefix . 'cf7_api_logs';
 		$log             = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		$log             = $this->logger->decrypt_log_fields( $log );
 		$request_headers = json_decode( $log['request_headers'], true );
 
 		$this->assertEquals( 'application/json', $request_headers['Content-Type'] );

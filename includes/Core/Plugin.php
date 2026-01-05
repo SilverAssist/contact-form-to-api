@@ -174,6 +174,21 @@ class Plugin implements LoadableInterface {
 			}
 		}
 
+		// Load EncryptionService (priority 10 - Core).
+		if ( \class_exists( EncryptionService::class ) ) {
+			try {
+				$encryption = EncryptionService::instance();
+				if ( $encryption->should_load() ) {
+					$encryption->init();
+					$this->components[] = $encryption;
+				}
+			} catch ( \Exception $e ) {
+				if ( \class_exists( DebugLogger::class ) ) {
+					DebugLogger::instance()->error( 'Failed to load EncryptionService - ' . $e->getMessage() );
+				}
+			}
+		}
+
 		// Load Utils Logger (priority 40 - but initialized early for error logging).
 		if ( \class_exists( DebugLogger::class ) ) {
 			try {
