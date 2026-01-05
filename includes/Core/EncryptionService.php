@@ -166,16 +166,22 @@ class EncryptionService implements LoadableInterface {
 			// Encrypt with authenticated encryption.
 			$ciphertext = \sodium_crypto_secretbox( $plaintext, $nonce, $this->get_key() );
 
+			// Handle encryption failure (should not happen with valid key).
+			if ( false === $ciphertext ) {
+				throw new \RuntimeException( 'Sodium encryption failed' );
+			}
+
 			// Prepend nonce to ciphertext and encode.
-			/** @var string $encrypted */
 			$encrypted = \base64_encode( $nonce . $ciphertext );
 
-			// Clear sensitive data from memory.
+			// Clear sensitive data from memory (do this before return).
+			// Note: sodium_memzero modifies vars by reference, so we use a copy for the return.
+			$result = $encrypted;
 			\sodium_memzero( $plaintext );
 			\sodium_memzero( $nonce );
 			\sodium_memzero( $ciphertext );
 
-			return $encrypted;
+			return $result;
 
 		} catch ( \Exception $e ) {
 			// Log encryption failure (without sensitive data).
