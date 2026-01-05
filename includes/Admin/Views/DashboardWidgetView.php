@@ -14,6 +14,8 @@
 
 namespace SilverAssist\ContactFormToAPI\Admin\Views;
 
+use SilverAssist\ContactFormToAPI\Core\RequestLogger;
+
 \defined( 'ABSPATH' ) || exit;
 
 /**
@@ -172,12 +174,17 @@ class DashboardWidgetView {
 		$form_id   = isset( $error['form_id'] ) ? (int) $error['form_id'] : 0;
 		$form_name = self::get_form_name( $form_id );
 		$error_msg = isset( $error['error_message'] ) ? $error['error_message'] : \__( 'Unknown error', 'contact-form-to-api' );
+		
+		// Anonymize sensitive data in error message using static method
+		$anonymized_msg  = RequestLogger::anonymize_data( $error_msg );
+		$displayed_msg   = \is_string( $anonymized_msg ) ? $anonymized_msg : $error_msg;
+		
 		$time_ago  = self::time_ago( $error['created_at'] ?? '' );
 		$log_url   = \admin_url( 'admin.php?page=cf7-api-logs&action=view&log_id=' . ( $error['id'] ?? 0 ) );
 		?>
 		<li class="cf7-error-item">
 			<strong><?php echo \esc_html( $form_name ); ?>:</strong>
-			<?php echo \esc_html( self::truncate( $error_msg, 60 ) ); ?>
+			<?php echo \esc_html( self::truncate( $displayed_msg, 60 ) ); ?>
 			<span class="cf7-error-time"><?php echo \esc_html( $time_ago ); ?></span>
 			<a href="<?php echo \esc_url( $log_url ); ?>" class="cf7-error-link">
 				<?php \esc_html_e( 'View', 'contact-form-to-api' ); ?>

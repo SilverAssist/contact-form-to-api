@@ -82,6 +82,8 @@ class RequestLogger {
 	 * Start logging an API request
 	 *
 	 * Creates initial log entry before sending request.
+	 * Stores original request body data for retry functionality.
+	 * Only redacts authorization headers for security.
 	 *
 	 * @since 1.1.0
 	 * @param int                    $form_id         Contact Form 7 form ID
@@ -102,12 +104,12 @@ class RequestLogger {
 
 		$this->start_time = \microtime( true );
 
-		// Anonymize sensitive data
-		$anonymized_data    = $this->anonymize_data( $request_data );
+		// Store original request body data (needed for retry functionality)
+		// Only redact authorization headers for security
 		$anonymized_headers = $this->anonymize_headers( $request_headers );
 
 		// Prepare data for storage
-		$prepared_data    = \is_string( $anonymized_data ) ? $anonymized_data : \wp_json_encode( $anonymized_data );
+		$prepared_data    = \is_string( $request_data ) ? $request_data : \wp_json_encode( $request_data );
 		$prepared_headers = \wp_json_encode( $anonymized_headers );
 
 		$insert_data = array(
@@ -177,15 +179,15 @@ class RequestLogger {
 			$response_body    = \wp_remote_retrieve_body( $response );
 			$response_headers = \wp_remote_retrieve_headers( $response );
 
-			// Anonymize response data
-			$anonymized_body    = $this->anonymize_data( $response_body );
+			// Store original response body data
+			// Only redact authorization headers for security
 			$anonymized_headers = $this->anonymize_headers( $response_headers );
 
 			// Determine status based on response code
 			$status = $this->determine_status( $response_code );
 
 			// Encode response data if it's an array
-			$encoded_body = \is_array( $anonymized_body ) ? \wp_json_encode( $anonymized_body ) : $anonymized_body;
+			$encoded_body = \is_array( $response_body ) ? \wp_json_encode( $response_body ) : $response_body;
 
 			$update_data = array(
 				'status'           => $status,
@@ -240,12 +242,14 @@ class RequestLogger {
 	 * Anonymize sensitive data
 	 *
 	 * Removes or masks sensitive information from logged data.
+	 * This method is public and static to allow views to anonymize data at render time
+	 * without creating logger instances.
 	 *
 	 * @since 1.1.0
 	 * @param mixed $data Data to anonymize
 	 * @return mixed Anonymized data
 	 */
-	private function anonymize_data( $data ) {
+	public static function anonymize_data( $data ) {
 		// If string, try to decode as JSON first
 		if ( \is_string( $data ) ) {
 			$decoded = \json_decode( $data, true );
@@ -263,7 +267,7 @@ class RequestLogger {
 				if ( SensitiveDataPatterns::is_sensitive( $key ) ) {
 					$data[ $key ] = '***REDACTED***';
 				} elseif ( \is_array( $value ) ) {
-					$data[ $key ] = $this->anonymize_data( $value );
+					$data[ $key ] = self::anonymize_data( $value );
 				}
 			}
 		}

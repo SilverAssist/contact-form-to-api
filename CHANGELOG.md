@@ -7,10 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Data Anonymization Breaking Retry Functionality** (#31): Moved sensitive data anonymization from storage layer to presentation layer
+  * Original form data now stored in database (needed for retry functionality)
+  * Authorization headers still redacted at storage (security requirement)
+  * UI views anonymize data at render time using `RequestLogger::anonymize_data()`
+  * Export functionality continues to anonymize data correctly
+  * Backward compatible with existing anonymized logs
+
 ### Planned Features
 
 #### High Priority
-- **Database Encryption**: Encrypt sensitive request data at rest using WordPress salts (#31)
+- **Database Encryption**: Encrypt sensitive request data at rest using Sodium (#33)
   * AES-256 encryption for stored form data
   * Transparent decryption for authorized admin operations (retry, view details)
   * Configurable per-field encryption based on sensitive data patterns

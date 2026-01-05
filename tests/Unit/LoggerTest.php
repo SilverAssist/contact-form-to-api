@@ -193,7 +193,7 @@ class LoggerTest extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test data anonymization for sensitive fields
+	 * Test data is stored without anonymization (except auth headers)
 	 *
 	 * @return void
 	 */
@@ -208,16 +208,17 @@ class LoggerTest extends WP_UnitTestCase {
 
 		$log_id = $this->logger->start_request( $form_id, 'https://example.com/api', 'POST', $data );
 
-		// Verify sensitive data was anonymized
+		// Verify data is stored WITHOUT anonymization (new behavior for retry functionality)
 		global $wpdb;
 		$table_name   = $wpdb->prefix . 'cf7_api_logs';
 		$log          = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
 		$request_data = json_decode( $log['request_data'], true );
 
+		// All fields should be stored as-is (not redacted)
 		$this->assertEquals( 'John Doe', $request_data['name'] );
 		$this->assertEquals( 'john@example.com', $request_data['email'] );
-		$this->assertEquals( '***REDACTED***', $request_data['password'] );
-		$this->assertEquals( '***REDACTED***', $request_data['api_key'] );
+		$this->assertEquals( 'secret123', $request_data['password'] );
+		$this->assertEquals( 'abc123xyz', $request_data['api_key'] );
 	}
 
 	/**
