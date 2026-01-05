@@ -9,6 +9,8 @@ Thank you for your interest in contributing to Contact Form 7 to API! This docum
 - [Testing Requirements](#testing-requirements)
 - [Pull Request Process](#pull-request-process)
 - [Project Architecture](#project-architecture)
+- [CI/CD Workflows](#cicd-workflows)
+- [Release Process](#release-process-maintainers)
 
 ## Development Setup
 
@@ -317,6 +319,121 @@ CF7_API_MIN_WP_VERSION
 
 **i18n Text Domain**: Always use literal string `'contact-form-to-api'` (not a constant) for WordPress i18n extraction tools.
 
+## CI/CD Workflows
+
+### GitHub Actions
+
+The project uses GitHub Actions for automated testing and releases:
+
+```
+.github/workflows/
+├── quality-checks.yml      # Reusable quality check workflow
+├── ci.yml                  # Pull request validation
+├── release.yml             # Automated releases
+└── dependency-updates.yml  # Automated dependency updates
+```
+
+### CI - Pull Request Validation
+
+**Triggers**: All pull requests to `main` or `develop`
+
+**Required Checks**:
+- ✅ Composer validation
+- ✅ PHPCS (WordPress-Extra)
+- ✅ PHPStan (Level 8)
+- ✅ PHPUnit (all tests passing)
+
+### Branch Strategy
+
+```
+main (production)
+  └── develop (integration)
+      └── feature/* (features)
+      └── fix/* (bug fixes)
+```
+
+### Development Workflow
+
+1. Create feature branch from `develop`:
+   ```bash
+   git checkout -b feature/your-feature-name develop
+   ```
+
+2. Run quality checks frequently:
+   ```bash
+   ./scripts/run-quality-checks.sh
+   ```
+
+3. Commit with conventional commits:
+   ```bash
+   git commit -m "feat(scope): description"
+   ```
+
+4. Push and create PR to `develop`
+
+5. After CI passes and approval, PR is squashed and merged
+
+## Release Process (Maintainers)
+
+### Versioning Strategy
+
+Follow [Semantic Versioning 2.0.0](https://semver.org/):
+
+- **MAJOR**: Breaking changes
+- **MINOR**: New features (backward-compatible)
+- **PATCH**: Bug fixes (backward-compatible)
+
+### Pre-Release Checklist
+
+- [ ] All tests passing
+- [ ] PHPCS clean (0 errors)
+- [ ] PHPStan Level 8 passing
+- [ ] CHANGELOG.md updated
+- [ ] Manual testing completed
+
+### Creating a Release
+
+1. **Update version**:
+   ```bash
+   ./scripts/update-version.sh 1.2.0
+   ```
+
+2. **Update CHANGELOG.md** with release notes
+
+3. **Run quality checks**:
+   ```bash
+   ./scripts/run-quality-checks.sh
+   ```
+
+4. **Commit and tag**:
+   ```bash
+   git commit -am "chore: prepare release v1.2.0"
+   git tag -a v1.2.0 -m "Release version 1.2.0"
+   git push origin main --tags
+   ```
+
+5. GitHub Actions will automatically:
+   - Run quality checks
+   - Build release package
+   - Create GitHub release with ZIP
+
+### Hotfix Releases
+
+For critical issues:
+
+1. Create hotfix branch from `main`:
+   ```bash
+   git checkout -b hotfix/1.2.1 main
+   ```
+
+2. Implement fix with regression test
+
+3. Update version to patch number (1.2.1)
+
+4. Tag and push (triggers release)
+
+5. Merge back to `main` and `develop`
+
 ## Resources
 
 - [SilverAssist Standards](https://gist.github.com/miguelcolmenares/227180b8983df6ad4ec3ced113677853)
@@ -324,6 +441,55 @@ CF7_API_MIN_WP_VERSION
 - [PHPStan Documentation](https://phpstan.org/)
 - [PHPUnit Documentation](https://phpunit.de/)
 - [Contact Form 7 Documentation](https://contactform7.com/docs/)
+
+## Hooks Reference
+
+### Actions
+
+```php
+// Before displaying logs page
+do_action('cf7_api_before_logs_page');
+
+// After log deletion
+do_action('cf7_api_log_deleted', $log_id);
+
+// After bulk deletion
+do_action('cf7_api_logs_bulk_deleted', $log_ids);
+
+// Before sending data to API
+do_action('cf7_api_before_send', $form_id, $data, $config);
+
+// After API response received
+do_action('cf7_api_after_send', $form_id, $response, $log_id);
+```
+
+### Filters
+
+```php
+// Modify logs query arguments
+$args = apply_filters('cf7_api_logs_query_args', $args);
+
+// Modify statistics output
+$stats = apply_filters('cf7_api_logs_statistics', $stats, $form_id);
+
+// Modify request data before sending
+$data = apply_filters('cf7_api_request_data', $data, $form_id);
+
+// Modify request headers
+$headers = apply_filters('cf7_api_request_headers', $headers, $form_id);
+
+// Modify API response handling
+$response = apply_filters('cf7_api_response', $response, $form_id);
+```
+
+### Database Schema
+
+Logs are stored in custom table: `{prefix}cf7_api_logs`
+
+**Indexed columns** for performance:
+- `form_id`
+- `status`
+- `created_at`
 
 ## Questions?
 

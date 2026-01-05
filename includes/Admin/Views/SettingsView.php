@@ -742,10 +742,10 @@ class SettingsView {
 					<span class="link-desc"><?php \esc_html_e( 'Hooks, filters and actions', 'contact-form-to-api' ); ?></span>
 				</a>
 
-				<a href="https://github.com/SilverAssist/contact-form-to-api/wiki" target="_blank" rel="noopener noreferrer" class="cf7-api-link-card">
+				<a href="https://github.com/SilverAssist/contact-form-to-api/blob/main/docs/USER_GUIDE.md" target="_blank" rel="noopener noreferrer" class="cf7-api-link-card">
 					<span class="dashicons dashicons-media-document"></span>
-					<span class="link-title"><?php \esc_html_e( 'Documentation', 'contact-form-to-api' ); ?></span>
-					<span class="link-desc"><?php \esc_html_e( 'Full plugin documentation', 'contact-form-to-api' ); ?></span>
+					<span class="link-title"><?php \esc_html_e( 'User Guide', 'contact-form-to-api' ); ?></span>
+					<span class="link-desc"><?php \esc_html_e( 'Complete plugin documentation', 'contact-form-to-api' ); ?></span>
 				</a>
 
 				<a href="https://github.com/SilverAssist/contact-form-to-api/issues" target="_blank" rel="noopener noreferrer" class="cf7-api-link-card">
