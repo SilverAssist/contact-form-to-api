@@ -432,7 +432,15 @@ class RequestLogController implements LoadableInterface {
 			ARRAY_A
 		);
 
-		return $log ?: null;
+		if ( ! $log ) {
+			return null;
+		}
+
+		// Decrypt log fields if encryption is enabled.
+		$logger = new RequestLogger();
+		$log    = $logger->decrypt_log_fields( $log );
+
+		return $log;
 	}
 
 	/**

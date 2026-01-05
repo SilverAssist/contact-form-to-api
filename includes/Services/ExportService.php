@@ -159,11 +159,15 @@ class ExportService implements LoadableInterface {
 	 * Sanitize log data for export
 	 *
 	 * Removes sensitive information from log entries before export.
+	 * Decrypts data first if it's encrypted.
 	 *
 	 * @param array<string, mixed> $log Log entry.
 	 * @return array<string, mixed> Sanitized log entry.
 	 */
 	private function sanitize_for_export( array $log ): array {
+		// Decrypt log fields if encryption is enabled.
+		$log = $this->decrypt_log_if_needed( $log );
+
 		$sanitized = $log;
 
 		// Sanitize request headers.
@@ -187,6 +191,35 @@ class ExportService implements LoadableInterface {
 		}
 
 		return $sanitized;
+	}
+
+	/**
+	 * Decrypt log fields if needed
+	 *
+	 * Decrypts encrypted log fields before export.
+	 *
+	 * @since 1.3.0
+	 * @param array<string, mixed> $log Log entry.
+	 * @return array<string, mixed> Log entry with decrypted fields.
+	 */
+	private function decrypt_log_if_needed( array $log ): array {
+		// Check if encryption service is available.
+		if ( ! \class_exists( 'SilverAssist\ContactFormToAPI\Core\EncryptionService' ) ) {
+			return $log;
+		}
+
+		// Check if this log uses encryption.
+		if ( ! isset( $log['encryption_version'] ) || $log['encryption_version'] === 0 ) {
+			return $log;
+		}
+
+		// Use RequestLogger to decrypt fields.
+		if ( \class_exists( 'SilverAssist\ContactFormToAPI\Core\RequestLogger' ) ) {
+			$logger = new \SilverAssist\ContactFormToAPI\Core\RequestLogger();
+			$log    = $logger->decrypt_log_fields( $log );
+		}
+
+		return $log;
 	}
 
 	/**
