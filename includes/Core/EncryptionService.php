@@ -16,6 +16,7 @@ namespace SilverAssist\ContactFormToAPI\Core;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Exceptions\DecryptionException;
+use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -177,7 +178,9 @@ class EncryptionService implements LoadableInterface {
 
 		} catch ( \Exception $e ) {
 			// Log encryption failure (without sensitive data).
-			\error_log( 'CF7 API Encryption failed: ' . $e->getMessage() );
+			if ( \class_exists( DebugLogger::class ) ) {
+				DebugLogger::instance()->error( 'Encryption failed: ' . $e->getMessage() );
+			}
 
 			// Return plaintext if encryption fails (graceful degradation).
 			return $plaintext;
@@ -247,7 +250,9 @@ class EncryptionService implements LoadableInterface {
 			throw $e;
 		} catch ( \Exception $e ) {
 			// Log decryption failure (without sensitive data).
-			\error_log( 'CF7 API Decryption failed: ' . $e->getMessage() );
+			if ( \class_exists( DebugLogger::class ) ) {
+				DebugLogger::instance()->error( 'Decryption failed: ' . $e->getMessage() );
+			}
 
 			// Throw exception to indicate failure.
 			throw new DecryptionException( 'Decryption failed: ' . $e->getMessage(), 0, $e );

@@ -17,6 +17,7 @@ namespace SilverAssist\ContactFormToAPI\Core;
 
 use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
 use SilverAssist\ContactFormToAPI\Core\Settings;
+use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 use WP_Error;
 
 \defined( 'ABSPATH' ) || exit;
@@ -133,10 +134,11 @@ class RequestLogger {
 				$prepared_headers   = $this->encryption->encrypt( $prepared_headers );
 				$encryption_version = $this->encryption->get_version();
 			} catch ( \Exception $e ) {
-				// Log encryption failure and continue with unencrypted data
-				\error_log( 'CF7 API: Encryption failed during start_request: ' . $e->getMessage() );
+				// Log encryption failure and continue with unencrypted data.
+				if ( \class_exists( DebugLogger::class ) ) {
+					DebugLogger::instance()->error( 'Encryption failed during start_request: ' . $e->getMessage() );
+				}
 			}
-		}
 
 		$insert_data = array(
 			'form_id'            => $form_id,
@@ -223,8 +225,10 @@ class RequestLogger {
 					$encoded_body    = $this->encryption->encrypt( $encoded_body );
 					$encoded_headers = $this->encryption->encrypt( $encoded_headers );
 				} catch ( \Exception $e ) {
-					// Log encryption failure and continue with unencrypted data
-					\error_log( 'CF7 API: Encryption failed during complete_request: ' . $e->getMessage() );
+					// Log encryption failure and continue with unencrypted data.
+					if ( \class_exists( DebugLogger::class ) ) {
+						DebugLogger::instance()->error( 'Encryption failed during complete_request: ' . $e->getMessage() );
+					}
 				}
 			}
 
@@ -657,8 +661,10 @@ class RequestLogger {
 				$request_headers_raw = $this->encryption->decrypt( $request_headers_raw );
 				$request_data_raw    = $this->encryption->decrypt( $request_data_raw );
 			} catch ( \Exception $e ) {
-				// Log decryption failure
-				\error_log( 'CF7 API: Decryption failed during get_request_for_retry: ' . $e->getMessage() );
+				// Log decryption failure.
+				if ( \class_exists( DebugLogger::class ) ) {
+					DebugLogger::instance()->error( 'Decryption failed during get_request_for_retry: ' . $e->getMessage() );
+				}
 				return null;
 			}
 		}
@@ -788,7 +794,9 @@ class RequestLogger {
 			}
 		} catch ( \Exception $e ) {
 			// Log decryption failure (without sensitive data).
-			\error_log( 'CF7 API: Failed to decrypt log fields for log ID ' . ( $log['id'] ?? 'unknown' ) . ': ' . $e->getMessage() );
+			if ( \class_exists( DebugLogger::class ) ) {
+				DebugLogger::instance()->error( 'Failed to decrypt log fields for log ID ' . ( $log['id'] ?? 'unknown' ) . ': ' . $e->getMessage() );
+			}
 		}
 
 		return $log;

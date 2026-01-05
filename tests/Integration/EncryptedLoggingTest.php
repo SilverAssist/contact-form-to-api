@@ -330,7 +330,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 	/**
 	 * Test encryption performance for list page
 	 *
-	 * Verify decrypting 25 logs meets performance requirements (&lt; 50ms).
+	 * Verify decrypting 25 logs meets performance requirements (< 50ms).
 	 *
 	 * @return void
 	 */

@@ -260,7 +260,7 @@ class EncryptionServiceTest extends WP_UnitTestCase {
 	/**
 	 * Test encryption performance
 	 *
-	 * Verify encryption meets performance requirements (&lt; 5ms per operation).
+	 * Verify encryption meets performance requirements (< 5ms per operation).
 	 *
 	 * @return void
 	 */
@@ -288,7 +288,7 @@ class EncryptionServiceTest extends WP_UnitTestCase {
 	/**
 	 * Test decryption performance
 	 *
-	 * Verify decryption meets performance requirements (&lt; 3ms per operation).
+	 * Verify decryption meets performance requirements (< 3ms per operation).
 	 *
 	 * @return void
 	 */
