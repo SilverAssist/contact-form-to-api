@@ -173,9 +173,8 @@ class DashboardWidgetView {
 		$form_name = self::get_form_name( $form_id );
 		$error_msg = isset( $error['error_message'] ) ? $error['error_message'] : \__( 'Unknown error', 'contact-form-to-api' );
 		
-		// Anonymize sensitive data in error message
-		$logger          = new \SilverAssist\ContactFormToAPI\Core\RequestLogger();
-		$anonymized_msg  = $logger->anonymize_data( $error_msg );
+		// Anonymize sensitive data in error message using static method
+		$anonymized_msg  = \SilverAssist\ContactFormToAPI\Core\RequestLogger::anonymize_data( $error_msg );
 		$displayed_msg   = \is_string( $anonymized_msg ) ? $anonymized_msg : $error_msg;
 		
 		$time_ago  = self::time_ago( $error['created_at'] ?? '' );

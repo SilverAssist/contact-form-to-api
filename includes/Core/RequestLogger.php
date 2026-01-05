@@ -242,13 +242,14 @@ class RequestLogger {
 	 * Anonymize sensitive data
 	 *
 	 * Removes or masks sensitive information from logged data.
-	 * This method is public to allow views to anonymize data at render time.
+	 * This method is public and static to allow views to anonymize data at render time
+	 * without creating logger instances.
 	 *
 	 * @since 1.1.0
 	 * @param mixed $data Data to anonymize
 	 * @return mixed Anonymized data
 	 */
-	public function anonymize_data( $data ) {
+	public static function anonymize_data( $data ) {
 		// If string, try to decode as JSON first
 		if ( \is_string( $data ) ) {
 			$decoded = \json_decode( $data, true );
@@ -266,7 +267,7 @@ class RequestLogger {
 				if ( SensitiveDataPatterns::is_sensitive( $key ) ) {
 					$data[ $key ] = '***REDACTED***';
 				} elseif ( \is_array( $value ) ) {
-					$data[ $key ] = $this->anonymize_data( $value );
+					$data[ $key ] = self::anonymize_data( $value );
 				}
 			}
 		}

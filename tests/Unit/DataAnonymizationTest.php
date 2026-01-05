@@ -166,8 +166,8 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 			'api_key'      => 'abc-def-ghi',
 		);
 
-		// Anonymize the data
-		$anonymized = $this->logger->anonymize_data( $data );
+		// Anonymize the data using static method
+		$anonymized = RequestLogger::anonymize_data( $data );
 
 		// Verify sensitive fields are redacted
 		$this->assertSame( '***REDACTED***', $anonymized['primaryEmail'] );
@@ -197,8 +197,8 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 			),
 		);
 
-		// Anonymize the data
-		$anonymized = $this->logger->anonymize_data( $data );
+		// Anonymize the data using static method
+		$anonymized = RequestLogger::anonymize_data( $data );
 
 		// Verify nested sensitive fields are redacted
 		$this->assertSame( '***REDACTED***', $anonymized['user']['email'] );

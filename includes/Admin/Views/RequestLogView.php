@@ -198,11 +198,10 @@ class RequestLogView {
 	 * @return void
 	 */
 	private static function render_request_data( array $log ): void {
-		$logger = new RequestLogger();
-		$data   = $log['request_data'] ?? '';
+		$data = $log['request_data'] ?? '';
 		
 		// Anonymize sensitive data at render time
-		$anonymized_data = $logger->anonymize_data( $data );
+		$anonymized_data = RequestLogger::anonymize_data( $data );
 		
 		?>
 		<div class="log-section">
@@ -267,11 +266,10 @@ class RequestLogView {
 			return;
 		}
 		
-		$logger = new RequestLogger();
-		$data   = $log['response_data'];
+		$data = $log['response_data'];
 		
 		// Anonymize sensitive data at render time
-		$anonymized_data = $logger->anonymize_data( $data );
+		$anonymized_data = RequestLogger::anonymize_data( $data );
 		
 		?>
 		<div class="log-section">
