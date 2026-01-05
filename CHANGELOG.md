@@ -15,7 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Transparent decryption for authorized admin operations (retry, view details)
   * Configurable per-field encryption based on sensitive data patterns
   * Backward compatible with existing unencrypted logs
-- **Webhook Security**: Enhanced security with HMAC signature verification for incoming webhooks
 
 #### Medium Priority
 - **Performance Charts**: Visual trends and analytics dashboard with Chart.js
