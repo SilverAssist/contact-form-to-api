@@ -566,33 +566,33 @@ class SettingsView {
 		?>
 		<h3>
 <span class="dashicons dashicons-lock"></span>
-<?php \esc_html_e( 'Database Encryption', 'contact-form-to-api' ); ?>
+		<?php \esc_html_e( 'Database Encryption', 'contact-form-to-api' ); ?>
 </h3>
 <table class="form-table" role="presentation">
 <tbody>
 <tr>
 <th scope="row">
-<?php \esc_html_e( 'Encryption status', 'contact-form-to-api' ); ?>
+		<?php \esc_html_e( 'Encryption status', 'contact-form-to-api' ); ?>
 </th>
 <td>
-<?php if ( $sodium_available ) : ?>
+		<?php if ( $sodium_available ) : ?>
 <span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span>
-<?php \esc_html_e( 'Sodium extension available', 'contact-form-to-api' ); ?>
+			<?php \esc_html_e( 'Sodium extension available', 'contact-form-to-api' ); ?>
 <p class="description">
-<?php \esc_html_e( 'Your server supports libsodium for secure authenticated encryption.', 'contact-form-to-api' ); ?>
+			<?php \esc_html_e( 'Your server supports libsodium for secure authenticated encryption.', 'contact-form-to-api' ); ?>
 </p>
-<?php else : ?>
+		<?php else : ?>
 <span class="dashicons dashicons-warning" style="color: #dc3232;"></span>
-<?php \esc_html_e( 'Sodium extension not available', 'contact-form-to-api' ); ?>
+			<?php \esc_html_e( 'Sodium extension not available', 'contact-form-to-api' ); ?>
 <p class="description">
-<?php \esc_html_e( 'Database encryption requires the Sodium extension (PHP 7.2+). Data will be stored unencrypted.', 'contact-form-to-api' ); ?>
+			<?php \esc_html_e( 'Database encryption requires the Sodium extension (PHP 7.2+). Data will be stored unencrypted.', 'contact-form-to-api' ); ?>
 </p>
-<?php endif; ?>
+		<?php endif; ?>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<?php \esc_html_e( 'Enable encryption', 'contact-form-to-api' ); ?>
+		<?php \esc_html_e( 'Enable encryption', 'contact-form-to-api' ); ?>
 </th>
 <td>
 <fieldset>
@@ -601,77 +601,77 @@ class SettingsView {
 id="encryption_enabled" 
 name="encryption_enabled" 
 value="1" 
-<?php \checked( $encryption_enabled ); ?>
-<?php \disabled( ! $sodium_available ); ?>>
-<?php \esc_html_e( 'Encrypt sensitive request/response data in database', 'contact-form-to-api' ); ?>
+		<?php \checked( $encryption_enabled ); ?>
+		<?php \disabled( ! $sodium_available ); ?>>
+		<?php \esc_html_e( 'Encrypt sensitive request/response data in database', 'contact-form-to-api' ); ?>
 </label>
 <p class="description">
-<?php \esc_html_e( 'Uses libsodium authenticated encryption for request_data, request_headers, response_data, and response_headers fields.', 'contact-form-to-api' ); ?>
+		<?php \esc_html_e( 'Uses libsodium authenticated encryption for request_data, request_headers, response_data, and response_headers fields.', 'contact-form-to-api' ); ?>
 </p>
 </fieldset>
 </td>
 </tr>
 <tr>
 <th scope="row">
-<?php \esc_html_e( 'Encryption statistics', 'contact-form-to-api' ); ?>
+		<?php \esc_html_e( 'Encryption statistics', 'contact-form-to-api' ); ?>
 </th>
 <td>
 <div class="cf7-api-encryption-stats">
 <p>
 <strong><?php \esc_html_e( 'Total logs:', 'contact-form-to-api' ); ?></strong>
-<?php echo \esc_html( \number_format_i18n( $stats['total'] ) ); ?>
+		<?php echo \esc_html( \number_format_i18n( $stats['total'] ) ); ?>
 </p>
 <p>
 <strong><?php \esc_html_e( 'Encrypted logs:', 'contact-form-to-api' ); ?></strong>
-<?php echo \esc_html( \number_format_i18n( $stats['encrypted'] ) ); ?>
-<?php if ( $stats['total'] > 0 ) : ?>
+		<?php echo \esc_html( \number_format_i18n( $stats['encrypted'] ) ); ?>
+		<?php if ( $stats['total'] > 0 ) : ?>
 (<?php echo \esc_html( \number_format( ( $stats['encrypted'] / $stats['total'] ) * 100, 1 ) ); ?>%)
-<?php endif; ?>
+		<?php endif; ?>
 </p>
-<?php if ( $stats['unencrypted'] > 0 ) : ?>
+		<?php if ( $stats['unencrypted'] > 0 ) : ?>
 <p style="color: #dc3232;">
 <strong><?php \esc_html_e( 'Unencrypted logs:', 'contact-form-to-api' ); ?></strong>
-<?php echo \esc_html( \number_format_i18n( $stats['unencrypted'] ) ); ?>
+			<?php echo \esc_html( \number_format_i18n( $stats['unencrypted'] ) ); ?>
 </p>
-<?php endif; ?>
+		<?php endif; ?>
 </div>
-<?php if ( $stats['unencrypted'] > 0 && $sodium_available ) : ?>
+		<?php if ( $stats['unencrypted'] > 0 && $sodium_available ) : ?>
 <p class="description">
-<?php
-/* translators: %d: number of unencrypted logs */
-echo \esc_html( \sprintf( \__( 'You have %d legacy unencrypted logs. Consider running a migration to encrypt existing data.', 'contact-form-to-api' ), $stats['unencrypted'] ) );
-?>
+			<?php
+			/* translators: %d: number of unencrypted logs */
+			echo \esc_html( \sprintf( \__( 'You have %d legacy unencrypted logs. Consider running a migration to encrypt existing data.', 'contact-form-to-api' ), $stats['unencrypted'] ) );
+			?>
 </p>
 <?php endif; ?>
 </td>
 </tr>
 </tbody>
 </table>
-<?php
-}
+		<?php
+	}
 
-/**
- * Get encryption statistics
- *
- * Retrieves statistics about encrypted vs unencrypted logs.
- *
- * @since 1.4.0
- * @return array{total: int, encrypted: int, unencrypted: int} Statistics array.
- */
+	/**
+	 * Get encryption statistics
+	 *
+	 * Retrieves statistics about encrypted vs unencrypted logs.
+	 *
+	 * @since 1.4.0
+	 * @return array{total: int, encrypted: int, unencrypted: int} Statistics array.
+	 */
 	private static function get_encryption_statistics(): array {
-	global $wpdb;
-	$table_name = $wpdb->prefix . 'cf7_api_logs';
-	
-	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-	$total_logs     = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
-	$encrypted_logs = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name} WHERE encryption_version > 0" );
-	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-	
-	return array(
-	'total'       => $total_logs,
-	'encrypted'   => $encrypted_logs,
-	'unencrypted' => $total_logs - $encrypted_logs,
-	);
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'cf7_api_logs';
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$total_logs     = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
+		$encrypted_logs = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name} WHERE encryption_version > 0" );
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+		return array(
+			'total'       => $total_logs,
+			'encrypted'   => $encrypted_logs,
+			'unencrypted' => $total_logs - $encrypted_logs,
+		);
 	}
 
 	/**

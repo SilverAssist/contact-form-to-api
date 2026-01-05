@@ -139,6 +139,7 @@ class RequestLogger {
 					DebugLogger::instance()->error( 'Encryption failed during start_request: ' . $e->getMessage() );
 				}
 			}
+		}
 
 		$insert_data = array(
 			'form_id'            => $form_id,
