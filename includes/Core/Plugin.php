@@ -33,6 +33,13 @@ use SilverAssist\WpGithubUpdater\UpdaterConfig;
  */
 class Plugin implements LoadableInterface {
 	/**
+	 * Plugin slug for admin pages and settings
+	 *
+	 * @var string
+	 */
+	public const SLUG = 'contact-form-to-api';
+
+	/**
 	 * Plugin instance
 	 *
 	 * @var Plugin|null

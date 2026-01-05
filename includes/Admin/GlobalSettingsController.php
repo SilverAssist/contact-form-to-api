@@ -15,6 +15,7 @@
 namespace SilverAssist\ContactFormToAPI\Admin;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Core\Plugin;
 use SilverAssist\ContactFormToAPI\Core\Settings;
 use SilverAssist\ContactFormToAPI\Services\EmailAlertService;
 
@@ -127,8 +128,8 @@ class GlobalSettingsController implements LoadableInterface {
 	public function enqueue_assets( string $hook_suffix ): void {
 		// Check for both standalone and Settings Hub contexts.
 		$allowed_hooks = array(
-			'settings_page_contact-form-to-api',
-			'silver-assist_page_contact-form-to-api',
+			'settings_page_' . Plugin::SLUG,
+			'silver-assist_page_' . Plugin::SLUG,
 		);
 
 		if ( ! \in_array( $hook_suffix, $allowed_hooks, true ) ) {
@@ -149,10 +150,10 @@ class GlobalSettingsController implements LoadableInterface {
 			'cf7-api-settings',
 			'cf7ApiSettings',
 			array(
-				'ajaxUrl'            => \admin_url( 'admin-ajax.php' ),
-				'nonce'              => \wp_create_nonce( 'cf7_api_test_email' ),
+				'ajaxUrl' => \admin_url( 'admin-ajax.php' ),
+				'nonce'   => \wp_create_nonce( 'cf7_api_test_email' ),
 				// i18n strings for JavaScript.
-				'i18n'               => array(
+				'i18n'    => array(
 					'enterRecipient' => \__( 'Please enter a recipient email address.', 'contact-form-to-api' ),
 					'sending'        => \__( 'Sending...', 'contact-form-to-api' ),
 					'sendTestEmail'  => \__( 'Send Test Email', 'contact-form-to-api' ),
@@ -183,20 +184,20 @@ class GlobalSettingsController implements LoadableInterface {
 
 		// Sanitize and validate input.
 		$new_settings = array(
-			'max_manual_retries'      => isset( $_POST['max_manual_retries'] ) ? \absint( $_POST['max_manual_retries'] ) : 3,
-			'max_retries_per_hour'    => isset( $_POST['max_retries_per_hour'] ) ? \absint( $_POST['max_retries_per_hour'] ) : 10,
-			'sensitive_patterns'      => $this->sanitize_patterns( isset( $_POST['sensitive_patterns'] ) ? \wp_unslash( $_POST['sensitive_patterns'] ) : '' ),
-			'logging_enabled'         => isset( $_POST['logging_enabled'] ) && '1' === $_POST['logging_enabled'],
-			'log_retention_days'      => isset( $_POST['log_retention_days'] ) ? \absint( $_POST['log_retention_days'] ) : 30,
+			'max_manual_retries'    => isset( $_POST['max_manual_retries'] ) ? \absint( $_POST['max_manual_retries'] ) : 3,
+			'max_retries_per_hour'  => isset( $_POST['max_retries_per_hour'] ) ? \absint( $_POST['max_retries_per_hour'] ) : 10,
+			'sensitive_patterns'    => $this->sanitize_patterns( isset( $_POST['sensitive_patterns'] ) ? \wp_unslash( $_POST['sensitive_patterns'] ) : '' ),
+			'logging_enabled'       => isset( $_POST['logging_enabled'] ) && '1' === $_POST['logging_enabled'],
+			'log_retention_days'    => isset( $_POST['log_retention_days'] ) ? \absint( $_POST['log_retention_days'] ) : 30,
 			// Encryption settings.
-			'encryption_enabled'      => isset( $_POST['encryption_enabled'] ) && '1' === $_POST['encryption_enabled'],
+			'encryption_enabled'    => isset( $_POST['encryption_enabled'] ) && '1' === $_POST['encryption_enabled'],
 			// Email alert settings.
-			'alerts_enabled'          => isset( $_POST['alerts_enabled'] ) && '1' === $_POST['alerts_enabled'],
-			'alert_recipients'        => $this->sanitize_email_recipients( isset( $_POST['alert_recipients'] ) ? \wp_unslash( $_POST['alert_recipients'] ) : \get_option( 'admin_email' ) ),
-			'alert_error_threshold'   => isset( $_POST['alert_error_threshold'] ) ? \absint( $_POST['alert_error_threshold'] ) : 10,
-			'alert_rate_threshold'    => isset( $_POST['alert_rate_threshold'] ) ? \absint( $_POST['alert_rate_threshold'] ) : 20,
-			'alert_check_interval'    => isset( $_POST['alert_check_interval'] ) ? \sanitize_text_field( \wp_unslash( $_POST['alert_check_interval'] ) ) : 'hourly',
-			'alert_cooldown_hours'    => isset( $_POST['alert_cooldown_hours'] ) ? \absint( $_POST['alert_cooldown_hours'] ) : 4,
+			'alerts_enabled'        => isset( $_POST['alerts_enabled'] ) && '1' === $_POST['alerts_enabled'],
+			'alert_recipients'      => $this->sanitize_email_recipients( isset( $_POST['alert_recipients'] ) ? \wp_unslash( $_POST['alert_recipients'] ) : \get_option( 'admin_email' ) ),
+			'alert_error_threshold' => isset( $_POST['alert_error_threshold'] ) ? \absint( $_POST['alert_error_threshold'] ) : 10,
+			'alert_rate_threshold'  => isset( $_POST['alert_rate_threshold'] ) ? \absint( $_POST['alert_rate_threshold'] ) : 20,
+			'alert_check_interval'  => isset( $_POST['alert_check_interval'] ) ? \sanitize_text_field( \wp_unslash( $_POST['alert_check_interval'] ) ) : 'hourly',
+			'alert_cooldown_hours'  => isset( $_POST['alert_cooldown_hours'] ) ? \absint( $_POST['alert_cooldown_hours'] ) : 4,
 		);
 
 		// Preserve alert_last_sent timestamp (don't reset it).
@@ -214,7 +215,7 @@ class GlobalSettingsController implements LoadableInterface {
 		// Redirect back to the main settings page with success/error message.
 		$redirect_url = \add_query_arg(
 			array(
-				'page'    => 'cf7-api-settings',
+				'page'    => Plugin::SLUG,
 				'updated' => $success ? '1' : '0',
 			),
 			\admin_url( 'admin.php' )
