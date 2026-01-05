@@ -255,6 +255,7 @@ class EncryptionService implements LoadableInterface {
 			}
 
 			// Throw exception to indicate failure.
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Exception passed to constructor, not output.
 			throw new DecryptionException( 'Decryption failed: ' . $e->getMessage(), 0, $e );
 		}
 	}
