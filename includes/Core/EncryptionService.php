@@ -159,8 +159,8 @@ class EncryptionService implements LoadableInterface {
 			return $plaintext;
 		}
 
-		// Keep original plaintext for error handling (before sodium_memzero).
-		$original_plaintext = $plaintext;
+		// Use a local working copy so we do not modify the caller's variable.
+		$working_plaintext = $plaintext;
 
 		try {
 			// Generate unique nonce for this encryption.
@@ -168,13 +168,13 @@ class EncryptionService implements LoadableInterface {
 
 			// Encrypt with authenticated encryption.
 			// Note: sodium_crypto_secretbox always returns string, throws SodiumException on failure.
-			$ciphertext = \sodium_crypto_secretbox( $plaintext, $nonce, $this->get_key() );
+			$ciphertext = \sodium_crypto_secretbox( $working_plaintext, $nonce, $this->get_key() );
 
 			// Prepend nonce to ciphertext and encode.
 			$encrypted = \base64_encode( $nonce . $ciphertext );
 
-			// Clear sensitive data from memory.
-			\sodium_memzero( $plaintext );
+			// Clear sensitive data from memory (only the working copy, not caller's variable).
+			\sodium_memzero( $working_plaintext );
 			\sodium_memzero( $nonce );
 			\sodium_memzero( $ciphertext );
 
@@ -187,7 +187,7 @@ class EncryptionService implements LoadableInterface {
 			}
 
 			// Return original plaintext if encryption fails (graceful degradation).
-			return $original_plaintext;
+			return $plaintext;
 		}
 	}
 
@@ -335,8 +335,37 @@ class EncryptionService implements LoadableInterface {
 			return $this->key;
 		}
 
-		// Use WordPress AUTH_KEY as input key material.
-		$ikm = \defined( 'AUTH_KEY' ) ? AUTH_KEY : 'cf7_api_fallback_key_' . \ABSPATH;
+		// Prefer WordPress AUTH_KEY as input key material when available.
+		if ( \defined( 'AUTH_KEY' ) && AUTH_KEY ) {
+			$ikm = AUTH_KEY;
+		} else {
+			// Fallback: use a securely generated, per-site random key stored in options.
+			$option_name = 'cf7_api_encryption_key';
+			$site_key    = (string) \get_option( $option_name, '' );
+
+			if ( '' === $site_key ) {
+				try {
+					// Generate a high-entropy random key and store it for future use.
+					$site_key = \bin2hex( \random_bytes( SODIUM_CRYPTO_SECRETBOX_KEYBYTES ) );
+				} catch ( \Exception $exception ) {
+					// Fallback to a deterministic but still non-predictable value if random_bytes() fails.
+					$site_key = \hash( 'sha256', \uniqid( 'cf7_api_encryption_', true ) );
+				}
+
+				// Do not autoload this option to minimize memory overhead.
+				\update_option( $option_name, $site_key, false );
+			}
+
+			$ikm = $site_key;
+
+			// Log a warning so site owners are aware AUTH_KEY is not defined.
+			if ( \class_exists( DebugLogger::class ) ) {
+				DebugLogger::instance()->warning(
+					'AUTH_KEY is not defined; using generated encryption key stored in options.',
+					array( 'option' => $option_name )
+				);
+			}
+		}
 
 		// Derive a 32-byte key using HKDF with SHA-256.
 		$this->key = \hash_hkdf(
