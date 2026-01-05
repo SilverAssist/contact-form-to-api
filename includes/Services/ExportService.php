@@ -14,7 +14,9 @@
 
 namespace SilverAssist\ContactFormToAPI\Services;
 
+use SilverAssist\ContactFormToAPI\Core\EncryptionService;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Core\RequestLogger;
 use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
 
 \defined( 'ABSPATH' ) || exit;
@@ -204,7 +206,7 @@ class ExportService implements LoadableInterface {
 	 */
 	private function decrypt_log_if_needed( array $log ): array {
 		// Check if encryption service is available.
-		if ( ! \class_exists( 'SilverAssist\ContactFormToAPI\Core\EncryptionService' ) ) {
+		if ( ! \class_exists( EncryptionService::class ) ) {
 			return $log;
 		}
 
@@ -214,8 +216,8 @@ class ExportService implements LoadableInterface {
 		}
 
 		// Use RequestLogger to decrypt fields.
-		if ( \class_exists( 'SilverAssist\ContactFormToAPI\Core\RequestLogger' ) ) {
-			$logger = new \SilverAssist\ContactFormToAPI\Core\RequestLogger();
+		if ( \class_exists( RequestLogger::class ) ) {
+			$logger = new RequestLogger();
 			$log    = $logger->decrypt_log_fields( $log );
 		}
 
