@@ -188,6 +188,8 @@ class GlobalSettingsController implements LoadableInterface {
 			'sensitive_patterns'      => $this->sanitize_patterns( isset( $_POST['sensitive_patterns'] ) ? \wp_unslash( $_POST['sensitive_patterns'] ) : '' ),
 			'logging_enabled'         => isset( $_POST['logging_enabled'] ) && '1' === $_POST['logging_enabled'],
 			'log_retention_days'      => isset( $_POST['log_retention_days'] ) ? \absint( $_POST['log_retention_days'] ) : 30,
+			// Encryption settings.
+			'encryption_enabled'      => isset( $_POST['encryption_enabled'] ) && '1' === $_POST['encryption_enabled'],
 			// Email alert settings.
 			'alerts_enabled'          => isset( $_POST['alerts_enabled'] ) && '1' === $_POST['alerts_enabled'],
 			'alert_recipients'        => $this->sanitize_email_recipients( isset( $_POST['alert_recipients'] ) ? \wp_unslash( $_POST['alert_recipients'] ) : \get_option( 'admin_email' ) ),

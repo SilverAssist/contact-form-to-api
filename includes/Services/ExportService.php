@@ -198,7 +198,7 @@ class ExportService implements LoadableInterface {
 	 *
 	 * Decrypts encrypted log fields before export.
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @param array<string, mixed> $log Log entry.
 	 * @return array<string, mixed> Log entry with decrypted fields.
 	 */

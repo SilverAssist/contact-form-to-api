@@ -7,8 +7,8 @@
  *
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Exceptions
- * @since 1.3.0
- * @version 1.3.0
+ * @since 1.4.0
+ * @version 1.4.0
  * @author Silver Assist
  */
 
@@ -23,14 +23,14 @@ use Exception;
  *
  * Exception thrown when data decryption fails.
  *
- * @since 1.3.0
+ * @since 1.4.0
  */
 class DecryptionException extends Exception {
 
 	/**
 	 * Constructor
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @param string          $message  Exception message.
 	 * @param int             $code     Exception code.
 	 * @param \Throwable|null $previous Previous exception.

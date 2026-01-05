@@ -7,8 +7,8 @@
  *
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Core
- * @since 1.3.0
- * @version 1.3.0
+ * @since 1.4.0
+ * @version 1.4.0
  * @author Silver Assist
  */
 
@@ -25,14 +25,14 @@ use SilverAssist\ContactFormToAPI\Exceptions\DecryptionException;
  * Handles encryption and decryption of sensitive data using libsodium.
  * Uses WordPress AUTH_KEY for key derivation to avoid separate key management.
  *
- * @since 1.3.0
+ * @since 1.4.0
  */
 class EncryptionService implements LoadableInterface {
 
 	/**
 	 * Encryption version identifier
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @var int
 	 */
 	private const VERSION = 1;
@@ -40,7 +40,7 @@ class EncryptionService implements LoadableInterface {
 	/**
 	 * Plugin-specific salt for key derivation
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @var string
 	 */
 	private const PLUGIN_SALT = 'cf7_api_encryption_v1';
@@ -76,7 +76,7 @@ class EncryptionService implements LoadableInterface {
 	/**
 	 * Get singleton instance
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @return EncryptionService
 	 */
 	public static function instance(): EncryptionService {
@@ -96,7 +96,7 @@ class EncryptionService implements LoadableInterface {
 	/**
 	 * Initialize encryption service
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @return void
 	 */
 	public function init(): void {
@@ -116,7 +116,7 @@ class EncryptionService implements LoadableInterface {
 	/**
 	 * Get loading priority
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @return int
 	 */
 	public function get_priority(): int {
@@ -126,7 +126,7 @@ class EncryptionService implements LoadableInterface {
 	/**
 	 * Determine if should load
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @return bool
 	 */
 	public function should_load(): bool {
@@ -142,7 +142,7 @@ class EncryptionService implements LoadableInterface {
 	 * - Authentication (Poly1305 MAC)
 	 * - Unique nonce per encryption
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @param string $plaintext Data to encrypt.
 	 * @return string Base64-encoded encrypted data with nonce prepended.
 	 * @throws \Exception If encryption fails.
@@ -190,7 +190,7 @@ class EncryptionService implements LoadableInterface {
 	 * Handles both encrypted data and legacy plaintext data.
 	 * Automatically detects format and returns appropriate result.
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @param string $data Data to decrypt (or plaintext).
 	 * @return string Decrypted plaintext data.
 	 * @throws DecryptionException If decryption fails due to tampering or corruption.
@@ -259,7 +259,7 @@ class EncryptionService implements LoadableInterface {
 	 *
 	 * Determines if data appears to be encrypted by checking format.
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @param string $data Data to check.
 	 * @return bool True if data appears encrypted.
 	 */
@@ -289,7 +289,7 @@ class EncryptionService implements LoadableInterface {
 	 *
 	 * Returns current encryption version identifier.
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @return int Version number.
 	 */
 	public function get_version(): int {
@@ -301,7 +301,7 @@ class EncryptionService implements LoadableInterface {
 	 *
 	 * Used to detect legacy unencrypted data in database.
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @param string $data Data to check.
 	 * @return bool True if data is valid JSON.
 	 */
@@ -316,7 +316,7 @@ class EncryptionService implements LoadableInterface {
 	 * Uses HKDF (HMAC-based Key Derivation Function) to derive a secure
 	 * encryption key from WordPress AUTH_KEY constant.
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @return string Binary encryption key (32 bytes).
 	 */
 	private function derive_key(): string {
@@ -344,7 +344,7 @@ class EncryptionService implements LoadableInterface {
 	 *
 	 * Returns the encryption key, deriving it if needed.
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @return string Binary encryption key.
 	 */
 	private function get_key(): string {
@@ -354,7 +354,7 @@ class EncryptionService implements LoadableInterface {
 	/**
 	 * Check if encryption is enabled via settings
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @return bool
 	 */
 	private function is_encryption_enabled(): bool {
@@ -372,7 +372,7 @@ class EncryptionService implements LoadableInterface {
 	 *
 	 * Public method for external checks.
 	 *
-	 * @since 1.3.0
+	 * @since 1.4.0
 	 * @return bool True if Sodium is available.
 	 */
 	public static function is_sodium_available(): bool {

@@ -347,6 +347,7 @@ class SettingsView {
 				<?php self::render_sensitive_patterns_settings( $settings ); ?>
 				<?php self::render_logging_settings( $settings ); ?>
 				<?php self::render_log_retention_settings( $settings ); ?>
+				<?php self::render_encryption_settings( $settings ); ?>
 				<?php self::render_email_alerts_settings( $settings ); ?>
 
 				<?php \submit_button( \__( 'Save Settings', 'contact-form-to-api' ) ); ?>
@@ -547,6 +548,110 @@ class SettingsView {
 		</table>
 		<?php
 	}
+
+/**
+ * Render encryption settings
+ *
+ * @since 1.4.0
+ * @param Settings $settings Settings instance.
+ * @return void
+ */
+private static function render_encryption_settings( Settings $settings ): void {
+$encryption_enabled = $settings->is_encryption_enabled();
+$sodium_available   = \extension_loaded( 'sodium' );
+
+// Get encryption statistics.
+global $wpdb;
+$table_name       = $wpdb->prefix . 'cf7_api_logs';
+$total_logs       = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
+$encrypted_logs   = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name} WHERE encryption_version > 0" );
+$unencrypted_logs = $total_logs - $encrypted_logs;
+?>
+<h3>
+<span class="dashicons dashicons-lock"></span>
+<?php \esc_html_e( 'Database Encryption', 'contact-form-to-api' ); ?>
+</h3>
+<table class="form-table" role="presentation">
+<tbody>
+<tr>
+<th scope="row">
+<?php \esc_html_e( 'Encryption status', 'contact-form-to-api' ); ?>
+</th>
+<td>
+<?php if ( $sodium_available ) : ?>
+<span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span>
+<?php \esc_html_e( 'Sodium extension available', 'contact-form-to-api' ); ?>
+<p class="description">
+<?php \esc_html_e( 'Your server supports libsodium for secure authenticated encryption.', 'contact-form-to-api' ); ?>
+</p>
+<?php else : ?>
+<span class="dashicons dashicons-warning" style="color: #dc3232;"></span>
+<?php \esc_html_e( 'Sodium extension not available', 'contact-form-to-api' ); ?>
+<p class="description">
+<?php \esc_html_e( 'Database encryption requires the Sodium extension (PHP 7.2+). Data will be stored unencrypted.', 'contact-form-to-api' ); ?>
+</p>
+<?php endif; ?>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<?php \esc_html_e( 'Enable encryption', 'contact-form-to-api' ); ?>
+</th>
+<td>
+<fieldset>
+<label>
+<input type="checkbox" 
+id="encryption_enabled" 
+name="encryption_enabled" 
+value="1" 
+<?php \checked( $encryption_enabled ); ?>
+<?php \disabled( ! $sodium_available ); ?>>
+<?php \esc_html_e( 'Encrypt sensitive request/response data in database', 'contact-form-to-api' ); ?>
+</label>
+<p class="description">
+<?php \esc_html_e( 'Uses libsodium authenticated encryption for request_data, request_headers, response_data, and response_headers fields.', 'contact-form-to-api' ); ?>
+</p>
+</fieldset>
+</td>
+</tr>
+<tr>
+<th scope="row">
+<?php \esc_html_e( 'Encryption statistics', 'contact-form-to-api' ); ?>
+</th>
+<td>
+<div class="cf7-api-encryption-stats">
+<p>
+<strong><?php \esc_html_e( 'Total logs:', 'contact-form-to-api' ); ?></strong>
+<?php echo \esc_html( \number_format_i18n( $total_logs ) ); ?>
+</p>
+<p>
+<strong><?php \esc_html_e( 'Encrypted logs:', 'contact-form-to-api' ); ?></strong>
+<?php echo \esc_html( \number_format_i18n( $encrypted_logs ) ); ?>
+<?php if ( $total_logs > 0 ) : ?>
+(<?php echo \esc_html( \number_format( ( $encrypted_logs / $total_logs ) * 100, 1 ) ); ?>%)
+<?php endif; ?>
+</p>
+<?php if ( $unencrypted_logs > 0 ) : ?>
+<p style="color: #dc3232;">
+<strong><?php \esc_html_e( 'Unencrypted logs:', 'contact-form-to-api' ); ?></strong>
+<?php echo \esc_html( \number_format_i18n( $unencrypted_logs ) ); ?>
+</p>
+<?php endif; ?>
+</div>
+<?php if ( $unencrypted_logs > 0 && $sodium_available ) : ?>
+<p class="description">
+<?php
+/* translators: %d: number of unencrypted logs */
+echo \esc_html( \sprintf( \__( 'You have %d legacy unencrypted logs. Consider running a migration to encrypt existing data.', 'contact-form-to-api' ), $unencrypted_logs ) );
+?>
+</p>
+<?php endif; ?>
+</td>
+</tr>
+</tbody>
+</table>
+<?php
+}
 
 	/**
 	 * Render email alerts settings
