@@ -127,6 +127,8 @@ class Settings implements LoadableInterface {
 			'alert_check_interval'    => 'hourly',
 			'alert_cooldown_hours'    => 4,
 			'alert_last_sent'         => 0,
+			// Encryption settings.
+			'encryption_enabled'      => true,
 		);
 	}
 
@@ -335,5 +337,15 @@ class Settings implements LoadableInterface {
 	 */
 	public function update_alert_last_sent( int $timestamp ): bool {
 		return $this->set( 'alert_last_sent', $timestamp );
+	}
+
+	/**
+	 * Check if encryption is enabled
+	 *
+	 * @since 1.3.0
+	 * @return bool
+	 */
+	public function is_encryption_enabled(): bool {
+		return (bool) $this->get( 'encryption_enabled', true );
 	}
 }

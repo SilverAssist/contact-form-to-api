@@ -144,6 +144,7 @@ class Activator {
 			execution_time decimal(10,4) DEFAULT NULL,
 			retry_count int(3) UNSIGNED DEFAULT 0,
 			retry_of bigint(20) UNSIGNED DEFAULT NULL,
+			encryption_version tinyint(1) UNSIGNED DEFAULT 0,
 			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			PRIMARY KEY  (id),
 			KEY form_id (form_id),

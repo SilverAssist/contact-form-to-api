@@ -69,6 +69,13 @@ class RequestLogger {
 	private ?float $start_time = null;
 
 	/**
+	 * Encryption service instance
+	 *
+	 * @var EncryptionService|null
+	 */
+	private ?EncryptionService $encryption = null;
+
+	/**
 	 * Constructor
 	 *
 	 * @since 1.1.0
@@ -76,6 +83,12 @@ class RequestLogger {
 	public function __construct() {
 		global $wpdb;
 		$this->table_name = "{$wpdb->prefix}cf7_api_logs";
+
+		// Initialize encryption service if available.
+		if ( \class_exists( EncryptionService::class ) && EncryptionService::is_sodium_available() ) {
+			$this->encryption = EncryptionService::instance();
+			$this->encryption->init();
+		}
 	}
 
 	/**
@@ -112,18 +125,32 @@ class RequestLogger {
 		$prepared_data    = \is_string( $request_data ) ? $request_data : \wp_json_encode( $request_data );
 		$prepared_headers = \wp_json_encode( $anonymized_headers );
 
+		// Encrypt sensitive data if encryption is available
+		$encryption_version = 0;
+		if ( $this->encryption ) {
+			try {
+				$prepared_data      = $this->encryption->encrypt( $prepared_data );
+				$prepared_headers   = $this->encryption->encrypt( $prepared_headers );
+				$encryption_version = $this->encryption->get_version();
+			} catch ( \Exception $e ) {
+				// Log encryption failure and continue with unencrypted data
+				\error_log( 'CF7 API: Encryption failed during start_request: ' . $e->getMessage() );
+			}
+		}
+
 		$insert_data = array(
-			'form_id'         => $form_id,
-			'endpoint'        => $endpoint,
-			'method'          => $method,
-			'status'          => 'pending',
-			'request_data'    => $prepared_data,
-			'request_headers' => $prepared_headers,
-			'retry_count'     => 0,
-			'created_at'      => \current_time( 'mysql' ),
+			'form_id'            => $form_id,
+			'endpoint'           => $endpoint,
+			'method'             => $method,
+			'status'             => 'pending',
+			'request_data'       => $prepared_data,
+			'request_headers'    => $prepared_headers,
+			'retry_count'        => 0,
+			'encryption_version' => $encryption_version,
+			'created_at'         => \current_time( 'mysql' ),
 		);
 
-		$format = array( '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%s' );
+		$format = array( '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%s' );
 
 		// Add retry_of if this is a retry attempt
 		if ( null !== $retry_of ) {
@@ -187,13 +214,25 @@ class RequestLogger {
 			$status = $this->determine_status( $response_code );
 
 			// Encode response data if it's an array
-			$encoded_body = \is_array( $response_body ) ? \wp_json_encode( $response_body ) : $response_body;
+			$encoded_body    = \is_array( $response_body ) ? \wp_json_encode( $response_body ) : $response_body;
+			$encoded_headers = \wp_json_encode( $anonymized_headers );
+
+			// Encrypt sensitive response data if encryption is available
+			if ( $this->encryption ) {
+				try {
+					$encoded_body    = $this->encryption->encrypt( $encoded_body );
+					$encoded_headers = $this->encryption->encrypt( $encoded_headers );
+				} catch ( \Exception $e ) {
+					// Log encryption failure and continue with unencrypted data
+					\error_log( 'CF7 API: Encryption failed during complete_request: ' . $e->getMessage() );
+				}
+			}
 
 			$update_data = array(
 				'status'           => $status,
 				'response_code'    => $response_code,
 				'response_data'    => $encoded_body,
-				'response_headers' => \wp_json_encode( $anonymized_headers ),
+				'response_headers' => $encoded_headers,
 				'execution_time'   => $execution_time,
 				'retry_count'      => $retry_count,
 			);
@@ -609,13 +648,28 @@ class RequestLogger {
 			return null;
 		}
 
+		// Decrypt data if encrypted
+		$request_headers_raw = $log['request_headers'];
+		$request_data_raw    = $log['request_data'];
+
+		if ( $this->encryption && isset( $log['encryption_version'] ) && $log['encryption_version'] > 0 ) {
+			try {
+				$request_headers_raw = $this->encryption->decrypt( $request_headers_raw );
+				$request_data_raw    = $this->encryption->decrypt( $request_data_raw );
+			} catch ( \Exception $e ) {
+				// Log decryption failure
+				\error_log( 'CF7 API: Decryption failed during get_request_for_retry: ' . $e->getMessage() );
+				return null;
+			}
+		}
+
 		// Decode JSON data
-		$request_headers = \json_decode( $log['request_headers'], true );
-		$request_data    = \json_decode( $log['request_data'], true );
+		$request_headers = \json_decode( $request_headers_raw, true );
+		$request_data    = \json_decode( $request_data_raw, true );
 
 		// If request_data is not valid JSON, use the raw string
-		if ( null === $request_data && 'null' !== \strtolower( (string) $log['request_data'] ) ) {
-			$request_data = $log['request_data'];
+		if ( null === $request_data && 'null' !== \strtolower( (string) $request_data_raw ) ) {
+			$request_data = $request_data_raw;
 		}
 
 		return array(
@@ -694,6 +748,50 @@ class RequestLogger {
 
 		// Fallback to constant.
 		return self::MAX_MANUAL_RETRIES;
+	}
+
+	/**
+	 * Decrypt log fields for display
+	 *
+	 * Decrypts encrypted log fields for viewing in admin or exports.
+	 *
+	 * @since 1.3.0
+	 * @param array<string, mixed> $log Log entry data.
+	 * @return array<string, mixed> Log entry with decrypted fields.
+	 */
+	public function decrypt_log_fields( array $log ): array {
+		if ( ! $this->encryption ) {
+			return $log;
+		}
+
+		// Only decrypt if encryption_version indicates encryption was used.
+		if ( ! isset( $log['encryption_version'] ) || $log['encryption_version'] === 0 ) {
+			return $log;
+		}
+
+		try {
+			// Decrypt sensitive fields.
+			if ( ! empty( $log['request_data'] ) ) {
+				$log['request_data'] = $this->encryption->decrypt( $log['request_data'] );
+			}
+
+			if ( ! empty( $log['request_headers'] ) ) {
+				$log['request_headers'] = $this->encryption->decrypt( $log['request_headers'] );
+			}
+
+			if ( ! empty( $log['response_data'] ) ) {
+				$log['response_data'] = $this->encryption->decrypt( $log['response_data'] );
+			}
+
+			if ( ! empty( $log['response_headers'] ) ) {
+				$log['response_headers'] = $this->encryption->decrypt( $log['response_headers'] );
+			}
+		} catch ( \Exception $e ) {
+			// Log decryption failure (without sensitive data).
+			\error_log( 'CF7 API: Failed to decrypt log fields for log ID ' . ( $log['id'] ?? 'unknown' ) . ': ' . $e->getMessage() );
+		}
+
+		return $log;
 	}
 
 	/**
