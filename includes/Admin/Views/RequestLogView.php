@@ -198,10 +198,16 @@ class RequestLogView {
 	 * @return void
 	 */
 	private static function render_request_data( array $log ): void {
+		$logger = new RequestLogger();
+		$data   = $log['request_data'] ?? '';
+		
+		// Anonymize sensitive data at render time
+		$anonymized_data = $logger->anonymize_data( $data );
+		
 		?>
 		<div class="log-section">
 			<h2><?php \esc_html_e( 'Request Data', 'contact-form-to-api' ); ?></h2>
-			<pre class="log-content"><?php echo \esc_html( self::format_json( $log['request_data'] ?? '' ) ); ?></pre>
+			<pre class="log-content"><?php echo \esc_html( self::format_json( \is_string( $anonymized_data ) ? $anonymized_data : \wp_json_encode( $anonymized_data ) ) ); ?></pre>
 		</div>
 		<?php
 	}
@@ -260,10 +266,17 @@ class RequestLogView {
 		if ( empty( $log['response_data'] ) ) {
 			return;
 		}
+		
+		$logger = new RequestLogger();
+		$data   = $log['response_data'];
+		
+		// Anonymize sensitive data at render time
+		$anonymized_data = $logger->anonymize_data( $data );
+		
 		?>
 		<div class="log-section">
 			<h2><?php \esc_html_e( 'Response Data', 'contact-form-to-api' ); ?></h2>
-			<pre class="log-content"><?php echo \esc_html( self::format_json( $log['response_data'] ) ); ?></pre>
+			<pre class="log-content"><?php echo \esc_html( self::format_json( \is_string( $anonymized_data ) ? $anonymized_data : \wp_json_encode( $anonymized_data ) ) ); ?></pre>
 		</div>
 		<?php
 	}
