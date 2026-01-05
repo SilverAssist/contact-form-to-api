@@ -9,24 +9,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned Features
 
-#### Security & Privacy
-- **Database Encryption**: Encrypt sensitive request data at rest using WordPress salts
+#### High Priority
+- **Database Encryption**: Encrypt sensitive request data at rest using WordPress salts (#31)
   * AES-256 encryption for stored form data
   * Transparent decryption for authorized admin operations (retry, view details)
   * Configurable per-field encryption based on sensitive data patterns
   * Backward compatible with existing unencrypted logs
+- **Webhook Security**: Enhanced security with HMAC signature verification for incoming webhooks
 
-#### API Logs Enhancements
-- **AJAX Live Refresh**: Real-time statistics updates without page reload
-- **Performance Charts**: Visual trends and analytics with Chart.js
+#### Medium Priority
+- **Performance Charts**: Visual trends and analytics dashboard with Chart.js
+  * Success/error rate over time
+  * Response time trends
+  * Top endpoints by volume
+- **Template System**: Pre-configured templates for popular APIs
+  * HubSpot, Mailchimp, Salesforce, Zapier
+  * One-click setup with guided configuration
 
-#### API Integration
-- **GraphQL API Support**: Native support for GraphQL endpoints
-- **Advanced Analytics**: Detailed analytics dashboard with charts and reports  
-- **Webhook Security**: Enhanced security with signature verification
-- **Form Builder Integration**: Visual field mapping interface
+#### Low Priority
 - **Multi-site Support**: Enhanced WordPress multisite compatibility
-- **Template System**: Pre-configured templates for popular APIs (Mailchimp, HubSpot, etc.)
+  * Network-wide settings management
+  * Per-site configuration overrides
 
 ## [1.2.1] - 2026-01-03
 
