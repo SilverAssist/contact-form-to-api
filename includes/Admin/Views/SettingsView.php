@@ -668,10 +668,12 @@ value="1"
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$total_logs     = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name}" );
-		$encrypted_logs = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name} WHERE encryption_version > 0" );
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$total_logs     = (int) $wpdb->get_var(
+			$wpdb->prepare( 'SELECT COUNT(*) FROM %i', $table_name )
+		);
+		$encrypted_logs = (int) $wpdb->get_var(
+			$wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE encryption_version > 0', $table_name )
+		);
 
 		return array(
 			'total'       => $total_logs,

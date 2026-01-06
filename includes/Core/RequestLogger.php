@@ -375,19 +375,18 @@ class RequestLogger {
 
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$this->table_name} 
+				'SELECT * FROM %i 
 				WHERE form_id = %d 
 				ORDER BY created_at DESC 
-				LIMIT %d",
+				LIMIT %d',
+				$this->table_name,
 				$form_id,
 				$limit
 			),
 			ARRAY_A
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $results ?: array();
 	}
@@ -404,15 +403,14 @@ class RequestLogger {
 	public function clean_old_logs( int $days = 30 ): int {
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
 		$result = $wpdb->query(
 			$wpdb->prepare(
-				"DELETE FROM {$this->table_name} 
-				WHERE created_at < DATE_SUB(NOW(), INTERVAL %d DAY)",
+				'DELETE FROM %i 
+				WHERE created_at < DATE_SUB(NOW(), INTERVAL %d DAY)',
+				$this->table_name,
 				$days
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $result ?: 0;
 	}
@@ -430,36 +428,44 @@ class RequestLogger {
 		global $wpdb;
 
 		if ( null !== $form_id && $form_id > 0 ) {
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
 			$stats = $wpdb->get_row(
 				$wpdb->prepare(
-					"SELECT 
+					'SELECT 
 						COUNT(*) as total_requests,
-						SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) as successful_requests,
-						SUM(CASE WHEN status IN ('error', 'client_error', 'server_error') THEN 1 ELSE 0 END) as failed_requests,
+						SUM(CASE WHEN status = %s THEN 1 ELSE 0 END) as successful_requests,
+						SUM(CASE WHEN status IN (%s, %s, %s) THEN 1 ELSE 0 END) as failed_requests,
 						AVG(execution_time) as avg_execution_time,
 						MAX(retry_count) as max_retries
-					FROM {$this->table_name}
-					WHERE form_id = %d",
+					FROM %i
+					WHERE form_id = %d',
+					'success',
+					'error',
+					'client_error',
+					'server_error',
+					$this->table_name,
 					$form_id
 				),
 				ARRAY_A
 			);
-			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		} else {
 			// Get statistics for all forms
-			// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
 			$stats = $wpdb->get_row(
-				"SELECT 
-					COUNT(*) as total_requests,
-					SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) as successful_requests,
-					SUM(CASE WHEN status IN ('error', 'client_error', 'server_error') THEN 1 ELSE 0 END) as failed_requests,
-					AVG(execution_time) as avg_execution_time,
-					MAX(retry_count) as max_retries
-				FROM {$this->table_name}",
+				$wpdb->prepare(
+					'SELECT 
+						COUNT(*) as total_requests,
+						SUM(CASE WHEN status = %s THEN 1 ELSE 0 END) as successful_requests,
+						SUM(CASE WHEN status IN (%s, %s, %s) THEN 1 ELSE 0 END) as failed_requests,
+						AVG(execution_time) as avg_execution_time,
+						MAX(retry_count) as max_retries
+					FROM %i',
+					'success',
+					'error',
+					'client_error',
+					'server_error',
+					$this->table_name
+				),
 				ARRAY_A
 			);
-			// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		}
 
 		return $stats ?: array(
@@ -497,14 +503,15 @@ class RequestLogger {
 			}
 		}
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared -- table_name is a safe class property, status_condition is prepared above.
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- status_condition is prepared above if present.
 		$count = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$this->table_name} WHERE created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)" . $status_condition,
+				'SELECT COUNT(*) FROM %i WHERE created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)' . $status_condition,
+				$this->table_name,
 				$hours
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQL.NotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
 		return (int) ( $count ?: 0 );
 	}
@@ -521,19 +528,19 @@ class RequestLogger {
 	public function get_success_rate_last_hours( int $hours ): float {
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
 		$stats = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT 
+				'SELECT 
 					COUNT(*) as total,
-					SUM(CASE WHEN status = 'success' THEN 1 ELSE 0 END) as successful
-				FROM {$this->table_name}
-				WHERE created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)",
+					SUM(CASE WHEN status = %s THEN 1 ELSE 0 END) as successful
+				FROM %i
+				WHERE created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)',
+				'success',
+				$this->table_name,
 				$hours
 			),
 			ARRAY_A
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( ! $stats || 0 === (int) $stats['total'] ) {
 			return 0.0;
@@ -555,17 +562,16 @@ class RequestLogger {
 	public function get_avg_response_time_last_hours( int $hours ): float {
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
 		$avg = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT AVG(execution_time) 
-				FROM {$this->table_name}
+				'SELECT AVG(execution_time) 
+				FROM %i
 				WHERE created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)
-				AND execution_time IS NOT NULL",
+				AND execution_time IS NOT NULL',
+				$this->table_name,
 				$hours
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( ! $avg ) {
 			return 0.0;
@@ -587,18 +593,20 @@ class RequestLogger {
 	public function get_recent_errors( int $limit = 5 ): array {
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$this->table_name} 
-				WHERE status IN ('error', 'client_error', 'server_error')
+				'SELECT * FROM %i 
+				WHERE status IN (%s, %s, %s)
 				ORDER BY created_at DESC 
-				LIMIT %d",
+				LIMIT %d',
+				$this->table_name,
+				'error',
+				'client_error',
+				'server_error',
 				$limit
 			),
 			ARRAY_A
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $results ?: array();
 	}
@@ -615,15 +623,14 @@ class RequestLogger {
 	public function get_log( int $log_id ): ?array {
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
 		$log = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT * FROM {$this->table_name} WHERE id = %d",
+				'SELECT * FROM %i WHERE id = %d',
+				$this->table_name,
 				$log_id
 			),
 			ARRAY_A
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return $log ?: null;
 	}
@@ -699,14 +706,13 @@ class RequestLogger {
 	public function count_retries( int $log_id ): int {
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
 		$count = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$this->table_name} WHERE retry_of = %d",
+				'SELECT COUNT(*) FROM %i WHERE retry_of = %d',
+				$this->table_name,
 				$log_id
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return (int) ( $count ?: 0 );
 	}

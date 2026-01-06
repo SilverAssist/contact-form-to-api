@@ -147,11 +147,9 @@ class MigrationService implements LoadableInterface {
 	public function get_unencrypted_count(): int {
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$count = $wpdb->get_var(
-			"SELECT COUNT(*) FROM {$this->table_name} WHERE encryption_version = 0"
+			$wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE encryption_version = 0', $this->table_name )
 		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return (int) ( $count ?: 0 );
 	}
@@ -196,19 +194,18 @@ class MigrationService implements LoadableInterface {
 		}
 
 		// Get batch of unencrypted logs.
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$logs = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT id, request_data, request_headers, response_data, response_headers 
-				FROM {$this->table_name} 
+				'SELECT id, request_data, request_headers, response_data, response_headers 
+				FROM %i 
 				WHERE encryption_version = 0 
 				ORDER BY id ASC 
-				LIMIT %d",
+				LIMIT %d',
+				$this->table_name,
 				$batch_size
 			),
 			ARRAY_A
 		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		if ( empty( $logs ) ) {
 			return array(
@@ -239,7 +236,7 @@ class MigrationService implements LoadableInterface {
 				}
 
 				// Update log with encrypted data.
-				// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 				$updated = $wpdb->update(
 					$this->table_name,
 					array(
@@ -256,7 +253,7 @@ class MigrationService implements LoadableInterface {
 					array( '%s', '%s', '%s', '%s', '%d' ),
 					array( '%d', '%d' )
 				);
-				// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+				// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 				if ( false !== $updated ) {
 					$success++;
@@ -306,10 +303,12 @@ class MigrationService implements LoadableInterface {
 	public function get_progress(): array {
 		global $wpdb;
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$total_logs     = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$this->table_name}" );
-		$encrypted_logs = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$this->table_name} WHERE encryption_version > 0" );
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$total_logs     = (int) $wpdb->get_var(
+			$wpdb->prepare( 'SELECT COUNT(*) FROM %i', $this->table_name )
+		);
+		$encrypted_logs = (int) $wpdb->get_var(
+			$wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE encryption_version > 0', $this->table_name )
+		);
 
 		$unencrypted_logs = $total_logs - $encrypted_logs;
 		$percentage       = $total_logs > 0 ? ( $encrypted_logs / $total_logs ) * 100 : 100;
