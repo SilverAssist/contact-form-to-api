@@ -650,7 +650,7 @@ value="1"
 
 		<?php
 		// Render migration section if there are unencrypted logs.
-		if ( \class_exists( '\SilverAssist\ContactFormToAPI\Admin\Views\MigrationView' ) ) {
+		if ( \class_exists( MigrationView::class ) ) {
 			MigrationView::render_migration_section( $stats );
 		}
 		?>

@@ -18,6 +18,7 @@ use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\Plugin;
 use SilverAssist\ContactFormToAPI\Core\Settings;
 use SilverAssist\ContactFormToAPI\Services\EmailAlertService;
+use SilverAssist\ContactFormToAPI\Services\MigrationService;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -449,11 +450,11 @@ class GlobalSettingsController implements LoadableInterface {
 		$dry_run = isset( $_POST['dry_run'] ) && '1' === $_POST['dry_run'];
 
 		// Initialize migration service.
-		if ( ! \class_exists( '\SilverAssist\ContactFormToAPI\Services\MigrationService' ) ) {
+		if ( ! \class_exists( MigrationService::class ) ) {
 			\wp_send_json_error( array( 'message' => \__( 'Migration service not available', 'contact-form-to-api' ) ) );
 		}
 
-		$migration_service = \SilverAssist\ContactFormToAPI\Services\MigrationService::instance();
+		$migration_service = MigrationService::instance();
 
 		// Start migration (set transient).
 		if ( ! $dry_run ) {
@@ -492,11 +493,11 @@ class GlobalSettingsController implements LoadableInterface {
 		}
 
 		// Initialize migration service.
-		if ( ! \class_exists( '\SilverAssist\ContactFormToAPI\Services\MigrationService' ) ) {
+		if ( ! \class_exists( MigrationService::class ) ) {
 			\wp_send_json_error( array( 'message' => \__( 'Migration service not available', 'contact-form-to-api' ) ) );
 		}
 
-		$migration_service = \SilverAssist\ContactFormToAPI\Services\MigrationService::instance();
+		$migration_service = MigrationService::instance();
 
 		// Get batch size and dry_run flag.
 		$batch_size = isset( $_POST['batch_size'] ) ? \absint( $_POST['batch_size'] ) : 100;
@@ -545,11 +546,11 @@ class GlobalSettingsController implements LoadableInterface {
 		}
 
 		// Initialize migration service.
-		if ( ! \class_exists( '\SilverAssist\ContactFormToAPI\Services\MigrationService' ) ) {
+		if ( ! \class_exists( MigrationService::class ) ) {
 			\wp_send_json_error( array( 'message' => \__( 'Migration service not available', 'contact-form-to-api' ) ) );
 		}
 
-		$migration_service = \SilverAssist\ContactFormToAPI\Services\MigrationService::instance();
+		$migration_service = MigrationService::instance();
 		$progress          = $migration_service->get_progress();
 
 		\wp_send_json_success( array( 'progress' => $progress ) );
@@ -575,11 +576,11 @@ class GlobalSettingsController implements LoadableInterface {
 		}
 
 		// Initialize migration service.
-		if ( ! \class_exists( '\SilverAssist\ContactFormToAPI\Services\MigrationService' ) ) {
+		if ( ! \class_exists( MigrationService::class ) ) {
 			\wp_send_json_error( array( 'message' => \__( 'Migration service not available', 'contact-form-to-api' ) ) );
 		}
 
-		$migration_service = \SilverAssist\ContactFormToAPI\Services\MigrationService::instance();
+		$migration_service = MigrationService::instance();
 		$migration_service->cancel_migration();
 
 		// Get remaining unencrypted count.
