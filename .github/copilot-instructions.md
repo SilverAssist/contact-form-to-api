@@ -980,10 +980,32 @@ on:
 
 **GitHub enforces immutability** on tags and releases in this repository. Once a tag is used (even if the release fails), it **CANNOT be reused**.
 
-**If a release workflow fails**:
+#### 🚨 NEVER Create Releases Manually
+**ALWAYS let the `release.yml` workflow create the GitHub release.** The workflow handles:
+- Quality checks validation
+- Version consistency verification
+- Building the release package (ZIP, checksums)
+- Creating the GitHub release with proper notes
+- Uploading all release assets
+
+**❌ FORBIDDEN - Do NOT use these commands**:
+```bash
+# NEVER do this - will cause "immutable release" errors
+gh release create v1.3.5 --title "..." --notes "..."
+```
+
+**✅ CORRECT - Only create and push the tag**:
+```bash
+# Let the workflow do everything else
+git tag v1.3.6 -m "Release v1.3.6"
+git push origin v1.3.6
+# Then monitor: gh run list --workflow=release.yml --limit 3
+```
+
+#### If a Release Workflow Fails
 1. **DO NOT** try to delete and recreate the same tag
 2. **DO NOT** manually create a release with the same version
-3. **INCREMENT the version** (e.g., v1.3.1 → v1.3.2 → v1.3.3)
+3. **INCREMENT the version** (e.g., v1.3.5 → v1.3.6 → v1.3.7)
 4. Update all version tags using `./scripts/update-version-simple.sh`
 5. Commit, push, and create a new tag
 
@@ -995,26 +1017,28 @@ on:
 **Correct release workflow**:
 ```bash
 # 1. Update all versions
-./scripts/update-version-simple.sh 1.3.4
+./scripts/update-version-simple.sh 1.3.6
 
 # 2. Update CHANGELOG.md with new version section
 
-# 3. Update CF7_API_VERSION constant in contact-form-to-api.php
+# 3. Verify the CF7_API_VERSION constant was updated (script should handle this)
+grep "CF7_API_VERSION" contact-form-to-api.php
 
 # 4. Verify consistency
 ./scripts/check-versions.sh
 
 # 5. Commit and push
 git add -A
-git commit -m "chore: bump version to 1.3.4 for release"
+git commit -m "chore: bump version to 1.3.6 for release"
 git push origin main
 
-# 6. Create and push tag (triggers release workflow)
-git tag v1.3.4
-git push origin v1.3.4
+# 6. Create and push tag (triggers release workflow - DO NOT create release manually!)
+git tag v1.3.6 -m "Release v1.3.6"
+git push origin v1.3.6
 
-# 7. Monitor workflow
+# 7. Monitor workflow (DO NOT intervene unless it fails)
 gh run list --workflow=release.yml --limit 3
+gh run watch <run-id> --exit-status
 ```
 
 ## Build and Release Scripts
@@ -1102,8 +1126,10 @@ git add -A && git commit -m "chore: Bump version to 1.2.0"
 - **NEVER** skip quality checks assuming code is correct
 
 ### Release Process
-- **ALWAYS** use `./scripts/build-release.sh` to create releases
+- **ALWAYS** create only the git tag and let `release.yml` workflow create the GitHub release
+- **NEVER** use `gh release create` manually - it causes immutable release conflicts
 - **NEVER** manually create ZIP files or release packages
+- **ALWAYS** increment version if a release fails (tags are immutable)
 
 ### Why This Matters
 1. **Consistency**: Scripts ensure ALL files are updated uniformly
