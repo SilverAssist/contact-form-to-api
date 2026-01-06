@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.6] - 2026-01-06
+
+### Changed
+- **Version bump**: Re-release of v1.3.5 due to GitHub tag immutability constraints
+- All changes from v1.3.5 are included in this release
+
+## [1.3.5] - 2026-01-06 [YANKED]
+
+> **Note**: This version was yanked due to GitHub tag immutability. Use v1.3.6 instead.
+
 #### Medium Priority
 - **Performance Charts**: Visual trends and analytics dashboard with Chart.js
   * Success/error rate over time
