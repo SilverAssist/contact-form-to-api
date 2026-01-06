@@ -105,6 +105,7 @@ class Loader implements LoadableInterface {
 			CheckboxHandler::class,
 			EmailAlertService::class,
 			ExportService::class,
+			MigrationService::class,
 		);
 
 		foreach ( $service_classes as $service_class ) {
