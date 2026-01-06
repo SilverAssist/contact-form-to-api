@@ -450,10 +450,6 @@ class GlobalSettingsController implements LoadableInterface {
 		$dry_run = isset( $_POST['dry_run'] ) && '1' === $_POST['dry_run'];
 
 		// Initialize migration service.
-		if ( ! \class_exists( MigrationService::class ) ) {
-			\wp_send_json_error( array( 'message' => \__( 'Migration service not available', 'contact-form-to-api' ) ) );
-		}
-
 		$migration_service = MigrationService::instance();
 
 		// Start migration (set transient).
@@ -493,10 +489,6 @@ class GlobalSettingsController implements LoadableInterface {
 		}
 
 		// Initialize migration service.
-		if ( ! \class_exists( MigrationService::class ) ) {
-			\wp_send_json_error( array( 'message' => \__( 'Migration service not available', 'contact-form-to-api' ) ) );
-		}
-
 		$migration_service = MigrationService::instance();
 
 		// Get batch size and dry_run flag.
@@ -546,10 +538,6 @@ class GlobalSettingsController implements LoadableInterface {
 		}
 
 		// Initialize migration service.
-		if ( ! \class_exists( MigrationService::class ) ) {
-			\wp_send_json_error( array( 'message' => \__( 'Migration service not available', 'contact-form-to-api' ) ) );
-		}
-
 		$migration_service = MigrationService::instance();
 		$progress          = $migration_service->get_progress();
 
@@ -576,10 +564,6 @@ class GlobalSettingsController implements LoadableInterface {
 		}
 
 		// Initialize migration service.
-		if ( ! \class_exists( MigrationService::class ) ) {
-			\wp_send_json_error( array( 'message' => \__( 'Migration service not available', 'contact-form-to-api' ) ) );
-		}
-
 		$migration_service = MigrationService::instance();
 		$migration_service->cancel_migration();
 

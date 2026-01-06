@@ -264,8 +264,8 @@ class MigrationService implements LoadableInterface {
 			} catch ( \Exception $e ) {
 				$failed++;
 				$error_message = \sprintf(
-					/* translators: %1$d: log ID, %2$s: error message */
-					\__( 'Error encrypting log ID %1$d: %2$s', 'contact-form-to-api' ),
+					/* translators: %d: log ID, %s: error message */
+					\__( 'Error encrypting log ID %d: %s', 'contact-form-to-api' ),
 					$log['id'],
 					$e->getMessage()
 				);
@@ -386,7 +386,8 @@ class MigrationService implements LoadableInterface {
 		$encrypted_data    = array();
 
 		foreach ( $fields_to_encrypt as $field ) {
-			$encrypted_data[ $field ] = ! empty( $log[ $field ] ) ? $this->encryption->encrypt( $log[ $field ] ) : $log[ $field ];
+			$value                    = $log[ $field ] ?? null;
+			$encrypted_data[ $field ] = null !== $value ? $this->encryption->encrypt( $value ) : $value;
 		}
 
 		return $encrypted_data;

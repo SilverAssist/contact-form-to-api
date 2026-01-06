@@ -14,6 +14,7 @@
 namespace SilverAssist\ContactFormToAPI\Services;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Services\MigrationService;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 
 defined( 'ABSPATH' ) || exit;

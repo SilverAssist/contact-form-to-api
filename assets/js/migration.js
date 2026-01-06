@@ -16,10 +16,19 @@
 
 	/**
 	 * Migration handler class
+	 *
+	 * @property {boolean} isRunning - Whether migration is currently running
+	 * @property {boolean} isDryRun - Whether this is a dry run (preview only)
+	 * @property {number} totalCount - Total number of logs to migrate
+	 * @property {number} processedCount - Number of logs processed so far
+	 * @property {number} batchSize - Number of logs to process per batch
+	 * @property {string} nonce - Security nonce for AJAX requests
+	 * @property {number} batchDelay - Delay in milliseconds between batches
+	 * @property {number|null} reloadTimeout - Timeout reference for page reload
 	 */
 	class MigrationHandler {
 		/**
-		 * Constructor
+		 * Constructor - initializes class properties and event handlers
 		 */
 		constructor() {
 			this.isRunning = false;
@@ -29,6 +38,7 @@
 			this.batchSize = 100;
 			this.nonce = '';
 			this.batchDelay = 500; // Delay in milliseconds between batches
+			this.reloadTimeout = null;
 
 			this.init();
 		}
@@ -100,7 +110,9 @@
 					}
 				},
 				error: function(xhr, status, error) {
-					self.showError(cf7ApiMigration.i18n.migrationError + ' ' + error);
+					var fallback = (cf7ApiMigration.i18n && cf7ApiMigration.i18n.networkError) ? cf7ApiMigration.i18n.networkError : 'Network error';
+					var message = error || status || fallback;
+					self.showError(cf7ApiMigration.i18n.migrationError + ' ' + message);
 				}
 			});
 		}
@@ -164,7 +176,9 @@
 					}
 				},
 				error: function(xhr, status, error) {
-					self.showError(cf7ApiMigration.i18n.migrationError + ' ' + error);
+					var fallback = (cf7ApiMigration.i18n && cf7ApiMigration.i18n.networkError) ? cf7ApiMigration.i18n.networkError : 'Network error';
+					var message = error || status || fallback;
+					self.showError(cf7ApiMigration.i18n.migrationError + ' ' + message);
 				}
 			});
 		}
@@ -191,7 +205,9 @@
 					}
 				},
 				error: function(xhr, status, error) {
-					self.showError(cf7ApiMigration.i18n.migrationError + ' ' + error);
+					var fallback = (cf7ApiMigration.i18n && cf7ApiMigration.i18n.networkError) ? cf7ApiMigration.i18n.networkError : 'Network error';
+					var message = error || status || fallback;
+					self.showError(cf7ApiMigration.i18n.migrationError + ' ' + message);
 				}
 			});
 		}
@@ -280,14 +296,22 @@
 		 * @param {string} type Message type (success, warning, info)
 		 */
 		showResult(message, type) {
+			const self = this;
 			this.hideProgress();
+
+			// Clear any existing reload timeout
+			if (this.reloadTimeout) {
+				clearTimeout(this.reloadTimeout);
+				this.reloadTimeout = null;
+			}
 
 			const html = '<div class="notice notice-' + type + '"><p>' + message + '</p></div>';
 			$('#cf7-api-migration-result').html(html).show();
 
 			// Reload page after delay if migration was successful
 			if (type === 'success') {
-				setTimeout(function() {
+				this.reloadTimeout = setTimeout(function() {
+					self.reloadTimeout = null;
 					window.location.reload();
 				}, 2000);
 			}
