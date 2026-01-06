@@ -15,6 +15,7 @@
 namespace SilverAssist\ContactFormToAPI\Admin\Views;
 
 use SilverAssist\ContactFormToAPI\Admin\GlobalSettingsController;
+use SilverAssist\ContactFormToAPI\Admin\Views\MigrationView;
 use SilverAssist\ContactFormToAPI\Core\EncryptionService;
 use SilverAssist\ContactFormToAPI\Core\Settings;
 
@@ -639,7 +640,7 @@ value="1"
 <p class="description">
 			<?php
 			/* translators: %d: number of unencrypted logs */
-			echo \esc_html( \sprintf( \__( 'You have %d legacy unencrypted logs. Consider running a migration to encrypt existing data.', 'contact-form-to-api' ), $stats['unencrypted'] ) );
+			echo \esc_html( \sprintf( \__( 'You have %d legacy unencrypted logs. Use the migration tool below to encrypt them.', 'contact-form-to-api' ), $stats['unencrypted'] ) );
 			?>
 </p>
 <?php endif; ?>
@@ -647,6 +648,11 @@ value="1"
 </tr>
 </tbody>
 </table>
+
+		<?php
+		// Render migration section if there are unencrypted logs.
+		MigrationView::render_migration_section( $stats );
+		?>
 		<?php
 	}
 

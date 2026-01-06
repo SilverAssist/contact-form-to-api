@@ -7,20 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Legacy Log Migration Tool** (#37): Batch migration tool to encrypt existing unencrypted logs
+  * One-click migration from Global Settings encryption section
+  * AJAX-based batch processing with real-time progress bar
+  * Dry-run mode for previewing changes without committing
+  * Pause/cancel capability during migration
+  * Automatic detection of legacy plaintext logs (encryption_version = 0)
+  * Transient-based progress tracking for resume capability
+  * Comprehensive unit tests with 13 test cases
+
 ### Fixed
 - **Custom Headers Not Saving** (#36): Fixed issue where custom headers configured in the Authentication & Custom Headers section were not persisting after saving the form
   * Changed filter hook from `wpcf7_contact_form_properties` to `wpcf7_pre_construct_contact_form_properties`
   * CF7's `set_properties()` uses `array_intersect_key()` which filters out properties not in defaults
   * New hook ensures custom properties are registered in CF7's defaults before filtering occurs
-
-### Planned Features
-
-#### High Priority
-- **Legacy Log Migration Tool** (#37): Encrypt existing plaintext logs from pre-encryption versions
-  * Admin UI with progress indicators and batch processing
-  * Background migration via WordPress cron
-  * MigrationService class with encryption version tracking
-  * Pause/Resume capability for large datasets
 
 #### Medium Priority
 - **Performance Charts**: Visual trends and analytics dashboard with Chart.js

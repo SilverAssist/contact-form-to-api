@@ -18,6 +18,7 @@ use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\Plugin;
 use SilverAssist\ContactFormToAPI\Core\Settings;
 use SilverAssist\ContactFormToAPI\Services\EmailAlertService;
+use SilverAssist\ContactFormToAPI\Services\MigrationService;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -94,6 +95,12 @@ class GlobalSettingsController implements LoadableInterface {
 		// Handle AJAX test email.
 		\add_action( 'wp_ajax_cf7_api_send_test_email', array( $this, 'handle_test_email' ) );
 
+		// Handle AJAX migration endpoints.
+		\add_action( 'wp_ajax_cf7_api_migration_start', array( $this, 'handle_start_migration' ) );
+		\add_action( 'wp_ajax_cf7_api_migration_batch', array( $this, 'handle_process_batch' ) );
+		\add_action( 'wp_ajax_cf7_api_migration_status', array( $this, 'handle_get_status' ) );
+		\add_action( 'wp_ajax_cf7_api_migration_cancel', array( $this, 'handle_cancel_migration' ) );
+
 		// Enqueue admin scripts.
 		\add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 
@@ -158,6 +165,38 @@ class GlobalSettingsController implements LoadableInterface {
 					'sending'        => \__( 'Sending...', 'contact-form-to-api' ),
 					'sendTestEmail'  => \__( 'Send Test Email', 'contact-form-to-api' ),
 					'ajaxError'      => \__( 'An error occurred while sending the test email.', 'contact-form-to-api' ),
+				),
+			)
+		);
+
+		// Enqueue migration JavaScript.
+		\wp_enqueue_script(
+			'cf7-api-migration',
+			CF7_API_URL . 'assets/js/migration.js',
+			array( 'jquery' ),
+			CF7_API_VERSION,
+			true
+		);
+
+		// Localize migration script.
+		\wp_localize_script(
+			'cf7-api-migration',
+			'cf7ApiMigration',
+			array(
+				'ajaxUrl' => \admin_url( 'admin-ajax.php' ),
+				'nonce'   => \wp_create_nonce( 'cf7_api_migration' ),
+				// i18n strings for JavaScript.
+				'i18n'    => array(
+					'confirmStart'      => \__( 'Are you sure you want to start the migration? This will encrypt all unencrypted logs.', 'contact-form-to-api' ),
+					'confirmCancel'     => \__( 'Are you sure you want to cancel the migration?', 'contact-form-to-api' ),
+					'migrationStarted'  => \__( 'Migration started...', 'contact-form-to-api' ),
+					'processingBatch'   => \__( 'Processing batch...', 'contact-form-to-api' ),
+					'migrationComplete' => \__( 'Migration completed successfully!', 'contact-form-to-api' ),
+					'migrationCancelled' => \__( 'Migration cancelled.', 'contact-form-to-api' ),
+					'migrationError'    => \__( 'Migration error:', 'contact-form-to-api' ),
+					'logsProcessed'     => \__( 'logs processed', 'contact-form-to-api' ),
+					'logsEncrypted'     => \__( 'logs encrypted', 'contact-form-to-api' ),
+					'logsFailed'        => \__( 'failed', 'contact-form-to-api' ),
 				),
 			)
 		);
@@ -365,10 +404,6 @@ class GlobalSettingsController implements LoadableInterface {
 		}
 
 		// Send test email.
-		if ( ! \class_exists( EmailAlertService::class ) ) {
-			\wp_send_json_error( array( 'message' => \__( 'Email service not available', 'contact-form-to-api' ) ) );
-		}
-
 		$alert_service = EmailAlertService::instance();
 		$sent          = $alert_service->send_test_email( $recipient );
 
@@ -387,4 +422,156 @@ class GlobalSettingsController implements LoadableInterface {
 	public static function get_nonce_name(): string {
 		return self::NONCE_NAME;
 	}
+
+	/**
+	 * Handle start migration AJAX request
+	 *
+	 * Initializes the migration process.
+	 *
+	 * @since 1.3.4
+	 * @return void
+	 */
+	public function handle_start_migration(): void {
+		// Verify user capabilities.
+		if ( ! \current_user_can( 'manage_options' ) ) {
+			\wp_send_json_error( array( 'message' => \__( 'Permission denied', 'contact-form-to-api' ) ) );
+		}
+
+		// Verify nonce.
+		if ( ! isset( $_POST['nonce'] ) || ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_POST['nonce'] ) ), 'cf7_api_migration' ) ) {
+			\wp_send_json_error( array( 'message' => \__( 'Security check failed', 'contact-form-to-api' ) ) );
+		}
+
+		// Get dry_run flag.
+		$dry_run = isset( $_POST['dry_run'] ) && '1' === $_POST['dry_run'];
+
+		// Initialize migration service.
+		$migration_service = MigrationService::instance();
+
+		// Start migration (set transient).
+		if ( ! $dry_run ) {
+			$migration_service->start_migration();
+		}
+
+		// Get initial progress.
+		$progress = $migration_service->get_progress();
+
+		\wp_send_json_success(
+			array(
+				'message'  => $dry_run ? \__( 'Dry run started', 'contact-form-to-api' ) : \__( 'Migration started', 'contact-form-to-api' ),
+				'progress' => $progress,
+				'dry_run'  => $dry_run,
+			)
+		);
+	}
+
+	/**
+	 * Handle process batch AJAX request
+	 *
+	 * Processes a single batch of logs during migration.
+	 *
+	 * @since 1.3.4
+	 * @return void
+	 */
+	public function handle_process_batch(): void {
+		// Verify user capabilities.
+		if ( ! \current_user_can( 'manage_options' ) ) {
+			\wp_send_json_error( array( 'message' => \__( 'Permission denied', 'contact-form-to-api' ) ) );
+		}
+
+		// Verify nonce.
+		if ( ! isset( $_POST['nonce'] ) || ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_POST['nonce'] ) ), 'cf7_api_migration' ) ) {
+			\wp_send_json_error( array( 'message' => \__( 'Security check failed', 'contact-form-to-api' ) ) );
+		}
+
+		// Initialize migration service.
+		$migration_service = MigrationService::instance();
+
+		// Get batch size and dry_run flag.
+		$batch_size = isset( $_POST['batch_size'] ) ? \absint( $_POST['batch_size'] ) : 100;
+		$dry_run    = isset( $_POST['dry_run'] ) && '1' === $_POST['dry_run'];
+
+		// Process batch.
+		$result = $migration_service->migrate_batch( $batch_size, $dry_run );
+
+		// Get updated progress.
+		$progress = $migration_service->get_progress();
+
+		// Check if migration is complete.
+		$is_complete = 0 === $result['remaining'];
+
+		// If complete, cleanup transient.
+		if ( $is_complete && ! $dry_run ) {
+			$migration_service->complete_migration();
+		}
+
+		\wp_send_json_success(
+			array(
+				'result'      => $result,
+				'progress'    => $progress,
+				'is_complete' => $is_complete,
+			)
+		);
+	}
+
+	/**
+	 * Handle get status AJAX request
+	 *
+	 * Returns current migration status and progress.
+	 *
+	 * @since 1.3.4
+	 * @return void
+	 */
+	public function handle_get_status(): void {
+		// Verify user capabilities.
+		if ( ! \current_user_can( 'manage_options' ) ) {
+			\wp_send_json_error( array( 'message' => \__( 'Permission denied', 'contact-form-to-api' ) ) );
+		}
+
+		// Verify nonce.
+		if ( ! isset( $_POST['nonce'] ) || ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_POST['nonce'] ) ), 'cf7_api_migration' ) ) {
+			\wp_send_json_error( array( 'message' => \__( 'Security check failed', 'contact-form-to-api' ) ) );
+		}
+
+		// Initialize migration service.
+		$migration_service = MigrationService::instance();
+		$progress          = $migration_service->get_progress();
+
+		\wp_send_json_success( array( 'progress' => $progress ) );
+	}
+
+	/**
+	 * Handle cancel migration AJAX request
+	 *
+	 * Cancels ongoing migration.
+	 *
+	 * @since 1.3.4
+	 * @return void
+	 */
+	public function handle_cancel_migration(): void {
+		// Verify user capabilities.
+		if ( ! \current_user_can( 'manage_options' ) ) {
+			\wp_send_json_error( array( 'message' => \__( 'Permission denied', 'contact-form-to-api' ) ) );
+		}
+
+		// Verify nonce.
+		if ( ! isset( $_POST['nonce'] ) || ! \wp_verify_nonce( \sanitize_text_field( \wp_unslash( $_POST['nonce'] ) ), 'cf7_api_migration' ) ) {
+			\wp_send_json_error( array( 'message' => \__( 'Security check failed', 'contact-form-to-api' ) ) );
+		}
+
+		// Initialize migration service.
+		$migration_service = MigrationService::instance();
+		$migration_service->cancel_migration();
+
+		// Get remaining unencrypted count.
+		$progress = $migration_service->get_progress();
+
+		\wp_send_json_success(
+			array(
+				'message'  => \__( 'Migration cancelled', 'contact-form-to-api' ),
+				'progress' => $progress,
+			)
+		);
+	}
 }
+

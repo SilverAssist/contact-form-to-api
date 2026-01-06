@@ -175,14 +175,12 @@ class RequestLogController implements LoadableInterface {
 	 * @return bool
 	 */
 	private function is_logging_enabled(): bool {
-		if ( \class_exists( Settings::class ) ) {
-			try {
-				$settings = Settings::instance();
-				return $settings->is_logging_enabled();
-			} catch ( \Exception $e ) {
-				// Settings not available, default to enabled.
-				unset( $e );
-			}
+		try {
+			$settings = Settings::instance();
+			return $settings->is_logging_enabled();
+		} catch ( \Exception $e ) {
+			// Settings not available, default to enabled.
+			unset( $e );
 		}
 		return true;
 	}

@@ -167,88 +167,72 @@ class Plugin implements LoadableInterface {
 	 */
 	private function load_components(): void {
 		// Load Settings first (priority 10 - Core).
-		if ( \class_exists( Settings::class ) ) {
-			try {
-				$settings = Settings::instance();
-				if ( $settings->should_load() ) {
-					$settings->init();
-					$this->components[] = $settings;
-				}
-			} catch ( \Exception $e ) {
-				if ( \class_exists( DebugLogger::class ) ) {
-					DebugLogger::instance()->error( 'Failed to load Settings - ' . $e->getMessage() );
-				}
+		try {
+			$settings = Settings::instance();
+			if ( $settings->should_load() ) {
+				$settings->init();
+				$this->components[] = $settings;
 			}
+		} catch ( \Exception $e ) {
+			DebugLogger::instance()->error( 'Failed to load Settings - ' . $e->getMessage() );
 		}
 
 		// Load EncryptionService (priority 10 - Core).
-		if ( \class_exists( EncryptionService::class ) ) {
-			try {
-				$encryption = EncryptionService::instance();
-				if ( $encryption->should_load() ) {
-					$encryption->init();
-					$this->components[] = $encryption;
-				}
-			} catch ( \Exception $e ) {
-				if ( \class_exists( DebugLogger::class ) ) {
-					DebugLogger::instance()->error( 'Failed to load EncryptionService - ' . $e->getMessage() );
-				}
+		try {
+			$encryption = EncryptionService::instance();
+			if ( $encryption->should_load() ) {
+				$encryption->init();
+				$this->components[] = $encryption;
 			}
+		} catch ( \Exception $e ) {
+			DebugLogger::instance()->error( 'Failed to load EncryptionService - ' . $e->getMessage() );
 		}
 
 		// Load Utils Logger (priority 40 - but initialized early for error logging).
-		if ( \class_exists( DebugLogger::class ) ) {
-			try {
-				$logger = DebugLogger::instance();
-				if ( $logger->should_load() ) {
-					$logger->init();
-					$this->components[] = $logger;
-				}
-			} catch ( \Exception $e ) {
-				// Fallback to error_log if Logger fails.
-				// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-				\error_log( 'Contact Form to API: Failed to load Logger - ' . $e->getMessage() );
+		try {
+			$logger = DebugLogger::instance();
+			if ( $logger->should_load() ) {
+				$logger->init();
+				$this->components[] = $logger;
 			}
+		} catch ( \Exception $e ) {
+			// Fallback to error_log if Logger fails.
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			\error_log( 'Contact Form to API: Failed to load Logger - ' . $e->getMessage() );
 		}
 
 		// Load Services Loader (priority 20 - Services).
-		if ( \class_exists( ServicesLoader::class ) ) {
-			try {
-				$services_loader = ServicesLoader::instance();
-				if ( $services_loader->should_load() ) {
-					$services_loader->init();
-					$this->components[] = $services_loader;
-				}
-			} catch ( \Exception $e ) {
-				$this->log_error( 'Services\\Loader', $e->getMessage() );
+		try {
+			$services_loader = ServicesLoader::instance();
+			if ( $services_loader->should_load() ) {
+				$services_loader->init();
+				$this->components[] = $services_loader;
 			}
+		} catch ( \Exception $e ) {
+			$this->log_error( 'Services\\Loader', $e->getMessage() );
 		}
 
 		// Load ContactForm integration (priority 20 - Services).
-		if ( \class_exists( Integration::class ) ) {
-			try {
-				$integration = Integration::instance();
-				if ( $integration->should_load() ) {
-					$integration->init();
-					$this->components[] = $integration;
-				}
-			} catch ( \Exception $e ) {
-				$this->log_error( 'ContactForm\\Integration', $e->getMessage() );
+		try {
+			$integration = Integration::instance();
+			if ( $integration->should_load() ) {
+				$integration->init();
+				$this->components[] = $integration;
 			}
+		} catch ( \Exception $e ) {
+			$this->log_error( 'ContactForm\\Integration', $e->getMessage() );
 		}
 
 		// Load Admin Loader (priority 30 - Admin components).
 		// The Admin\Loader manages SettingsPage and RequestLogController internally.
-		if ( \class_exists( AdminLoader::class ) ) {
-			try {
-				$admin_loader = AdminLoader::instance();
-				if ( $admin_loader->should_load() ) {
-					$admin_loader->init();
-					$this->components[] = $admin_loader;
-				}
-			} catch ( \Exception $e ) {
-				$this->log_error( 'Admin\\Loader', $e->getMessage() );
+		try {
+			$admin_loader = AdminLoader::instance();
+			if ( $admin_loader->should_load() ) {
+				$admin_loader->init();
+				$this->components[] = $admin_loader;
 			}
+		} catch ( \Exception $e ) {
+			$this->log_error( 'Admin\\Loader', $e->getMessage() );
 		}
 	}
 
@@ -264,15 +248,13 @@ class Plugin implements LoadableInterface {
 	private function log_error( string $component, string $message ): void {
 		$full_message = "Failed to load {$component} - {$message}";
 
-		// Try to use the Logger if available.
-		if ( \class_exists( DebugLogger::class ) ) {
-			try {
-				DebugLogger::instance()->error( $full_message, array( 'component' => $component ) );
-				return;
-			} catch ( \Exception $e ) {
-				// Logger unavailable, fall through to error_log.
-				unset( $e );
-			}
+		// Try to use the Logger.
+		try {
+			DebugLogger::instance()->error( $full_message, array( 'component' => $component ) );
+			return;
+		} catch ( \Exception $e ) {
+			// Logger unavailable, fall through to error_log.
+			unset( $e );
 		}
 
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
@@ -415,13 +397,10 @@ class Plugin implements LoadableInterface {
 	/**
 	 * Get Logger instance
 	 *
-	 * @return DebugLogger|null
+	 * @return DebugLogger
 	 */
-	public function get_logger(): ?DebugLogger {
-		if ( \class_exists( DebugLogger::class ) ) {
-			return DebugLogger::instance();
-		}
-		return null;
+	public function get_logger(): DebugLogger {
+		return DebugLogger::instance();
 	}
 
 	/**
@@ -454,10 +433,6 @@ class Plugin implements LoadableInterface {
 	 */
 	public function cleanup_old_logs(): void {
 		// Get retention days from settings.
-		if ( ! \class_exists( Settings::class ) ) {
-			return;
-		}
-
 		$settings       = Settings::instance();
 		$retention_days = $settings->get_log_retention_days();
 
@@ -470,8 +445,8 @@ class Plugin implements LoadableInterface {
 		$logger  = new RequestLogger();
 		$deleted = $logger->clean_old_logs( $retention_days );
 
-		// Log cleanup result if debug logger is available.
-		if ( $deleted > 0 && \class_exists( DebugLogger::class ) ) {
+		// Log cleanup result.
+		if ( $deleted > 0 ) {
 			try {
 				DebugLogger::instance()->info(
 					"Cleaned up {$deleted} old API logs (retention: {$retention_days} days)",
@@ -496,11 +471,6 @@ class Plugin implements LoadableInterface {
 	 * @return void
 	 */
 	public function check_email_alerts(): void {
-		// Only run if EmailAlertService is available.
-		if ( ! \class_exists( EmailAlertService::class ) ) {
-			return;
-		}
-
 		// Get service instance and check alerts.
 		$alert_service = EmailAlertService::instance();
 		$alert_service->check_and_alert();

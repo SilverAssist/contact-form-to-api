@@ -14,6 +14,7 @@
 namespace SilverAssist\ContactFormToAPI\Services;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Services\MigrationService;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 
 defined( 'ABSPATH' ) || exit;
@@ -105,6 +106,7 @@ class Loader implements LoadableInterface {
 			CheckboxHandler::class,
 			EmailAlertService::class,
 			ExportService::class,
+			MigrationService::class,
 		);
 
 		foreach ( $service_classes as $service_class ) {
@@ -132,12 +134,10 @@ class Loader implements LoadableInterface {
 	 * @return void
 	 */
 	private function log_error( string $service_class, string $message ): void {
-		if ( \class_exists( DebugLogger::class ) ) {
-			DebugLogger::instance()->error(
-				"Failed to load service: {$service_class}",
-				array( 'message' => $message )
-			);
-		}
+		DebugLogger::instance()->error(
+			"Failed to load service: {$service_class}",
+			array( 'message' => $message )
+		);
 	}
 
 	/**

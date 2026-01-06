@@ -1300,3 +1300,168 @@ body.cf7-input-type-json .cf7_row[data-cf7index="params"] {
     font-size: 11px;
   }
 }
+/* ==========================================================================
+   Migration Section Styles
+   ========================================================================== */
+
+.cf7-api-migration-section {
+  margin-top: 20px;
+  padding: 20px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.cf7-api-migration-section h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+}
+
+.cf7-api-migration-warning {
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  background: #fff;
+  border-left: 4px solid #dc3232;
+  border-radius: 4px;
+}
+
+.cf7-api-migration-warning strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.cf7-api-migration-info {
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  background: #fff;
+  border-left: 4px solid #2271b1;
+  border-radius: 4px;
+}
+
+.cf7-api-migration-info p {
+  margin: 8px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.cf7-api-migration-controls {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cf7-api-migration-controls .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cf7-api-migration-controls .button .dashicons {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.cf7-api-progress-bar-container {
+  width: 100%;
+  height: 30px;
+  background: #f0f0f1;
+  border: 1px solid #c3c4c7;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.cf7-api-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #2271b1 0%, #135e96 100%);
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 30px;
+}
+
+.cf7-api-progress-text {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.cf7-api-migration-status {
+  background: #fff;
+  padding: 12px 15px;
+  border: 1px solid #c3c4c7;
+  border-radius: 4px;
+}
+
+.cf7-api-migration-status p {
+  margin: 5px 0;
+}
+
+#cf7-api-migration-status-text {
+  font-weight: 600;
+  color: #2271b1;
+}
+
+.cf7-api-migration-complete {
+  padding: 15px;
+  background: #fff;
+  border-left: 4px solid #46b450;
+  border-radius: 4px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.cf7-api-migration-complete .dashicons {
+  flex-shrink: 0;
+}
+
+.cf7-api-migration-complete strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+#cf7-api-migration-result {
+  margin-top: 15px;
+}
+
+#cf7-api-migration-result .notice {
+  margin: 0;
+}
+
+/* Animation for progress bar */
+@keyframes progress-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.cf7-api-progress-bar {
+  animation: progress-pulse 2s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .cf7-api-migration-controls {
+    flex-direction: column;
+  }
+  
+  .cf7-api-migration-controls .button {
+    width: 100%;
+    justify-content: center;
+  }
+}
