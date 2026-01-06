@@ -375,16 +375,15 @@ class RequestLogController implements LoadableInterface {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property
 		$count = $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM {$table_name} 
+				'SELECT COUNT(*) FROM %i 
 				WHERE retry_of IS NOT NULL 
-				AND created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)",
+				AND created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)',
+				$table_name,
 				$hours
 			)
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 
 		return (int) ( $count ?: 0 );
 	}
@@ -667,15 +666,16 @@ class RequestLogController implements LoadableInterface {
 		}
 
 		// Get logs matching filters with limit to prevent memory exhaustion.
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table_name is a safe class property.
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- WHERE clause is prepared above if needed.
 		$logs = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$table_name} WHERE {$where} ORDER BY created_at DESC LIMIT %d",
+				'SELECT * FROM %i WHERE ' . $where . ' ORDER BY created_at DESC LIMIT %d',
+				$table_name,
 				self::EXPORT_LIMIT
 			),
 			ARRAY_A
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
 		return $logs ?: array();
 	}
