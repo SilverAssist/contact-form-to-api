@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.7] - 2026-01-06
+
+### Fixed
+- **Sensitive Data Anonymization**: Fixed case-insensitive matching for custom sensitive patterns
+  * Custom patterns with mixed case (e.g., `primaryPhone`, `primaryEmail`) now correctly match field names
+  * Pattern comparison is now case-insensitive on both sides (field name and pattern)
+
+### Added
+- **Test Coverage**: Added test for custom sensitive patterns with mixed case from Settings
+
 ## [1.3.6] - 2026-01-06
 
 ### Changed
