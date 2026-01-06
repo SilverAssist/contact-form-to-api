@@ -69,16 +69,20 @@ contact-form-to-api/
 │   │   ├── Interfaces/
 │   │   │   └── LoadableInterface.php # Component contract
 │   │   ├── Activator.php         # Lifecycle management
+│   │   ├── EncryptionService.php # libsodium encryption for logs
 │   │   ├── RequestLogger.php     # API request/response DB logger
 │   │   ├── Settings.php          # Global settings singleton (stores all plugin settings)
 │   │   ├── SensitiveDataPatterns.php # Sensitive data detection patterns
 │   │   └── Plugin.php            # Main plugin controller
+│   ├── Exceptions/               # Custom exception classes
+│   │   └── DecryptionException.php # Thrown when decryption fails
 │   ├── Services/                 # Priority 20 - Business logic services
 │   │   ├── Loader.php            # Services component loader
 │   │   ├── ApiClient.php         # HTTP client with retry logic
 │   │   ├── CheckboxHandler.php   # Checkbox value processing
 │   │   ├── EmailAlertService.php # Email alerts for high error rates
-│   │   └── ExportService.php     # Log export (CSV/JSON)
+│   │   ├── ExportService.php     # Log export (CSV/JSON)
+│   │   └── MigrationService.php  # Legacy log encryption migration
 │   └── Utils/                    # Priority 40 - Utility classes
 │       ├── DateFilterTrait.php   # Reusable date filtering for SQL queries
 │       ├── DebugLogger.php       # PSR-3 file logger for debugging
@@ -119,8 +123,8 @@ contact-form-to-api/
 
 ### Component Priority System (LoadableInterface)
 All components implement `LoadableInterface` with priority-based loading:
-- **Priority 10**: Core (Plugin, Activator)
-- **Priority 20**: Services (ApiClient, CheckboxHandler)
+- **Priority 10**: Core (Plugin, Activator, EncryptionService)
+- **Priority 20**: Services (ApiClient, CheckboxHandler, MigrationService)
 - **Priority 30**: Admin & ContactForm (SettingsPage, RequestLogController, Integration)
 - **Priority 40**: Utils (Logger, StringHelper)
 
@@ -393,6 +397,61 @@ Activator::create_tables();
 - `get_log(int $id): array|null` - Get single log entry
 - `delete_logs(array $ids): int` - Delete log entries
 - `get_statistics(): array` - Get log statistics for dashboard
+
+### includes/Core/EncryptionService.php - Database Encryption
+**Purpose**: Transparent database-level encryption for sensitive request data using libsodium
+**Pattern**: Singleton implementing LoadableInterface
+**Priority**: 10 (Core - load early before data access)
+**Since**: 1.3.0
+
+**Encryption Details**:
+- **Algorithm**: XSalsa20 stream cipher with Poly1305 MAC (authenticated encryption)
+- **Key Derivation**: HKDF from WordPress `AUTH_KEY` constant
+- **Fallback**: Secure key generation stored in `wp_options` if `AUTH_KEY` unavailable
+- **Version**: Tracks encryption version for future algorithm upgrades
+
+**Key Methods**:
+- `encrypt(string $plaintext): string` - Encrypt data with authenticated encryption
+- `decrypt(string $data): string` - Decrypt data (handles legacy plaintext transparently)
+- `is_encryption_enabled(): bool` - Check if encryption is enabled in settings
+- `is_encrypted(string $data): bool` - Detect if data appears to be encrypted
+- `is_plaintext_json(string $data): bool` - Detect legacy unencrypted JSON data
+- `get_version(): int` - Get current encryption version (for migrations)
+- `is_sodium_available(): bool` - Static check for Sodium extension
+
+**Encrypted Fields** (in `cf7_api_logs` table):
+- `request_data` - Form submission data sent to API
+- `request_headers` - HTTP headers including auth tokens
+- `response_data` - API response body
+- `response_headers` - API response headers
+
+**Important**: Always use `RequestLogger::decrypt_log_fields()` when displaying logs in UI.
+
+### includes/Services/MigrationService.php - Legacy Log Migration
+**Purpose**: Batch migration of unencrypted legacy logs to encrypted format
+**Pattern**: Singleton implementing LoadableInterface
+**Priority**: 20 (Services)
+**Since**: 1.3.4
+
+**Key Methods**:
+- `get_unencrypted_count(): int` - Count logs with `encryption_version = 0`
+- `migrate_batch(int $batch_size, bool $dry_run): array` - Migrate a batch of logs
+- `get_progress(): array` - Get migration progress from transient
+- `save_progress(array $progress): void` - Save progress to transient
+- `reset_progress(): void` - Clear migration progress
+
+**Migration Results Array**:
+```php
+array{
+    'processed' => int,  // Total logs processed in batch
+    'success' => int,    // Successfully encrypted
+    'failed' => int,     // Failed to encrypt
+    'remaining' => int,  // Logs still needing migration
+    'errors' => array    // Error messages
+}
+```
+
+**AJAX Endpoint**: `cf7_api_migrate_logs` - Used by admin UI for batch processing with progress bar.
 
 ### includes/Utils/DebugLogger.php - Debug File Logger
 **Purpose**: PSR-3 compliant file logger for plugin debugging
