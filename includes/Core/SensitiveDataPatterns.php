@@ -114,7 +114,9 @@ final class SensitiveDataPatterns {
 		$field_lower = \strtolower( $field_name );
 
 		foreach ( self::get_all() as $pattern ) {
-			if ( \strpos( $field_lower, $pattern ) !== false ) {
+			// Convert pattern to lowercase for case-insensitive matching.
+			$pattern_lower = \strtolower( $pattern );
+			if ( \strpos( $field_lower, $pattern_lower ) !== false ) {
 				return true;
 			}
 		}

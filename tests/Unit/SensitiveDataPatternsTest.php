@@ -8,7 +8,7 @@
  *
  * @package SilverAssist\ContactFormToAPI\Tests
  * @since   1.2.0
- * @version 1.2.0
+ * @version 1.3.6
  * @author  Silver Assist
  */
 
@@ -16,6 +16,7 @@ namespace SilverAssist\ContactFormToAPI\Tests\Unit;
 
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
+use SilverAssist\ContactFormToAPI\Core\Settings;
 
 /**
  * Test cases for the SensitiveDataPatterns class
@@ -287,5 +288,153 @@ class SensitiveDataPatternsTest extends TestCase {
 				"Pattern '{$pattern}' from original ExportService should be present"
 			);
 		}
+	}
+
+	/**
+	 * Test is_sensitive() with custom patterns containing mixed case
+	 *
+	 * Custom patterns added by users (e.g., "primaryPhone", "primaryEmail")
+	 * should match field names regardless of case.
+	 *
+	 * @return void
+	 */
+	public function testIsSensitiveWithMixedCaseCustomPatterns(): void {
+		// Test camelCase field names with lowercase default patterns.
+		// The fix ensures pattern comparison is case-insensitive on BOTH sides.
+
+		// "userPassword" contains "password" (default pattern).
+		$this->assertTrue(
+			SensitiveDataPatterns::is_sensitive( 'userPassword' ),
+			'CamelCase field "userPassword" should match pattern "password"'
+		);
+
+		// "accessToken" contains "token" (default pattern).
+		$this->assertTrue(
+			SensitiveDataPatterns::is_sensitive( 'accessToken' ),
+			'CamelCase field "accessToken" should match pattern "token"'
+		);
+
+		// "apiSecretKey" contains "secret" (default pattern).
+		$this->assertTrue(
+			SensitiveDataPatterns::is_sensitive( 'apiSecretKey' ),
+			'CamelCase field "apiSecretKey" should match pattern "secret"'
+		);
+
+		// "myApiKey" contains "apikey" (default pattern, no underscore).
+		$this->assertTrue(
+			SensitiveDataPatterns::is_sensitive( 'myApiKey' ),
+			'CamelCase field "myApiKey" should match pattern "apikey"'
+		);
+
+		// "bearerToken" contains both "bearer" and "token".
+		$this->assertTrue(
+			SensitiveDataPatterns::is_sensitive( 'bearerToken' ),
+			'CamelCase field "bearerToken" should match pattern "bearer" or "token"'
+		);
+
+		// "AuthorizationHeader" contains "authorization".
+		$this->assertTrue(
+			SensitiveDataPatterns::is_sensitive( 'AuthorizationHeader' ),
+			'PascalCase field "AuthorizationHeader" should match pattern "authorization"'
+		);
+
+		// Test that non-matching fields still return false.
+		$this->assertFalse(
+			SensitiveDataPatterns::is_sensitive( 'firstName' ),
+			'Field "firstName" should not match any sensitive pattern'
+		);
+
+		$this->assertFalse(
+			SensitiveDataPatterns::is_sensitive( 'postalCode' ),
+			'Field "postalCode" should not match any sensitive pattern'
+		);
+
+		$this->assertFalse(
+			SensitiveDataPatterns::is_sensitive( 'emailAddress' ),
+			'Field "emailAddress" should not match any default sensitive pattern'
+		);
+	}
+
+	/**
+	 * Test is_sensitive() with custom patterns from Settings
+	 *
+	 * This test verifies the fix for the bug where custom patterns with
+	 * uppercase letters (e.g., "primaryPhone") didn't match field names
+	 * because the pattern wasn't converted to lowercase before comparison.
+	 *
+	 * @return void
+	 */
+	public function testIsSensitiveWithCustomPatternsFromSettings(): void {
+		// Get the settings instance.
+		$settings = Settings::instance();
+
+		// Store original patterns to restore later.
+		$original_patterns = $settings->get_sensitive_patterns();
+
+		// Add custom patterns with mixed case (as a user might enter them).
+		$custom_patterns = array(
+			'primaryPhone',  // CamelCase
+			'primaryEmail',  // CamelCase
+			'SSN_Number',    // Mixed case with underscore
+			'CreditScore',   // PascalCase
+		);
+		$settings->set( 'sensitive_patterns', $custom_patterns );
+
+		// Verify custom patterns are in get_all().
+		$all_patterns = SensitiveDataPatterns::get_all();
+		foreach ( $custom_patterns as $pattern ) {
+			$this->assertContains(
+				$pattern,
+				$all_patterns,
+				"Custom pattern '{$pattern}' should be included in get_all()"
+			);
+		}
+
+		// Test that is_sensitive() matches with case variations.
+		// This is the core test for the bug fix.
+		$this->assertTrue(
+			SensitiveDataPatterns::is_sensitive( 'primaryPhone' ),
+			'Field "primaryPhone" should match custom pattern "primaryPhone"'
+		);
+		$this->assertTrue(
+			SensitiveDataPatterns::is_sensitive( 'primaryphone' ),
+			'Field "primaryphone" (lowercase) should match custom pattern "primaryPhone"'
+		);
+		$this->assertTrue(
+			SensitiveDataPatterns::is_sensitive( 'PRIMARYPHONE' ),
+			'Field "PRIMARYPHONE" (uppercase) should match custom pattern "primaryPhone"'
+		);
+
+		$this->assertTrue(
+			SensitiveDataPatterns::is_sensitive( 'primaryEmail' ),
+			'Field "primaryEmail" should match custom pattern "primaryEmail"'
+		);
+		$this->assertTrue(
+			SensitiveDataPatterns::is_sensitive( 'primaryemail' ),
+			'Field "primaryemail" (lowercase) should match custom pattern "primaryEmail"'
+		);
+
+		$this->assertTrue(
+			SensitiveDataPatterns::is_sensitive( 'user_ssn_number' ),
+			'Field "user_ssn_number" should match custom pattern "SSN_Number"'
+		);
+
+		$this->assertTrue(
+			SensitiveDataPatterns::is_sensitive( 'applicantCreditScore' ),
+			'Field "applicantCreditScore" should match custom pattern "CreditScore"'
+		);
+
+		// Non-matching fields should still return false.
+		$this->assertFalse(
+			SensitiveDataPatterns::is_sensitive( 'firstName' ),
+			'Field "firstName" should not match any pattern'
+		);
+		$this->assertFalse(
+			SensitiveDataPatterns::is_sensitive( 'postalCode' ),
+			'Field "postalCode" should not match any pattern'
+		);
+
+		// Restore original patterns.
+		$settings->set( 'sensitive_patterns', $original_patterns );
 	}
 }
