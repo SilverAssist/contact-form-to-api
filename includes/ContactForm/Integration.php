@@ -122,8 +122,8 @@ class Integration implements LoadableInterface {
 			\add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 		}
 
-		// Add properties filter - must use wpcf7_pre_construct_contact_form_properties so properties are in defaults
-		\add_filter( 'wpcf7_pre_construct_contact_form_properties', array( $this, 'add_form_properties' ), 10, 2 );
+		// Register properties filter to ensure properties are in CF7 defaults before filtering.
+		\add_filter( 'wpcf7_pre_construct_contact_form_properties', array( $this, 'add_form_properties' ), 10, 1 );
 
 		$this->initialized = true;
 	}
