@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **Custom Headers Not Saving** (#36): Fixed issue where custom headers configured in the Authentication & Custom Headers section were not persisting after saving the form
+  * Changed filter hook from `wpcf7_contact_form_properties` to `wpcf7_pre_construct_contact_form_properties`
+  * CF7's `set_properties()` uses `array_intersect_key()` which filters out properties not in defaults
+  * New hook ensures custom properties are registered in CF7's defaults before filtering occurs
+
 ### Planned Features
 
 #### Medium Priority
