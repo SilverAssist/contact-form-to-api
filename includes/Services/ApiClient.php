@@ -8,7 +8,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Services
  * @since 1.1.0
- * @version 1.3.4
+ * @version 1.3.5
  * @author Silver Assist
  */
 
@@ -96,65 +96,10 @@ class ApiClient implements LoadableInterface {
 			return;
 		}
 
-		// Register legacy hook aliases for backward compatibility.
-		$this->register_legacy_hooks();
+		// Note: Legacy hooks are now centralized in ContactForm\Integration::register_legacy_hooks()
+		// to avoid duplication and improve maintainability.
 
 		$this->initialized = true;
-	}
-
-	/**
-	 * Register legacy hook aliases for backward compatibility
-	 *
-	 * Maps old qs_cf7_api_* hooks to new cf7_api_* hooks.
-	 * Uses priority 5 to run BEFORE user hooks (priority 10), allowing
-	 * user code that hooks into qs_cf7_api_* to still work.
-	 *
-	 * @since 1.1.2
-	 * @return void
-	 */
-	private function register_legacy_hooks(): void {
-		// Legacy: qs_cf7_api_get_args -> cf7_api_get_args.
-		// Priority 5 so it runs before default (10), applying legacy hooks first.
-		\add_filter(
-			'cf7_api_get_args',
-			function ( $args ) {
-				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
-				return \apply_filters( 'qs_cf7_api_get_args', $args );
-			},
-			5
-		);
-
-		// Legacy: qs_cf7_api_post_args (new) with fallback to qs_cf7_api_get_args.
-		// The original plugin used qs_cf7_api_get_args for both GET and POST.
-		\add_filter(
-			'cf7_api_post_args',
-			function ( $args ) {
-				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
-				return \apply_filters( 'qs_cf7_api_get_args', $args );
-			},
-			5
-		);
-
-		// Legacy: qs_cf7_api_get_url -> cf7_api_get_url.
-		\add_filter(
-			'cf7_api_get_url',
-			function ( $url, $record ) {
-				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
-				return \apply_filters( 'qs_cf7_api_get_url', $url, $record );
-			},
-			5,
-			2
-		);
-
-		// Legacy: qs_cf7_api_post_url -> cf7_api_post_url.
-		\add_filter(
-			'cf7_api_post_url',
-			function ( $url ) {
-				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
-				return \apply_filters( 'qs_cf7_api_post_url', $url );
-			},
-			5
-		);
 	}
 
 	/**

@@ -8,7 +8,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Core
  * @since 1.0.0
- * @version 1.3.4
+ * @version 1.3.5
  * @author Silver Assist
  */
 
@@ -274,6 +274,9 @@ class Plugin implements LoadableInterface {
 		// Register cron jobs.
 		\add_action( 'cf7_api_cleanup_old_logs', array( $this, 'cleanup_old_logs' ) );
 		\add_action( 'cf7_api_check_alerts', array( $this, 'check_email_alerts' ) );
+
+		// Check for legacy plugin conflict.
+		\add_action( 'admin_notices', array( $this, 'check_legacy_plugin_conflict' ) );
 	}
 
 	/**
@@ -338,8 +341,52 @@ class Plugin implements LoadableInterface {
 	 * @return void
 	 */
 	public function handle_admin_init(): void {
+		// Check and update database schema if needed.
+		$this->maybe_update_database_schema();
+
 		// Admin-specific initialization.
 		\do_action( 'cf7_api_admin_init' );
+	}
+
+	/**
+	 * Check and update database schema if needed
+	 *
+	 * Ensures the database table has all required columns for the current version.
+	 * This handles upgrades from older versions that may be missing columns.
+	 *
+	 * @since 1.3.5
+	 * @return void
+	 */
+	private function maybe_update_database_schema(): void {
+		// Check if we need to update the schema.
+		$db_version = \get_option( 'cf7_api_db_version', '0' );
+
+		// Current schema version - increment this when making schema changes.
+		$current_schema_version = '1.3.5';
+
+		if ( \version_compare( $db_version, $current_schema_version, '>=' ) ) {
+			return;
+		}
+
+		// Run table creation/update via dbDelta.
+		Activator::create_tables();
+
+		// Update the stored database version.
+		\update_option( 'cf7_api_db_version', $current_schema_version );
+
+		// Log the schema update.
+		try {
+			DebugLogger::instance()->info(
+				'Database schema updated',
+				array(
+					'from_version' => $db_version,
+					'to_version'   => $current_schema_version,
+				)
+			);
+		} catch ( \Exception $e ) {
+			// Silently fail if logger not available.
+			unset( $e );
+		}
 	}
 
 	/**
@@ -474,5 +521,53 @@ class Plugin implements LoadableInterface {
 		// Get service instance and check alerts.
 		$alert_service = EmailAlertService::instance();
 		$alert_service->check_and_alert();
+	}
+
+	/**
+	 * Check for legacy plugin conflict and display admin notice
+	 *
+	 * Detects if the legacy "Contact Form 7 to API" plugin by Query Solutions
+	 * is active alongside this plugin and warns the user about potential conflicts.
+	 *
+	 * @since 1.3.5
+	 * @return void
+	 */
+	public function check_legacy_plugin_conflict(): void {
+		// Only show on admin pages.
+		if ( ! \is_admin() ) {
+			return;
+		}
+
+		// Check if the legacy plugin class exists (indicating it's active).
+		if ( ! \class_exists( 'QS_CF7_atp_integration' ) ) {
+			return;
+		}
+
+		// Check if notice was dismissed.
+		$dismissed = \get_option( 'cf7_api_legacy_conflict_dismissed', false );
+		if ( $dismissed ) {
+			return;
+		}
+
+		// Display warning notice.
+		$message = \sprintf(
+			/* translators: %1$s: Legacy plugin name, %2$s: New plugin name */
+			\__(
+				'<strong>Warning:</strong> Both the legacy "%1$s" plugin (by Query Solutions) and "%2$s" (by Silver Assist) are active. This may cause duplicate API submissions and unexpected behavior. Please deactivate the legacy plugin to avoid conflicts.',
+				'contact-form-to-api'
+			),
+			'Contact Form 7 to API',
+			'Contact Form to API'
+		);
+
+		\printf(
+			'<div class="notice notice-warning is-dismissible"><p>%s</p></div>',
+			\wp_kses(
+				$message,
+				array(
+					'strong' => array(),
+				)
+			)
+		);
 	}
 }
