@@ -507,7 +507,7 @@ These examples show code that will continue to work with this plugin:
 // Legacy code - still works!
 \add_filter("qs_cf7_api_get_args", function($args) {
     // Add authentication header
-    $args["headers"]["Authorization"] = "Bearer " . get_option("api_token");
+    $args["headers"]["Authorization"] = "Bearer " . \get_option("api_token");
     return $args;
 }, 10, 1);
 ```

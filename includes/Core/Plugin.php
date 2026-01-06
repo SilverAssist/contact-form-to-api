@@ -561,7 +561,7 @@ class Plugin implements LoadableInterface {
 		);
 
 		\printf(
-			'<div class="notice notice-warning is-dismissible"><p>%s</p></div>',
+			'<div class="notice notice-warning"><p>%s</p></div>',
 			\wp_kses(
 				$message,
 				array(
