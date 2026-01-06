@@ -650,9 +650,7 @@ value="1"
 
 		<?php
 		// Render migration section if there are unencrypted logs.
-		if ( \class_exists( MigrationView::class ) ) {
-			MigrationView::render_migration_section( $stats );
-		}
+		MigrationView::render_migration_section( $stats );
 		?>
 		<?php
 	}

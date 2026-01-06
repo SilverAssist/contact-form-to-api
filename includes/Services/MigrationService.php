@@ -223,10 +223,7 @@ class MigrationService implements LoadableInterface {
 
 			try {
 				// Encrypt fields (handle NULL values).
-				$encrypted_request_data    = ! empty( $log['request_data'] ) ? $this->encryption->encrypt( $log['request_data'] ) : $log['request_data'];
-				$encrypted_request_headers = ! empty( $log['request_headers'] ) ? $this->encryption->encrypt( $log['request_headers'] ) : $log['request_headers'];
-				$encrypted_response_data   = ! empty( $log['response_data'] ) ? $this->encryption->encrypt( $log['response_data'] ) : $log['response_data'];
-				$encrypted_response_headers = ! empty( $log['response_headers'] ) ? $this->encryption->encrypt( $log['response_headers'] ) : $log['response_headers'];
+				$encrypted_data = $this->encrypt_log_fields( $log );
 
 				// In dry-run mode, just count successes without updating.
 				if ( $dry_run ) {
@@ -239,10 +236,10 @@ class MigrationService implements LoadableInterface {
 				$updated = $wpdb->update(
 					$this->table_name,
 					array(
-						'request_data'       => $encrypted_request_data,
-						'request_headers'    => $encrypted_request_headers,
-						'response_data'      => $encrypted_response_data,
-						'response_headers'   => $encrypted_response_headers,
+						'request_data'       => $encrypted_data['request_data'],
+						'request_headers'    => $encrypted_data['request_headers'],
+						'response_data'      => $encrypted_data['response_data'],
+						'response_headers'   => $encrypted_data['response_headers'],
 						'encryption_version' => $this->encryption->get_version(),
 					),
 					array(
@@ -373,5 +370,25 @@ class MigrationService implements LoadableInterface {
 	 */
 	public function complete_migration(): bool {
 		return \delete_transient( self::PROGRESS_TRANSIENT );
+	}
+
+	/**
+	 * Encrypt log fields
+	 *
+	 * Helper method to encrypt sensitive log fields, handling NULL values.
+	 *
+	 * @since 1.3.4
+	 * @param array<string, mixed> $log Log entry data.
+	 * @return array<string, mixed> Log entry with encrypted fields.
+	 */
+	private function encrypt_log_fields( array $log ): array {
+		$fields_to_encrypt = array( 'request_data', 'request_headers', 'response_data', 'response_headers' );
+		$encrypted_data    = array();
+
+		foreach ( $fields_to_encrypt as $field ) {
+			$encrypted_data[ $field ] = ! empty( $log[ $field ] ) ? $this->encryption->encrypt( $log[ $field ] ) : $log[ $field ];
+		}
+
+		return $encrypted_data;
 	}
 }

@@ -28,6 +28,7 @@
 			this.processedCount = 0;
 			this.batchSize = 100;
 			this.nonce = '';
+			this.batchDelay = 500; // Delay in milliseconds between batches
 
 			this.init();
 		}
@@ -156,7 +157,7 @@
 							// Process next batch
 							setTimeout(function() {
 								self.processBatch();
-							}, 500);
+							}, self.batchDelay);
 						}
 					} else {
 						self.showError(response.data.message);
