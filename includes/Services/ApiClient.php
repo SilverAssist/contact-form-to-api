@@ -547,15 +547,13 @@ class ApiClient implements LoadableInterface {
 		}
 
 		// Also log to plugin logger.
-		if ( \class_exists( DebugLogger::class ) ) {
-			DebugLogger::instance()->info(
-				'API request retry',
-				array(
-					'retry_count' => $retry_count,
-					'log_id'      => $log_id,
-				)
-			);
-		}
+		DebugLogger::instance()->info(
+			'API request retry',
+			array(
+				'retry_count' => $retry_count,
+				'log_id'      => $log_id,
+			)
+		);
 	}
 
 	/**
@@ -614,9 +612,6 @@ class ApiClient implements LoadableInterface {
 	 * @return RequestLogger|null
 	 */
 	private function get_api_logger(): ?RequestLogger {
-		if ( \class_exists( RequestLogger::class ) ) {
-			return new RequestLogger();
-		}
-		return null;
+		return new RequestLogger();
 	}
 }

@@ -231,18 +231,17 @@ class EmailAlertService implements LoadableInterface {
 		$settings->update_alert_last_sent( \time() );
 
 		// Log alert sent.
-		if ( \class_exists( DebugLogger::class ) ) {
-			try {
-				DebugLogger::instance()->info(
-					'Email alert sent for high error rate',
-					array(
-						'error_count' => $stats['errors'],
-						'error_rate'  => $stats['error_rate'],
-						'recipients'  => $recipients_string,
-					)
-				);
-			} catch ( \Exception $e ) {
-				// Silently fail if logger not available.
+		try {
+			DebugLogger::instance()->info(
+				'Email alert sent for high error rate',
+				array(
+					'error_count' => $stats['errors'],
+					'error_rate'  => $stats['error_rate'],
+					'recipients'  => $recipients_string,
+				)
+			);
+		} catch ( \Exception $e ) {
+			// Silently fail if logger not available.
 				unset( $e );
 			}
 		}

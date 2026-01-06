@@ -205,21 +205,14 @@ class ExportService implements LoadableInterface {
 	 * @return array<string, mixed> Log entry with decrypted fields.
 	 */
 	private function decrypt_log_if_needed( array $log ): array {
-		// Check if encryption service is available.
-		if ( ! \class_exists( EncryptionService::class ) ) {
-			return $log;
-		}
-
 		// Check if this log uses encryption.
 		if ( ! isset( $log['encryption_version'] ) || $log['encryption_version'] === 0 ) {
 			return $log;
 		}
 
 		// Use RequestLogger to decrypt fields.
-		if ( \class_exists( RequestLogger::class ) ) {
-			$logger = new RequestLogger();
-			$log    = $logger->decrypt_log_fields( $log );
-		}
+		$logger = new RequestLogger();
+		$log    = $logger->decrypt_log_fields( $log );
 
 		return $log;
 	}

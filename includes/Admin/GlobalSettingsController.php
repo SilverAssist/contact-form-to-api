@@ -404,10 +404,6 @@ class GlobalSettingsController implements LoadableInterface {
 		}
 
 		// Send test email.
-		if ( ! \class_exists( EmailAlertService::class ) ) {
-			\wp_send_json_error( array( 'message' => \__( 'Email service not available', 'contact-form-to-api' ) ) );
-		}
-
 		$alert_service = EmailAlertService::instance();
 		$sent          = $alert_service->send_test_email( $recipient );
 

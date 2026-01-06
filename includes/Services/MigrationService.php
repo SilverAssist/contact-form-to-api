@@ -103,7 +103,7 @@ class MigrationService implements LoadableInterface {
 		}
 
 		// Initialize encryption service if available.
-		if ( \class_exists( EncryptionService::class ) && EncryptionService::is_sodium_available() ) {
+		if ( EncryptionService::is_sodium_available() ) {
 			$this->encryption = EncryptionService::instance();
 			$this->encryption->init();
 		}
@@ -272,9 +272,7 @@ class MigrationService implements LoadableInterface {
 				$errors[] = $error_message;
 
 				// Log to debug logger.
-				if ( \class_exists( DebugLogger::class ) ) {
-					DebugLogger::instance()->error( $error_message );
-				}
+				DebugLogger::instance()->error( $error_message );
 			}
 		}
 
