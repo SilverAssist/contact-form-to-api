@@ -242,8 +242,7 @@ class EmailAlertService implements LoadableInterface {
 			);
 		} catch ( \Exception $e ) {
 			// Silently fail if logger not available.
-				unset( $e );
-			}
+			unset( $e );
 		}
 	}
 

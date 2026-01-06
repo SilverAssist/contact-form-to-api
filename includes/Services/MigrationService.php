@@ -264,8 +264,8 @@ class MigrationService implements LoadableInterface {
 			} catch ( \Exception $e ) {
 				$failed++;
 				$error_message = \sprintf(
-					/* translators: %d: log ID, %s: error message */
-					\__( 'Error encrypting log ID %d: %s', 'contact-form-to-api' ),
+					/* translators: %1$d: log ID, %2$s: error message */
+					\__( 'Error encrypting log ID %1$d: %2$s', 'contact-form-to-api' ),
 					$log['id'],
 					$e->getMessage()
 				);

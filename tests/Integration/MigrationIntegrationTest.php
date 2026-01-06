@@ -198,7 +198,8 @@ class MigrationIntegrationTest extends WP_UnitTestCase {
 		try {
 			$controller->handle_start_migration();
 		} catch ( \WPDieException $e ) {
-			// Expected exception from wp_send_json_error.
+			// Expected exception from wp_send_json_error - intentionally suppressed.
+			unset( $e );
 		}
 		$output = \ob_get_clean();
 
@@ -233,7 +234,8 @@ class MigrationIntegrationTest extends WP_UnitTestCase {
 		try {
 			$controller->handle_start_migration();
 		} catch ( \WPDieException $e ) {
-			// Expected exception from wp_send_json_error.
+			// Expected exception from wp_send_json_error - intentionally suppressed.
+			unset( $e );
 		}
 		$output = \ob_get_clean();
 
