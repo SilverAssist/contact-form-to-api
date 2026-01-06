@@ -380,6 +380,11 @@ class MigrationService implements LoadableInterface {
 	 * @return array<string, mixed> Log entry with encrypted fields.
 	 */
 	private function encrypt_log_fields( array $log ): array {
+		// Encryption service must be available at this point.
+		if ( null === $this->encryption ) {
+			return $log;
+		}
+
 		$fields_to_encrypt = array( 'request_data', 'request_headers', 'response_data', 'response_headers' );
 		$encrypted_data    = array();
 
