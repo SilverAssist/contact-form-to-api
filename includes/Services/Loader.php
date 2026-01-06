@@ -134,12 +134,10 @@ class Loader implements LoadableInterface {
 	 * @return void
 	 */
 	private function log_error( string $service_class, string $message ): void {
-		if ( \class_exists( DebugLogger::class ) ) {
-			DebugLogger::instance()->error(
-				"Failed to load service: {$service_class}",
-				array( 'message' => $message )
-			);
-		}
+		DebugLogger::instance()->error(
+			"Failed to load service: {$service_class}",
+			array( 'message' => $message )
+		);
 	}
 
 	/**

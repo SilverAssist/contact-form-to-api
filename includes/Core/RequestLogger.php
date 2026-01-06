@@ -86,7 +86,7 @@ class RequestLogger {
 		$this->table_name = "{$wpdb->prefix}cf7_api_logs";
 
 		// Initialize encryption service if available.
-		if ( \class_exists( EncryptionService::class ) && EncryptionService::is_sodium_available() ) {
+		if ( EncryptionService::is_sodium_available() ) {
 			$this->encryption = EncryptionService::instance();
 			$this->encryption->init();
 		}
@@ -135,9 +135,7 @@ class RequestLogger {
 				$encryption_version = $this->encryption->get_version();
 			} catch ( \Exception $e ) {
 				// Log encryption failure and continue with unencrypted data.
-				if ( \class_exists( DebugLogger::class ) ) {
-					DebugLogger::instance()->error( 'Encryption failed during start_request: ' . $e->getMessage() );
-				}
+				DebugLogger::instance()->error( 'Encryption failed during start_request: ' . $e->getMessage() );
 			}
 		}
 
@@ -721,14 +719,12 @@ class RequestLogger {
 	 */
 	private function is_logging_enabled(): bool {
 		// Try to get settings instance.
-		if ( \class_exists( Settings::class ) ) {
-			try {
-				$settings = Settings::instance();
-				return $settings->is_logging_enabled();
-			} catch ( \Exception $e ) {
-				// Settings not available, default to enabled.
-				unset( $e );
-			}
+		try {
+			$settings = Settings::instance();
+			return $settings->is_logging_enabled();
+		} catch ( \Exception $e ) {
+			// Settings not available, default to enabled.
+			unset( $e );
 		}
 
 		// Default to enabled if settings not available.
@@ -743,14 +739,12 @@ class RequestLogger {
 	 */
 	public static function get_max_manual_retries(): int {
 		// Try to get from settings first.
-		if ( \class_exists( Settings::class ) ) {
-			try {
-				$settings = Settings::instance();
-				return $settings->get_max_manual_retries();
-			} catch ( \Exception $e ) {
-				// Settings not available, use constant.
-				unset( $e );
-			}
+		try {
+			$settings = Settings::instance();
+			return $settings->get_max_manual_retries();
+		} catch ( \Exception $e ) {
+			// Settings not available, use constant.
+			unset( $e );
 		}
 
 		// Fallback to constant.
@@ -795,9 +789,7 @@ class RequestLogger {
 			}
 		} catch ( \Exception $e ) {
 			// Log decryption failure (without sensitive data).
-			if ( \class_exists( DebugLogger::class ) ) {
-				DebugLogger::instance()->error( 'Failed to decrypt log fields for log ID ' . ( $log['id'] ?? 'unknown' ) . ': ' . $e->getMessage() );
-			}
+			DebugLogger::instance()->error( 'Failed to decrypt log fields for log ID ' . ( $log['id'] ?? 'unknown' ) . ': ' . $e->getMessage() );
 		}
 
 		return $log;
@@ -811,14 +803,12 @@ class RequestLogger {
 	 */
 	public static function get_max_retries_per_hour(): int {
 		// Try to get from settings first.
-		if ( \class_exists( Settings::class ) ) {
-			try {
-				$settings = Settings::instance();
-				return $settings->get_max_retries_per_hour();
-			} catch ( \Exception $e ) {
-				// Settings not available, use constant.
-				unset( $e );
-			}
+		try {
+			$settings = Settings::instance();
+			return $settings->get_max_retries_per_hour();
+		} catch ( \Exception $e ) {
+			// Settings not available, use constant.
+			unset( $e );
 		}
 
 		// Fallback to constant.

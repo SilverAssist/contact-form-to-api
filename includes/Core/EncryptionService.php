@@ -107,9 +107,7 @@ class EncryptionService implements LoadableInterface {
 		}
 
 		// Get settings instance.
-		if ( \class_exists( Settings::class ) ) {
-			$this->settings = Settings::instance();
-		}
+		$this->settings = Settings::instance();
 
 		$this->initialized = true;
 	}
@@ -182,9 +180,7 @@ class EncryptionService implements LoadableInterface {
 
 		} catch ( \Exception $e ) {
 			// Log encryption failure (without sensitive data).
-			if ( \class_exists( DebugLogger::class ) ) {
-				DebugLogger::instance()->error( 'Encryption failed: ' . $e->getMessage() );
-			}
+			DebugLogger::instance()->error( 'Encryption failed: ' . $e->getMessage() );
 
 			// Return original plaintext if encryption fails (graceful degradation).
 			return $plaintext;
