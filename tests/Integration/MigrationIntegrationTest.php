@@ -34,8 +34,8 @@ class MigrationIntegrationTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public static function wpSetUpBeforeClass(): void {
-		parent::wpSetUpBeforeClass();
+	public static function set_up_before_class(): void {
+		parent::set_up_before_class();
 
 		// Create tables BEFORE inserting any test data.
 		Activator::create_tables();

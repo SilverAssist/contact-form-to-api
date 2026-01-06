@@ -503,6 +503,55 @@ $status = "active";  // Should be 'active'
 
 **PHPCS Rule**: `Squiz.Strings.DoubleQuoteUsage.NotRequired` - Strings that don't require double quotes must use single quotes.
 
+### Indentation Standards (WordPress Coding Standards)
+**CRITICAL**: WordPress Coding Standards require **TABS for indentation**, not spaces. Incorrect indentation causes PHPCS errors like: `Line indented incorrectly; expected 1 tabs, found 2`
+
+#### Rules:
+- **Use TABS only**: Never use spaces for indentation
+- **1 tab = 1 indentation level**: Each nesting level adds exactly ONE tab
+- **Alignment with spaces**: After initial tab indentation, use spaces for alignment if needed
+- **Switch/case**: Case statements are indented ONE level from switch, code inside case is ONE more level
+
+#### Common Errors:
+```php
+// ❌ WRONG - Expected 1 tab, found 2 (double indentation)
+class MyClass {
+		public function method() {  // 2 tabs instead of 1
+		}
+}
+
+// ✅ CORRECT - Proper single tab indentation
+class MyClass {
+	public function method() {  // 1 tab
+		$variable = 'value';      // 2 tabs (inside method)
+	}
+}
+
+// ❌ WRONG - Spaces used for indentation
+class MyClass {
+    public function method() {  // 4 spaces instead of 1 tab
+    }
+}
+
+// ✅ CORRECT - Switch/case indentation
+switch ( $value ) {
+	case 'option1':           // 1 tab from switch
+		$result = 'one';      // 2 tabs (inside case)
+		break;
+	case 'option2':
+		$result = 'two';
+		break;
+	default:
+		$result = 'default';
+}
+```
+
+**PHPCS Rules**:
+- `Generic.WhiteSpace.DisallowSpaceIndent` - Spaces cannot be used for indentation
+- `Generic.WhiteSpace.ScopeIndent` - Code must be indented correctly
+
+**Editor Configuration**: Ensure your editor uses tabs (not spaces) with tab width of 4 for PHP files.
+
 ### Documentation Requirements
 - **PHP**: Complete PHPDoc documentation for ALL classes, methods, and properties
 - **JavaScript**: Complete JSDoc documentation for ALL functions (in English)
@@ -517,10 +566,26 @@ $status = "active";  // Should be 'active'
 - **Forbidden**: Hardcoded user-facing strings without translation functions
 
 #### sprintf() Placeholder Standards
-- **Simple placeholders**: Use `%d`, `%s`, `%f` for sequential arguments: `sprintf(__('Found %d items', 'contact-form-to-api'), $count)`
-- **Positional placeholders**: Use `%1$d`, `%2$s` for non-sequential (with single quotes, no escaping needed): `__('Value %1$d exceeds limit %2$d', 'contact-form-to-api')`
-- **Translator comments**: ALWAYS add comments for placeholders: `/* translators: %d: number of items found */`
-- **Multiple placeholders**: Use positional numbering for clarity: `%1$d` for first, `%2$s` for second, etc.
+**CRITICAL**: WordPress PHPCS (`WordPress.WP.I18n.MissingArgDomainDefault`) requires **ordered/positional placeholders** for translatable strings with multiple arguments.
+
+- **Single placeholder**: Use simple format: `sprintf(__('Found %d items', 'contact-form-to-api'), $count)`
+- **Multiple placeholders - ALWAYS use positional format**: Use `%1$d`, `%2$s`, `%3$f` etc.
+  ```php
+  // ✅ CORRECT - Ordered placeholders (PHPCS compliant)
+  sprintf(
+      /* translators: %1$d: batch number, %2$s: batch status */
+      __('Batch %1$d completed with status: %2$s', 'contact-form-to-api'),
+      $batch_number,
+      $status
+  )
+  
+  // ❌ WRONG - Simple placeholders with multiple args (PHPCS error)
+  sprintf(__('Batch %d completed with status: %s', 'contact-form-to-api'), $batch_number, $status)
+  ```
+- **Translator comments**: ALWAYS add comments for placeholders explaining each variable
+- **Why positional?**: Translators may need to reorder placeholders in different languages
+
+**PHPCS Rule**: `WordPress.WP.I18n.UnorderedPlaceholdersText` - Multiple placeholders must use ordered format.
 
 ## Modern PHP 8.2+ Conventions
 
@@ -541,12 +606,49 @@ $status = "active";  // Should be 'active'
 - **PSR-4 Autoloading**: `includes/` directory mapped to namespace
 - **Import Organization**: All `use` statements at top after namespace
 - **Alphabetical Ordering**: ALWAYS sort `use` statements alphabetically
-- **No In-Method Imports**: NEVER use fully qualified names in methods
 - **Same Namespace Rule**: NEVER import classes from same namespace
 - **WordPress Functions**: Use `\` prefix for ALL WordPress functions in namespaced classes
   * Examples: `\add_action()`, `\get_option()`, `\is_ssl()`, `\wp_enqueue_script()`
 - **PHP Native Functions**: NO `\` prefix for built-in functions
   * Examples: `array_key_exists()`, `explode()`, `trim()`, `sprintf()`
+
+#### CRITICAL: Always Use `use` Statements - Avoid FQCN
+**MANDATORY**: Always prefer `use` statements over Fully Qualified Class Names (FQCN) in code.
+
+```php
+// ✅ CORRECT - Import with use statement
+namespace SilverAssist\ContactFormToAPI\Services;
+
+use SilverAssist\ContactFormToAPI\Core\Settings;
+use SilverAssist\ContactFormToAPI\Core\EncryptionService;
+use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
+
+class MyService {
+    public function __construct() {
+        $settings = Settings::instance();  // Clean, readable
+        $logger = DebugLogger::instance();
+    }
+}
+
+// ❌ WRONG - FQCN in method body
+class MyService {
+    public function __construct() {
+        $settings = \SilverAssist\ContactFormToAPI\Core\Settings::instance();  // Verbose, hard to read
+    }
+}
+```
+
+**Benefits of `use` statements**:
+- Cleaner, more readable code
+- Easier refactoring (change import once, not every usage)
+- IDE autocomplete works better
+- Follows PSR-12 coding standard
+- Reduces line length issues
+
+**When NOT to use `use` statements**:
+- Classes in the SAME namespace (use short name directly)
+- WordPress core classes that may not exist (use `class_exists()` check first)
+- External plugin classes (use `class_exists()` check first)
 
 ### WordPress Integration Standards
 - **Hooks**: Use `\add_action("init", [$this, "method"])` with array callbacks

@@ -609,9 +609,9 @@ class ApiClient implements LoadableInterface {
 	/**
 	 * Get API Logger instance
 	 *
-	 * @return RequestLogger|null
+	 * @return RequestLogger
 	 */
-	private function get_api_logger(): ?RequestLogger {
+	private function get_api_logger(): RequestLogger {
 		return new RequestLogger();
 	}
 }
