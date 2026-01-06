@@ -119,9 +119,11 @@ class Integration implements LoadableInterface {
 		if ( \is_admin() ) {
 			\add_filter( 'wpcf7_editor_panels', array( $this, 'add_integrations_tab' ) );
 			\add_action( 'wpcf7_save_contact_form', array( $this, 'save_contact_form_details' ) );
-			\add_filter( 'wpcf7_contact_form_properties', array( $this, 'add_form_properties' ), 10, 1 );
 			\add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ) );
 		}
+
+		// Add properties filter - must use wpcf7_pre_construct_contact_form_properties so properties are in defaults
+		\add_filter( 'wpcf7_pre_construct_contact_form_properties', array( $this, 'add_form_properties' ), 10, 2 );
 
 		$this->initialized = true;
 	}
