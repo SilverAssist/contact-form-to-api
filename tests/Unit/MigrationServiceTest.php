@@ -345,6 +345,41 @@ class MigrationServiceTest extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test migrate_batch enforces MAX_BATCH_SIZE limit
+	 *
+	 * @return void
+	 */
+	public function test_migrate_batch_enforces_max_batch_size_limit(): void {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'cf7_api_logs';
+
+		// Insert 600 unencrypted test logs (more than MAX_BATCH_SIZE).
+		for ( $i = 0; $i < 600; $i++ ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+			$wpdb->insert(
+				$table_name,
+				array(
+					'form_id'            => 1,
+					'endpoint'           => 'https://example.com/api',
+					'method'             => 'POST',
+					'status'             => 'success',
+					'request_data'       => '{"test": "data"}',
+					'encryption_version' => 0,
+				),
+				array( '%d', '%s', '%s', '%s', '%s', '%d' )
+			);
+		}
+
+		// Try to migrate with batch size 1000 (above MAX_BATCH_SIZE).
+		$result = $this->service->migrate_batch( 1000, false );
+
+		// Should only process 500 (MAX_BATCH_SIZE).
+		$this->assertSame( 500, $result['processed'] );
+		$this->assertSame( 500, $result['success'] );
+		$this->assertSame( 100, $result['remaining'] ); // 600 - 500 = 100.
+	}
+
+	/**
 	 * Test dry_run does not modify data
 	 *
 	 * @return void
