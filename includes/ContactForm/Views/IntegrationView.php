@@ -8,7 +8,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage ContactForm\Views
  * @since 1.1.0
- * @version 1.3.3
+ * @version 1.3.4
  * @author Silver Assist
  */
 

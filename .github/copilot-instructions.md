@@ -243,6 +243,24 @@ define("CF7_API_MIN_WP_VERSION", "6.5");
   * Set charset/collation from `$wpdb`
   * Error handling for table creation failures
 
+- `drop_tables(): void` - Remove plugin database tables
+  * Uses `$wpdb->prepare()` with `%i` placeholder for table name escaping
+  * The `%i` placeholder (identifier) was introduced in WordPress 6.2
+
+**IMPORTANT - Database Table Name Handling**:
+```php
+// ✅ CREATE TABLE - Uses dbDelta() which has its own rules
+// dbDelta() does NOT support prepared statements - it parses raw SQL
+// Table name interpolation is SAFE because it comes from $wpdb->prefix + literal string
+$sql = "CREATE TABLE {$table_name} (...)";
+\dbDelta( $sql );
+
+// ✅ DROP TABLE - Uses %i placeholder for identifier escaping (WP 6.2+)
+$wpdb->query( $wpdb->prepare( 'DROP TABLE IF EXISTS %i', $table_name ) );
+```
+
+**Why this is secure**: The `$table_name` is always constructed from `$wpdb->prefix . 'cf7_api_logs'` - no user input is involved. The `dbDelta()` function cannot use prepared statements due to its SQL parsing requirements.
+
 **Testing Pattern**:
 ```php
 // In wpSetUpBeforeClass() - BEFORE data insertion

@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+#### Medium Priority
+- **Performance Charts**: Visual trends and analytics dashboard with Chart.js
+  * Success/error rate over time
+  * Response time trends
+  * Top endpoints by volume
+- **Template System**: Pre-configured templates for popular APIs
+  * HubSpot, Mailchimp, Salesforce, Zapier
+  * One-click setup with guided configuration
+
+#### Low Priority
+- **Multi-site Support**: Enhanced WordPress multisite compatibility
+  * Network-wide settings management
+  * Per-site configuration overrides
+
+## [1.3.4] - 2026-01-06
+
 ### Added
 - **Legacy Log Migration Tool** (#37): Batch migration tool to encrypt existing unencrypted logs
   * One-click migration from Global Settings encryption section
@@ -22,20 +38,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Changed filter hook from `wpcf7_contact_form_properties` to `wpcf7_pre_construct_contact_form_properties`
   * CF7's `set_properties()` uses `array_intersect_key()` which filters out properties not in defaults
   * New hook ensures custom properties are registered in CF7's defaults before filtering occurs
-
-#### Medium Priority
-- **Performance Charts**: Visual trends and analytics dashboard with Chart.js
-  * Success/error rate over time
-  * Response time trends
-  * Top endpoints by volume
-- **Template System**: Pre-configured templates for popular APIs
-  * HubSpot, Mailchimp, Salesforce, Zapier
-  * One-click setup with guided configuration
-
-#### Low Priority
-- **Multi-site Support**: Enhanced WordPress multisite compatibility
-  * Network-wide settings management
-  * Per-site configuration overrides
 
 ## [1.3.3] - 2026-01-05
 
