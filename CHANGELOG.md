@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Planned Features
 
+#### High Priority
+- **Legacy Log Migration Tool** (#37): Encrypt existing plaintext logs from pre-encryption versions
+  * Admin UI with progress indicators and batch processing
+  * Background migration via WordPress cron
+  * MigrationService class with encryption version tracking
+  * Pause/Resume capability for large datasets
+
 #### Medium Priority
 - **Performance Charts**: Visual trends and analytics dashboard with Chart.js
   * Success/error rate over time

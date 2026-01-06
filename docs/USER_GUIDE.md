@@ -191,6 +191,60 @@ Cleanup runs automatically via WordPress cron (daily).
 
 ---
 
+## Migrating Legacy Logs to Encrypted Format
+
+> **Note**: This feature will be available in a future release. See [Issue #37](https://github.com/SilverAssist/contact-form-to-api/issues/37) for details.
+
+If you upgraded from a version prior to encryption support, your existing logs may contain unencrypted sensitive data. The migration tool allows you to encrypt these legacy logs.
+
+### When to Migrate
+
+Consider migration if:
+- You upgraded from a pre-encryption version
+- Your logs page shows warnings about unencrypted entries
+- You need to ensure all stored data is encrypted for compliance
+
+### Starting Migration
+
+1. Navigate to **Settings → CF7 to API → Migration**
+2. Review the count of unencrypted logs
+3. Click **Start Migration** to begin the process
+
+### Migration Progress
+
+The migration runs in batches to prevent timeouts:
+- **Batch size**: 100 logs per batch (configurable)
+- **Progress indicator**: Shows percentage complete
+- **Pause/Resume**: Stop and continue migration at any time
+- **Background processing**: Uses WordPress cron for large datasets
+
+### What Gets Migrated
+
+| Data Type | Action |
+|-----------|--------|
+| Request URL | Encrypted |
+| Request Headers | Encrypted |
+| Request Body | Encrypted |
+| Response Body | Encrypted |
+| Form Data | Encrypted |
+
+### Migration Status Indicators
+
+| Status | Meaning |
+|--------|---------|
+| 🔴 Pending | Logs not yet migrated |
+| 🟡 In Progress | Migration currently running |
+| 🟢 Complete | All logs encrypted |
+
+### Post-Migration
+
+After migration completes:
+- All sensitive data is encrypted at rest
+- Decryption happens on-demand when viewing logs
+- Original encryption version tracked for auditing
+
+---
+
 ## Troubleshooting
 
 ### Dashboard Widget Issues
