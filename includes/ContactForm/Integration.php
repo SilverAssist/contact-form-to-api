@@ -10,7 +10,7 @@
  * @subpackage ContactForm
  * @since 1.0.0
  * @author Silver Assist
- * @version 1.3.4
+ * @version 1.3.5
  */
 
 namespace SilverAssist\ContactFormToAPI\ContactForm;
@@ -132,17 +132,128 @@ class Integration implements LoadableInterface {
 	 * Register legacy hook aliases for backward compatibility
 	 *
 	 * Maps old qs_cf7_* hooks to new cf7_api_* hooks.
+	 * This allows themes and plugins using the legacy Query Solutions plugin hooks
+	 * to continue working with this plugin without code changes.
+	 *
+	 * CENTRALIZED: All legacy hooks are registered here (previously split between
+	 * Integration.php and ApiClient.php).
+	 *
+	 * Legacy Hook Mappings:
+	 * - qs_cf7_collect_mail_tags     -> cf7_api_collect_mail_tags
+	 * - qs_cf7_api_before_sent_to_api -> cf7_api_before_send_to_api (note: "sent" vs "send")
+	 * - qs_cf7_api_after_sent_to_api  -> cf7_api_after_send_to_api
+	 * - set_record_value             -> cf7_api_set_record_value
+	 * - cf7api_create_record         -> cf7_api_create_record
+	 * - qs_cf7_api_get_args          -> cf7_api_get_args / cf7_api_post_args
+	 * - qs_cf7_api_get_url           -> cf7_api_get_url
+	 * - qs_cf7_api_post_url          -> cf7_api_post_url
 	 *
 	 * @since 1.1.2
+	 * @since 1.3.5 Centralized all legacy hooks from ApiClient.php
 	 * @return void
 	 */
 	private function register_legacy_hooks(): void {
+		// =====================================================================
+		// Form Processing Hooks (from Integration)
+		// =====================================================================
+
 		// Legacy: qs_cf7_collect_mail_tags -> cf7_api_collect_mail_tags.
 		\add_filter(
 			'cf7_api_collect_mail_tags',
 			function ( $tags ) {
 				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
 				return \apply_filters( 'qs_cf7_collect_mail_tags', $tags );
+			},
+			5
+		);
+
+		// Legacy: qs_cf7_api_before_sent_to_api -> cf7_api_before_send_to_api.
+		// Note: The legacy hook used "sent" (past tense), new hook uses "send" (present).
+		\add_action(
+			'cf7_api_before_send_to_api',
+			function ( $record ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
+				\do_action( 'qs_cf7_api_before_sent_to_api', $record );
+			},
+			5
+		);
+
+		// Legacy: qs_cf7_api_after_sent_to_api -> cf7_api_after_send_to_api.
+		\add_action(
+			'cf7_api_after_send_to_api',
+			function ( $record, $response ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
+				\do_action( 'qs_cf7_api_after_sent_to_api', $record, $response );
+			},
+			5,
+			2
+		);
+
+		// Legacy: set_record_value -> cf7_api_set_record_value.
+		\add_filter(
+			'cf7_api_set_record_value',
+			function ( $value, $api_field_name ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
+				return \apply_filters( 'set_record_value', $value, $api_field_name );
+			},
+			5,
+			2
+		);
+
+		// Legacy: cf7api_create_record -> cf7_api_create_record.
+		\add_filter(
+			'cf7_api_create_record',
+			function ( $record, $submitted_data, $data_map, $type, $template ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
+				return \apply_filters( 'cf7api_create_record', $record, $submitted_data, $data_map, $type, $template );
+			},
+			5,
+			5
+		);
+
+		// =====================================================================
+		// API Client Hooks (moved from ApiClient.php for centralization)
+		// =====================================================================
+
+		// Legacy: qs_cf7_api_get_args -> cf7_api_get_args.
+		// Priority 5 so it runs before default (10), applying legacy hooks first.
+		\add_filter(
+			'cf7_api_get_args',
+			function ( $args ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
+				return \apply_filters( 'qs_cf7_api_get_args', $args );
+			},
+			5
+		);
+
+		// Legacy: qs_cf7_api_get_args -> cf7_api_post_args.
+		// The original plugin used qs_cf7_api_get_args for both GET and POST methods.
+		\add_filter(
+			'cf7_api_post_args',
+			function ( $args ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
+				return \apply_filters( 'qs_cf7_api_get_args', $args );
+			},
+			5
+		);
+
+		// Legacy: qs_cf7_api_get_url -> cf7_api_get_url.
+		\add_filter(
+			'cf7_api_get_url',
+			function ( $url, $record ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
+				return \apply_filters( 'qs_cf7_api_get_url', $url, $record );
+			},
+			5,
+			2
+		);
+
+		// Legacy: qs_cf7_api_post_url -> cf7_api_post_url.
+		\add_filter(
+			'cf7_api_post_url',
+			function ( $url ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Legacy hook for backward compatibility.
+				return \apply_filters( 'qs_cf7_api_post_url', $url );
 			},
 			5
 		);

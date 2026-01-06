@@ -21,6 +21,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   * Network-wide settings management
   * Per-site configuration overrides
 
+## [1.3.5] - 2026-01-06
+
+### Added
+- **Legacy Hook Compatibility** (#38): Full backward compatibility with Query Solutions "cf7-to-api" plugin hooks
+  * Centralized all legacy hook bridges in `Integration::register_legacy_hooks()`
+  * Legacy hooks run at priority 5 (before new hooks at priority 10)
+  * Supports themes/plugins using `qs_cf7_*` hooks without code changes
+- **Dual Plugin Conflict Detection**: Admin notice when both legacy and new plugins are active
+  * Warns users about potential duplicate API submissions
+  * Dismissible notice with clear instructions
+- **Automatic Database Schema Migration**: Auto-updates database on admin_init
+  * Adds missing `encryption_version` column for upgrades from older versions
+  * Version-tracked schema updates via `cf7_api_db_version` option
+- **API Reference Documentation**: Comprehensive hooks documentation in `docs/API_REFERENCE.md`
+  * Complete hook mapping table (legacy → new)
+  * Migration guide with code examples
+  * All 9 legacy hooks documented with examples
+
+### Changed
+- **Hook Registration Centralization**: Moved all legacy hook bridges from `ApiClient.php` to `Integration.php`
+  * Single location for all backward compatibility hooks
+  * Improved maintainability and reduced code duplication
+  * Clear PHPDoc documentation for each hook mapping
+
+### Fixed
+- **Theme Compatibility**: Fixed issue where themes using legacy hooks (e.g., Oasis theme) weren't triggering API logs
+  * Legacy hook `qs_cf7_api_before_sent_to_api` now correctly bridges to `cf7_api_before_send_to_api`
+  * Note: Legacy used "sent" (past tense), new uses "send" (present tense)
+
+### Legacy Hook Mappings
+| Legacy Hook | New Hook | Type |
+|-------------|----------|------|
+| `qs_cf7_collect_mail_tags` | `cf7_api_collect_mail_tags` | Filter |
+| `qs_cf7_api_before_sent_to_api` | `cf7_api_before_send_to_api` | Action |
+| `qs_cf7_api_after_sent_to_api` | `cf7_api_after_send_to_api` | Action |
+| `set_record_value` | `cf7_api_set_record_value` | Filter |
+| `cf7api_create_record` | `cf7_api_create_record` | Filter |
+| `qs_cf7_api_get_args` | `cf7_api_get_args` / `cf7_api_post_args` | Filter |
+| `qs_cf7_api_get_url` | `cf7_api_get_url` | Filter |
+| `qs_cf7_api_post_url` | `cf7_api_post_url` | Filter |
+
 ## [1.3.4] - 2026-01-06
 
 ### Added

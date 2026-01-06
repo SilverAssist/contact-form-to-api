@@ -1223,75 +1223,34 @@ gh pr view <pr-number> | cat
 ```
 
 ### Responding to PR Review Comments
-When the PR has review comments from Copilot Code Review or other reviewers, use these commands to list and respond to them:
 
+**IMPORTANT**: Each reviewer comment MUST be responded to INDIVIDUALLY. Do NOT create a single summary comment for all feedback. The goal is to close/resolve each review thread with a specific response explaining how it was addressed.
+
+#### Process Overview
+1. **Get all review threads** with their IDs and content
+2. **Analyze each comment** to determine if it requires a code fix or just clarification
+3. **Make code fixes** if needed, commit, and push
+4. **Reply to EACH thread individually** explaining the resolution
+5. **Verify** all threads have been responded to
+
+#### Step 1: Get Review Threads (GraphQL - Recommended)
 ```bash
-# List all review comments with their IDs and file locations
-gh api repos/<owner>/<repo>/pulls/<pr-number>/comments --jq '.[] | "ID: \(.id) | File: \(.path):\(.line // .original_line)"' | cat
-
-# Get full details of a specific comment
-gh api repos/<owner>/<repo>/pulls/<pr-number>/comments --jq '.[] | select(.id == <comment-id>)' | cat
-
-# Get all commits in the PR (needed for commit_id when replying)
-gh api repos/<owner>/<repo>/pulls/<pr-number>/commits --jq '.[].sha' | cat
-
-# Reply to a review comment (use the LATEST commit SHA from the PR)
-gh api repos/<owner>/<repo>/pulls/<pr-number>/comments -X POST --input - <<EOF | cat
-{
-  "body": "Fixed in commit <short-sha>. <description of the fix>",
-  "commit_id": "<full-40-char-commit-sha-from-pr>",
-  "path": "<file-path-from-comment>",
-  "line": <line-number-from-comment>,
-  "in_reply_to": <original-comment-id>
-}
-EOF
-```
-
-**Important Notes for Replying to Review Comments**:
-- The `commit_id` MUST be a full 40-character SHA that belongs to the PR (use the commits endpoint to get valid SHAs)
-- The `in_reply_to` field links your reply to the original comment thread
-- The `path` and `line` should match the original comment's location
-- Always pipe to `| cat` to avoid paging issues
-
-**Example Workflow (REST API)**:
-```bash
-# 1. Get comment IDs
-gh api repos/SilverAssist/contact-form-to-api/pulls/29/comments --jq '.[] | "ID: \(.id) | File: \(.path):\(.original_line)"' | cat
-
-# 2. Get valid commit SHA from PR
-gh api repos/SilverAssist/contact-form-to-api/pulls/29/commits --jq '.[].sha' | cat
-# Output: 2c714cbb93edfbf923c70d29815974ce9f00e91b (use the latest one)
-
-# 3. Reply to comment
-gh api repos/SilverAssist/contact-form-to-api/pulls/29/comments -X POST --input - <<EOF | cat
-{
-  "body": "Fixed in commit 85e5d7f. Added wp_next_scheduled() check before scheduling the cron event.",
-  "commit_id": "2c714cbb93edfbf923c70d29815974ce9f00e91b",
-  "path": "includes/Core/Activator.php",
-  "line": 270,
-  "in_reply_to": 2659078318
-}
-EOF
-```
-
-### Using GraphQL API for Review Threads (Recommended)
-The GraphQL API provides better access to review threads and is more reliable for replying to Copilot Code Review comments:
-
-```bash
-# Get all review thread IDs with their comments
+# Get all review thread IDs with their comments and resolution status
 gh api graphql -f query='
 query {
-  repository(owner: "SilverAssist", name: "contact-form-to-api") {
-    pullRequest(number: 30) {
-      reviewThreads(first: 20) {
+  repository(owner: "<owner>", name: "<repo>") {
+    pullRequest(number: <pr-number>) {
+      reviewThreads(first: 50) {
         nodes {
           id
           path
+          line
           isResolved
-          comments(first: 1) {
+          comments(first: 5) {
             nodes {
               id
               body
+              author { login }
             }
           }
         }
@@ -1301,58 +1260,95 @@ query {
 }' | cat
 ```
 
-**Reply to a specific review thread using GraphQL**:
+#### Step 2: Analyze and Fix
+For each comment:
+- **Valid issue**: Make the code fix, note what was changed
+- **Already correct**: Prepare explanation of why current code is correct
+- **Won't fix**: Prepare justification
+
+#### Step 3: Commit and Push Fixes
 ```bash
-gh api graphql -f query='
-mutation {
-  addPullRequestReviewThreadReply(input: {
-    pullRequestReviewThreadId: "PRRT_kwDONqY9Pc6XXXXXXX",
-    body: "Fixed in commit abc1234. Description of the fix."
-  }) {
-    comment {
-      id
-      body
-    }
-  }
-}' | cat
+git add -A && git commit -m "fix: Address PR review comments" && git push
 ```
 
-**Why GraphQL over REST API**:
-- Review thread IDs (`PRRT_...`) are more reliable for Copilot Code Review comments
-- No need to provide `commit_id`, `path`, or `line` - the thread ID handles all context
-- Simpler mutation structure for replies
-- Better support for multi-line review comments
+#### Step 4: Reply to EACH Thread Individually
+**CRITICAL**: Use a separate GraphQL mutation for EACH review thread. This allows GitHub to mark each thread as resolved.
 
-**Example GraphQL Workflow**:
 ```bash
-# 1. Get all review thread IDs
-gh api graphql -f query='
-query {
-  repository(owner: "SilverAssist", name: "contact-form-to-api") {
-    pullRequest(number: 30) {
-      reviewThreads(first: 20) {
-        nodes {
-          id
-          path
-          comments(first: 1) {
-            nodes {
-              body
-            }
-          }
-        }
-      }
-    }
-  }
-}' | cat
-
-# 2. Reply to each thread (repeat for each thread ID)
+# Reply to thread 1
 gh api graphql -f query='
 mutation {
   addPullRequestReviewThreadReply(input: {
-    pullRequestReviewThreadId: "PRRT_kwDONqY9Pc6ABC123",
-    body: "Fixed in commit abc1234. Added proper validation."
+    pullRequestReviewThreadId: "PRRT_kwDONqY9Pc6THREAD1",
+    body: "Fixed in commit abc1234. Added the missing backslash prefix to `get_option()`."
   }) {
     comment { id }
   }
 }' | cat
+
+# Reply to thread 2
+gh api graphql -f query='
+mutation {
+  addPullRequestReviewThreadReply(input: {
+    pullRequestReviewThreadId: "PRRT_kwDONqY9Pc6THREAD2",
+    body: "Already correct. The `is-dismissible` class was intentionally omitted because there is no AJAX handler to persist the dismissal state."
+  }) {
+    comment { id }
+  }
+}' | cat
+
+# Continue for each remaining thread...
 ```
+
+#### Response Templates
+Use these templates for consistency:
+
+**For fixed issues**:
+```
+Fixed in commit <short-sha>. <Brief description of the fix>.
+```
+
+**For already correct code**:
+```
+Already correct. <Explanation of why the current implementation is correct>.
+```
+
+**For won't fix**:
+```
+Won't fix. <Justification for keeping current implementation>.
+```
+
+**For clarification needed**:
+```
+Could you clarify <specific question>? The current implementation does <explanation>.
+```
+
+#### Alternative: REST API Method
+If GraphQL doesn't work, use REST API:
+
+```bash
+# Get comment IDs
+gh api repos/<owner>/<repo>/pulls/<pr-number>/comments --jq '.[] | "ID: \(.id) | File: \(.path):\(.line // .original_line)"' | cat
+
+# Get latest commit SHA
+gh api repos/<owner>/<repo>/pulls/<pr-number>/commits --jq '.[-1].sha' | cat
+
+# Reply to each comment individually
+gh api repos/<owner>/<repo>/pulls/<pr-number>/comments -X POST --input - <<EOF | cat
+{
+  "body": "Fixed in commit abc1234. Description of the fix.",
+  "commit_id": "<full-40-char-sha>",
+  "path": "<file-path>",
+  "line": <line-number>,
+  "in_reply_to": <comment-id>
+}
+EOF
+```
+
+#### Important Notes
+- **ALWAYS use `| cat`** at the end of commands to avoid pager issues
+- **One response per thread** - never batch responses into a single comment
+- **Be specific** - reference exact commit SHAs and describe what changed
+- **Close the loop** - each response should clearly indicate resolution status
+- The `commit_id` in REST API MUST be a full 40-character SHA from the PR
+- GraphQL thread IDs start with `PRRT_` and are found in the reviewThreads query

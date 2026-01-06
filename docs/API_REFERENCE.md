@@ -6,6 +6,7 @@ Complete API reference for Contact Form 7 to API plugin, documenting all hooks, 
 
 - [Plugin Architecture](#plugin-architecture)
 - [Hooks and Filters](#hooks-and-filters)
+- [Legacy Hook Compatibility](#legacy-hook-compatibility)
 - [Classes](#classes)
 - [Constants](#constants)
 - [Integration Examples](#integration-examples)
@@ -298,6 +299,242 @@ Filter form tags before processing in API integration panel.
     });
 }, 10, 1);
 ```
+
+#### `cf7_api_before_send_to_api`
+
+Action fired before sending form data to the API endpoint.
+
+**Parameters**:
+
+- `array $record` - The prepared record data including URL and fields
+
+**Example**:
+
+```php
+\add_action("cf7_api_before_send_to_api", function($record) {
+    // Log or modify before sending
+    \error_log("Sending to API: " . $record["url"]);
+}, 10, 1);
+```
+
+#### `cf7_api_after_send_to_api`
+
+Action fired after receiving API response.
+
+**Parameters**:
+
+- `array $record` - The sent record data
+- `array|WP_Error $response` - API response or error
+
+**Example**:
+
+```php
+\add_action("cf7_api_after_send_to_api", function($record, $response) {
+    if (!\is_wp_error($response)) {
+        $code = \wp_remote_retrieve_response_code($response);
+        \error_log("API Response Code: " . $code);
+    }
+}, 10, 2);
+```
+
+#### `cf7_api_set_record_value`
+
+Filter individual field values before adding to the record.
+
+**Parameters**:
+
+- `mixed $value` - The field value
+- `string $api_field_name` - The API field name
+
+**Return**: `mixed` Modified field value
+
+**Example**:
+
+```php
+\add_filter("cf7_api_set_record_value", function($value, $api_field_name) {
+    // Transform phone numbers
+    if ($api_field_name === "phone") {
+        return preg_replace("/[^0-9]/", "", $value);
+    }
+    return $value;
+}, 10, 2);
+```
+
+#### `cf7_api_create_record`
+
+Filter the complete record before sending to API.
+
+**Parameters**:
+
+- `array $record` - The record data
+- `array $submitted_data` - Original form submission data
+- `array $data_map` - Field mapping configuration
+- `string $type` - Record type (params, json, xml)
+- `string $template` - Template string for json/xml
+
+**Return**: `array` Modified record
+
+**Example**:
+
+```php
+\add_filter("cf7_api_create_record", function($record, $submitted_data, $data_map, $type, $template) {
+    // Add computed fields
+    if ($type === "params") {
+        $record["fields"]["full_name"] = trim(
+            ($record["fields"]["first_name"] ?? "") . " " . 
+            ($record["fields"]["last_name"] ?? "")
+        );
+    }
+    return $record;
+}, 10, 5);
+```
+
+#### `cf7_api_get_args` / `cf7_api_post_args`
+
+Filter HTTP request arguments for GET/POST requests.
+
+**Parameters**:
+
+- `array $args` - WordPress HTTP API arguments
+
+**Return**: `array` Modified arguments
+
+**Example**:
+
+```php
+\add_filter("cf7_api_post_args", function($args) {
+    // Add custom header
+    $args["headers"]["X-API-Version"] = "2.0";
+    // Increase timeout
+    $args["timeout"] = 45;
+    return $args;
+}, 10, 1);
+```
+
+#### `cf7_api_get_url` / `cf7_api_post_url`
+
+Filter the API URL before sending request.
+
+**Parameters**:
+
+- `string $url` - The API endpoint URL
+- `array $record` - The record data (only for GET)
+
+**Return**: `string` Modified URL
+
+**Example**:
+
+```php
+\add_filter("cf7_api_post_url", function($url) {
+    // Add API version to URL
+    return \add_query_arg("version", "2", $url);
+}, 10, 1);
+```
+
+## Legacy Hook Compatibility
+
+### Overview
+
+This plugin provides full backward compatibility with the legacy "Contact Form 7 to API" plugin by Query Solutions (`cf7-to-api`). If your theme or custom code uses the old `qs_cf7_*` hooks, they will continue to work without any modifications.
+
+> **Migration Note**: While legacy hooks are fully supported, we recommend migrating to the new `cf7_api_*` hooks for new development. The legacy hooks are bridged at priority 5, so new hooks (priority 10) will run after legacy modifications are applied.
+
+### Hook Mapping Table
+
+| Legacy Hook (Query Solutions) | New Hook (Silver Assist) | Type | Notes |
+|------------------------------|--------------------------|------|-------|
+| `qs_cf7_collect_mail_tags` | `cf7_api_collect_mail_tags` | Filter | Form tags collection |
+| `qs_cf7_api_before_sent_to_api` | `cf7_api_before_send_to_api` | Action | Note: "sent" → "send" |
+| `qs_cf7_api_after_sent_to_api` | `cf7_api_after_send_to_api` | Action | Note: "sent" → "send" |
+| `set_record_value` | `cf7_api_set_record_value` | Filter | Field value processing |
+| `cf7api_create_record` | `cf7_api_create_record` | Filter | Record creation |
+| `qs_cf7_api_get_args` | `cf7_api_get_args` | Filter | GET request arguments |
+| `qs_cf7_api_get_args` | `cf7_api_post_args` | Filter | POST request arguments |
+| `qs_cf7_api_get_url` | `cf7_api_get_url` | Filter | GET URL modification |
+| `qs_cf7_api_post_url` | `cf7_api_post_url` | Filter | POST URL modification |
+
+### How Legacy Compatibility Works
+
+The plugin registers bridge hooks at priority 5 that automatically call the legacy hooks when the new hooks are fired. This means:
+
+1. **Existing code continues to work**: Any theme or plugin using `qs_cf7_*` hooks will function without changes
+2. **Priority order**: Legacy hooks run first (priority 5), then new hooks (priority 10)
+3. **No conflicts**: Both hook systems can coexist safely
+
+### Legacy Hook Examples
+
+These examples show code that will continue to work with this plugin:
+
+#### Using `qs_cf7_api_before_sent_to_api`
+
+```php
+// Legacy code - still works!
+\add_action("qs_cf7_api_before_sent_to_api", function($record) {
+    // Store submission data before API call
+    \update_option("last_cf7_submission", $record);
+}, 10, 1);
+```
+
+#### Using `qs_cf7_api_after_sent_to_api`
+
+```php
+// Legacy code - still works!
+\add_action("qs_cf7_api_after_sent_to_api", function($record, $response) {
+    // Process API response
+    if (!\is_wp_error($response)) {
+        $body = \wp_remote_retrieve_body($response);
+        \error_log("API Response: " . $body);
+    }
+}, 10, 2);
+```
+
+#### Using `set_record_value`
+
+```php
+// Legacy code - still works!
+\add_filter("set_record_value", function($value, $api_field_name) {
+    // Convert checkbox arrays to comma-separated strings
+    if (is_array($value)) {
+        return implode(", ", $value);
+    }
+    return $value;
+}, 10, 2);
+```
+
+#### Using `qs_cf7_api_get_args`
+
+```php
+// Legacy code - still works!
+\add_filter("qs_cf7_api_get_args", function($args) {
+    // Add authentication header
+    $args["headers"]["Authorization"] = "Bearer " . \get_option("api_token");
+    return $args;
+}, 10, 1);
+```
+
+### Migration Guide
+
+To migrate from legacy hooks to new hooks:
+
+```php
+// Before (legacy)
+\add_action("qs_cf7_api_before_sent_to_api", "my_before_api_handler", 10, 1);
+\add_action("qs_cf7_api_after_sent_to_api", "my_after_api_handler", 10, 2);
+\add_filter("set_record_value", "my_value_filter", 10, 2);
+
+// After (new)
+\add_action("cf7_api_before_send_to_api", "my_before_api_handler", 10, 1);
+\add_action("cf7_api_after_send_to_api", "my_after_api_handler", 10, 2);
+\add_filter("cf7_api_set_record_value", "my_value_filter", 10, 2);
+```
+
+### Dual Plugin Warning
+
+If both the legacy Query Solutions plugin (`cf7-to-api`) and this plugin are active simultaneously, an admin notice will be displayed warning about potential conflicts. To avoid duplicate API submissions:
+
+1. **Deactivate the legacy plugin** after installing this one
+2. Keep the legacy plugin installed (but deactivated) as a reference during migration
+3. Test your forms to ensure API submissions work correctly
 
 ## Classes
 
