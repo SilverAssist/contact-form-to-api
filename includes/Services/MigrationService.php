@@ -38,6 +38,13 @@ class MigrationService implements LoadableInterface {
 	private static ?MigrationService $instance = null;
 
 	/**
+	 * Maximum number of logs to process in a single migration batch.
+	 *
+	 * @since 1.3.4
+	 */
+	private const MAX_BATCH_SIZE = 500;
+
+	/**
 	 * Whether the component has been initialized
 	 *
 	 * @var bool
@@ -163,7 +170,7 @@ class MigrationService implements LoadableInterface {
 		global $wpdb;
 
 		// Validate batch size.
-		$batch_size = \max( 1, \min( $batch_size, 500 ) );
+		$batch_size = \max( 1, \min( $batch_size, self::MAX_BATCH_SIZE ) );
 
 		// Check if encryption is available.
 		if ( ! $this->encryption ) {
