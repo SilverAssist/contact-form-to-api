@@ -684,6 +684,184 @@ Get log statistics for dashboard display.
 
 **Return**: `array` Statistics data (total, success, errors, last_request)
 
+##### `get_request_for_retry(int $log_id): ?array`
+
+Get request data for retrying a failed request. Retrieves complete request data needed to replay a failed API request.
+
+**Since**: 1.2.0
+
+**Parameters**:
+
+- `int $log_id` - Log entry ID to retry
+
+**Return**: `array<string, mixed>|null` Request data or null if not retryable
+
+**Example**:
+
+```php
+$logger = RequestLogger::instance();
+$request_data = $logger->get_request_for_retry(123);
+
+if ($request_data) {
+    // Request data contains: url, method, headers, body, form_id, original_log_id
+    $api_client = ApiClient::instance();
+    $api_client->request($request_data['url'], [
+        'method'  => $request_data['method'],
+        'headers' => $request_data['headers'],
+        'body'    => $request_data['body'],
+    ]);
+}
+```
+
+##### `count_retries(int $log_id): int`
+
+Count retries for a specific log entry. Counts how many times a specific log entry has been manually retried.
+
+**Since**: 1.2.0
+
+**Parameters**:
+
+- `int $log_id` - Original log entry ID
+
+**Return**: `int` Number of retry attempts
+
+**Example**:
+
+```php
+$logger = RequestLogger::instance();
+$retry_count = $logger->count_retries(123);
+
+if ($retry_count >= RequestLogger::get_max_manual_retries()) {
+    echo "Maximum retry limit reached";
+}
+```
+
+##### `get_retries_for_log(int $log_id): array`
+
+Get all retry entries for a log. Retrieves all manual retry attempts for a specific log entry.
+
+**Since**: 1.3.8
+
+**Parameters**:
+
+- `int $log_id` - Original log entry ID
+
+**Return**: `array<int, array{id: string, status: string, response_code: string|null, created_at: string}>` Array of retry entries
+
+**Example**:
+
+```php
+$logger = RequestLogger::instance();
+$retries = $logger->get_retries_for_log(123);
+
+foreach ($retries as $retry) {
+    echo "Retry #{$retry['id']}: {$retry['status']} at {$retry['created_at']}";
+}
+```
+
+##### `has_successful_retry(int $log_id): bool`
+
+Check if log entry has a successful manual retry. Determines if a failed request has been successfully retried.
+
+**Since**: 1.3.8
+
+**Parameters**:
+
+- `int $log_id` - Original log entry ID
+
+**Return**: `bool` True if has successful retry, false otherwise
+
+**Example**:
+
+```php
+$logger = RequestLogger::instance();
+
+if ($logger->has_successful_retry(123)) {
+    echo "This failed request was successfully retried!";
+}
+```
+
+##### `get_successful_retry_id(int $log_id): ?int`
+
+Get ID of successful retry entry. Returns the ID of the first successful manual retry for a log entry. Used to create links from original failed entry to successful retry.
+
+**Since**: 1.3.8
+
+**Parameters**:
+
+- `int $log_id` - Original log entry ID
+
+**Return**: `int|null` ID of successful retry or null if none exists
+
+**Example**:
+
+```php
+$logger = RequestLogger::instance();
+$retry_id = $logger->get_successful_retry_id(123);
+
+if ($retry_id) {
+    $retry_url = admin_url("admin.php?page=cf7-api-logs&action=view&log_id={$retry_id}");
+    echo "<a href='{$retry_url}'>View successful retry</a>";
+}
+```
+
+##### `decrypt_log_fields(array $log): array`
+
+Decrypt log fields for display. Decrypts encrypted log fields for viewing in admin or exports.
+
+**Since**: 1.3.0
+
+**Parameters**:
+
+- `array<string, mixed> $log` - Log entry data
+
+**Return**: `array<string, mixed>` Log entry with decrypted fields
+
+**Example**:
+
+```php
+$logger = RequestLogger::instance();
+$log = $logger->get_log(123);
+
+// Decrypt sensitive fields for display
+$decrypted_log = $logger->decrypt_log_fields($log);
+echo $decrypted_log['request_data'];
+```
+
+##### `get_max_manual_retries(): int` (static)
+
+Get maximum manual retries allowed from settings.
+
+**Since**: 1.2.0
+
+**Return**: `int` Maximum number of manual retry attempts allowed per log entry
+
+**Example**:
+
+```php
+$max_retries = RequestLogger::get_max_manual_retries();
+$current_retries = $logger->count_retries($log_id);
+
+if ($current_retries < $max_retries) {
+    // Allow retry
+}
+```
+
+##### `get_max_retries_per_hour(): int` (static)
+
+Get maximum retries per hour from settings. Rate limiting for manual retry operations.
+
+**Since**: 1.2.0
+
+**Return**: `int` Maximum number of manual retries allowed per hour
+
+**Example**:
+
+```php
+$max_per_hour = RequestLogger::get_max_retries_per_hour();
+echo "You can retry up to {$max_per_hour} requests per hour";
+```
+
 ### Core\Interfaces\LoadableInterface
 
 Interface for loadable components with priority-based loading.
