@@ -36,6 +36,13 @@ class RequestLogTable extends \WP_List_Table {
 	use DateFilterTrait;
 
 	/**
+	 * Logger instance for retry checks
+	 *
+	 * @var RequestLogger|null
+	 */
+	private ?RequestLogger $logger = null;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
@@ -46,6 +53,9 @@ class RequestLogTable extends \WP_List_Table {
 				'ajax'     => false,
 			)
 		);
+
+		// Initialize logger instance once for reuse
+		$this->logger = new RequestLogger();
 	}
 
 	/**
@@ -375,9 +385,8 @@ class RequestLogTable extends \WP_List_Table {
 
 		// Only show retry action for failed requests that haven't been successfully retried
 		if ( 'error' === $item['status'] || 'client_error' === $item['status'] || 'server_error' === $item['status'] ) {
-			// Check if already successfully retried
-			$logger = new RequestLogger();
-			if ( ! $logger->has_successful_retry( (int) $item['id'] ) ) {
+			// Check if already successfully retried using cached logger instance
+			if ( ! $this->logger->has_successful_retry( (int) $item['id'] ) ) {
 				$actions['retry'] = \sprintf(
 					'<a href="%s">%s</a>',
 					\esc_url(

@@ -868,7 +868,7 @@ class RequestLogger {
 			)
 		);
 
-		return (int) ( $count ?: 0 ) > 0;
+		return ( $count ?? 0 ) > 0;
 	}
 
 	/**

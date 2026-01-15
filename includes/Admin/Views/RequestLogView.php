@@ -122,7 +122,7 @@ class RequestLogView {
 			<?php self::render_retry_information( $log, $logger ); ?>
 
 			<div class="cf7-api-log-detail">
-				<?php self::render_request_section( $log ); ?>
+				<?php self::render_request_section( $log, $logger ); ?>
 				<?php self::render_request_headers( $log ); ?>
 				<?php self::render_request_data( $log ); ?>
 				<?php self::render_response_section( $log ); ?>
@@ -136,12 +136,12 @@ class RequestLogView {
 	/**
 	 * Render request information section
 	 *
-	 * @param array<string, mixed> $log Log entry data.
+	 * @param array<string, mixed> $log    Log entry data.
+	 * @param RequestLogger        $logger Logger instance.
 	 * @return void
 	 */
-	private static function render_request_section( array $log ): void {
-		// Get logger instance to count manual retries
-		$logger             = new RequestLogger();
+	private static function render_request_section( array $log, RequestLogger $logger ): void {
+		// Get manual retry count from provided logger instance
 		$manual_retry_count = $logger->count_retries( (int) $log['id'] );
 
 		?>
