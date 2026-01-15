@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.8] - 2026-01-15
+
+### Added
+- **Manual Retry Traceability** (#44): Complete visibility into retry outcomes for failed API requests
+  * New link from original failed entry to successful retry: "→ View successful retry (#102)"
+  * "Manual Retry Count" field in Request Information section (separate from automatic retries)
+  * Green success styling on retry information notice when retry succeeded
+  * Integration test suite (`RetryTraceabilityTest.php`) covering all retry scenarios
+
+### Changed
+- **Retry Button Behavior**: Disabled after successful manual retry with tooltip "Already successfully retried"
+- **List View Actions**: "Retry" action hidden for entries that already have a successful manual retry
+- **Bulk Retry Operations**: Skip entries with successful retries during bulk retry, with feedback on skipped count
+
+### Fixed
+- **Duplicate Retry Prevention**: Users can no longer create unnecessary retry attempts after success
+
+### Developer
+- **RequestLogger New Methods**:
+  * `get_successful_retry_id(int $log_id): ?int` - Returns ID of first successful retry
+  * `has_successful_retry(int $log_id): bool` - Boolean check for successful retry existence
+  * `get_retries_for_log(int $log_id): array` - Returns all retry attempts with status
+- **Performance**: Single `RequestLogger` instance cached per page render, all queries use existing `retry_of` index (O(log n))
+- **No database schema changes required**
+
 ## [1.3.7] - 2026-01-06
 
 ### Fixed
