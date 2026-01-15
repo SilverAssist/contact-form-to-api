@@ -47,7 +47,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-		$wpdb->query( "TRUNCATE TABLE {$table_name}" );
+		$wpdb->query( $wpdb->prepare( 'TRUNCATE TABLE %i', $table_name ) );
 	}
 
 	/**

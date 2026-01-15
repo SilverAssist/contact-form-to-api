@@ -747,10 +747,10 @@ class RequestLogView {
 						echo ' ';
 						echo \wp_kses_post(
 							\sprintf(
-								/* translators: %1$d: successful retry log ID, %2$s: link to successful retry log */
-								\__( '→ <a href="%2$s">View successful retry (#%1$d)</a>', 'contact-form-to-api' ),
-								$successful_retry_id,
-								\esc_url( $retry_url )
+								/* translators: %1$s: link to successful retry log, %2$d: successful retry log ID */
+								\__( '→ <a href="%1$s">View successful retry (#%2$d)</a>', 'contact-form-to-api' ),
+								\esc_url( $retry_url ),
+								$successful_retry_id
 							)
 						);
 					}
