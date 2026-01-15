@@ -30,7 +30,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 	 */
 	public static function wpSetUpBeforeClass(): void {
 		parent::wpSetUpBeforeClass();
-		
+
 		// Create tables BEFORE inserting any test data
 		Activator::create_tables();
 	}
@@ -42,7 +42,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
-		
+
 		// Clean logs table before each test
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
