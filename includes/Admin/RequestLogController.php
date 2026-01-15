@@ -8,7 +8,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Admin
  * @since 1.1.0
- * @version 1.3.7
+ * @version 1.3.8
  * @author Silver Assist
  */
 
@@ -293,6 +293,7 @@ class RequestLogController implements LoadableInterface {
 	 * Handle retry action
 	 *
 	 * Retries failed API requests with rate limiting.
+	 * Skips entries that have already been successfully retried.
 	 *
 	 * @param array<int, int> $log_ids Log IDs to retry.
 	 * @return void
@@ -323,6 +324,12 @@ class RequestLogController implements LoadableInterface {
 		}
 
 		foreach ( $log_ids as $log_id ) {
+			// Skip if already successfully retried
+			if ( $logger->has_successful_retry( $log_id ) ) {
+				++$skipped_count;
+				continue;
+			}
+
 			// Check per-entry retry limit
 			$retry_count = $logger->count_retries( $log_id );
 			if ( $retry_count >= $max_retries_per_entry ) {

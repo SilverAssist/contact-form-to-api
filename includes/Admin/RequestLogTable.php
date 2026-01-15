@@ -8,12 +8,13 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Admin
  * @since 1.1.0
- * @version 1.3.7
+ * @version 1.3.8
  * @author Silver Assist
  */
 
 namespace SilverAssist\ContactFormToAPI\Admin;
 
+use SilverAssist\ContactFormToAPI\Core\RequestLogger;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
 
 \defined( 'ABSPATH' ) || exit;
@@ -372,22 +373,27 @@ class RequestLogTable extends \WP_List_Table {
 			),
 		);
 
+		// Only show retry action for failed requests that haven't been successfully retried
 		if ( 'error' === $item['status'] || 'client_error' === $item['status'] || 'server_error' === $item['status'] ) {
-			$actions['retry'] = \sprintf(
-				'<a href="%s">%s</a>',
-				\esc_url(
-					\wp_nonce_url(
-						\add_query_arg(
-							array(
-								'action' => 'retry',
-								'log'    => $item['id'],
-							)
-						),
-						'bulk-cf7-api-logs'
-					)
-				),
-				\__( 'Retry', 'contact-form-to-api' )
-			);
+			// Check if already successfully retried
+			$logger = new RequestLogger();
+			if ( ! $logger->has_successful_retry( (int) $item['id'] ) ) {
+				$actions['retry'] = \sprintf(
+					'<a href="%s">%s</a>',
+					\esc_url(
+						\wp_nonce_url(
+							\add_query_arg(
+								array(
+									'action' => 'retry',
+									'log'    => $item['id'],
+								)
+							),
+							'bulk-cf7-api-logs'
+						)
+					),
+					\__( 'Retry', 'contact-form-to-api' )
+				);
+			}
 		}
 
 		$actions['delete'] = \sprintf(

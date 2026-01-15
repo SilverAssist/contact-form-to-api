@@ -8,7 +8,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Admin\Views
  * @since 1.1.0
- * @version 1.3.7
+ * @version 1.3.8
  * @author Silver Assist
  */
 
@@ -140,6 +140,10 @@ class RequestLogView {
 	 * @return void
 	 */
 	private static function render_request_section( array $log ): void {
+		// Get logger instance to count manual retries
+		$logger             = new RequestLogger();
+		$manual_retry_count = $logger->count_retries( (int) $log['id'] );
+
 		?>
 		<div class="log-section">
 			<h2><?php \esc_html_e( 'Request Information', 'contact-form-to-api' ); ?></h2>
@@ -166,7 +170,14 @@ class RequestLogView {
 				</tr>
 				<tr>
 					<th><?php \esc_html_e( 'Retry Count', 'contact-form-to-api' ); ?></th>
-					<td><?php echo \esc_html( $log['retry_count'] ); ?></td>
+					<td>
+						<?php echo \esc_html( $log['retry_count'] ); ?>
+						<small class="description"><?php \esc_html_e( '(automatic retries)', 'contact-form-to-api' ); ?></small>
+					</td>
+				</tr>
+				<tr>
+					<th><?php \esc_html_e( 'Manual Retry Count', 'contact-form-to-api' ); ?></th>
+					<td><?php echo \esc_html( $manual_retry_count ); ?></td>
 				</tr>
 			</table>
 		</div>
@@ -604,7 +615,8 @@ class RequestLogView {
 	/**
 	 * Render retry button for failed requests
 	 *
-	 * Shows retry button only for failed requests that haven't exceeded retry limit.
+	 * Shows retry button only for failed requests that haven't exceeded retry limit
+	 * or haven't been successfully retried yet.
 	 *
 	 * @param array<string, mixed> $log    Log entry data.
 	 * @param RequestLogger        $logger Logger instance.
@@ -616,9 +628,21 @@ class RequestLogView {
 			return;
 		}
 
-		$retry_count = $logger->count_retries( (int) $log['id'] );
-		$max_retries = RequestLogger::get_max_manual_retries();
+		$retry_count         = $logger->count_retries( (int) $log['id'] );
+		$max_retries         = RequestLogger::get_max_manual_retries();
+		$has_successful_retry = $logger->has_successful_retry( (int) $log['id'] );
 
+		// Disable if already successfully retried
+		if ( $has_successful_retry ) {
+			?>
+			<span class="button disabled" aria-disabled="true" title="<?php \esc_attr_e( 'Already successfully retried', 'contact-form-to-api' ); ?>">
+				<?php \esc_html_e( 'Retry Request', 'contact-form-to-api' ); ?>
+			</span>
+			<?php
+			return;
+		}
+
+		// Disable if maximum retries exceeded
 		if ( $retry_count >= $max_retries ) {
 			?>
 			<span class="button disabled" aria-disabled="true" title="<?php \esc_attr_e( 'Maximum retries exceeded', 'contact-form-to-api' ); ?>">
@@ -690,8 +714,11 @@ class RequestLogView {
 		// Show retry attempts for this request
 		$retry_count = $logger->count_retries( (int) $log['id'] );
 		if ( $retry_count > 0 ) {
+			// Check if there's a successful retry
+			$successful_retry_id = $logger->get_successful_retry_id( (int) $log['id'] );
+			$notice_class        = $successful_retry_id ? 'notice-success' : 'notice-info';
 			?>
-			<div class="notice notice-info inline">
+			<div class="notice <?php echo \esc_attr( $notice_class ); ?> inline">
 				<p>
 					<?php
 					echo \esc_html(
@@ -706,6 +733,27 @@ class RequestLogView {
 							$retry_count
 						)
 					);
+
+					// Add link to successful retry if exists
+					if ( $successful_retry_id ) {
+						$retry_url = \add_query_arg(
+							array(
+								'page'   => 'cf7-api-logs',
+								'action' => 'view',
+								'log_id' => $successful_retry_id,
+							),
+							\admin_url( 'admin.php' )
+						);
+						echo ' ';
+						echo \wp_kses_post(
+							\sprintf(
+								/* translators: %1$d: successful retry log ID, %2$s: link to successful retry log */
+								\__( '→ <a href="%2$s">View successful retry (#%1$d)</a>', 'contact-form-to-api' ),
+								$successful_retry_id,
+								\esc_url( $retry_url )
+							)
+						);
+					}
 					?>
 				</p>
 			</div>
