@@ -38,9 +38,9 @@ class RequestLogTable extends \WP_List_Table {
 	/**
 	 * Logger instance for retry checks
 	 *
-	 * @var RequestLogger|null
+	 * @var RequestLogger
 	 */
-	private ?RequestLogger $logger = null;
+	private RequestLogger $logger;
 
 	/**
 	 * Constructor
