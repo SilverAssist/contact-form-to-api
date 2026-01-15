@@ -9,7 +9,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Core
  * @since 1.1.0
- * @version 1.3.7
+ * @version 1.3.8
  * @author Silver Assist
  */
 
@@ -819,5 +819,80 @@ class RequestLogger {
 
 		// Fallback to constant.
 		return self::MAX_RETRIES_PER_HOUR;
+	}
+
+	/**
+	 * Get all retry entries for a log
+	 *
+	 * Retrieves all manual retry attempts for a specific log entry.
+	 * Returns array with retry details including status.
+	 *
+	 * @since 1.3.8
+	 * @param int $log_id Original log entry ID
+	 * @return array<int, array{id: string, status: string, response_code: string|null, created_at: string}> Array of retry entries with id, status, response_code, and created_at keys.
+	 */
+	public function get_retries_for_log( int $log_id ): array {
+		global $wpdb;
+
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT id, status, response_code, created_at FROM %i WHERE retry_of = %d ORDER BY created_at ASC',
+				$this->table_name,
+				$log_id
+			),
+			ARRAY_A
+		);
+
+		return $results ?: array();
+	}
+
+	/**
+	 * Check if log entry has a successful manual retry
+	 *
+	 * Determines if a failed request has been successfully retried.
+	 * Returns true if any manual retry resulted in success status.
+	 *
+	 * @since 1.3.8
+	 * @param int $log_id Original log entry ID
+	 * @return bool True if has successful retry, false otherwise
+	 */
+	public function has_successful_retry( int $log_id ): bool {
+		global $wpdb;
+
+		$count = $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(*) FROM %i WHERE retry_of = %d AND status = %s',
+				$this->table_name,
+				$log_id,
+				'success'
+			)
+		);
+
+		return ( $count ?? 0 ) > 0;
+	}
+
+	/**
+	 * Get ID of successful retry entry
+	 *
+	 * Returns the ID of the first successful manual retry for a log entry.
+	 * Used to create links from original failed entry to successful retry.
+	 *
+	 * @since 1.3.8
+	 * @param int $log_id Original log entry ID
+	 * @return int|null ID of successful retry or null if none exists
+	 */
+	public function get_successful_retry_id( int $log_id ): ?int {
+		global $wpdb;
+
+		$retry_id = $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT id FROM %i WHERE retry_of = %d AND status = %s ORDER BY created_at ASC LIMIT 1',
+				$this->table_name,
+				$log_id,
+				'success'
+			)
+		);
+
+		return $retry_id ? (int) $retry_id : null;
 	}
 }
