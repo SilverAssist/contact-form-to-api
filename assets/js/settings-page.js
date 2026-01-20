@@ -5,7 +5,7 @@
  *
  * @package SilverAssist\ContactFormToAPI
  * @since 1.2.0
- * @version 1.3.8
+ * @version 1.3.9
  */
 
 (function ($) {

@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.9] - 2026-01-19
+
+### Fixed
+- **Dashboard Widget Error Count** (#46): Errors with successful manual retries are now excluded from the error count
+  * `get_count_last_hours()` excludes errors that have a successful retry entry
+  * Prevents inflated error counts when issues have been resolved via manual retry
+  * Error count now reflects only unresolved failures
+- **Dashboard Widget Settings Button URL** (#46): Fixed Settings button redirecting to wrong page
+  * Changed from `?page=cf7-api-settings` to `?page=contact-form-to-api`
+
+### Changed
+- **Success Rate Calculation**: `get_success_rate_last_hours()` now considers successfully retried errors as effective successes
+  * Original errors with successful retries contribute positively to success rate
+  * More accurate representation of actual API reliability
+
+### Developer
+- **RequestLogger Query Updates**:
+  * `get_count_last_hours()` with `status='error'` now uses subquery to exclude retried errors
+  * `get_success_rate_last_hours()` tracks `retried_successfully` count separately
+  * `get_recent_errors()` already excluded retried errors (no change needed)
+- **PHPCS Compliance**: Changed SQL string assignments to single quotes with escaped inner quotes per WordPress Coding Standards
+
 ## [1.3.8] - 2026-01-15
 
 ### Added
