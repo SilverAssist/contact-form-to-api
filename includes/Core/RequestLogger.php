@@ -499,7 +499,7 @@ class RequestLogger {
 			// Handle different status types.
 			if ( 'error' === $status ) {
 				// Count all error types, but exclude errors with successful retries.
-				$status_condition = " AND status IN ('error', 'client_error', 'server_error')";
+				$status_condition = ' AND status IN (\'error\', \'client_error\', \'server_error\')';
 				$exclude_retried  = $wpdb->prepare(
 					' AND id NOT IN (SELECT DISTINCT retry_of FROM %i WHERE retry_of IS NOT NULL AND status = %s)',
 					$this->table_name,
@@ -510,7 +510,7 @@ class RequestLogger {
 			}
 		}
 
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- status_condition and exclude_retried are prepared above if present.
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- Variables are safely prepared above.
 		$count = $wpdb->get_var(
 			$wpdb->prepare(
 				'SELECT COUNT(*) FROM %i WHERE created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)' . $status_condition . $exclude_retried,
