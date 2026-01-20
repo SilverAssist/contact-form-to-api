@@ -481,7 +481,8 @@ class RequestLogger {
 	 * Get count of logs in the last N hours
 	 *
 	 * Retrieves the count of API requests in the specified time window.
-	 * Optionally filter by status.
+	 * Optionally filter by status. When filtering by error status,
+	 * excludes errors that have been successfully retried.
 	 *
 	 * @since 1.2.0
 	 * @param int         $hours  Number of hours to look back
@@ -492,21 +493,27 @@ class RequestLogger {
 		global $wpdb;
 
 		$status_condition = '';
+		$exclude_retried  = '';
 
 		if ( $status ) {
 			// Handle different status types.
 			if ( 'error' === $status ) {
-				// Count all error types.
-				$status_condition = " AND status IN ('error', 'client_error', 'server_error')";
+				// Count all error types, but exclude errors with successful retries.
+				$status_condition = ' AND status IN (\'error\', \'client_error\', \'server_error\')';
+				$exclude_retried  = $wpdb->prepare(
+					' AND id NOT IN (SELECT DISTINCT retry_of FROM %i WHERE retry_of IS NOT NULL AND status = %s)',
+					$this->table_name,
+					'success'
+				);
 			} else {
 				$status_condition = $wpdb->prepare( ' AND status = %s', $status );
 			}
 		}
 
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- status_condition is prepared above if present.
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- Variables are safely prepared above.
 		$count = $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT COUNT(*) FROM %i WHERE created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)' . $status_condition,
+				'SELECT COUNT(*) FROM %i WHERE created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)' . $status_condition . $exclude_retried,
 				$this->table_name,
 				$hours
 			)
@@ -520,6 +527,7 @@ class RequestLogger {
 	 * Get success rate for the last N hours
 	 *
 	 * Calculates the percentage of successful requests in the specified time window.
+	 * Considers errors with successful retries as successes, not failures.
 	 *
 	 * @since 1.2.0
 	 * @param int $hours Number of hours to look back
@@ -532,9 +540,20 @@ class RequestLogger {
 			$wpdb->prepare(
 				'SELECT 
 					COUNT(*) as total,
-					SUM(CASE WHEN status = %s THEN 1 ELSE 0 END) as successful
+					SUM(CASE WHEN status = %s THEN 1 ELSE 0 END) as successful,
+					SUM(CASE 
+						WHEN status IN (%s, %s, %s) 
+						AND id IN (SELECT DISTINCT retry_of FROM %i WHERE retry_of IS NOT NULL AND status = %s)
+						THEN 1 
+						ELSE 0 
+					END) as retried_successfully
 				FROM %i
 				WHERE created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)',
+				'success',
+				'error',
+				'client_error',
+				'server_error',
+				$this->table_name,
 				'success',
 				$this->table_name,
 				$hours
@@ -546,7 +565,10 @@ class RequestLogger {
 			return 0.0;
 		}
 
-		return round( ( (int) $stats['successful'] / (int) $stats['total'] ) * 100, 2 );
+		// Successful requests + errors that were successfully retried
+		$effective_successful = (int) $stats['successful'] + (int) $stats['retried_successfully'];
+
+		return round( ( $effective_successful / (int) $stats['total'] ) * 100, 2 );
 	}
 
 	/**
@@ -585,6 +607,7 @@ class RequestLogger {
 	 * Get recent error logs
 	 *
 	 * Retrieves the most recent failed API requests for quick diagnostics.
+	 * Excludes errors that have been successfully retried.
 	 *
 	 * @since 1.2.0
 	 * @param int $limit Maximum number of errors to retrieve
@@ -597,12 +620,19 @@ class RequestLogger {
 			$wpdb->prepare(
 				'SELECT * FROM %i 
 				WHERE status IN (%s, %s, %s)
+				AND id NOT IN (
+					SELECT DISTINCT retry_of FROM %i 
+					WHERE retry_of IS NOT NULL 
+					AND status = %s
+				)
 				ORDER BY created_at DESC 
 				LIMIT %d',
 				$this->table_name,
 				'error',
 				'client_error',
 				'server_error',
+				$this->table_name,
+				'success',
 				$limit
 			),
 			ARRAY_A

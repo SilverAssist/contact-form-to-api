@@ -342,4 +342,217 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 		$this->assertEquals( 'Error message 2', $recent_errors[1]['error_message'] );
 		$this->assertEquals( 'Error message 1', $recent_errors[2]['error_message'] );
 	}
+
+	/**
+	 * Test get_recent_errors excludes errors with successful retries
+	 *
+	 * @return void
+	 */
+	public function test_get_recent_errors_excludes_errors_with_successful_retries(): void {
+		$form_id = 123;
+
+		// Create 2 errors without retries
+		for ( $i = 0; $i < 2; $i++ ) {
+			$log_id = $this->logger->start_request( $form_id, "https://example.com/api/error{$i}", 'POST', 'test data' );
+			$error  = new \WP_Error( 'http_request_failed', "Unretried error {$i}" );
+			$this->logger->complete_request( $error );
+
+			// Reset logger
+			$this->logger = new RequestLogger();
+		}
+
+		// Create 2 errors WITH successful retries
+		for ( $i = 2; $i < 4; $i++ ) {
+			// Create original error
+			$original_log_id = $this->logger->start_request( $form_id, "https://example.com/api/error{$i}", 'POST', 'test data' );
+			$error           = new \WP_Error( 'http_request_failed', "Retried error {$i}" );
+			$this->logger->complete_request( $error );
+
+			// Reset logger
+			$this->logger = new RequestLogger();
+
+			// Create successful retry
+			$retry_log_id = $this->logger->start_request( $form_id, "https://example.com/api/error{$i}", 'POST', 'test data', array(), $original_log_id );
+			$response     = array(
+				'response' => array( 'code' => 200 ),
+				'body'     => \json_encode( array( 'success' => true ) ),
+			);
+			$this->logger->complete_request( $response );
+
+			// Reset logger
+			$this->logger = new RequestLogger();
+		}
+
+		// Get recent errors - should only return the 2 errors WITHOUT successful retries
+		$recent_errors = $this->logger->get_recent_errors( 10 );
+
+		$this->assertCount( 2, $recent_errors );
+
+		// Verify returned errors are the unretried ones
+		$error_messages = array_column( $recent_errors, 'error_message' );
+		$this->assertContains( 'Unretried error 0', $error_messages );
+		$this->assertContains( 'Unretried error 1', $error_messages );
+		$this->assertNotContains( 'Retried error 2', $error_messages );
+		$this->assertNotContains( 'Retried error 3', $error_messages );
+	}
+
+	/**
+	 * Test get_recent_errors includes errors with only failed retries
+	 *
+	 * @return void
+	 */
+	public function test_get_recent_errors_includes_errors_with_only_failed_retries(): void {
+		$form_id = 123;
+
+		// Create error with failed retry (should still be included)
+		$original_log_id = $this->logger->start_request( $form_id, 'https://example.com/api/error', 'POST', 'test data' );
+		$error           = new \WP_Error( 'http_request_failed', 'Original error' );
+		$this->logger->complete_request( $error );
+
+		// Reset logger
+		$this->logger = new RequestLogger();
+
+		// Create failed retry
+		$retry_log_id = $this->logger->start_request( $form_id, 'https://example.com/api/error', 'POST', 'test data', array(), $original_log_id );
+		$error2       = new \WP_Error( 'http_request_failed', 'Retry also failed' );
+		$this->logger->complete_request( $error2 );
+
+		// Reset logger
+		$this->logger = new RequestLogger();
+
+		// Get recent errors - should return the original error since retry was not successful
+		$recent_errors = $this->logger->get_recent_errors( 10 );
+
+		$this->assertCount( 1, $recent_errors );
+		$this->assertEquals( 'Original error', $recent_errors[0]['error_message'] );
+	}
+
+	/**
+	 * Test get_count_last_hours excludes retried errors from error count
+	 *
+	 * @return void
+	 */
+	public function test_get_count_last_hours_excludes_retried_errors_from_error_count(): void {
+		$form_id = 123;
+
+		// Create 3 successful requests
+		for ( $i = 0; $i < 3; $i++ ) {
+			$log_id = $this->logger->start_request( $form_id, "https://example.com/api/success{$i}", 'POST', 'test data' );
+
+			$response = array(
+				'response' => array( 'code' => 200 ),
+				'body'     => \json_encode( array( 'success' => true ) ),
+			);
+			$this->logger->complete_request( $response );
+
+			// Reset logger
+			$this->logger = new RequestLogger();
+		}
+
+		// Create 2 errors WITHOUT retries
+		for ( $i = 0; $i < 2; $i++ ) {
+			$log_id = $this->logger->start_request( $form_id, "https://example.com/api/unretried{$i}", 'POST', 'test data' );
+			$error  = new \WP_Error( 'http_request_failed', "Unretried error {$i}" );
+			$this->logger->complete_request( $error );
+
+			// Reset logger
+			$this->logger = new RequestLogger();
+		}
+
+		// Create 2 errors WITH successful retries
+		for ( $i = 0; $i < 2; $i++ ) {
+			// Create original error
+			$original_log_id = $this->logger->start_request( $form_id, "https://example.com/api/retried{$i}", 'POST', 'test data' );
+			$error           = new \WP_Error( 'http_request_failed', "Retried error {$i}" );
+			$this->logger->complete_request( $error );
+
+			// Reset logger
+			$this->logger = new RequestLogger();
+
+			// Create successful retry
+			$retry_log_id = $this->logger->start_request( $form_id, "https://example.com/api/retried{$i}", 'POST', 'test data', array(), $original_log_id );
+			$response     = array(
+				'response' => array( 'code' => 200 ),
+				'body'     => \json_encode( array( 'success' => true ) ),
+			);
+			$this->logger->complete_request( $response );
+
+			// Reset logger
+			$this->logger = new RequestLogger();
+		}
+
+		// Total: 3 success + 2 unretried errors + 2 retried errors + 2 successful retries = 9 total
+		$total = $this->logger->get_count_last_hours( 24 );
+		$this->assertEquals( 9, $total );
+
+		// Success count: 3 original + 2 successful retries = 5
+		$success = $this->logger->get_count_last_hours( 24, 'success' );
+		$this->assertEquals( 5, $success );
+
+		// Error count: Should only count the 2 unretried errors (not the 2 with successful retries)
+		$errors = $this->logger->get_count_last_hours( 24, 'error' );
+		$this->assertEquals( 2, $errors );
+	}
+
+	/**
+	 * Test get_success_rate_last_hours accounts for retried errors as successes
+	 *
+	 * @return void
+	 */
+	public function test_get_success_rate_last_hours_accounts_for_retried_errors(): void {
+		$form_id = 123;
+
+		// Create 5 successful requests
+		for ( $i = 0; $i < 5; $i++ ) {
+			$log_id = $this->logger->start_request( $form_id, "https://example.com/api/success{$i}", 'POST', 'test data' );
+
+			$response = array(
+				'response' => array( 'code' => 200 ),
+				'body'     => \json_encode( array( 'success' => true ) ),
+			);
+			$this->logger->complete_request( $response );
+
+			// Reset logger
+			$this->logger = new RequestLogger();
+		}
+
+		// Create 2 errors WITHOUT retries (permanent failures)
+		for ( $i = 0; $i < 2; $i++ ) {
+			$log_id = $this->logger->start_request( $form_id, "https://example.com/api/unretried{$i}", 'POST', 'test data' );
+			$error  = new \WP_Error( 'http_request_failed', "Unretried error {$i}" );
+			$this->logger->complete_request( $error );
+
+			// Reset logger
+			$this->logger = new RequestLogger();
+		}
+
+		// Create 3 errors WITH successful retries (eventual successes)
+		for ( $i = 0; $i < 3; $i++ ) {
+			// Create original error
+			$original_log_id = $this->logger->start_request( $form_id, "https://example.com/api/retried{$i}", 'POST', 'test data' );
+			$error           = new \WP_Error( 'http_request_failed', "Retried error {$i}" );
+			$this->logger->complete_request( $error );
+
+			// Reset logger
+			$this->logger = new RequestLogger();
+
+			// Create successful retry
+			$retry_log_id = $this->logger->start_request( $form_id, "https://example.com/api/retried{$i}", 'POST', 'test data', array(), $original_log_id );
+			$response     = array(
+				'response' => array( 'code' => 200 ),
+				'body'     => \json_encode( array( 'success' => true ) ),
+			);
+			$this->logger->complete_request( $response );
+
+			// Reset logger
+			$this->logger = new RequestLogger();
+		}
+
+		// Total requests: 5 success + 2 unretried errors + 3 retried errors + 3 successful retries = 13
+		// Effective successes: 5 original success + 3 successful retries + 3 retried errors = 11
+		// (retried errors count as successes since they eventually succeeded)
+		// Success rate: 11/13 = 84.62%
+		$success_rate = $this->logger->get_success_rate_last_hours( 24 );
+		$this->assertEquals( 84.62, $success_rate );
+	}
 }
