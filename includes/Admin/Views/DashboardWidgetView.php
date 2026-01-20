@@ -52,7 +52,7 @@ class DashboardWidgetView {
 				<a href="<?php echo \esc_url( \admin_url( 'admin.php?page=cf7-api-logs' ) ); ?>" class="button">
 					<?php \esc_html_e( 'View All Logs', 'contact-form-to-api' ); ?>
 				</a>
-				<a href="<?php echo \esc_url( \admin_url( 'admin.php?page=wpcf7' ) ); ?>" class="button">
+				<a href="<?php echo \esc_url( \admin_url( 'admin.php?page=contact-form-to-api' ) ); ?>" class="button">
 					<?php \esc_html_e( 'Settings', 'contact-form-to-api' ); ?>
 				</a>
 			</div>
