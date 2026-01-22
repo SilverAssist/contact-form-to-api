@@ -703,7 +703,7 @@ class RequestLogView {
 		);
 
 		// Preserve current filters.
-		if ( isset( $_GET['status'] ) && 'all' !== $_GET['status'] ) {
+		if ( isset( $_GET['status'] ) && ! empty( $_GET['status'] ) ) {
 			$base_args['status'] = \sanitize_text_field( \wp_unslash( $_GET['status'] ) );
 		}
 
