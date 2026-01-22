@@ -678,11 +678,78 @@ Delete log entries by IDs.
 
 **Return**: `int` Number of deleted entries
 
-##### `get_statistics(): array`
+##### `get_statistics(?int $form_id, ?string $date_start = null, ?string $date_end = null): array`
 
-Get log statistics for dashboard display.
+Get log statistics for a form with optional date filtering. Returns aggregated statistics about API calls. Can be filtered by date range to show statistics for specific time periods.
 
-**Return**: `array` Statistics data (total, success, errors, last_request)
+**Since**: 1.1.0 (date parameters added in 1.4.0)
+
+**Parameters**:
+
+- `int|null $form_id` - Form ID (0 or null for all forms)
+- `string|null $date_start` - Optional start date in Y-m-d format (null for no filter)
+- `string|null $date_end` - Optional end date in Y-m-d format (null for no filter)
+
+**Return**: `array<string, int|float>` Statistics array with keys:
+- `total_requests` - Total number of API requests
+- `successful_requests` - Number of successful requests (HTTP 2xx)
+- `failed_requests` - Number of failed requests excluding successfully retried errors
+- `avg_execution_time` - Average execution time in seconds
+- `max_retries` - Maximum number of retries
+
+**Example**:
+
+```php
+$logger = new RequestLogger();
+
+// Get all-time statistics for all forms
+$all_stats = $logger->get_statistics(null);
+
+// Get statistics for form ID 5
+$form_stats = $logger->get_statistics(5);
+
+// Get statistics for yesterday
+$yesterday_stats = $logger->get_statistics(
+    null,
+    '2024-01-15',
+    '2024-01-15'
+);
+
+// Get statistics for last 7 days
+$week_stats = $logger->get_statistics(
+    null,
+    '2024-01-08',
+    '2024-01-15'
+);
+```
+
+##### `get_recent_errors(int $limit = 5, ?int $hours = null): array`
+
+Get recent error logs with optional time filtering. Retrieves the most recent failed API requests for quick diagnostics. Excludes errors that have been successfully retried.
+
+**Since**: 1.2.0 (hours parameter added in 1.4.0)
+
+**Parameters**:
+
+- `int $limit` - Maximum number of errors to retrieve (default: 5)
+- `int|null $hours` - Optional time window in hours (null for all time)
+
+**Return**: `array<int, array<string, mixed>>` Array of error log entries
+
+**Example**:
+
+```php
+$logger = new RequestLogger();
+
+// Get 5 most recent errors from all time
+$recent_errors = $logger->get_recent_errors(5);
+
+// Get 5 most recent errors from last 24 hours
+$daily_errors = $logger->get_recent_errors(5, 24);
+
+// Get 10 most recent errors from last hour
+$hourly_errors = $logger->get_recent_errors(10, 1);
+```
 
 ##### `get_request_for_retry(int $log_id): ?array`
 

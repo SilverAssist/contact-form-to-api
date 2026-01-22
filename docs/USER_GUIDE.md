@@ -7,6 +7,7 @@ Complete user guide for Contact Form 7 to API plugin features and configuration.
 - [Dashboard Widget](#dashboard-widget)
 - [API Logs](#api-logs)
 - [Date Range Filters](#date-range-filters)
+- [Status Filter](#status-filter)
 - [Global Settings](#global-settings)
 - [Troubleshooting](#troubleshooting)
 
@@ -134,7 +135,43 @@ Select from the "Date Filter" dropdown:
 
 ### Clearing Filters
 
-Click the **"Clear Filter"** button to remove the date filter and show all logs.
+Click the **"Clear Filters"** button to remove all active filters and show all logs.
+
+---
+
+## Status Filter
+
+Filter API logs by request status to focus on successes or errors.
+
+### Available Options
+
+Select from the "Status" dropdown:
+
+| Option | Description |
+|--------|-------------|
+| **All** | Show all logs (default) |
+| **Success** | Show only successful requests (HTTP 2xx) |
+| **Error** | Show all failed requests (client and server errors) |
+
+### Using Status Filters
+
+1. Select an option from the **"Status"** dropdown
+2. Optionally combine with **Date** or other filters
+3. Click **"Apply Filters"**
+
+### Filter Features
+
+- ✅ **Combination**: Use with date filters for precise filtering
+- ✅ **Persistence**: Remains active across pagination and sorting
+- ✅ **Export Integration**: Respects status filter when exporting logs
+- ✅ **Visual Feedback**: Active filters shown in badge below controls
+- ✅ **Statistics Update**: Stats grid reflects filtered results
+
+### Example Use Cases
+
+- **Error Analysis**: Filter by "Error" status to view only failed requests
+- **Success Audit**: Filter by "Success" status to review successful integrations
+- **Time-based Error Review**: Combine "Error" status with "Yesterday" date filter
 
 ---
 

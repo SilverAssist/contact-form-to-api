@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Status Filter Dropdown** (#47): New status filter UI control on logs page
+  * Dropdown with "All", "Success", and "Error" options
+  * Appears alongside date filter for consistent UI
+  * Preserves form_id and search parameters when filtering
+  * Combined active filters badge shows both status and date filters
+  * Already integrated with pagination, sorting, and export URLs
+- **Date-Aware Statistics Grid** (#47): Stats now reflect active date filters
+  * Stats grid displays date context label (e.g., "Total Requests (Yesterday)")
+  * All statistics (total, successful, failed, avg time) respect date filters
+  * Date context shown as "(All Time)", "(Today)", "(Last 7 Days)", etc.
+
+### Changed
+- **Dashboard Widget Recent Errors** (#47): Now limited to last 24 hours
+  * `get_recent_errors()` accepts optional `$hours` parameter
+  * Dashboard widget passes 24-hour filter to match other statistics
+  * More relevant error display focusing on recent issues
+- **Failed Requests Count** (#47): Excludes successfully retried errors
+  * `get_statistics()` uses subquery to exclude errors with successful retries
+  * Matches logic from `get_count_last_hours()` for consistency
+  * Shows only unresolved failures in stats grid
+
+### Enhanced
+- **`RequestLogger::get_statistics()`** (#47):
+  * Now accepts optional date parameters: `get_statistics(?int $form_id, ?string $date_start = null, ?string $date_end = null)`
+  * Returns statistics filtered by date range when parameters provided
+  * Failed requests count excludes successfully retried errors
+  * Backward compatible (date parameters optional)
+- **`RequestLogger::get_recent_errors()`** (#47):
+  * Now accepts optional hours parameter: `get_recent_errors(int $limit = 5, ?int $hours = null)`
+  * Filters errors by time window when hours specified
+  * Backward compatible (hours parameter optional)
+
+### Documentation
+- **USER_GUIDE.md** (#47):
+  * Added dedicated "Status Filter" section
+  * Updated filtering examples with combined filter use cases
+  * Updated "Clearing Filters" to reference both status and date filters
+- **API_REFERENCE.md** (#47):
+  * Updated `get_statistics()` method documentation with new parameters
+  * Updated `get_recent_errors()` method documentation with new parameters
+  * Added examples for date-filtered statistics queries
+
 ## [1.3.9] - 2026-01-19
 
 ### Fixed
