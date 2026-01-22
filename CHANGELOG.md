@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.10] - 2026-01-22
+
 ### Added
 - **Status Filter Dropdown** (#47): New status filter UI control on logs page
   * Dropdown with "All", "Success", and "Error" options
