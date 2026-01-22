@@ -528,50 +528,81 @@ class RequestLogView {
 	}
 
 	/**
-	 * Render date filter UI
+	 * Render filters UI (date and status)
 	 *
 	 * @return void
 	 */
-	public static function render_date_filter(): void {
-		$current_filter = isset( $_GET['date_filter'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_filter'] ) ) : '';
-		$date_start     = isset( $_GET['date_start'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_start'] ) ) : '';
-		$date_end       = isset( $_GET['date_end'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_end'] ) ) : '';
-		$page           = isset( $_GET['page'] ) ? \sanitize_text_field( \wp_unslash( $_GET['page'] ) ) : 'cf7-api-logs';
+	public static function render_filters(): void {
+		$current_date_filter = isset( $_GET['date_filter'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_filter'] ) ) : '';
+		$current_status      = isset( $_GET['status'] ) ? \sanitize_text_field( \wp_unslash( $_GET['status'] ) ) : '';
+		$date_start          = isset( $_GET['date_start'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_start'] ) ) : '';
+		$date_end            = isset( $_GET['date_end'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_end'] ) ) : '';
+		$page                = isset( $_GET['page'] ) ? \sanitize_text_field( \wp_unslash( $_GET['page'] ) ) : 'cf7-api-logs';
+		$form_id             = isset( $_GET['form_id'] ) ? \absint( $_GET['form_id'] ) : 0;
+		$search              = isset( $_GET['s'] ) ? \sanitize_text_field( \wp_unslash( $_GET['s'] ) ) : '';
 
-		$is_custom = 'custom' === $current_filter;
+		$is_custom = 'custom' === $current_date_filter;
 		?>
-		<div class="cf7-api-date-filter">
-			<form method="get" action="<?php echo \esc_url( \admin_url( 'admin.php' ) ); ?>" id="cf7-date-filter-form">
+		<div class="cf7-api-filters">
+			<form method="get" action="<?php echo \esc_url( \admin_url( 'admin.php' ) ); ?>" id="cf7-filters-form">
 				<input type="hidden" name="page" value="<?php echo \esc_attr( $page ); ?>" />
+				<?php if ( $form_id > 0 ) : ?>
+					<input type="hidden" name="form_id" value="<?php echo \esc_attr( $form_id ); ?>" />
+				<?php endif; ?>
+				<?php if ( ! empty( $search ) ) : ?>
+					<input type="hidden" name="s" value="<?php echo \esc_attr( $search ); ?>" />
+				<?php endif; ?>
 				
-				<div class="date-filter-controls">
-					<label for="date_filter" class="date-filter-label">
-						<?php \esc_html_e( 'Date Filter', 'contact-form-to-api' ); ?>:
-					</label>
-					
-					<select name="date_filter" id="date_filter" class="date-filter-select">
-						<option value="" <?php \selected( $current_filter, '' ); ?>>
-							<?php \esc_html_e( 'All Time', 'contact-form-to-api' ); ?>
-						</option>
-						<option value="today" <?php \selected( $current_filter, 'today' ); ?>>
-							<?php \esc_html_e( 'Today', 'contact-form-to-api' ); ?>
-						</option>
-						<option value="yesterday" <?php \selected( $current_filter, 'yesterday' ); ?>>
-							<?php \esc_html_e( 'Yesterday', 'contact-form-to-api' ); ?>
-						</option>
-						<option value="7days" <?php \selected( $current_filter, '7days' ); ?>>
-							<?php \esc_html_e( 'Last 7 Days', 'contact-form-to-api' ); ?>
-						</option>
-						<option value="30days" <?php \selected( $current_filter, '30days' ); ?>>
-							<?php \esc_html_e( 'Last 30 Days', 'contact-form-to-api' ); ?>
-						</option>
-						<option value="month" <?php \selected( $current_filter, 'month' ); ?>>
-							<?php \esc_html_e( 'This Month', 'contact-form-to-api' ); ?>
-						</option>
-						<option value="custom" <?php \selected( $current_filter, 'custom' ); ?>>
-							<?php \esc_html_e( 'Custom Range', 'contact-form-to-api' ); ?>
-						</option>
-					</select>
+				<div class="filter-controls">
+					<!-- Status Filter -->
+					<div class="filter-group">
+						<label for="status_filter" class="filter-label">
+							<?php \esc_html_e( 'Status', 'contact-form-to-api' ); ?>:
+						</label>
+						
+						<select name="status" id="status_filter" class="filter-select">
+							<option value="" <?php \selected( $current_status, '' ); ?>>
+								<?php \esc_html_e( 'All', 'contact-form-to-api' ); ?>
+							</option>
+							<option value="success" <?php \selected( $current_status, 'success' ); ?>>
+								<?php \esc_html_e( 'Success', 'contact-form-to-api' ); ?>
+							</option>
+							<option value="error" <?php \selected( $current_status, 'error' ); ?>>
+								<?php \esc_html_e( 'Error', 'contact-form-to-api' ); ?>
+							</option>
+						</select>
+					</div>
+
+					<!-- Date Filter -->
+					<div class="filter-group">
+						<label for="date_filter" class="filter-label">
+							<?php \esc_html_e( 'Date', 'contact-form-to-api' ); ?>:
+						</label>
+						
+						<select name="date_filter" id="date_filter" class="filter-select">
+							<option value="" <?php \selected( $current_date_filter, '' ); ?>>
+								<?php \esc_html_e( 'All Time', 'contact-form-to-api' ); ?>
+							</option>
+							<option value="today" <?php \selected( $current_date_filter, 'today' ); ?>>
+								<?php \esc_html_e( 'Today', 'contact-form-to-api' ); ?>
+							</option>
+							<option value="yesterday" <?php \selected( $current_date_filter, 'yesterday' ); ?>>
+								<?php \esc_html_e( 'Yesterday', 'contact-form-to-api' ); ?>
+							</option>
+							<option value="7days" <?php \selected( $current_date_filter, '7days' ); ?>>
+								<?php \esc_html_e( 'Last 7 Days', 'contact-form-to-api' ); ?>
+							</option>
+							<option value="30days" <?php \selected( $current_date_filter, '30days' ); ?>>
+								<?php \esc_html_e( 'Last 30 Days', 'contact-form-to-api' ); ?>
+							</option>
+							<option value="month" <?php \selected( $current_date_filter, 'month' ); ?>>
+								<?php \esc_html_e( 'This Month', 'contact-form-to-api' ); ?>
+							</option>
+							<option value="custom" <?php \selected( $current_date_filter, 'custom' ); ?>>
+								<?php \esc_html_e( 'Custom Range', 'contact-form-to-api' ); ?>
+							</option>
+						</select>
+					</div>
 
 					<div class="custom-date-range<?php echo $is_custom ? '' : ' cf7-api-hidden'; ?>" id="custom-date-range">
 						<label for="date_start">
@@ -586,47 +617,73 @@ class RequestLogView {
 					</div>
 
 					<button type="submit" class="button button-primary">
-						<?php \esc_html_e( 'Apply Filter', 'contact-form-to-api' ); ?>
+						<?php \esc_html_e( 'Apply Filters', 'contact-form-to-api' ); ?>
 					</button>
 
-					<?php if ( ! empty( $current_filter ) ) : ?>
+					<?php if ( ! empty( $current_date_filter ) || ! empty( $current_status ) ) : ?>
 						<a href="<?php echo \esc_url( \add_query_arg( 'page', $page, \admin_url( 'admin.php' ) ) ); ?>" class="button">
-							<?php \esc_html_e( 'Clear Filter', 'contact-form-to-api' ); ?>
+							<?php \esc_html_e( 'Clear Filters', 'contact-form-to-api' ); ?>
 						</a>
 					<?php endif; ?>
 				</div>
 
-				<?php if ( ! empty( $current_filter ) ) : ?>
-					<div class="active-filter-badge">
+				<?php if ( ! empty( $current_date_filter ) || ! empty( $current_status ) ) : ?>
+					<div class="active-filters-badge">
 						<span class="dashicons dashicons-filter"></span>
 						<?php
-						$filter_labels = array(
-							'today'     => \__( 'Today', 'contact-form-to-api' ),
-							'yesterday' => \__( 'Yesterday', 'contact-form-to-api' ),
-							'7days'     => \__( 'Last 7 Days', 'contact-form-to-api' ),
-							'30days'    => \__( 'Last 30 Days', 'contact-form-to-api' ),
-							'month'     => \__( 'This Month', 'contact-form-to-api' ),
-							'custom'    => \__( 'Custom Range', 'contact-form-to-api' ),
-						);
+						$active_filters = array();
 
-						$label = $filter_labels[ $current_filter ] ?? $current_filter;
-						
-						if ( 'custom' === $current_filter && ! empty( $date_start ) ) {
-							/* translators: %1$s: start date, %2$s: end date */
-							$label = \sprintf(
-								\__( 'Custom Range: %1$s to %2$s', 'contact-form-to-api' ),
-								$date_start,
-								! empty( $date_end ) ? $date_end : \__( 'now', 'contact-form-to-api' )
+						// Add status filter label
+						if ( ! empty( $current_status ) ) {
+							$status_labels = array(
+								'success' => \__( 'Success', 'contact-form-to-api' ),
+								'error'   => \__( 'Error', 'contact-form-to-api' ),
 							);
+							$active_filters[] = $status_labels[ $current_status ] ?? $current_status;
 						}
 
-						echo \esc_html( $label );
+						// Add date filter label
+						if ( ! empty( $current_date_filter ) ) {
+							$date_labels = array(
+								'today'     => \__( 'Today', 'contact-form-to-api' ),
+								'yesterday' => \__( 'Yesterday', 'contact-form-to-api' ),
+								'7days'     => \__( 'Last 7 Days', 'contact-form-to-api' ),
+								'30days'    => \__( 'Last 30 Days', 'contact-form-to-api' ),
+								'month'     => \__( 'This Month', 'contact-form-to-api' ),
+								'custom'    => \__( 'Custom Range', 'contact-form-to-api' ),
+							);
+
+							$date_label = $date_labels[ $current_date_filter ] ?? $current_date_filter;
+							
+							if ( 'custom' === $current_date_filter && ! empty( $date_start ) ) {
+								/* translators: %1$s: start date, %2$s: end date */
+								$date_label = \sprintf(
+									\__( 'Custom: %1$s to %2$s', 'contact-form-to-api' ),
+									$date_start,
+									! empty( $date_end ) ? $date_end : \__( 'now', 'contact-form-to-api' )
+								);
+							}
+
+							$active_filters[] = $date_label;
+						}
+
+						echo \esc_html( \implode( ' | ', $active_filters ) );
 						?>
 					</div>
 				<?php endif; ?>
 			</form>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Render date filter UI
+	 *
+	 * @deprecated Use render_filters() instead
+	 * @return void
+	 */
+	public static function render_date_filter(): void {
+		self::render_filters();
 	}
 
 	/**
