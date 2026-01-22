@@ -16,6 +16,7 @@ namespace SilverAssist\ContactFormToAPI\Admin\Views;
 
 use SilverAssist\ContactFormToAPI\Admin\RequestLogTable;
 use SilverAssist\ContactFormToAPI\Core\RequestLogger;
+use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -27,6 +28,8 @@ use SilverAssist\ContactFormToAPI\Core\RequestLogger;
  * @since 1.1.0
  */
 class RequestLogView {
+
+	use DateFilterTrait;
 
 	/**
 	 * Render the main logs page
@@ -64,47 +67,14 @@ class RequestLogView {
 		$logger = new RequestLogger();
 
 		// Get form_id from query if filtering by form.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only operation for filtering
 		$form_id = isset( $_GET['form_id'] ) ? \absint( $_GET['form_id'] ) : 0;
 
-		// Get date filter parameters
-		$date_filter = isset( $_GET['date_filter'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_filter'] ) ) : '';
-		$date_start  = null;
-		$date_end    = null;
-
-		// Convert date filter to start/end dates
-		if ( ! empty( $date_filter ) ) {
-			$current_date = \current_time( 'Y-m-d' );
-			switch ( $date_filter ) {
-				case 'today':
-					$date_start = $current_date;
-					$date_end   = $current_date;
-					break;
-				case 'yesterday':
-					$date_start = \gmdate( 'Y-m-d', \strtotime( '-1 day', \strtotime( $current_date ) ) );
-					$date_end   = $date_start;
-					break;
-				case '7days':
-					$date_start = \gmdate( 'Y-m-d', \strtotime( '-7 days', \strtotime( $current_date ) ) );
-					$date_end   = $current_date;
-					break;
-				case '30days':
-					$date_start = \gmdate( 'Y-m-d', \strtotime( '-30 days', \strtotime( $current_date ) ) );
-					$date_end   = $current_date;
-					break;
-				case 'month':
-					$date_start = \gmdate( 'Y-m-01', \strtotime( $current_date ) );
-					$date_end   = $current_date;
-					break;
-				case 'custom':
-					if ( isset( $_GET['date_start'] ) && ! empty( $_GET['date_start'] ) ) {
-						$date_start = \sanitize_text_field( \wp_unslash( $_GET['date_start'] ) );
-					}
-					if ( isset( $_GET['date_end'] ) && ! empty( $_GET['date_end'] ) ) {
-						$date_end = \sanitize_text_field( \wp_unslash( $_GET['date_end'] ) );
-					}
-					break;
-			}
-		}
+		// Get date filter parameters using centralized helper
+		$date_params = self::get_date_range_from_filter();
+		$date_filter = $date_params['filter'];
+		$date_start  = $date_params['start'];
+		$date_end    = $date_params['end'];
 
 		$stats = $logger->get_statistics( $form_id, $date_start, $date_end );
 
@@ -184,6 +154,98 @@ class RequestLogView {
 		}
 
 		return '(' . \__( 'All Time', 'contact-form-to-api' ) . ')';
+	}
+
+	/**
+	 * Get date range from filter parameter
+	 *
+	 * Converts date filter type to start/end date strings.
+	 * Uses DateFilterTrait validation for custom date ranges.
+	 *
+	 * @return array{filter: string, start: string|null, end: string|null} Date range parameters
+	 */
+	private static function get_date_range_from_filter(): array {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only operation for filtering
+		$date_filter = isset( $_GET['date_filter'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_filter'] ) ) : '';
+		// phpcs:enable
+
+		if ( empty( $date_filter ) ) {
+			return array(
+				'filter' => '',
+				'start'  => null,
+				'end'    => null,
+			);
+		}
+
+		$current_date = \current_time( 'Y-m-d' );
+
+		return match ( $date_filter ) {
+			'today' => array(
+				'filter' => 'today',
+				'start'  => $current_date,
+				'end'    => $current_date,
+			),
+			'yesterday' => array(
+				'filter' => 'yesterday',
+				'start'  => \gmdate( 'Y-m-d', \strtotime( '-1 day', \strtotime( $current_date ) ) ),
+				'end'    => \gmdate( 'Y-m-d', \strtotime( '-1 day', \strtotime( $current_date ) ) ),
+			),
+			'7days' => array(
+				'filter' => '7days',
+				'start'  => \gmdate( 'Y-m-d', \strtotime( '-7 days', \strtotime( $current_date ) ) ),
+				'end'    => $current_date,
+			),
+			'30days' => array(
+				'filter' => '30days',
+				'start'  => \gmdate( 'Y-m-d', \strtotime( '-30 days', \strtotime( $current_date ) ) ),
+				'end'    => $current_date,
+			),
+			'month' => array(
+				'filter' => 'month',
+				'start'  => \gmdate( 'Y-m-01', \strtotime( $current_date ) ),
+				'end'    => $current_date,
+			),
+			'custom' => self::get_custom_date_range(),
+			default => array(
+				'filter' => '',
+				'start'  => null,
+				'end'    => null,
+			),
+		};
+	}
+
+	/**
+	 * Get custom date range from request parameters
+	 *
+	 * Validates dates using DateFilterTrait::is_valid_date_format().
+	 *
+	 * @return array{filter: string, start: string|null, end: string|null} Custom date range
+	 */
+	private static function get_custom_date_range(): array {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only operation for filtering
+		$date_start = isset( $_GET['date_start'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_start'] ) ) : '';
+		$date_end   = isset( $_GET['date_end'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_end'] ) ) : '';
+		// phpcs:enable
+
+		// Validate date formats using trait method (instance needed for trait)
+		$instance = new self();
+
+		$valid_start = ! empty( $date_start ) && $instance->is_valid_date_format( $date_start );
+		$valid_end   = empty( $date_end ) || $instance->is_valid_date_format( $date_end );
+
+		if ( ! $valid_start ) {
+			return array(
+				'filter' => 'custom',
+				'start'  => null,
+				'end'    => null,
+			);
+		}
+
+		return array(
+			'filter' => 'custom',
+			'start'  => $date_start,
+			'end'    => $valid_end ? ( $date_end ?: null ) : null,
+		);
 	}
 
 	/**
@@ -544,7 +606,7 @@ class RequestLogView {
 		$is_custom = 'custom' === $current_date_filter;
 		?>
 		<div class="cf7-api-filters">
-			<form method="get" action="<?php echo \esc_url( \admin_url( 'admin.php' ) ); ?>" id="cf7-filters-form">
+			<form method="get" action="<?php echo \esc_url( \admin_url( 'admin.php' ) ); ?>" id="cf7-date-filter-form">
 				<input type="hidden" name="page" value="<?php echo \esc_attr( $page ); ?>" />
 				<?php if ( $form_id > 0 ) : ?>
 					<input type="hidden" name="form_id" value="<?php echo \esc_attr( $form_id ); ?>" />

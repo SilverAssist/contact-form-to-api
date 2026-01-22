@@ -430,50 +430,55 @@ class RequestLogger {
 	public function get_statistics( ?int $form_id, ?string $date_start = null, ?string $date_end = null ): array {
 		global $wpdb;
 
-		// Build date filter clause
-		$date_clause = '';
-		if ( null !== $date_start && null !== $date_end ) {
-			$date_clause = $wpdb->prepare( ' AND DATE(created_at) BETWEEN %s AND %s', $date_start, $date_end );
-		}
+		// Build base query with placeholders for all dynamic values
+		$base_query = 'SELECT 
+				COUNT(*) as total_requests,
+				SUM(CASE WHEN status = %s THEN 1 ELSE 0 END) as successful_requests,
+				SUM(CASE 
+					WHEN status IN (%s, %s, %s) 
+					AND id NOT IN (
+						SELECT DISTINCT retry_of FROM %i 
+						WHERE retry_of IS NOT NULL 
+						AND status = %s
+					)
+					THEN 1 
+					ELSE 0 
+				END) as failed_requests,
+				AVG(execution_time) as avg_execution_time,
+				MAX(retry_count) as max_retries
+			FROM %i
+			WHERE 1=1';
 
-		// Build form filter clause
-		$form_clause = '';
+		// Base prepare values (always needed)
+		$prepare_values = array(
+			'success',       // For successful_requests count
+			'error',         // For failed_requests IN clause
+			'client_error',  // For failed_requests IN clause
+			'server_error',  // For failed_requests IN clause
+			$this->table_name, // For subquery FROM
+			'success',       // For subquery status check
+			$this->table_name, // For main FROM
+		);
+
+		// Add form filter if specified
 		if ( null !== $form_id && $form_id > 0 ) {
-			$form_clause = $wpdb->prepare( ' AND form_id = %d', $form_id );
+			$base_query      .= ' AND form_id = %d';
+			$prepare_values[] = $form_id;
 		}
 
-		// Query with subquery to exclude successfully retried errors
-		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- Date and form clauses are safely prepared above.
+		// Add date filter if specified
+		if ( null !== $date_start && null !== $date_end ) {
+			$base_query      .= ' AND DATE(created_at) BETWEEN %s AND %s';
+			$prepare_values[] = $date_start;
+			$prepare_values[] = $date_end;
+		}
+
+		// Execute query with all values passed to single prepare() call
+		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is built with placeholders, all values passed to prepare().
 		$stats = $wpdb->get_row(
-			$wpdb->prepare(
-				'SELECT 
-					COUNT(*) as total_requests,
-					SUM(CASE WHEN status = %s THEN 1 ELSE 0 END) as successful_requests,
-					SUM(CASE 
-						WHEN status IN (%s, %s, %s) 
-						AND id NOT IN (
-							SELECT DISTINCT retry_of FROM %i 
-							WHERE retry_of IS NOT NULL 
-							AND status = %s
-						)
-						THEN 1 
-						ELSE 0 
-					END) as failed_requests,
-					AVG(execution_time) as avg_execution_time,
-					MAX(retry_count) as max_retries
-				FROM %i
-				WHERE 1=1' . $form_clause . $date_clause,
-				'success',
-				'error',
-				'client_error',
-				'server_error',
-				$this->table_name,
-				'success',
-				$this->table_name
-			),
+			$wpdb->prepare( $base_query, $prepare_values ),
 			ARRAY_A
 		);
-		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
 		return $stats ?: array(
 			'total_requests'      => 0,
