@@ -474,8 +474,8 @@ class RequestLogger {
 		}
 
 		// Execute query with all values passed to single prepare() call
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query is built with placeholders, all values passed to prepare().
 		$stats = $wpdb->get_row(
+			// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query built with placeholders, all values passed to prepare().
 			$wpdb->prepare( $base_query, $prepare_values ),
 			ARRAY_A
 		);
