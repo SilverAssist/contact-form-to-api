@@ -679,7 +679,7 @@ class RequestLogView {
 	/**
 	 * Render date filter UI
 	 *
-	 * @deprecated Use render_filters() instead
+	 * @deprecated 1.4.0 Use render_filters() instead
 	 * @return void
 	 */
 	public static function render_date_filter(): void {
