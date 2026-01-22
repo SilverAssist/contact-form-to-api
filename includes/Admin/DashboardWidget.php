@@ -139,7 +139,7 @@ class DashboardWidget implements LoadableInterface {
 			'errors_24h'         => $logger->get_count_last_hours( 24, 'error' ),
 			'success_rate'       => $logger->get_success_rate_last_hours( 24 ),
 			'avg_response_time'  => $logger->get_avg_response_time_last_hours( 24 ),
-			'recent_errors'      => $logger->get_recent_errors( 5 ),
+			'recent_errors'      => $logger->get_recent_errors( 5, 24 ),
 		);
 	}
 

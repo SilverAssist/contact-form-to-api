@@ -65,7 +65,48 @@ class RequestLogView {
 
 		// Get form_id from query if filtering by form.
 		$form_id = isset( $_GET['form_id'] ) ? \absint( $_GET['form_id'] ) : 0;
-		$stats   = $logger->get_statistics( $form_id );
+
+		// Get date filter parameters
+		$date_filter = isset( $_GET['date_filter'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_filter'] ) ) : '';
+		$date_start  = null;
+		$date_end    = null;
+
+		// Convert date filter to start/end dates
+		if ( ! empty( $date_filter ) ) {
+			$current_date = \current_time( 'Y-m-d' );
+			switch ( $date_filter ) {
+				case 'today':
+					$date_start = $current_date;
+					$date_end   = $current_date;
+					break;
+				case 'yesterday':
+					$date_start = \gmdate( 'Y-m-d', \strtotime( '-1 day', \strtotime( $current_date ) ) );
+					$date_end   = $date_start;
+					break;
+				case '7days':
+					$date_start = \gmdate( 'Y-m-d', \strtotime( '-7 days', \strtotime( $current_date ) ) );
+					$date_end   = $current_date;
+					break;
+				case '30days':
+					$date_start = \gmdate( 'Y-m-d', \strtotime( '-30 days', \strtotime( $current_date ) ) );
+					$date_end   = $current_date;
+					break;
+				case 'month':
+					$date_start = \gmdate( 'Y-m-01', \strtotime( $current_date ) );
+					$date_end   = $current_date;
+					break;
+				case 'custom':
+					if ( isset( $_GET['date_start'] ) && ! empty( $_GET['date_start'] ) ) {
+						$date_start = \sanitize_text_field( \wp_unslash( $_GET['date_start'] ) );
+					}
+					if ( isset( $_GET['date_end'] ) && ! empty( $_GET['date_end'] ) ) {
+						$date_end = \sanitize_text_field( \wp_unslash( $_GET['date_end'] ) );
+					}
+					break;
+			}
+		}
+
+		$stats = $logger->get_statistics( $form_id, $date_start, $date_end );
 
 		if ( empty( $stats['total_requests'] ) ) {
 			return;
@@ -75,12 +116,25 @@ class RequestLogView {
 			? \round( ( $stats['successful_requests'] / $stats['total_requests'] ) * 100, 1 )
 			: 0;
 
+		// Determine date context label
+		$date_context = self::get_date_context_label( $date_filter, $date_start, $date_end );
+
 		?>
 		<div class="cf7-api-stats-summary">
 			<div class="stats-grid">
 				<div class="stat-box">
 					<span class="stat-number"><?php echo \esc_html( \number_format_i18n( $stats['total_requests'] ) ); ?></span>
-					<span class="stat-label"><?php \esc_html_e( 'Total Requests', 'contact-form-to-api' ); ?></span>
+					<span class="stat-label">
+						<?php
+						echo \esc_html(
+							\sprintf(
+								/* translators: %s: date context (e.g., "(Today)", "(All Time)") */
+								\__( 'Total Requests %s', 'contact-form-to-api' ),
+								$date_context
+							)
+						);
+						?>
+					</span>
 				</div>
 				<div class="stat-box stat-success">
 					<span class="stat-number"><?php echo \esc_html( \number_format_i18n( $stats['successful_requests'] ) ); ?></span>
@@ -98,6 +152,38 @@ class RequestLogView {
 			</div>
 		</div>
 		<?php
+	}
+
+	/**
+	 * Get date context label for statistics
+	 *
+	 * @param string      $date_filter Date filter type
+	 * @param string|null $date_start  Start date
+	 * @param string|null $date_end    End date
+	 * @return string Date context label (e.g., "(Today)", "(All Time)")
+	 */
+	private static function get_date_context_label( string $date_filter, ?string $date_start, ?string $date_end ): string {
+		if ( empty( $date_filter ) ) {
+			return '(' . \__( 'All Time', 'contact-form-to-api' ) . ')';
+		}
+
+		$labels = array(
+			'today'     => '(' . \__( 'Today', 'contact-form-to-api' ) . ')',
+			'yesterday' => '(' . \__( 'Yesterday', 'contact-form-to-api' ) . ')',
+			'7days'     => '(' . \__( 'Last 7 Days', 'contact-form-to-api' ) . ')',
+			'30days'    => '(' . \__( 'Last 30 Days', 'contact-form-to-api' ) . ')',
+			'month'     => '(' . \__( 'This Month', 'contact-form-to-api' ) . ')',
+		);
+
+		if ( isset( $labels[ $date_filter ] ) ) {
+			return $labels[ $date_filter ];
+		}
+
+		if ( 'custom' === $date_filter && $date_start ) {
+			return '(' . \esc_html( $date_start ) . ' - ' . \esc_html( $date_end ?: \__( 'now', 'contact-form-to-api' ) ) . ')';
+		}
+
+		return '(' . \__( 'All Time', 'contact-form-to-api' ) . ')';
 	}
 
 	/**

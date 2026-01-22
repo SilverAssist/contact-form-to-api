@@ -419,54 +419,61 @@ class RequestLogger {
 	 * Get log statistics for a form
 	 *
 	 * Returns aggregated statistics about API calls.
+	 * Can be filtered by date range to show statistics for specific time periods.
 	 *
 	 * @since 1.1.0
-	 * @param int|null $form_id Form ID (0 or null for all forms)
+	 * @param int|null    $form_id    Form ID (0 or null for all forms)
+	 * @param string|null $date_start Start date in Y-m-d format (null for no filter)
+	 * @param string|null $date_end   End date in Y-m-d format (null for no filter)
 	 * @return array<string, int|float> Statistics array
 	 */
-	public function get_statistics( ?int $form_id ): array {
+	public function get_statistics( ?int $form_id, ?string $date_start = null, ?string $date_end = null ): array {
 		global $wpdb;
 
-		if ( null !== $form_id && $form_id > 0 ) {
-			$stats = $wpdb->get_row(
-				$wpdb->prepare(
-					'SELECT 
-						COUNT(*) as total_requests,
-						SUM(CASE WHEN status = %s THEN 1 ELSE 0 END) as successful_requests,
-						SUM(CASE WHEN status IN (%s, %s, %s) THEN 1 ELSE 0 END) as failed_requests,
-						AVG(execution_time) as avg_execution_time,
-						MAX(retry_count) as max_retries
-					FROM %i
-					WHERE form_id = %d',
-					'success',
-					'error',
-					'client_error',
-					'server_error',
-					$this->table_name,
-					$form_id
-				),
-				ARRAY_A
-			);
-		} else {
-			// Get statistics for all forms
-			$stats = $wpdb->get_row(
-				$wpdb->prepare(
-					'SELECT 
-						COUNT(*) as total_requests,
-						SUM(CASE WHEN status = %s THEN 1 ELSE 0 END) as successful_requests,
-						SUM(CASE WHEN status IN (%s, %s, %s) THEN 1 ELSE 0 END) as failed_requests,
-						AVG(execution_time) as avg_execution_time,
-						MAX(retry_count) as max_retries
-					FROM %i',
-					'success',
-					'error',
-					'client_error',
-					'server_error',
-					$this->table_name
-				),
-				ARRAY_A
-			);
+		// Build date filter clause
+		$date_clause = '';
+		if ( null !== $date_start && null !== $date_end ) {
+			$date_clause = $wpdb->prepare( ' AND DATE(created_at) BETWEEN %s AND %s', $date_start, $date_end );
 		}
+
+		// Build form filter clause
+		$form_clause = '';
+		if ( null !== $form_id && $form_id > 0 ) {
+			$form_clause = $wpdb->prepare( ' AND form_id = %d', $form_id );
+		}
+
+		// Query with subquery to exclude successfully retried errors
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- Date and form clauses are safely prepared above.
+		$stats = $wpdb->get_row(
+			$wpdb->prepare(
+				'SELECT 
+					COUNT(*) as total_requests,
+					SUM(CASE WHEN status = %s THEN 1 ELSE 0 END) as successful_requests,
+					SUM(CASE 
+						WHEN status IN (%s, %s, %s) 
+						AND id NOT IN (
+							SELECT DISTINCT retry_of FROM %i 
+							WHERE retry_of IS NOT NULL 
+							AND status = %s
+						)
+						THEN 1 
+						ELSE 0 
+					END) as failed_requests,
+					AVG(execution_time) as avg_execution_time,
+					MAX(retry_count) as max_retries
+				FROM %i
+				WHERE 1=1' . $form_clause . $date_clause,
+				'success',
+				'error',
+				'client_error',
+				'server_error',
+				$this->table_name,
+				'success',
+				$this->table_name
+			),
+			ARRAY_A
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
 		return $stats ?: array(
 			'total_requests'      => 0,
@@ -610,12 +617,19 @@ class RequestLogger {
 	 * Excludes errors that have been successfully retried.
 	 *
 	 * @since 1.2.0
-	 * @param int $limit Maximum number of errors to retrieve
+	 * @param int      $limit Maximum number of errors to retrieve
+	 * @param int|null $hours Optional time window in hours (null for all time)
 	 * @return array<int, array<string, mixed>> Array of error log entries
 	 */
-	public function get_recent_errors( int $limit = 5 ): array {
+	public function get_recent_errors( int $limit = 5, ?int $hours = null ): array {
 		global $wpdb;
 
+		$time_clause = '';
+		if ( null !== $hours && $hours > 0 ) {
+			$time_clause = $wpdb->prepare( ' AND created_at >= DATE_SUB(NOW(), INTERVAL %d HOUR)', $hours );
+		}
+
+		// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- Time clause is safely prepared above.
 		$results = $wpdb->get_results(
 			$wpdb->prepare(
 				'SELECT * FROM %i 
@@ -624,7 +638,7 @@ class RequestLogger {
 					SELECT DISTINCT retry_of FROM %i 
 					WHERE retry_of IS NOT NULL 
 					AND status = %s
-				)
+				)' . $time_clause . '
 				ORDER BY created_at DESC 
 				LIMIT %d',
 				$this->table_name,
@@ -637,6 +651,7 @@ class RequestLogger {
 			),
 			ARRAY_A
 		);
+		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
 		return $results ?: array();
 	}
