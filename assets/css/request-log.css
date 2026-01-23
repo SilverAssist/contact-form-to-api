@@ -203,37 +203,72 @@
 	font-weight: 600;
 }
 
+/* From Column (Sender Info) */
+.from-name {
+	color: #1d2327;
+}
+
+.from-email {
+	font-size: 12px;
+	color: #646970;
+}
+
+.from-unknown {
+	color: #a7aaad;
+	font-style: italic;
+}
+
+/* Endpoint Cell - Fixed Width with Ellipsis */
+.endpoint-cell {
+	display: block;
+	max-width: 300px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.endpoint-cell a {
+	display: block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 /* List Table Enhancements */
+.wp-list-table .column-from {
+	width: 18%;
+}
+
 .wp-list-table .column-form {
-	width: 25%;
+	width: 12%;
 }
 
 .wp-list-table .column-endpoint {
-	width: 35%;
+	max-width: 250px;
 }
 
 .wp-list-table .column-method {
-	width: 8%;
+	width: 5%;
 }
 
 .wp-list-table .column-status {
-	width: 10%;
-}
-
-.wp-list-table .column-response_code {
-	width: 10%;
-}
-
-.wp-list-table .column-execution_time {
-	width: 10%;
-}
-
-.wp-list-table .column-retry_count {
 	width: 8%;
 }
 
+.wp-list-table .column-response_code {
+	width: 8%;
+}
+
+.wp-list-table .column-execution_time {
+	width: 8%;
+}
+
+.wp-list-table .column-retry_count {
+	width: 6%;
+}
+
 .wp-list-table .column-created_at {
-	width: 15%;
+	width: 12%;
 }
 
 /* Responsive Design */

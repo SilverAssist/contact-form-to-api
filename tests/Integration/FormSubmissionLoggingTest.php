@@ -543,16 +543,16 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 	 */
 	public static function http_status_code_provider(): array {
 		return array(
-			'200 OK'                  => array( 200, 'success' ),
-			'201 Created'             => array( 201, 'success' ),
-			'204 No Content'          => array( 204, 'success' ),
-			'400 Bad Request'         => array( 400, 'client_error' ),
-			'401 Unauthorized'        => array( 401, 'client_error' ),
-			'403 Forbidden'           => array( 403, 'client_error' ),
-			'404 Not Found'           => array( 404, 'client_error' ),
+			'200 OK'                    => array( 200, 'success' ),
+			'201 Created'               => array( 201, 'success' ),
+			'204 No Content'            => array( 204, 'success' ),
+			'400 Bad Request'           => array( 400, 'client_error' ),
+			'401 Unauthorized'          => array( 401, 'client_error' ),
+			'403 Forbidden'             => array( 403, 'client_error' ),
+			'404 Not Found'             => array( 404, 'client_error' ),
 			'500 Internal Server Error' => array( 500, 'server_error' ),
-			'502 Bad Gateway'         => array( 502, 'server_error' ),
-			'503 Service Unavailable' => array( 503, 'server_error' ),
+			'502 Bad Gateway'           => array( 502, 'server_error' ),
+			'503 Service Unavailable'   => array( 503, 'server_error' ),
 		);
 	}
 

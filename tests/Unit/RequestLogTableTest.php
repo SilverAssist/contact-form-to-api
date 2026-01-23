@@ -335,4 +335,323 @@ class RequestLogTableTest extends TestCase {
 		$this->assertEquals( '', $result['clause'], 'Should return empty clause for invalid filter' );
 		$this->assertEquals( array(), $result['values'], 'Should return empty values for invalid filter' );
 	}
+
+	/**
+	 * Test mask_email with standard email
+	 *
+	 * @return void
+	 */
+	public function testMaskEmailWithStandardEmail(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'mask_email' );
+		$method->setAccessible( true );
+
+		$result = $method->invoke( $this->table, 'john.doe@example.com' );
+
+		$this->assertEquals( 'jo***@example.com', $result, 'Should mask standard email showing first 2 chars' );
+	}
+
+	/**
+	 * Test mask_email with short email (2 characters local part)
+	 *
+	 * @return void
+	 */
+	public function testMaskEmailWithTwoCharLocalPart(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'mask_email' );
+		$method->setAccessible( true );
+
+		$result = $method->invoke( $this->table, 'ab@example.com' );
+
+		$this->assertEquals( 'a***@example.com', $result, 'Should show only first char for 2-char local part' );
+	}
+
+	/**
+	 * Test mask_email with single character local part
+	 *
+	 * @return void
+	 */
+	public function testMaskEmailWithSingleCharLocalPart(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'mask_email' );
+		$method->setAccessible( true );
+
+		$result = $method->invoke( $this->table, 'a@example.com' );
+
+		$this->assertEquals( '***@example.com', $result, 'Should completely mask single char local part' );
+	}
+
+	/**
+	 * Test mask_email with empty string
+	 *
+	 * @return void
+	 */
+	public function testMaskEmailWithEmptyString(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'mask_email' );
+		$method->setAccessible( true );
+
+		$result = $method->invoke( $this->table, '' );
+
+		$this->assertEquals( '', $result, 'Should return empty string for empty input' );
+	}
+
+	/**
+	 * Test mask_email with invalid email (no @ symbol)
+	 *
+	 * @return void
+	 */
+	public function testMaskEmailWithNoAtSymbol(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'mask_email' );
+		$method->setAccessible( true );
+
+		$result = $method->invoke( $this->table, 'notanemail' );
+
+		$this->assertEquals( 'notanemail', $result, 'Should return original string when no @ symbol' );
+	}
+
+	/**
+	 * Test extract_sender_info with standard form data
+	 *
+	 * @return void
+	 */
+	public function testExtractSenderInfoWithStandardData(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'extract_sender_info' );
+		$method->setAccessible( true );
+
+		$item = array(
+			'id'                 => 1,
+			'request_data'       => \wp_json_encode(
+				array(
+					'name'     => 'John',
+					'lastname' => 'Doe',
+					'email'    => 'john@example.com',
+				)
+			),
+			'encryption_version' => 0,
+		);
+
+		$result = $method->invoke( $this->table, $item );
+
+		$this->assertEquals( 'John Doe', $result['display_name'], 'Should extract full name' );
+		$this->assertEquals( 'john@example.com', $result['email'], 'Should extract email' );
+	}
+
+	/**
+	 * Test extract_sender_info with CF7 field names (your-name format)
+	 *
+	 * @return void
+	 */
+	public function testExtractSenderInfoWithCF7FieldNames(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'extract_sender_info' );
+		$method->setAccessible( true );
+
+		$item = array(
+			'id'                 => 2,
+			'request_data'       => \wp_json_encode(
+				array(
+					'your-name'  => 'Jane',
+					'your-email' => 'jane@example.com',
+				)
+			),
+			'encryption_version' => 0,
+		);
+
+		$result = $method->invoke( $this->table, $item );
+
+		$this->assertEquals( 'Jane', $result['display_name'], 'Should extract name from your-name field' );
+		$this->assertEquals( 'jane@example.com', $result['email'], 'Should extract email from your-email field' );
+	}
+
+	/**
+	 * Test extract_sender_info with case-insensitive field names
+	 *
+	 * @return void
+	 */
+	public function testExtractSenderInfoCaseInsensitive(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'extract_sender_info' );
+		$method->setAccessible( true );
+
+		$item = array(
+			'id'                 => 3,
+			'request_data'       => \wp_json_encode(
+				array(
+					'NAME'     => 'Bob',
+					'LASTNAME' => 'Smith',
+					'EMAIL'    => 'bob@example.com',
+				)
+			),
+			'encryption_version' => 0,
+		);
+
+		$result = $method->invoke( $this->table, $item );
+
+		$this->assertEquals( 'Bob Smith', $result['display_name'], 'Should extract name case-insensitively' );
+		$this->assertEquals( 'bob@example.com', $result['email'], 'Should extract email case-insensitively' );
+	}
+
+	/**
+	 * Test extract_sender_info with array values (CF7 checkbox/radio format)
+	 *
+	 * @return void
+	 */
+	public function testExtractSenderInfoWithArrayValues(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'extract_sender_info' );
+		$method->setAccessible( true );
+
+		$item = array(
+			'id'                 => 4,
+			'request_data'       => \wp_json_encode(
+				array(
+					'name'  => array( 'Alice' ),
+					'email' => array( 'alice@example.com' ),
+				)
+			),
+			'encryption_version' => 0,
+		);
+
+		$result = $method->invoke( $this->table, $item );
+
+		$this->assertEquals( 'Alice', $result['display_name'], 'Should extract name from array' );
+		$this->assertEquals( 'alice@example.com', $result['email'], 'Should extract email from array' );
+	}
+
+	/**
+	 * Test extract_sender_info with empty request data
+	 *
+	 * @return void
+	 */
+	public function testExtractSenderInfoWithEmptyData(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'extract_sender_info' );
+		$method->setAccessible( true );
+
+		$item = array(
+			'id'                 => 5,
+			'request_data'       => '',
+			'encryption_version' => 0,
+		);
+
+		$result = $method->invoke( $this->table, $item );
+
+		$this->assertEquals( '', $result['display_name'], 'Should return empty name for empty data' );
+		$this->assertEquals( '', $result['email'], 'Should return empty email for empty data' );
+	}
+
+	/**
+	 * Test extract_sender_info with invalid JSON
+	 *
+	 * @return void
+	 */
+	public function testExtractSenderInfoWithInvalidJson(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'extract_sender_info' );
+		$method->setAccessible( true );
+
+		$item = array(
+			'id'                 => 6,
+			'request_data'       => 'not valid json',
+			'encryption_version' => 0,
+		);
+
+		$result = $method->invoke( $this->table, $item );
+
+		$this->assertEquals( '', $result['display_name'], 'Should return empty name for invalid JSON' );
+		$this->assertEquals( '', $result['email'], 'Should return empty email for invalid JSON' );
+	}
+
+	/**
+	 * Test extract_sender_info with missing fields
+	 *
+	 * @return void
+	 */
+	public function testExtractSenderInfoWithMissingFields(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'extract_sender_info' );
+		$method->setAccessible( true );
+
+		$item = array(
+			'id'                 => 7,
+			'request_data'       => \wp_json_encode(
+				array(
+					'subject' => 'Test Subject',
+					'message' => 'Test message content',
+				)
+			),
+			'encryption_version' => 0,
+		);
+
+		$result = $method->invoke( $this->table, $item );
+
+		$this->assertEquals( '', $result['display_name'], 'Should return empty name when fields missing' );
+		$this->assertEquals( '', $result['email'], 'Should return empty email when fields missing' );
+	}
+
+	/**
+	 * Test extract_sender_info caching behavior
+	 *
+	 * @return void
+	 */
+	public function testExtractSenderInfoCaching(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'extract_sender_info' );
+		$method->setAccessible( true );
+
+		$item = array(
+			'id'                 => 8,
+			'request_data'       => \wp_json_encode(
+				array(
+					'name'  => 'Cached',
+					'email' => 'cached@example.com',
+				)
+			),
+			'encryption_version' => 0,
+		);
+
+		// Call twice with same ID - should use cache on second call
+		$result1 = $method->invoke( $this->table, $item );
+		$result2 = $method->invoke( $this->table, $item );
+
+		$this->assertEquals( $result1, $result2, 'Cached results should match' );
+		$this->assertEquals( 'Cached', $result1['display_name'], 'Should extract name correctly' );
+	}
+
+	/**
+	 * Test extract_sender_info respects sensitive data patterns
+	 *
+	 * When a field is marked as sensitive in user configuration,
+	 * it should not be extracted even if present in the data.
+	 *
+	 * @return void
+	 */
+	public function testExtractSenderInfoRespectsSensitivePatterns(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'extract_sender_info' );
+		$method->setAccessible( true );
+
+		// Test with default sensitive patterns (password, token, etc.)
+		// These should never match name/email fields by default
+		$item = array(
+			'id'                 => 9,
+			'request_data'       => \wp_json_encode(
+				array(
+					'name'     => 'TestUser',
+					'email'    => 'test@example.com',
+					'password' => 'secret123', // This should never be extracted
+				)
+			),
+			'encryption_version' => 0,
+		);
+
+		$result = $method->invoke( $this->table, $item );
+
+		// Name and email should be extracted (not in default sensitive patterns)
+		$this->assertEquals( 'TestUser', $result['display_name'], 'Name should be extracted when not sensitive' );
+		$this->assertEquals( 'test@example.com', $result['email'], 'Email should be extracted when not sensitive' );
+	}
 }

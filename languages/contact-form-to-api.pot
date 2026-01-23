@@ -2,21 +2,21 @@
 # This file is distributed under the Polyform-Noncommercial-1.0.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: CF7 to API 1.2.0\n"
+"Project-Id-Version: CF7 to API 1.3.11\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/contact-form-to-api\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-03T05:54:35+00:00\n"
+"POT-Creation-Date: 2026-01-23T18:27:32+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: contact-form-to-api\n"
 
 #. Plugin Name of the plugin
 #: contact-form-to-api.php
-#: includes/Admin/SettingsPage.php:143
+#: includes/Admin/SettingsPage.php:136
 msgid "CF7 to API"
 msgstr ""
 
@@ -48,706 +48,1291 @@ msgstr ""
 msgid "CF7 API Status"
 msgstr ""
 
-#: includes/Admin/RequestLogController.php:143
-#: includes/Admin/RequestLogController.php:144
-#: includes/Admin/Views/RequestLogView.php:40
-#: includes/Admin/Views/SettingsView.php:417
-msgid "API Logs"
+#: includes/Admin/GlobalSettingsController.php:164
+msgid "Please enter a recipient email address."
 msgstr ""
 
-#: includes/Admin/RequestLogController.php:162
-msgid "Logs per page"
+#: includes/Admin/GlobalSettingsController.php:165
+msgid "Sending..."
 msgstr ""
 
-#: includes/Admin/RequestLogController.php:212
-#: includes/Admin/RequestLogController.php:386
+#: includes/Admin/GlobalSettingsController.php:166
+#: includes/Admin/Views/SettingsView.php:834
+msgid "Send Test Email"
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:167
+msgid "An error occurred while sending the test email."
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:190
+msgid "Are you sure you want to start the migration? This will encrypt all unencrypted logs."
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:191
+msgid "Are you sure you want to cancel the migration?"
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:192
+msgid "Migration started..."
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:193
+msgid "Processing batch..."
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:194
+msgid "Migration completed successfully!"
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:195
+msgid "Migration cancelled."
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:196
+msgid "Migration error:"
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:197
+#: includes/Admin/Views/MigrationView.php:129
+msgid "logs processed"
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:198
+msgid "logs encrypted"
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:199
+msgid "failed"
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:213
+msgid "You do not have permission to access this page."
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:218
+msgid "Security check failed. Please try again."
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:392
+#: includes/Admin/GlobalSettingsController.php:437
+#: includes/Admin/GlobalSettingsController.php:479
+#: includes/Admin/GlobalSettingsController.php:528
+#: includes/Admin/GlobalSettingsController.php:554
+msgid "Permission denied"
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:397
+#: includes/Admin/GlobalSettingsController.php:442
+#: includes/Admin/GlobalSettingsController.php:484
+#: includes/Admin/GlobalSettingsController.php:533
+#: includes/Admin/GlobalSettingsController.php:559
+#: includes/Admin/RequestLogController.php:246
+#: includes/Admin/RequestLogController.php:542
 msgid "Security check failed"
 msgstr ""
 
-#: includes/Admin/RequestLogController.php:325
+#: includes/Admin/GlobalSettingsController.php:403
+msgid "Invalid email address"
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:411
+msgid "Test email sent successfully"
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:413
+msgid "Failed to send test email"
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:461
+msgid "Dry run started"
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:461
+msgid "Migration started"
+msgstr ""
+
+#: includes/Admin/GlobalSettingsController.php:571
+msgid "Migration cancelled"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:161
+#: includes/Admin/RequestLogController.php:162
+#: includes/Admin/Views/RequestLogView.php:43
+#: includes/Admin/Views/SettingsView.php:869
+msgid "API Logs"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:196
+msgid "Logs per page"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:410
+msgid "API logging is disabled. Enable it in the plugin settings to view logs."
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:411
+msgid "Logging Disabled"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:458
 msgid "Log entry not found."
 msgstr ""
 
-#: includes/Admin/RequestLogController.php:391
+#: includes/Admin/RequestLogController.php:521
+msgid "Are you sure you want to delete this log entry?"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:522
+msgid "Please select at least one item."
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:523
+msgid "Are you sure you want to delete the selected log entries?"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:524
+#: includes/Admin/Views/RequestLogView.php:909
+msgid "Are you sure you want to retry this request?"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:525
+msgid "Are you sure you want to retry the selected requests?"
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:526
+msgid "Start date must be before or equal to end date."
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:527
+msgid "End date must be after or equal to start date."
+msgstr ""
+
+#: includes/Admin/RequestLogController.php:547
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
-#: includes/Admin/RequestLogController.php:406
+#: includes/Admin/RequestLogController.php:562
 msgid "Invalid export action."
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:65
-msgid "Form"
+#: includes/Admin/RequestLogTable.php:81
+#: includes/Admin/Views/RequestLogView.php:671
+msgid "From"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:66
-#: includes/Admin/Views/RequestLogView.php:142
-#: includes/ContactForm/Views/IntegrationView.php:501
-#: includes/Services/ExportService.php:261
+#: includes/Admin/RequestLogTable.php:82
+msgid "Channel"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:83
+#: includes/Admin/Views/RequestLogView.php:300
+#: includes/ContactForm/Views/IntegrationView.php:520
+#: includes/Services/ExportService.php:289
 msgid "Endpoint"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:67
-#: includes/Admin/Views/RequestLogView.php:146
-#: includes/ContactForm/Views/IntegrationView.php:164
-#: includes/ContactForm/Views/IntegrationView.php:502
-#: includes/Services/ExportService.php:262
+#: includes/Admin/RequestLogTable.php:84
+#: includes/Admin/Views/RequestLogView.php:304
+#: includes/ContactForm/Views/IntegrationView.php:165
+#: includes/ContactForm/Views/IntegrationView.php:521
+#: includes/Services/ExportService.php:290
 msgid "Method"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:68
-#: includes/Admin/Views/RequestLogView.php:150
-#: includes/ContactForm/Views/IntegrationView.php:503
-#: includes/Services/ExportService.php:263
+#: includes/Admin/RequestLogTable.php:85
+#: includes/Admin/Views/RequestLogView.php:308
+#: includes/Admin/Views/RequestLogView.php:622
+#: includes/ContactForm/Views/IntegrationView.php:522
+#: includes/Services/ExportService.php:291
 msgid "Status"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:69
+#: includes/Admin/RequestLogTable.php:86
 msgid "Response"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:70
-#: includes/ContactForm/Views/IntegrationView.php:505
+#: includes/Admin/RequestLogTable.php:87
+#: includes/ContactForm/Views/IntegrationView.php:524
 msgid "Time (s)"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:71
-#: includes/ContactForm/Views/IntegrationView.php:506
+#: includes/Admin/RequestLogTable.php:88
+#: includes/ContactForm/Views/IntegrationView.php:525
 msgid "Retries"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:72
-#: includes/Admin/Views/RequestLogView.php:154
-#: includes/ContactForm/Views/IntegrationView.php:500
+#: includes/Admin/RequestLogTable.php:89
+#: includes/Admin/Views/RequestLogView.php:312
+#: includes/Admin/Views/RequestLogView.php:641
+#: includes/ContactForm/Views/IntegrationView.php:519
 msgid "Date"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:99
-#: includes/Admin/RequestLogTable.php:395
+#: includes/Admin/RequestLogTable.php:116
+#: includes/Admin/RequestLogTable.php:605
 msgid "Delete"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:100
-#: includes/Admin/RequestLogTable.php:378
+#: includes/Admin/RequestLogTable.php:117
+#: includes/Admin/RequestLogTable.php:587
 msgid "Retry"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:142
+#: includes/Admin/RequestLogTable.php:159
+#: includes/Admin/Views/RequestLogView.php:627
 msgid "All"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:150
+#: includes/Admin/RequestLogTable.php:167
+#: includes/Admin/Views/RequestLogView.php:630
+#: includes/Admin/Views/RequestLogView.php:703
 msgid "Success"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:158
+#: includes/Admin/RequestLogTable.php:175
 msgid "Errors"
 msgstr ""
 
 #. translators: %d: Form ID number
-#: includes/Admin/RequestLogTable.php:330
+#. translators: %d: form ID
+#: includes/Admin/RequestLogTable.php:354
+#: includes/Services/EmailAlertService.php:300
 #, php-format
 msgid "Form #%d"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:360
+#: includes/Admin/RequestLogTable.php:380
+msgid "Unknown"
+msgstr ""
+
+#: includes/Admin/RequestLogTable.php:566
 msgid "View Details"
 msgstr ""
 
-#: includes/Admin/RequestLogTable.php:455
+#: includes/Admin/RequestLogTable.php:690
 msgid "No API logs found."
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:128
+#: includes/Admin/SettingsPage.php:121
 msgid "Check Updates"
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:137
+#: includes/Admin/SettingsPage.php:130
 msgid "Contact Form 7 to API"
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:140
+#: includes/Admin/SettingsPage.php:133
 msgid "Send CF7 form submissions to external APIs with field mapping and logging."
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:180
+#: includes/Admin/SettingsPage.php:173
 msgid "Checking..."
 msgstr ""
 
 #. translators: %s: Version number
-#: includes/Admin/SettingsPage.php:182
+#: includes/Admin/SettingsPage.php:175
 #, php-format
 msgid "Update available: v%s! Redirecting..."
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:183
+#: includes/Admin/SettingsPage.php:176
 msgid "Plugin is up to date!"
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:184
+#: includes/Admin/SettingsPage.php:177
 msgid "Error checking updates. Please try again."
 msgstr ""
 
-#: includes/Admin/SettingsPage.php:185
+#: includes/Admin/SettingsPage.php:178
 msgid "Error connecting to update server."
 msgstr ""
 
-#: includes/Admin/Views/DashboardWidgetView.php:38
+#: includes/Admin/SettingsPage.php:214
+msgid "Settings saved successfully."
+msgstr ""
+
+#: includes/Admin/SettingsPage.php:219
+msgid "Failed to save settings. Please try again."
+msgstr ""
+
+#: includes/Admin/Views/DashboardWidgetView.php:40
 msgid "Last 24 Hours"
 msgstr ""
 
-#: includes/Admin/Views/DashboardWidgetView.php:42
+#: includes/Admin/Views/DashboardWidgetView.php:44
 msgid "Requests"
 msgstr ""
 
-#: includes/Admin/Views/DashboardWidgetView.php:51
+#: includes/Admin/Views/DashboardWidgetView.php:53
+#: includes/Services/EmailAlertService.php:320
 msgid "View All Logs"
 msgstr ""
 
-#: includes/Admin/Views/DashboardWidgetView.php:54
-#: includes/Core/Plugin.php:344
+#: includes/Admin/Views/DashboardWidgetView.php:56
+#: includes/Core/Plugin.php:418
 msgid "Settings"
 msgstr ""
 
-#: includes/Admin/Views/DashboardWidgetView.php:98
+#: includes/Admin/Views/DashboardWidgetView.php:100
 msgid "Success Rate"
 msgstr ""
 
 #. translators: %d: average response time in milliseconds
-#: includes/Admin/Views/DashboardWidgetView.php:115
+#: includes/Admin/Views/DashboardWidgetView.php:117
 #, php-format
 msgid "%d ms"
 msgstr ""
 
-#: includes/Admin/Views/DashboardWidgetView.php:118
-#: includes/Admin/Views/RequestLogView.php:94
-#: includes/ContactForm/Views/IntegrationView.php:471
+#: includes/Admin/Views/DashboardWidgetView.php:120
+#: includes/Admin/Views/RequestLogView.php:120
+#: includes/ContactForm/Views/IntegrationView.php:490
 msgid "Avg Response Time"
 msgstr ""
 
 #. translators: %d: number of errors
-#: includes/Admin/Views/DashboardWidgetView.php:136
+#: includes/Admin/Views/DashboardWidgetView.php:138
 #, php-format
 msgid "Recent Errors (%d)"
 msgstr ""
 
-#: includes/Admin/Views/DashboardWidgetView.php:142
+#: includes/Admin/Views/DashboardWidgetView.php:144
 msgid "No errors in the last 24 hours"
 msgstr ""
 
 #. translators: %d: number of errors
-#: includes/Admin/Views/DashboardWidgetView.php:150
+#: includes/Admin/Views/DashboardWidgetView.php:152
 #, php-format
 msgid "%d errors require attention"
 msgstr ""
 
-#: includes/Admin/Views/DashboardWidgetView.php:174
+#: includes/Admin/Views/DashboardWidgetView.php:176
+#: includes/Services/EmailAlertService.php:305
 msgid "Unknown error"
 msgstr ""
 
-#: includes/Admin/Views/DashboardWidgetView.php:183
+#: includes/Admin/Views/DashboardWidgetView.php:190
 msgid "View"
 msgstr ""
 
-#: includes/Admin/Views/DashboardWidgetView.php:197
-#: includes/Admin/Views/DashboardWidgetView.php:202
+#: includes/Admin/Views/DashboardWidgetView.php:204
+#: includes/Admin/Views/DashboardWidgetView.php:209
 msgid "Unknown Form"
 msgstr ""
 
-#: includes/Admin/Views/DashboardWidgetView.php:224
+#: includes/Admin/Views/DashboardWidgetView.php:231
 msgid "ago"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:48
+#: includes/Admin/Views/MigrationView.php:52
+msgid "Legacy Data Migration"
+msgstr ""
+
+#. translators: %d: number of unencrypted logs
+#: includes/Admin/Views/MigrationView.php:63
+#, php-format
+msgid "%d unencrypted log found"
+msgid_plural "%d unencrypted logs found"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Admin/Views/MigrationView.php:75
+msgid "These logs were created before encryption was enabled and contain unencrypted sensitive data."
+msgstr ""
+
+#: includes/Admin/Views/MigrationView.php:82
+msgid "The migration tool will encrypt existing logs in batches to avoid timeouts."
+msgstr ""
+
+#: includes/Admin/Views/MigrationView.php:85
+msgid "Recommendation:"
+msgstr ""
+
+#: includes/Admin/Views/MigrationView.php:86
+msgid "Create a database backup before proceeding."
+msgstr ""
+
+#: includes/Admin/Views/MigrationView.php:96
+msgid "Start Migration"
+msgstr ""
+
+#: includes/Admin/Views/MigrationView.php:104
+msgid "Dry Run (Preview)"
+msgstr ""
+
+#: includes/Admin/Views/MigrationView.php:112
+msgid "Cancel"
+msgstr ""
+
+#: includes/Admin/Views/MigrationView.php:124
+msgid "Preparing migration..."
+msgstr ""
+
+#: includes/Admin/Views/MigrationView.php:139
+msgid "All logs are encrypted"
+msgstr ""
+
+#: includes/Admin/Views/MigrationView.php:141
+msgid "No legacy unencrypted logs found. All logs are using encrypted storage."
+msgstr ""
+
+#: includes/Admin/Views/MigrationView.php:161
+msgid "Dry Run Results"
+msgstr ""
+
+#: includes/Admin/Views/MigrationView.php:163
+msgid "Preview completed:"
+msgstr ""
+
+#. translators: %d: number of logs that would be encrypted
+#: includes/Admin/Views/MigrationView.php:168
+#, php-format
+msgid "%d log would be encrypted"
+msgid_plural "%d logs would be encrypted"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Admin/Views/MigrationView.php:180
+msgid "No changes were made during this preview. Click \"Start Migration\" to encrypt the logs."
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:53
 msgid "Search logs"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:81
-#: includes/ContactForm/Views/IntegrationView.php:456
-msgid "Total Requests"
+#. translators: %s: date context (e.g., "(Today)", "(All Time)")
+#: includes/Admin/Views/RequestLogView.php:102
+#, php-format
+msgid "Total Requests %s"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:85
-#: includes/ContactForm/Views/IntegrationView.php:460
+#: includes/Admin/Views/RequestLogView.php:111
+#: includes/ContactForm/Views/IntegrationView.php:479
 msgid "Successful"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:90
-#: includes/ContactForm/Views/IntegrationView.php:467
+#: includes/Admin/Views/RequestLogView.php:116
+#: includes/ContactForm/Views/IntegrationView.php:486
 msgid "Failed"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:110
+#: includes/Admin/Views/RequestLogView.php:137
+#: includes/Admin/Views/RequestLogView.php:156
+#: includes/Admin/Views/RequestLogView.php:646
+msgid "All Time"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:141
+#: includes/Admin/Views/RequestLogView.php:649
+#: includes/Admin/Views/RequestLogView.php:733
+msgid "Today"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:142
+#: includes/Admin/Views/RequestLogView.php:652
+#: includes/Admin/Views/RequestLogView.php:734
+msgid "Yesterday"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:143
+#: includes/Admin/Views/RequestLogView.php:655
+#: includes/Admin/Views/RequestLogView.php:735
+msgid "Last 7 Days"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:144
+#: includes/Admin/Views/RequestLogView.php:658
+#: includes/Admin/Views/RequestLogView.php:736
+msgid "Last 30 Days"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:145
+#: includes/Admin/Views/RequestLogView.php:661
+#: includes/Admin/Views/RequestLogView.php:737
+msgid "This Month"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:153
+#: includes/Admin/Views/RequestLogView.php:748
+msgid "now"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:261
 msgid "API Log Detail"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:114
+#: includes/Admin/Views/RequestLogView.php:265
 msgid "Back to Logs"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:139
+#: includes/Admin/Views/RequestLogView.php:297
 msgid "Request Information"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:158
+#: includes/Admin/Views/RequestLogView.php:316
 msgid "Execution Time"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:162
-#: includes/Services/ExportService.php:266
+#: includes/Admin/Views/RequestLogView.php:320
+#: includes/Services/ExportService.php:294
 msgid "Retry Count"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:182
+#: includes/Admin/Views/RequestLogView.php:323
+msgid "(automatic retries)"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:327
+msgid "Manual Retry Count"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:347
 msgid "Request Headers"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:197
+#: includes/Admin/Views/RequestLogView.php:367
 msgid "Request Data"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:212
+#: includes/Admin/Views/RequestLogView.php:382
 msgid "Response Information"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:215
-#: includes/ContactForm/Views/IntegrationView.php:504
-#: includes/Services/ExportService.php:264
+#: includes/Admin/Views/RequestLogView.php:385
+#: includes/ContactForm/Views/IntegrationView.php:523
+#: includes/Services/ExportService.php:292
 msgid "Response Code"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:220
-#: includes/Services/ExportService.php:267
+#: includes/Admin/Views/RequestLogView.php:390
+#: includes/Services/ExportService.php:295
 msgid "Error Message"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:241
+#: includes/Admin/Views/RequestLogView.php:411
 msgid "Response Headers"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:259
+#: includes/Admin/Views/RequestLogView.php:435
 msgid "Response Data"
 msgstr ""
 
 #. translators: %d: number of deleted logs
-#: includes/Admin/Views/RequestLogView.php:279
+#: includes/Admin/Views/RequestLogView.php:455
 #, php-format
 msgid "%d log entry deleted."
 msgid_plural "%d log entries deleted."
 msgstr[0] ""
 msgstr[1] ""
 
+#. translators: %d: number of successfully retried requests
+#: includes/Admin/Views/RequestLogView.php:479
+#, php-format
+msgid "%d request retried successfully."
+msgid_plural "%d requests retried successfully."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of failed retry attempts
+#: includes/Admin/Views/RequestLogView.php:503
+#, php-format
+msgid "%d retry attempt failed."
+msgid_plural "%d retry attempts failed."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d: number of skipped retry attempts
+#: includes/Admin/Views/RequestLogView.php:527
+#, php-format
+msgid "%d request skipped (maximum retries exceeded)."
+msgid_plural "%d requests skipped (maximum retries exceeded)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/Admin/Views/RequestLogView.php:546
+msgid "Rate limit exceeded. Please wait before retrying more requests."
+msgstr ""
+
 #. translators: %d: number of retried logs
-#: includes/Admin/Views/RequestLogView.php:302
+#: includes/Admin/Views/RequestLogView.php:561
 #, php-format
 msgid "%d log entry queued for retry."
 msgid_plural "%d log entries queued for retry."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/Admin/Views/RequestLogView.php:377
+#: includes/Admin/Views/RequestLogView.php:633
+#: includes/Admin/Views/RequestLogView.php:704
+msgid "Error"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:664
+#: includes/Admin/Views/RequestLogView.php:738
+msgid "Custom Range"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:676
+msgid "To"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:682
+msgid "Apply Filters"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:688
+msgid "Filtered by:"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:723
+msgid "Remove status filter"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:746
+#, php-format
+msgid "%1$s to %2$s"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:761
+msgid "Remove date filter"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:768
+msgid "Clear all"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:845
 msgid "Export as CSV"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:381
+#: includes/Admin/Views/RequestLogView.php:849
 msgid "Export as JSON"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:57
+#: includes/Admin/Views/RequestLogView.php:879
+msgid "Already successfully retried"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:880
+#: includes/Admin/Views/RequestLogView.php:890
+#: includes/Admin/Views/RequestLogView.php:910
+msgid "Retry Request"
+msgstr ""
+
+#: includes/Admin/Views/RequestLogView.php:889
+msgid "Maximum retries exceeded"
+msgstr ""
+
+#. translators: %1$d: original log ID, %2$s: link to original log
+#: includes/Admin/Views/RequestLogView.php:944
+#, php-format
+msgid "This is a retry of log entry <a href=\"%2$s\">#%1$d</a>."
+msgstr ""
+
+#. translators: %d: number of retry attempts
+#: includes/Admin/Views/RequestLogView.php:968
+#, php-format
+msgid "This request has been retried %d time."
+msgid_plural "This request has been retried %d times."
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %1$s: link to successful retry log, %2$d: successful retry log ID
+#: includes/Admin/Views/RequestLogView.php:992
+#, php-format
+msgid "→ <a href=\"%1$s\">View successful retry (#%2$d)</a>"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:149
 msgid "How to Configure API Integration"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:83
+#: includes/Admin/Views/SettingsView.php:179
 msgid "Open your Contact Form 7 form"
 msgstr ""
 
 #. translators: %s: Link to Contact Forms page
-#: includes/Admin/Views/SettingsView.php:88
+#: includes/Admin/Views/SettingsView.php:184
 #, php-format
 msgid "Go to %s and select the form you want to integrate with an API."
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:108
+#: includes/Admin/Views/SettingsView.php:204
 msgid "Navigate to the API Integration tab"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:109
+#: includes/Admin/Views/SettingsView.php:205
 msgid "In the form editor, click on the \"API Integration\" tab to access the API settings."
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:112
+#: includes/Admin/Views/SettingsView.php:208
 msgid "Each form can have its own API endpoint and configuration."
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:129
+#: includes/Admin/Views/SettingsView.php:225
 msgid "Enable API Integration"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:130
+#: includes/Admin/Views/SettingsView.php:226
 msgid "Check the \"Send to API\" checkbox to enable the integration for this form."
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:146
+#: includes/Admin/Views/SettingsView.php:242
 msgid "Configure your API endpoint"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:147
+#: includes/Admin/Views/SettingsView.php:243
 msgid "Enter the following settings:"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:150
+#: includes/Admin/Views/SettingsView.php:246
 msgid "API URL:"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:151
+#: includes/Admin/Views/SettingsView.php:247
 msgid "The full URL of your API endpoint (e.g., https://api.example.com/leads)"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:154
+#: includes/Admin/Views/SettingsView.php:250
 msgid "HTTP Method:"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:155
+#: includes/Admin/Views/SettingsView.php:251
 msgid "Usually POST for form submissions"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:158
+#: includes/Admin/Views/SettingsView.php:254
 msgid "Input Type:"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:159
+#: includes/Admin/Views/SettingsView.php:255
 msgid "JSON or Form Data, depending on your API requirements"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:177
+#: includes/Admin/Views/SettingsView.php:273
 msgid "Map your form fields"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:178
+#: includes/Admin/Views/SettingsView.php:274
 msgid "Use the field mapping section to match your CF7 form fields with the API parameters."
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:185
+#: includes/Admin/Views/SettingsView.php:281
 msgid "Click on the mail tags to insert them into your field mapping."
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:202
+#: includes/Admin/Views/SettingsView.php:298
 msgid "Add authentication (if required)"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:203
+#: includes/Admin/Views/SettingsView.php:299
 msgid "If your API requires authentication, add the necessary headers:"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:223
+#: includes/Admin/Views/SettingsView.php:319
 msgid "Save and test"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:224
+#: includes/Admin/Views/SettingsView.php:320
 msgid "Save your form and submit a test entry. Check the API Logs to verify the submission was successful."
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:241
-msgid "Available Hooks for Developers"
+#: includes/Admin/Views/SettingsView.php:338
+#: includes/ContactForm/Views/IntegrationView.php:443
+msgid "Global Settings"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:244
-msgid "Use these hooks in your theme's functions.php or a custom plugin to extend the API integration functionality."
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:266
-msgid "Filters"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:271
-msgid "Modify request arguments for GET requests."
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:280
-msgid "Modify request arguments for POST requests."
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:289
-msgid "Modify the API URL for GET requests."
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:297
-msgid "Modify the API URL for POST requests."
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:305
-msgid "Modify the complete record before sending to API."
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:314
-msgid "Modify individual field values before adding to record."
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:325
-msgid "Modify available mail tags for field mapping."
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:334
-msgid "Modify the API response after sending."
+#: includes/Admin/Views/SettingsView.php:341
+msgid "Configure plugin-wide settings for retry limits, sensitive data patterns, logging control, and log retention."
 msgstr ""
 
 #: includes/Admin/Views/SettingsView.php:355
-#: includes/ContactForm/Views/IntegrationView.php:246
-msgid "Actions"
+msgid "Save Settings"
 msgstr ""
 
-#: includes/Admin/Views/SettingsView.php:360
-msgid "Triggered before sending data to the API."
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:368
-msgid "Triggered after receiving API response."
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:378
-msgid "Add custom content before the base fields in the integration panel."
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:386
-msgid "Add custom content after the base fields in the integration panel."
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:405
-msgid "Quick Links"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:411
-msgid "Contact Forms"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:412
-msgid "Manage your CF7 forms"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:418
-msgid "View submission history"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:423
-msgid "Documentation"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:424
-msgid "Full plugin documentation"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:429
-msgid "Support"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:430
-msgid "Report issues or get help"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:448
-msgid "Plugin Status"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:453
-msgid "Plugin Version"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:457
-msgid "Contact Form 7"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:462
-msgid "Active"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:467
-msgid "Not Active - Plugin requires Contact Form 7"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:473
-msgid "PHP Version"
-msgstr ""
-
-#: includes/Admin/Views/SettingsView.php:477
-msgid "WordPress Version"
-msgstr ""
-
-#: includes/ContactForm/Integration.php:194
-#: includes/ContactForm/Views/IntegrationView.php:65
-msgid "API Integration"
-msgstr ""
-
-#: includes/ContactForm/Views/IntegrationView.php:111
-msgid "Send to API?"
-msgstr ""
-
-#: includes/ContactForm/Views/IntegrationView.php:117
-msgid "Base URL"
-msgstr ""
-
-#: includes/ContactForm/Views/IntegrationView.php:136
-msgid "Input type"
-msgstr ""
-
-#: includes/ContactForm/Views/IntegrationView.php:139
-msgid "Parameters - GET/POST"
-msgstr ""
-
-#: includes/ContactForm/Views/IntegrationView.php:142
-msgid "XML"
-msgstr ""
-
-#: includes/ContactForm/Views/IntegrationView.php:145
-msgid "JSON"
-msgstr ""
-
-#: includes/ContactForm/Views/IntegrationView.php:183
+#: includes/Admin/Views/SettingsView.php:371
+#: includes/ContactForm/Views/IntegrationView.php:184
 msgid "Retry Configuration"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:184
+#: includes/Admin/Views/SettingsView.php:377
+msgid "Maximum retries per entry"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:389
+msgid "Maximum number of times a single failed request can be manually retried."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:396
+msgid "Maximum retries per hour"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:408
+msgid "Global rate limit for all retry attempts across all requests."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:427
+msgid "Sensitive Data Patterns"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:433
+msgid "Field patterns to anonymize"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:444
+msgid "Enter one pattern per line. Fields containing these patterns will be redacted (e.g., password, token, secret, api_key)."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:462
+msgid "Logging"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:467
+msgid "Enable logging"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:477
+msgid "Enable API request logging"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:480
+msgid "When disabled, API requests will not be logged. Useful for GDPR compliance or performance optimization."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:499
+msgid "Log Retention"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:505
+msgid "Delete logs older than"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:511
+msgid "Never (keep all logs)"
+msgstr ""
+
+#. translators: %d: number of days
+#: includes/Admin/Views/SettingsView.php:516
+#: includes/Admin/Views/SettingsView.php:522
+#: includes/Admin/Views/SettingsView.php:528
+#: includes/Admin/Views/SettingsView.php:534
+#: includes/Admin/Views/SettingsView.php:540
+#, php-format
+msgid "%d days"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:545
+msgid "Logs older than this period will be automatically deleted daily via WP-Cron."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:570
+msgid "Database Encryption"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:576
+msgid "Encryption status"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:581
+msgid "Sodium extension available"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:583
+msgid "Your server supports libsodium for secure authenticated encryption."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:587
+msgid "Sodium extension not available"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:589
+msgid "Database encryption requires the Sodium extension (PHP 7.2+). Data will be stored unencrypted."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:596
+msgid "Enable encryption"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:607
+msgid "Encrypt sensitive request/response data in database"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:610
+msgid "Uses libsodium authenticated encryption for request_data, request_headers, response_data, and response_headers fields."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:617
+msgid "Encryption statistics"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:622
+msgid "Total logs:"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:626
+msgid "Encrypted logs:"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:634
+msgid "Unencrypted logs:"
+msgstr ""
+
+#. translators: %d: number of unencrypted logs
+#: includes/Admin/Views/SettingsView.php:643
+#, php-format
+msgid "You have %d legacy unencrypted logs. Use the migration tool below to encrypt them."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:699
+msgid "Email Alerts"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:704
+msgid "Enable alerts"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:714
+msgid "Send email alerts when API error rate exceeds thresholds"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:722
+msgid "Recipients"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:731
+msgid "admin@example.com"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:733
+msgid "Comma-separated email addresses to receive alerts."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:740
+msgid "Error count threshold"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:751
+msgid "errors per hour"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:753
+msgid "Alert when errors exceed this count per hour."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:760
+msgid "Error rate threshold"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:773
+msgid "Alert when error percentage exceeds this value."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:780
+msgid "Check interval"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:786
+msgid "Every hour"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:789
+msgid "Every 30 minutes"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:793
+msgid "How often to check error rates."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:800
+msgid "Cooldown period"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:806
+msgid "1 hour"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:809
+msgid "2 hours"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:812
+msgid "4 hours"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:815
+msgid "8 hours"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:818
+msgid "24 hours"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:822
+msgid "Minimum time between alert emails."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:828
+msgid "Test email"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:838
+msgid "Send a test email to verify configuration."
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:857
+msgid "Quick Links"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:863
+msgid "Contact Forms"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:864
+msgid "Manage your CF7 forms"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:870
+msgid "View submission history"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:875
+msgid "API Reference"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:876
+msgid "Hooks, filters and actions"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:881
+msgid "User Guide"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:882
+msgid "Complete plugin documentation"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:887
+msgid "Support"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:888
+msgid "Report issues or get help"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:906
+msgid "Plugin Status"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:911
+msgid "Plugin Version"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:915
+msgid "Contact Form 7"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:920
+msgid "Active"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:925
+msgid "Not Active - Plugin requires Contact Form 7"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:931
+msgid "PHP Version"
+msgstr ""
+
+#: includes/Admin/Views/SettingsView.php:935
+msgid "WordPress Version"
+msgstr ""
+
+#: includes/ContactForm/Integration.php:307
+#: includes/ContactForm/Views/IntegrationView.php:66
+msgid "API Integration"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:112
+msgid "Send to API?"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:118
+msgid "Base URL"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:137
+msgid "Input type"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:140
+msgid "Parameters - GET/POST"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:143
+msgid "XML"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:146
+msgid "JSON"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:185
 msgid "Configure automatic retry behavior for failed API requests."
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:188
+#: includes/ContactForm/Views/IntegrationView.php:189
 msgid "Maximum Retries"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:192
+#: includes/ContactForm/Views/IntegrationView.php:193
 msgid "Number of times to retry a failed request (0-10). Default: 3"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:197
+#: includes/ContactForm/Views/IntegrationView.php:198
 msgid "Retry Delay (seconds)"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:201
+#: includes/ContactForm/Views/IntegrationView.php:202
 msgid "Initial delay between retries in seconds (uses exponential backoff). Default: 2"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:207
+#: includes/ContactForm/Views/IntegrationView.php:208
 msgid "Retry on timeout errors"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:209
+#: includes/ContactForm/Views/IntegrationView.php:210
 msgid "Automatically retry when API request times out."
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:233
+#: includes/ContactForm/Views/IntegrationView.php:234
 msgid "Authentication & Custom Headers"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:235
+#: includes/ContactForm/Views/IntegrationView.php:236
 msgid "Add custom HTTP headers for authentication or other purposes. Common examples:"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:244
+#: includes/ContactForm/Views/IntegrationView.php:245
 msgid "Header Name"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:245
+#: includes/ContactForm/Views/IntegrationView.php:246
 msgid "Header Value"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:257
+#: includes/ContactForm/Views/IntegrationView.php:247
+msgid "Actions"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:258
 msgid "e.g., Authorization"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:264
+#: includes/ContactForm/Views/IntegrationView.php:265
 msgid "e.g., Bearer your-api-token"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:267
+#: includes/ContactForm/Views/IntegrationView.php:268
 msgid "Remove header"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:279
+#: includes/ContactForm/Views/IntegrationView.php:280
 msgid "Add Header"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:285
+#: includes/ContactForm/Views/IntegrationView.php:286
 msgid "Quick Add Authentication"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:286
+#: includes/ContactForm/Views/IntegrationView.php:287
 msgid "Click a preset to add common authentication headers:"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:289
+#: includes/ContactForm/Views/IntegrationView.php:290
 msgid "Bearer Token"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:292
+#: includes/ContactForm/Views/IntegrationView.php:293
 msgid "Basic Auth"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:295
-#: includes/ContactForm/Views/IntegrationView.php:323
+#: includes/ContactForm/Views/IntegrationView.php:296
+#: includes/ContactForm/Views/IntegrationView.php:324
 msgid "API Key"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:298
+#: includes/ContactForm/Views/IntegrationView.php:299
 msgid "Content-Type JSON"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:318
-#: includes/ContactForm/Views/IntegrationView.php:322
+#: includes/ContactForm/Views/IntegrationView.php:319
+#: includes/ContactForm/Views/IntegrationView.php:323
 msgid "Form fields"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:368
+#: includes/ContactForm/Views/IntegrationView.php:369
 msgid "XML Template"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:396
+#: includes/ContactForm/Views/IntegrationView.php:397
 msgid "JSON Template"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:430
+#: includes/ContactForm/Views/IntegrationView.php:434
 msgid "API Call Logs & Statistics"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:453
-msgid "Overall Statistics"
+#. translators: %s: URL to settings page
+#: includes/ContactForm/Views/IntegrationView.php:442
+#, php-format
+msgid "Logging is currently disabled. Enable it in %s to track API calls."
 msgstr ""
 
 #: includes/ContactForm/Views/IntegrationView.php:472
-msgid "seconds"
+msgid "Overall Statistics"
 msgstr ""
 
 #: includes/ContactForm/Views/IntegrationView.php:475
+#: includes/Services/EmailAlertService.php:287
+msgid "Total Requests"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:491
+msgid "seconds"
+msgstr ""
+
+#: includes/ContactForm/Views/IntegrationView.php:494
 msgid "Max Retries Used"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:493
+#: includes/ContactForm/Views/IntegrationView.php:512
 msgid "Recent API Calls (Last 5)"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:530
+#: includes/ContactForm/Views/IntegrationView.php:549
 msgid "No API calls logged yet. Submit a form to see logs here."
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:546
+#: includes/ContactForm/Views/IntegrationView.php:565
 msgid "Legacy Debug Info (Last Transmission)"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:550
+#: includes/ContactForm/Views/IntegrationView.php:569
 msgid "Called URL"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:553
+#: includes/ContactForm/Views/IntegrationView.php:572
 msgid "Params"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:556
+#: includes/ContactForm/Views/IntegrationView.php:575
 msgid "Remote server result"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:559
+#: includes/ContactForm/Views/IntegrationView.php:578
 msgid "Error logs"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:573
+#: includes/ContactForm/Views/IntegrationView.php:592
 msgid ""
 "*** THIS IS AN EXAMPLE ** USE YOUR XML ACCORDING TO YOUR API DOCUMENTATION **\n"
 "<update>\n"
@@ -763,126 +1348,130 @@ msgid ""
 "</update>"
 msgstr ""
 
-#: includes/ContactForm/Views/IntegrationView.php:597
+#: includes/ContactForm/Views/IntegrationView.php:616
 msgid ""
 "*** THIS IS AN EXAMPLE ** USE YOUR JSON ACCORDING TO YOUR API DOCUMENTATION **\n"
 "{ \"name\":\"[fullname]\", \"age\":30, \"car\":null }"
 msgstr ""
 
 #. translators: %s: required PHP version
-#: includes/Core/Activator.php:203
+#: includes/Core/Activator.php:208
 #, php-format
 msgid "Contact Form 7 to API requires PHP %s or higher."
 msgstr ""
 
 #. translators: %s: required WordPress version
-#: includes/Core/Activator.php:219
+#: includes/Core/Activator.php:224
 #, php-format
 msgid "Contact Form 7 to API requires WordPress %s or higher."
 msgstr ""
 
-#: includes/Core/Activator.php:232
+#: includes/Core/Activator.php:237
 msgid "Contact Form 7 to API requires Contact Form 7 to be active."
 msgstr ""
 
-#: includes/Services/ApiClient.php:509
+#. translators: %1$s: Legacy plugin name, %2$s: New plugin name
+#: includes/Core/Plugin.php:555
+#, php-format
+msgid "<strong>Warning:</strong> Both the legacy \"%1$s\" plugin (by Query Solutions) and \"%2$s\" (by Silver Assist) are active. This may cause duplicate API submissions and unexpected behavior. Please deactivate the legacy plugin to avoid conflicts."
+msgstr ""
+
+#: includes/Services/ApiClient.php:198
+msgid "Invalid or non-retryable log entry"
+msgstr ""
+
+#: includes/Services/ApiClient.php:534
 msgid "XML functions not available"
 msgstr ""
 
-#: includes/Services/ApiClient.php:516
+#: includes/Services/ApiClient.php:541
 msgid "XML Structure is incorrect"
 msgstr ""
 
-#: includes/Services/ExportService.php:259
+#. translators: %s: site name
+#: includes/Services/EmailAlertService.php:213
+#, php-format
+msgid "[%s] CF7 API Alert: High Error Rate Detected"
+msgstr ""
+
+#: includes/Services/EmailAlertService.php:277
+msgid "CF7 API Alert"
+msgstr ""
+
+#: includes/Services/EmailAlertService.php:278
+msgid "High error rate detected on your WordPress site."
+msgstr ""
+
+#: includes/Services/EmailAlertService.php:281
+msgid "Site"
+msgstr ""
+
+#: includes/Services/EmailAlertService.php:282
+msgid "Time"
+msgstr ""
+
+#: includes/Services/EmailAlertService.php:283
+msgid "Errors (last hour)"
+msgstr ""
+
+#: includes/Services/EmailAlertService.php:286
+msgid "Error Rate"
+msgstr ""
+
+#: includes/Services/EmailAlertService.php:291
+msgid "Recent Errors"
+msgstr ""
+
+#. translators: %s: site name
+#: includes/Services/EmailAlertService.php:343
+#, php-format
+msgid "[%s] CF7 API Alert Test Email"
+msgstr ""
+
+#: includes/Services/EmailAlertService.php:352
+msgid "Test Email"
+msgstr ""
+
+#: includes/Services/EmailAlertService.php:353
+msgid "This is a test email from Contact Form 7 to API plugin."
+msgstr ""
+
+#: includes/Services/EmailAlertService.php:354
+msgid "If you received this email, your alert configuration is working correctly."
+msgstr ""
+
+#: includes/Services/ExportService.php:287
 msgid "ID"
 msgstr ""
 
-#: includes/Services/ExportService.php:260
+#: includes/Services/ExportService.php:288
 msgid "Form ID"
 msgstr ""
 
-#: includes/Services/ExportService.php:265
+#: includes/Services/ExportService.php:293
 msgid "Execution Time (s)"
 msgstr ""
 
-#: includes/Services/ExportService.php:268
+#: includes/Services/ExportService.php:296
 msgid "Created At"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:112
-msgid "Date Filter"
+#: includes/Services/MigrationService.php:180
+msgid "Encryption service not available"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:117
-msgid "All Time"
+#: includes/Services/MigrationService.php:192
+msgid "Encryption is disabled in settings"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:120
-msgid "Today"
-msgstr ""
-
-#: includes/Admin/Views/RequestLogView.php:123
-msgid "Yesterday"
-msgstr ""
-
-#: includes/Admin/Views/RequestLogView.php:126
-msgid "Last 7 Days"
-msgstr ""
-
-#: includes/Admin/Views/RequestLogView.php:129
-msgid "Last 30 Days"
-msgstr ""
-
-#: includes/Admin/Views/RequestLogView.php:132
-msgid "This Month"
-msgstr ""
-
-#: includes/Admin/Views/RequestLogView.php:135
-msgid "Custom Range"
-msgstr ""
-
-#: includes/Admin/Views/RequestLogView.php:141
-msgid "From"
-msgstr ""
-
-#: includes/Admin/Views/RequestLogView.php:146
-msgid "To"
-msgstr ""
-
-#: includes/Admin/Views/RequestLogView.php:152
-msgid "Apply Filter"
-msgstr ""
-
-#: includes/Admin/Views/RequestLogView.php:157
-msgid "Clear Filter"
-msgstr ""
-
-#. translators: %1$s: start date, %2$s: end date
-#: includes/Admin/Views/RequestLogView.php:180
+#. translators: %d: log ID
+#: includes/Services/MigrationService.php:264
 #, php-format
-msgid "Custom Range: %1$s to %2$s"
+msgid "Failed to update log ID %d"
 msgstr ""
 
-#: includes/Admin/Views/RequestLogView.php:182
-msgid "now"
-msgstr ""
-
-#: includes/Admin/RequestLogController.php:368
-msgid "Are you sure you want to delete this log entry?"
-msgstr ""
-
-#: includes/Admin/RequestLogController.php:369
-msgid "Please select at least one item."
-msgstr ""
-
-#: includes/Admin/RequestLogController.php:370
-msgid "Are you sure you want to delete the selected log entries?"
-msgstr ""
-
-#: includes/Admin/RequestLogController.php:371
-msgid "Start date must be before or equal to end date."
-msgstr ""
-
-#: includes/Admin/RequestLogController.php:372
-msgid "End date must be after or equal to start date."
+#. translators: %1$d: log ID, %2$s: error message
+#: includes/Services/MigrationService.php:272
+#, php-format
+msgid "Error encrypting log ID %1$d: %2$s"
 msgstr ""
