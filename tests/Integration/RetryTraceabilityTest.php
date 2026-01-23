@@ -346,4 +346,300 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 		$this->assertIsArray( $retries, 'Should return an array' );
 		$this->assertEmpty( $retries, 'Should return empty array when no retries exist' );
 	}
+
+	/**
+	 * Test count_errors_by_resolution() returns correct counts
+	 *
+	 * @return void
+	 * @since 1.3.14
+	 */
+	public function test_count_errors_by_resolution_returns_correct_counts(): void {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'cf7_api_logs';
+
+		// Create unresolved error (no retry)
+		$wpdb->insert(
+			$table_name,
+			array(
+				'id'           => 700,
+				'form_id'      => 1,
+				'endpoint'     => 'https://api.example.com/test',
+				'method'       => 'POST',
+				'status'       => 'error',
+				'request_data' => '{}',
+				'retry_count'  => 3,
+				'created_at'   => \current_time( 'mysql' ),
+			),
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
+		);
+
+		// Create another unresolved error (retry also failed)
+		$wpdb->insert(
+			$table_name,
+			array(
+				'id'           => 701,
+				'form_id'      => 1,
+				'endpoint'     => 'https://api.example.com/test',
+				'method'       => 'POST',
+				'status'       => 'error',
+				'request_data' => '{}',
+				'retry_count'  => 3,
+				'created_at'   => \current_time( 'mysql' ),
+			),
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
+		);
+
+		// Create failed retry for 701 (still unresolved)
+		$wpdb->insert(
+			$table_name,
+			array(
+				'id'           => 702,
+				'form_id'      => 1,
+				'endpoint'     => 'https://api.example.com/test',
+				'method'       => 'POST',
+				'status'       => 'error',
+				'request_data' => '{}',
+				'retry_of'     => 701,
+				'retry_count'  => 0,
+				'created_at'   => \current_time( 'mysql' ),
+			),
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%s' )
+		);
+
+		// Create resolved error (has successful retry)
+		$wpdb->insert(
+			$table_name,
+			array(
+				'id'           => 703,
+				'form_id'      => 1,
+				'endpoint'     => 'https://api.example.com/test',
+				'method'       => 'POST',
+				'status'       => 'error',
+				'request_data' => '{}',
+				'retry_count'  => 3,
+				'created_at'   => \current_time( 'mysql' ),
+			),
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
+		);
+
+		// Create successful retry for 703 (resolved)
+		$wpdb->insert(
+			$table_name,
+			array(
+				'id'            => 704,
+				'form_id'       => 1,
+				'endpoint'      => 'https://api.example.com/test',
+				'method'        => 'POST',
+				'status'        => 'success',
+				'request_data'  => '{}',
+				'response_code' => 200,
+				'retry_of'      => 703,
+				'retry_count'   => 0,
+				'created_at'    => \current_time( 'mysql' ),
+			),
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%s' )
+		);
+
+		// Create a success log (should not be counted as error)
+		$wpdb->insert(
+			$table_name,
+			array(
+				'id'            => 705,
+				'form_id'       => 1,
+				'endpoint'      => 'https://api.example.com/test',
+				'method'        => 'POST',
+				'status'        => 'success',
+				'request_data'  => '{}',
+				'response_code' => 200,
+				'created_at'    => \current_time( 'mysql' ),
+			),
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
+		);
+
+		$logger = new RequestLogger();
+		$result = $logger->count_errors_by_resolution();
+
+		$this->assertIsArray( $result, 'Should return an array' );
+		$this->assertArrayHasKey( 'total', $result, 'Should have total key' );
+		$this->assertArrayHasKey( 'resolved', $result, 'Should have resolved key' );
+		$this->assertArrayHasKey( 'unresolved', $result, 'Should have unresolved key' );
+
+		// Total errors: 700, 701, 702, 703 = 4 (702 is a retry but also an error)
+		$this->assertSame( 4, $result['total'], 'Should count 4 total errors' );
+		// Resolved: only 703 has successful retry
+		$this->assertSame( 1, $result['resolved'], 'Should count 1 resolved error' );
+		// Unresolved: 700, 701, 702 = 3
+		$this->assertSame( 3, $result['unresolved'], 'Should count 3 unresolved errors' );
+	}
+
+	/**
+	 * Test count_errors_by_resolution() returns zeros when no errors
+	 *
+	 * @return void
+	 * @since 1.3.14
+	 */
+	public function test_count_errors_by_resolution_returns_zeros_when_no_errors(): void {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'cf7_api_logs';
+
+		// Create only success logs
+		$wpdb->insert(
+			$table_name,
+			array(
+				'id'            => 800,
+				'form_id'       => 1,
+				'endpoint'      => 'https://api.example.com/test',
+				'method'        => 'POST',
+				'status'        => 'success',
+				'request_data'  => '{}',
+				'response_code' => 200,
+				'created_at'    => \current_time( 'mysql' ),
+			),
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
+		);
+
+		$logger = new RequestLogger();
+		$result = $logger->count_errors_by_resolution();
+
+		$this->assertSame( 0, $result['total'], 'Should count 0 total errors' );
+		$this->assertSame( 0, $result['resolved'], 'Should count 0 resolved errors' );
+		$this->assertSame( 0, $result['unresolved'], 'Should count 0 unresolved errors' );
+	}
+
+	/**
+	 * Test get_resolved_error_ids() returns correct IDs
+	 *
+	 * @return void
+	 * @since 1.3.14
+	 */
+	public function test_get_resolved_error_ids_returns_correct_ids(): void {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'cf7_api_logs';
+
+		// Create unresolved error
+		$wpdb->insert(
+			$table_name,
+			array(
+				'id'           => 900,
+				'form_id'      => 1,
+				'endpoint'     => 'https://api.example.com/test',
+				'method'       => 'POST',
+				'status'       => 'error',
+				'request_data' => '{}',
+				'retry_count'  => 3,
+				'created_at'   => \current_time( 'mysql' ),
+			),
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
+		);
+
+		// Create resolved error #1
+		$wpdb->insert(
+			$table_name,
+			array(
+				'id'           => 901,
+				'form_id'      => 1,
+				'endpoint'     => 'https://api.example.com/test',
+				'method'       => 'POST',
+				'status'       => 'error',
+				'request_data' => '{}',
+				'retry_count'  => 3,
+				'created_at'   => \current_time( 'mysql' ),
+			),
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
+		);
+
+		// Successful retry for 901
+		$wpdb->insert(
+			$table_name,
+			array(
+				'id'            => 902,
+				'form_id'       => 1,
+				'endpoint'      => 'https://api.example.com/test',
+				'method'        => 'POST',
+				'status'        => 'success',
+				'request_data'  => '{}',
+				'response_code' => 200,
+				'retry_of'      => 901,
+				'retry_count'   => 0,
+				'created_at'    => \current_time( 'mysql' ),
+			),
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%s' )
+		);
+
+		// Create resolved error #2
+		$wpdb->insert(
+			$table_name,
+			array(
+				'id'           => 903,
+				'form_id'      => 1,
+				'endpoint'     => 'https://api.example.com/test',
+				'method'       => 'POST',
+				'status'       => 'error',
+				'request_data' => '{}',
+				'retry_count'  => 3,
+				'created_at'   => \current_time( 'mysql' ),
+			),
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
+		);
+
+		// Successful retry for 903
+		$wpdb->insert(
+			$table_name,
+			array(
+				'id'            => 904,
+				'form_id'       => 1,
+				'endpoint'      => 'https://api.example.com/test',
+				'method'        => 'POST',
+				'status'        => 'success',
+				'request_data'  => '{}',
+				'response_code' => 200,
+				'retry_of'      => 903,
+				'retry_count'   => 0,
+				'created_at'    => \current_time( 'mysql' ),
+			),
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%s' )
+		);
+
+		$logger = new RequestLogger();
+		$result = $logger->get_resolved_error_ids();
+
+		$this->assertIsArray( $result, 'Should return an array' );
+		$this->assertCount( 2, $result, 'Should return 2 resolved error IDs' );
+		$this->assertContains( 901, $result, 'Should contain error ID 901' );
+		$this->assertContains( 903, $result, 'Should contain error ID 903' );
+		$this->assertNotContains( 900, $result, 'Should not contain unresolved error ID 900' );
+	}
+
+	/**
+	 * Test get_resolved_error_ids() returns empty array when no resolved errors
+	 *
+	 * @return void
+	 * @since 1.3.14
+	 */
+	public function test_get_resolved_error_ids_returns_empty_when_no_resolved(): void {
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'cf7_api_logs';
+
+		// Create only unresolved errors
+		$wpdb->insert(
+			$table_name,
+			array(
+				'id'           => 1000,
+				'form_id'      => 1,
+				'endpoint'     => 'https://api.example.com/test',
+				'method'       => 'POST',
+				'status'       => 'error',
+				'request_data' => '{}',
+				'retry_count'  => 3,
+				'created_at'   => \current_time( 'mysql' ),
+			),
+			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
+		);
+
+		$logger = new RequestLogger();
+		$result = $logger->get_resolved_error_ids();
+
+		$this->assertIsArray( $result, 'Should return an array' );
+		$this->assertEmpty( $result, 'Should return empty array when no resolved errors' );
+	}
 }

@@ -72,10 +72,30 @@ Displays aggregated metrics at the top:
 
 | Filter | Description |
 |--------|-------------|
-| **Status** | All, Success, or Errors |
+| **Status** | All, Success, All Errors, or Unresolved |
 | **Form** | Filter by specific Contact Form 7 form |
 | **Search** | Search in endpoint URLs and error messages |
 | **Date** | Filter by date range (see below) |
+
+### Status Filter
+
+The status filter provides different views of your API logs:
+
+| Option | Description |
+|--------|-------------|
+| **All** | Show all logs regardless of status |
+| **Success** | Show only successful API requests |
+| **All Errors** | Show all error logs, including resolved ones |
+| **Unresolved** | Show only errors without successful retries |
+
+#### Resolved vs Unresolved Errors
+
+When viewing error logs, you'll notice a **"Resolved"** badge next to errors that have been successfully retried:
+
+- **Resolved errors**: The original request failed, but a manual retry succeeded. These show a green "Resolved" badge.
+- **Unresolved errors**: Errors that still need attention - either no retry was attempted, or all retry attempts also failed.
+
+> **Tip**: Use the "Unresolved" filter to quickly find errors that still need attention.
 
 ### Log Details
 
