@@ -77,7 +77,8 @@ class RequestLogTable extends \WP_List_Table {
 	public function get_columns(): array {
 		return array(
 			'cb'             => '<input type="checkbox" />',
-			'form'           => \__( 'Form', 'contact-form-to-api' ),
+			'from'           => \__( 'From', 'contact-form-to-api' ),
+			'form'           => \__( 'Channel', 'contact-form-to-api' ),
 			'endpoint'       => \__( 'Endpoint', 'contact-form-to-api' ),
 			'method'         => \__( 'Method', 'contact-form-to-api' ),
 			'status'         => \__( 'Status', 'contact-form-to-api' ),
@@ -227,7 +228,7 @@ class RequestLogTable extends \WP_List_Table {
 		$where_values = array();
 
 		// Filter by status.
-		if ( isset( $_GET['status'] ) && 'all' !== $_GET['status'] ) {
+		if ( isset( $_GET['status'] ) && ! empty( $_GET['status'] ) && 'all' !== $_GET['status'] ) {
 			$status = \sanitize_text_field( \wp_unslash( $_GET['status'] ) );
 			if ( 'error' === $status ) {
 				// Include all error types.
@@ -362,6 +363,137 @@ class RequestLogTable extends \WP_List_Table {
 	}
 
 	/**
+	 * Column from (sender information)
+	 *
+	 * Extracts and displays sender info from request data.
+	 * Shows name, lastname and masked email.
+	 *
+	 * @param array<string, mixed> $item Item data.
+	 * @return string
+	 */
+	public function column_from( $item ): string {
+		$from_parts = $this->extract_sender_info( $item );
+
+		if ( empty( $from_parts['display_name'] ) && empty( $from_parts['email'] ) ) {
+			return '<span class="from-unknown">' . \esc_html__( 'Unknown', 'contact-form-to-api' ) . '</span>';
+		}
+
+		$output = '';
+
+		if ( ! empty( $from_parts['display_name'] ) ) {
+			$output .= '<span class="from-name">' . \esc_html( $from_parts['display_name'] ) . '</span>';
+		}
+
+		if ( ! empty( $from_parts['email'] ) ) {
+			$masked_email = $this->mask_email( $from_parts['email'] );
+			$output      .= ' <span class="from-email">&lt;' . \esc_html( $masked_email ) . '&gt;</span>';
+		}
+
+		return $output;
+	}
+
+	/**
+	 * Extract sender information from request data
+	 *
+	 * Attempts to find name, lastname and email from various common field names.
+	 *
+	 * @param array<string, mixed> $item Item data.
+	 * @return array{display_name: string, email: string} Extracted sender info.
+	 */
+	private function extract_sender_info( array $item ): array {
+		$result = array(
+			'display_name' => '',
+			'email'        => '',
+		);
+
+		// Get and decrypt request data if needed.
+		$request_data = $item['request_data'] ?? '';
+
+		if ( empty( $request_data ) ) {
+			return $result;
+		}
+
+		// Decrypt if encrypted.
+		if ( isset( $item['encryption_version'] ) && $item['encryption_version'] > 0 ) {
+			$decrypted_item = $this->logger->decrypt_log_fields( $item );
+			$request_data   = $decrypted_item['request_data'] ?? '';
+		}
+
+		// Parse JSON data.
+		$data = \is_string( $request_data ) ? \json_decode( $request_data, true ) : $request_data;
+
+		if ( ! \is_array( $data ) ) {
+			return $result;
+		}
+
+		// Common field names for name (case-insensitive search).
+		$name_fields     = array( 'name', 'first_name', 'firstname', 'your-name', 'nombre', 'prenom' );
+		$lastname_fields = array( 'lastname', 'last_name', 'surname', 'your-lastname', 'apellido', 'nom' );
+		$email_fields    = array( 'email', 'your-email', 'youremail', 'mail', 'e-mail', 'correo', 'courriel', 'primaryEmail' );
+
+		$name     = '';
+		$lastname = '';
+		$email    = '';
+
+		// Search for fields (case-insensitive).
+		$data_lower = \array_change_key_case( $data, CASE_LOWER );
+
+		foreach ( $name_fields as $field ) {
+			if ( isset( $data_lower[ $field ] ) && ! empty( $data_lower[ $field ] ) ) {
+				$name = \is_array( $data_lower[ $field ] ) ? $data_lower[ $field ][0] : $data_lower[ $field ];
+				break;
+			}
+		}
+
+		foreach ( $lastname_fields as $field ) {
+			if ( isset( $data_lower[ $field ] ) && ! empty( $data_lower[ $field ] ) ) {
+				$lastname = \is_array( $data_lower[ $field ] ) ? $data_lower[ $field ][0] : $data_lower[ $field ];
+				break;
+			}
+		}
+
+		foreach ( $email_fields as $field ) {
+			if ( isset( $data_lower[ $field ] ) && ! empty( $data_lower[ $field ] ) ) {
+				$email = \is_array( $data_lower[ $field ] ) ? $data_lower[ $field ][0] : $data_lower[ $field ];
+				break;
+			}
+		}
+
+		// Build display name.
+		$display_name = \trim( $name . ' ' . $lastname );
+
+		return array(
+			'display_name' => $display_name,
+			'email'        => $email,
+		);
+	}
+
+	/**
+	 * Mask email address for privacy
+	 *
+	 * Shows first 2 chars, masks middle, shows domain.
+	 * Example: jo***@example.com
+	 *
+	 * @param string $email Email address to mask.
+	 * @return string Masked email.
+	 */
+	private function mask_email( string $email ): string {
+		if ( empty( $email ) || ! \str_contains( $email, '@' ) ) {
+			return $email;
+		}
+
+		$parts = \explode( '@', $email );
+		$local = $parts[0];
+		$domain = $parts[1] ?? '';
+
+		// Show first 2 characters of local part, mask the rest.
+		$visible_chars = \min( 2, \strlen( $local ) );
+		$masked_local  = \substr( $local, 0, $visible_chars ) . '***';
+
+		return $masked_local . '@' . $domain;
+	}
+
+	/**
 	 * Column endpoint
 	 *
 	 * @param array<string, mixed> $item Item data.
@@ -421,13 +553,12 @@ class RequestLogTable extends \WP_List_Table {
 			\__( 'Delete', 'contact-form-to-api' )
 		);
 
-		$endpoint = $item['endpoint'];
-		if ( \strlen( $endpoint ) > 60 ) {
-			$endpoint = \substr( $endpoint, 0, 57 ) . '...';
-		}
+		$endpoint      = $item['endpoint'];
+		$endpoint_full = $endpoint;
 
 		return \sprintf(
-			'<strong><a href="%s">%s</a></strong>%s',
+			'<span class="endpoint-cell" title="%s"><strong><a href="%s">%s</a></strong></span>%s',
+			\esc_attr( $endpoint_full ),
 			\esc_url(
 				\add_query_arg(
 					array(

@@ -77,10 +77,16 @@
 		 * Initialize date filter functionality
 		 */
 		initDateFilter: function () {
+			const $statusFilter = $("#status_filter");
 			const $dateFilter = $("#date_filter");
 			const $customDateRange = $("#custom-date-range");
 			const $dateStart = $("#date_start");
 			const $dateEnd = $("#date_end");
+
+			// Auto-submit for status filter
+			$statusFilter.on("change", function () {
+				$("#cf7-date-filter-form").submit();
+			});
 
 			// Toggle custom date range visibility using CSS class
 			$dateFilter.on("change", function () {
@@ -92,10 +98,8 @@
 					$customDateRange.slideUp(200, function() {
 						$(this).addClass("cf7-api-hidden");
 					});
-					// Clear custom date inputs when switching to preset filter
-					if (value !== "") {
-						$("#cf7-date-filter-form").submit();
-					}
+					// Auto-submit for preset filters (including "All Time" which has empty value)
+					$("#cf7-date-filter-form").submit();
 				}
 			});
 
