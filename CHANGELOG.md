@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Architecture Foundation (Phase 1)**: New MVC structure for version 2.0.0
+  - Created `Model/` directory with type-safe domain models
+    - `LogEntry`: Type-safe API request log representation
+    - `FormSettings`: Type-safe form configuration
+    - `ApiResponse`: Type-safe API response data
+    - `Statistics`: Type-safe aggregated statistics
+  - Created `Repository/` directory with data access interfaces
+    - `LogRepositoryInterface`: Contract for log data access
+    - `SettingsRepositoryInterface`: Contract for settings data access
+  - Created `Controller/`, `View/`, `Infrastructure/` directories for future refactoring
+  - Added `docs/ARCHITECTURE.md`: Comprehensive architecture documentation
+  - Added `docs/UPGRADE.md`: Migration guide for version 2.0.0
 - **Unresolved Errors Filter**: New filter to show only errors that haven't been successfully retried
   - "Unresolved" tab in logs table shows errors pending resolution
   - "All Errors" renamed to distinguish from unresolved filter
@@ -30,6 +42,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `RequestLogger::count_errors_by_resolution()` method for error statistics
 - Added `RequestLogger::get_resolved_error_ids()` method for efficient filtering
+- **New Model Layer**: Type-safe domain models following SOLID principles
+- **Repository Pattern**: Interfaces for future data access abstraction
+- **Architecture Documentation**: See `docs/ARCHITECTURE.md` for complete refactoring plan
+
+### Notes
+
+- Phase 1 contains NO BREAKING CHANGES - all additions are backward compatible
+- Existing code continues to work unchanged
+- Foundation for future architecture improvements in version 2.0.0
+- See `docs/UPGRADE.md` for migration guidance
 
 ## [1.3.13] - 2026-01-23
 
