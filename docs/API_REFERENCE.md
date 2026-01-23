@@ -872,6 +872,54 @@ if ($retry_id) {
 }
 ```
 
+##### `count_errors_by_resolution(): array`
+
+Count error logs by resolution status. Returns total errors, resolved errors (with successful retry), and unresolved errors (pending).
+
+**Since**: 1.3.14
+
+**Return**: `array{total: int, resolved: int, unresolved: int}` Error counts by resolution status
+
+**Example**:
+
+```php
+$logger = RequestLogger::instance();
+$counts = $logger->count_errors_by_resolution();
+
+echo "Total errors: {$counts['total']}";
+echo "Resolved: {$counts['resolved']}";
+echo "Unresolved: {$counts['unresolved']}";
+
+// Display unresolved count in UI
+if ($counts['unresolved'] > 0) {
+    echo "<span class='error-badge'>{$counts['unresolved']} pending errors</span>";
+}
+```
+
+##### `get_resolved_error_ids(): array`
+
+Get IDs of error logs that have successful retries. Returns array of original error log IDs that have been successfully retried.
+
+**Since**: 1.3.14
+
+**Return**: `array<int>` Array of error log IDs with successful retries
+
+**Example**:
+
+```php
+$logger = RequestLogger::instance();
+$resolved_ids = $logger->get_resolved_error_ids();
+
+// Filter out resolved errors from a list
+$error_ids = [100, 101, 102, 103];
+$unresolved_ids = array_diff($error_ids, $resolved_ids);
+
+// Check if specific error is resolved
+if (in_array(123, $resolved_ids, true)) {
+    echo "Error #123 has been resolved";
+}
+```
+
 ##### `decrypt_log_fields(array $log): array`
 
 Decrypt log fields for display. Decrypts encrypted log fields for viewing in admin or exports.
