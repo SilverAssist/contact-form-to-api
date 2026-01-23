@@ -681,56 +681,92 @@ class RequestLogView {
 					<button type="submit" class="button button-primary">
 						<?php \esc_html_e( 'Apply Filters', 'contact-form-to-api' ); ?>
 					</button>
-
-					<?php if ( ! empty( $current_date_filter ) || ! empty( $current_status ) ) : ?>
-						<a href="<?php echo \esc_url( \add_query_arg( 'page', $page, \admin_url( 'admin.php' ) ) ); ?>" class="button">
-							<?php \esc_html_e( 'Clear Filters', 'contact-form-to-api' ); ?>
-						</a>
-					<?php endif; ?>
 				</div>
 
 				<?php if ( ! empty( $current_date_filter ) || ! empty( $current_status ) ) : ?>
-					<div class="active-filters-badge">
-						<span class="dashicons dashicons-filter"></span>
-						<?php
-						$active_filters = array();
-
-						// Add status filter label
-						if ( ! empty( $current_status ) ) {
-							$status_labels = array(
-								'success' => \__( 'Success', 'contact-form-to-api' ),
-								'error'   => \__( 'Error', 'contact-form-to-api' ),
-							);
-							$active_filters[] = $status_labels[ $current_status ] ?? $current_status;
-						}
-
-						// Add date filter label
-						if ( ! empty( $current_date_filter ) ) {
-							$date_labels = array(
-								'today'     => \__( 'Today', 'contact-form-to-api' ),
-								'yesterday' => \__( 'Yesterday', 'contact-form-to-api' ),
-								'7days'     => \__( 'Last 7 Days', 'contact-form-to-api' ),
-								'30days'    => \__( 'Last 30 Days', 'contact-form-to-api' ),
-								'month'     => \__( 'This Month', 'contact-form-to-api' ),
-								'custom'    => \__( 'Custom Range', 'contact-form-to-api' ),
-							);
-
-							$date_label = $date_labels[ $current_date_filter ] ?? $current_date_filter;
-							
-							if ( 'custom' === $current_date_filter && ! empty( $date_start ) ) {
-								/* translators: %1$s: start date, %2$s: end date */
-								$date_label = \sprintf(
-									\__( 'Custom: %1$s to %2$s', 'contact-form-to-api' ),
-									$date_start,
-									! empty( $date_end ) ? $date_end : \__( 'now', 'contact-form-to-api' )
-								);
+					<div class="filtered-by">
+						<span><?php \esc_html_e( 'Filtered by:', 'contact-form-to-api' ); ?></span>
+						<div class="tags">
+							<?php
+							// Build base URL for removing individual filters
+							$base_args = array( 'page' => $page );
+							if ( $form_id > 0 ) {
+								$base_args['form_id'] = $form_id;
+							}
+							if ( ! empty( $search ) ) {
+								$base_args['s'] = $search;
 							}
 
-							$active_filters[] = $date_label;
-						}
+							// Status filter tag
+							if ( ! empty( $current_status ) ) :
+								$status_labels = array(
+									'success' => \__( 'Success', 'contact-form-to-api' ),
+									'error'   => \__( 'Error', 'contact-form-to-api' ),
+								);
+								$status_label = $status_labels[ $current_status ] ?? $current_status;
+								
+								// URL to remove only status filter (keep date filter)
+								$remove_status_args = $base_args;
+								if ( ! empty( $current_date_filter ) ) {
+									$remove_status_args['date_filter'] = $current_date_filter;
+									if ( 'custom' === $current_date_filter ) {
+										$remove_status_args['date_start'] = $date_start;
+										if ( ! empty( $date_end ) ) {
+											$remove_status_args['date_end'] = $date_end;
+										}
+									}
+								}
+								$remove_status_url = \add_query_arg( $remove_status_args, \admin_url( 'admin.php' ) );
+								?>
+								<span class="tag">
+									<?php echo \esc_html( $status_label ); ?>
+									<a href="<?php echo \esc_url( $remove_status_url ); ?>" class="remove-tag" aria-label="<?php \esc_attr_e( 'Remove status filter', 'contact-form-to-api' ); ?>">
+										<span class="dashicons dashicons-no-alt"></span>
+									</a>
+								</span>
+							<?php endif; ?>
 
-						echo \esc_html( \implode( ' | ', $active_filters ) );
-						?>
+							<?php
+							// Date filter tag
+							if ( ! empty( $current_date_filter ) ) :
+								$date_labels = array(
+									'today'     => \__( 'Today', 'contact-form-to-api' ),
+									'yesterday' => \__( 'Yesterday', 'contact-form-to-api' ),
+									'7days'     => \__( 'Last 7 Days', 'contact-form-to-api' ),
+									'30days'    => \__( 'Last 30 Days', 'contact-form-to-api' ),
+									'month'     => \__( 'This Month', 'contact-form-to-api' ),
+									'custom'    => \__( 'Custom Range', 'contact-form-to-api' ),
+								);
+
+								$date_label = $date_labels[ $current_date_filter ] ?? $current_date_filter;
+								
+								if ( 'custom' === $current_date_filter && ! empty( $date_start ) ) {
+									/* translators: %1$s: start date, %2$s: end date */
+									$date_label = \sprintf(
+										\__( '%1$s to %2$s', 'contact-form-to-api' ),
+										$date_start,
+										! empty( $date_end ) ? $date_end : \__( 'now', 'contact-form-to-api' )
+									);
+								}
+
+								// URL to remove only date filter (keep status filter)
+								$remove_date_args = $base_args;
+								if ( ! empty( $current_status ) ) {
+									$remove_date_args['status'] = $current_status;
+								}
+								$remove_date_url = \add_query_arg( $remove_date_args, \admin_url( 'admin.php' ) );
+								?>
+								<span class="tag">
+									<?php echo \esc_html( $date_label ); ?>
+									<a href="<?php echo \esc_url( $remove_date_url ); ?>" class="remove-tag" aria-label="<?php \esc_attr_e( 'Remove date filter', 'contact-form-to-api' ); ?>">
+										<span class="dashicons dashicons-no-alt"></span>
+									</a>
+								</span>
+							<?php endif; ?>
+						</div>
+						<a href="<?php echo \esc_url( \add_query_arg( $base_args, \admin_url( 'admin.php' ) ) ); ?>" class="button-link clear-filters">
+							<?php \esc_html_e( 'Clear all', 'contact-form-to-api' ); ?>
+						</a>
 					</div>
 				<?php endif; ?>
 			</form>
