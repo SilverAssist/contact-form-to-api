@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.12] - 2026-01-23
+
 ### Added
 
 - **New "From" Column in Logs Table** (#54): Quick sender identification without opening log details
