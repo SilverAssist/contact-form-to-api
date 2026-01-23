@@ -221,9 +221,9 @@ update_file "${PROJECT_ROOT}/contact-form-to-api.php" \
     "s/Version: [0-9]+\\.[0-9]+\\.[0-9]+/Version: ${NEW_VERSION}/g" \
     "plugin header"
 
-# Update constant
+# Update constant (handles both with and without spaces: define('...' or define( '...' )
 update_file "${PROJECT_ROOT}/contact-form-to-api.php" \
-    "s/define\\('CF7_API_VERSION', '[0-9]+\\.[0-9]+\\.[0-9]+'\\)/define('CF7_API_VERSION', '${NEW_VERSION}')/g" \
+    "s/define\\(\\s*'CF7_API_VERSION',\\s*'[0-9]+\\.[0-9]+\\.[0-9]+'\\s*\\)/define( 'CF7_API_VERSION', '${NEW_VERSION}' )/g" \
     "plugin constant"
 
 # Update @version tag

@@ -95,8 +95,8 @@ check_file_version() {
 # 1. Check main plugin file constant
 print_status "Checking main plugin file..."
 
-# Check the constant definition
-CONSTANT_VERSION=$(grep "define('CF7_API_VERSION'" "${PROJECT_ROOT}/contact-form-to-api.php" | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+" | head -1)
+# Check the constant definition (handles both with and without spaces)
+CONSTANT_VERSION=$(grep -E "define\(\s*'CF7_API_VERSION'" "${PROJECT_ROOT}/contact-form-to-api.php" | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+" | head -1)
 
 if [ -n "$CONSTANT_VERSION" ]; then
     TOTAL_FILES=$((TOTAL_FILES + 1))
@@ -107,6 +107,8 @@ if [ -n "$CONSTANT_VERSION" ]; then
         print_error "✗ Plugin constant: CF7_API_VERSION ($CONSTANT_VERSION) - Expected: $MAIN_VERSION"
         INCONSISTENT_FILES=$((INCONSISTENT_FILES + 1))
     fi
+else
+    print_warning "⚠ Plugin constant CF7_API_VERSION not found"
 fi
 
 # Check @version tag in main file
