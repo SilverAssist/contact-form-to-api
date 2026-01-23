@@ -775,9 +775,10 @@ class RequestLogTableTest extends TestCase {
 			'Should match case insensitively'
 		);
 
+		// Note: method expects lowercase search term (caller lowercases before calling)
 		$this->assertTrue(
-			$method->invoke( $this->table, $item, 'JOHN' ),
-			'Should match uppercase search against mixed case name'
+			$method->invoke( $this->table, $item, 'john' ),
+			'Should match lowercase search against mixed case name'
 		);
 	}
 

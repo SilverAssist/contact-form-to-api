@@ -249,14 +249,11 @@ class RequestLogTable extends \WP_List_Table {
 			$where_values[] = \absint( $_GET['form_id'] );
 		}
 
-		// Search functionality - SQL handles endpoint/error_message, PHP handles name/lastname.
+		// Search term - when active, all filtering is done in PHP to support
+		// endpoint/error_message/sender_name search with OR logic.
 		$search_term = '';
 		if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) {
-			$search_term    = \sanitize_text_field( \wp_unslash( $_GET['s'] ) );
-			$search         = '%' . $wpdb->esc_like( $search_term ) . '%';
-			$where         .= ' AND (endpoint LIKE %s OR error_message LIKE %s)';
-			$where_values[] = $search;
-			$where_values[] = $search;
+			$search_term = \sanitize_text_field( \wp_unslash( $_GET['s'] ) );
 		}
 
 		// Apply date filter.
@@ -287,8 +284,8 @@ class RequestLogTable extends \WP_List_Table {
 			$order = 'DESC';
 		}
 
-		// If search is active, add PHP filtering for name/lastname (SQL already handles endpoint/error_message).
-		// This respects anonymization rules for sender data.
+		// If search is active, use PHP filtering for full OR logic
+		// (endpoint OR error_message OR sender_name) with anonymization support.
 		if ( ! empty( $search_term ) ) {
 			return $this->get_logs_data_with_search( $table_name, $where, $orderby, $order, $search_term, $per_page, $paged );
 		}
@@ -314,14 +311,15 @@ class RequestLogTable extends \WP_List_Table {
 	}
 
 	/**
-	 * Get logs data with additional PHP filtering for name/lastname search
+	 * Get logs data with PHP-based search filtering
 	 *
-	 * SQL already filters by endpoint/error_message. This method adds PHP-based
-	 * filtering for name/lastname which respects anonymization rules.
+	 * This method handles search by endpoint, error_message, name, and lastname
+	 * using OR logic. Name/lastname search respects anonymization rules - fields
+	 * marked as sensitive via SensitiveDataPatterns are not searched.
 	 *
 	 * @since 1.3.13
 	 * @param string $table_name  Table name.
-	 * @param string $where       WHERE clause (already includes endpoint/error_message search).
+	 * @param string $where       WHERE clause (without search filter).
 	 * @param string $orderby     Order by column.
 	 * @param string $order       Sort order (ASC/DESC).
 	 * @param string $search_term Search term.
@@ -345,8 +343,8 @@ class RequestLogTable extends \WP_List_Table {
 		$columns = 'id, form_id, endpoint, method, status, error_message, request_data, '
 			. 'encryption_version, response_code, execution_time, retry_count, retry_of, created_at';
 
-		// Fetch records matching SQL filters, limit for memory safety.
-		// SQL already filters endpoint/error_message, PHP will add name/lastname filtering.
+		// Fetch records matching base filters (status, form, date), limit for memory safety.
+		// Search filtering is done in PHP to support OR logic with sender name.
 		$max_records = 5000;
 		$all_items   = $wpdb->get_results(
 			$wpdb->prepare(
@@ -363,12 +361,21 @@ class RequestLogTable extends \WP_List_Table {
 			);
 		}
 
-		// Additional PHP filtering for name/lastname (respects anonymization rules).
+		// PHP filtering for search: matches endpoint OR error_message OR sender name.
+		// This respects anonymization rules for sender data.
 		$filtered_items = array();
 		$search_lower   = \strtolower( $search_term );
 
 		foreach ( $all_items as $item ) {
-			if ( $this->item_matches_sender_search( $item, $search_lower ) ) {
+			$endpoint      = isset( $item['endpoint'] ) ? \strtolower( (string) $item['endpoint'] ) : '';
+			$error_message = isset( $item['error_message'] ) ? \strtolower( (string) $item['error_message'] ) : '';
+
+			// Match if search term found in endpoint, error_message, or sender name.
+			if (
+				false !== \strpos( $endpoint, $search_lower ) ||
+				false !== \strpos( $error_message, $search_lower ) ||
+				$this->item_matches_sender_search( $item, $search_lower )
+			) {
 				$filtered_items[] = $item;
 			}
 		}
