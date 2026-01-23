@@ -44,6 +44,13 @@ class RequestLogTable extends \WP_List_Table {
 	private RequestLogger $logger;
 
 	/**
+	 * Cached resolved error IDs to avoid N+1 queries
+	 *
+	 * @var array<int>|null
+	 */
+	private ?array $resolved_error_ids = null;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
@@ -696,13 +703,20 @@ class RequestLogTable extends \WP_List_Table {
 		);
 
 		// Check if this is an error that has been successfully retried.
+		// Use cached resolved IDs to avoid N+1 queries.
 		$is_error = \in_array( $status, array( 'error', 'client_error', 'server_error' ), true );
-		if ( $is_error && $this->logger->has_successful_retry( (int) $item['id'] ) ) {
-			$output .= \sprintf(
-				' <span class="cf7-api-status cf7-api-status-resolved" title="%s">%s</span>',
-				\esc_attr__( 'This error was resolved via manual retry', 'contact-form-to-api' ),
-				\esc_html__( 'Resolved', 'contact-form-to-api' )
-			);
+		if ( $is_error ) {
+			// Lazy load resolved IDs once per request.
+			if ( null === $this->resolved_error_ids ) {
+				$this->resolved_error_ids = $this->logger->get_resolved_error_ids();
+			}
+			if ( \in_array( (int) $item['id'], $this->resolved_error_ids, true ) ) {
+				$output .= \sprintf(
+					' <span class="cf7-api-status cf7-api-status-resolved" title="%s">%s</span>',
+					\esc_attr__( 'This error was resolved via manual retry', 'contact-form-to-api' ),
+					\esc_html__( 'Resolved', 'contact-form-to-api' )
+				);
+			}
 		}
 
 		return $output;

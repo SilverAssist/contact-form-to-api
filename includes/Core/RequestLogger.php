@@ -950,7 +950,7 @@ class RequestLogger {
 	 * Count error logs by resolution status
 	 *
 	 * Returns counts of total errors, resolved (successfully retried), and unresolved.
-	 * Uses a single optimized query with LEFT JOIN to count resolved errors.
+	 * Uses an optimized query with INNER JOIN to count resolved errors.
 	 *
 	 * @since 1.3.14
 	 * @return array{total: int, resolved: int, unresolved: int} Error counts by resolution status.
@@ -961,7 +961,7 @@ class RequestLogger {
 		// Count total errors (not including retry entries themselves).
 		$total_errors = (int) $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(*) FROM %i WHERE status IN ('error', 'client_error', 'server_error') AND retry_of IS NULL",
+				'SELECT COUNT(*) FROM %i WHERE status IN (\'error\', \'client_error\', \'server_error\') AND retry_of IS NULL',
 				$this->table_name
 			)
 		);
@@ -969,9 +969,9 @@ class RequestLogger {
 		// Count resolved errors (errors that have a successful retry).
 		$resolved_errors = (int) $wpdb->get_var(
 			$wpdb->prepare(
-				"SELECT COUNT(DISTINCT e.id) FROM %i e
-				INNER JOIN %i r ON r.retry_of = e.id AND r.status = 'success'
-				WHERE e.status IN ('error', 'client_error', 'server_error') AND e.retry_of IS NULL",
+				'SELECT COUNT(DISTINCT e.id) FROM %i e
+				INNER JOIN %i r ON r.retry_of = e.id AND r.status = \'success\'
+				WHERE e.status IN (\'error\', \'client_error\', \'server_error\') AND e.retry_of IS NULL',
 				$this->table_name,
 				$this->table_name
 			)
@@ -998,9 +998,9 @@ class RequestLogger {
 
 		$results = $wpdb->get_col(
 			$wpdb->prepare(
-				"SELECT DISTINCT e.id FROM %i e
-				INNER JOIN %i r ON r.retry_of = e.id AND r.status = 'success'
-				WHERE e.status IN ('error', 'client_error', 'server_error') AND e.retry_of IS NULL",
+				'SELECT DISTINCT e.id FROM %i e
+				INNER JOIN %i r ON r.retry_of = e.id AND r.status = \'success\'
+				WHERE e.status IN (\'error\', \'client_error\', \'server_error\') AND e.retry_of IS NULL',
 				$this->table_name,
 				$this->table_name
 			)

@@ -464,12 +464,12 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'resolved', $result, 'Should have resolved key' );
 		$this->assertArrayHasKey( 'unresolved', $result, 'Should have unresolved key' );
 
-		// Total errors: 700, 701, 702, 703 = 4 (702 is a retry but also an error)
-		$this->assertSame( 4, $result['total'], 'Should count 4 total errors' );
+		// Total errors (originals only): 700, 701, 703 = 3 (702 is a retry of 701 and not counted)
+		$this->assertSame( 3, $result['total'], 'Should count 3 total errors' );
 		// Resolved: only 703 has successful retry
 		$this->assertSame( 1, $result['resolved'], 'Should count 1 resolved error' );
-		// Unresolved: 700, 701, 702 = 3
-		$this->assertSame( 3, $result['unresolved'], 'Should count 3 unresolved errors' );
+		// Unresolved: 700, 701 = 2
+		$this->assertSame( 2, $result['unresolved'], 'Should count 2 unresolved errors' );
 	}
 
 	/**
