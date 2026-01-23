@@ -368,6 +368,7 @@ class RequestLogTable extends \WP_List_Table {
 	 * Extracts and displays sender info from request data.
 	 * Shows name, lastname and masked email.
 	 *
+	 * @since 1.3.12
 	 * @param array<string, mixed> $item Item data.
 	 * @return string
 	 */
@@ -396,31 +397,52 @@ class RequestLogTable extends \WP_List_Table {
 	 * Extract sender information from request data
 	 *
 	 * Attempts to find name, lastname and email from various common field names.
+	 * Uses static cache to avoid redundant decryption operations.
 	 *
+	 * @since 1.3.12
 	 * @param array<string, mixed> $item Item data.
 	 * @return array{display_name: string, email: string} Extracted sender info.
 	 */
 	private function extract_sender_info( array $item ): array {
+		static $sender_data_cache = array();
+
 		$result = array(
 			'display_name' => '',
 			'email'        => '',
 		);
 
-		// Get and decrypt request data if needed.
-		$request_data = $item['request_data'] ?? '';
-
-		if ( empty( $request_data ) ) {
-			return $result;
+		// Build a cache key per log item (prefer the log ID when available).
+		if ( isset( $item['id'] ) ) {
+			$cache_key = 'id_' . (string) $item['id'];
+		} else {
+			$request_data_raw   = $item['request_data'] ?? '';
+			$encryption_version = $item['encryption_version'] ?? '';
+			$cache_key          = \md5( (string) $request_data_raw . '|' . (string) $encryption_version );
 		}
 
-		// Decrypt if encrypted.
-		if ( isset( $item['encryption_version'] ) && $item['encryption_version'] > 0 ) {
-			$decrypted_item = $this->logger->decrypt_log_fields( $item );
-			$request_data   = $decrypted_item['request_data'] ?? '';
-		}
+		// Reuse already decrypted and decoded data when available.
+		if ( isset( $sender_data_cache[ $cache_key ] ) ) {
+			$data = $sender_data_cache[ $cache_key ];
+		} else {
+			// Get and decrypt request data if needed.
+			$request_data = $item['request_data'] ?? '';
 
-		// Parse JSON data.
-		$data = \is_string( $request_data ) ? \json_decode( $request_data, true ) : $request_data;
+			if ( empty( $request_data ) ) {
+				return $result;
+			}
+
+			// Decrypt if encrypted.
+			if ( isset( $item['encryption_version'] ) && $item['encryption_version'] > 0 ) {
+				$decrypted_item = $this->logger->decrypt_log_fields( $item );
+				$request_data   = $decrypted_item['request_data'] ?? '';
+			}
+
+			// Parse JSON data.
+			$data = \is_string( $request_data ) ? \json_decode( $request_data, true ) : $request_data;
+
+			// Cache the parsed data (even if not an array, to avoid repeating work).
+			$sender_data_cache[ $cache_key ] = $data;
+		}
 
 		if ( ! \is_array( $data ) ) {
 			return $result;
@@ -472,8 +494,13 @@ class RequestLogTable extends \WP_List_Table {
 	 * Mask email address for privacy
 	 *
 	 * Shows first 2 chars, masks middle, shows domain.
-	 * Example: jo***@example.com
+	 * Handles edge cases for very short email local parts.
+	 * Examples:
+	 * - john@example.com -> jo***@example.com
+	 * - ab@example.com -> a***@example.com
+	 * - a@example.com -> ***@example.com
 	 *
+	 * @since 1.3.12
 	 * @param string $email Email address to mask.
 	 * @return string Masked email.
 	 */
@@ -482,13 +509,22 @@ class RequestLogTable extends \WP_List_Table {
 			return $email;
 		}
 
-		$parts = \explode( '@', $email );
-		$local = $parts[0];
+		$parts  = \explode( '@', $email );
+		$local  = $parts[0];
 		$domain = $parts[1] ?? '';
 
-		// Show first 2 characters of local part, mask the rest.
-		$visible_chars = \min( 2, \strlen( $local ) );
-		$masked_local  = \substr( $local, 0, $visible_chars ) . '***';
+		$local_length = \strlen( $local );
+
+		if ( 1 === $local_length ) {
+			// For 1-character local part, do not reveal the character at all.
+			$masked_local = '***';
+		} elseif ( 2 === $local_length ) {
+			// For 2-character local part, reveal only the first character.
+			$masked_local = \substr( $local, 0, 1 ) . '***';
+		} else {
+			// Show first 2 characters of local part, mask the rest.
+			$masked_local = \substr( $local, 0, 2 ) . '***';
+		}
 
 		return $masked_local . '@' . $domain;
 	}
