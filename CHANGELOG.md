@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **New "From" Column in Logs Table** (#54): Quick sender identification without opening log details
+  - Displays sender name and masked email (e.g., `John Doe <jo***@example.com>`)
+  - Extracts data from common form fields (name, firstname, your-name, email, your-email, etc.)
+  - Email masking preserves privacy while allowing identification
+  - Shows "Unknown" when sender info cannot be extracted
+
+### Changed
+
+- **Renamed "Form" Column to "Channel"** (#54): Better reflects the source/channel of submission
+- **Improved Endpoint Column** (#54): Fixed width with CSS text-overflow ellipsis
+  - Full URL visible on hover via title attribute
+  - Cleaner table layout without PHP-based truncation
+
+### Fixed
+
+- **Empty Status Filter Bug** (#54): Fixed table showing no results when URL has empty status parameter
+  - Added `! empty()` check to prevent filtering with empty string
+  - URLs like `?status&date_filter` now work correctly
+- **Status Filter Auto-Submit** (#54): Status dropdown now submits form automatically on change
+- **"All Time" Date Filter Auto-Submit** (#54): Previously only non-empty filter values triggered auto-submit
+
 ## [1.3.11] - 2026-01-22
 
 ### Fixed
