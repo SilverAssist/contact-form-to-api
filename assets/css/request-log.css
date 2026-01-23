@@ -239,6 +239,10 @@
 	width: 18%;
 }
 
+.wp-list-table .column-form {
+	width: 12%;
+}
+
 .wp-list-table .column-endpoint {
 	max-width: 250px;
 }

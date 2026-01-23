@@ -456,10 +456,9 @@ class RequestLogTable extends \WP_List_Table {
 		$lastname_fields = array( 'lastname', 'last_name', 'surname', 'your-lastname', 'apellido', 'nom' );
 		$email_fields    = array( 'email', 'your-email', 'youremail', 'mail', 'e-mail', 'correo', 'courriel', 'primaryEmail' );
 
-		$name           = '';
-		$lastname       = '';
-		$email          = '';
-		$found_field    = '';
+		$name     = '';
+		$lastname = '';
+		$email    = '';
 
 		// Search for fields (case-insensitive).
 		$data_lower = \array_change_key_case( $data, CASE_LOWER );
@@ -470,7 +469,11 @@ class RequestLogTable extends \WP_List_Table {
 				if ( SensitiveDataPatterns::is_sensitive( $field ) ) {
 					continue;
 				}
-				$name = \is_array( $data_lower[ $field ] ) ? $data_lower[ $field ][0] : $data_lower[ $field ];
+				if ( \is_array( $data_lower[ $field ] ) ) {
+					$name = isset( $data_lower[ $field ][0] ) ? $data_lower[ $field ][0] : '';
+				} else {
+					$name = $data_lower[ $field ];
+				}
 				break;
 			}
 		}
@@ -481,7 +484,11 @@ class RequestLogTable extends \WP_List_Table {
 				if ( SensitiveDataPatterns::is_sensitive( $field ) ) {
 					continue;
 				}
-				$lastname = \is_array( $data_lower[ $field ] ) ? $data_lower[ $field ][0] : $data_lower[ $field ];
+				if ( \is_array( $data_lower[ $field ] ) ) {
+					$lastname = isset( $data_lower[ $field ][0] ) ? $data_lower[ $field ][0] : '';
+				} else {
+					$lastname = $data_lower[ $field ];
+				}
 				break;
 			}
 		}
@@ -492,7 +499,11 @@ class RequestLogTable extends \WP_List_Table {
 				if ( SensitiveDataPatterns::is_sensitive( $field ) ) {
 					continue;
 				}
-				$email = \is_array( $data_lower[ $field ] ) ? $data_lower[ $field ][0] : $data_lower[ $field ];
+				if ( \is_array( $data_lower[ $field ] ) ) {
+					$email = isset( $data_lower[ $field ][0] ) ? $data_lower[ $field ][0] : '';
+				} else {
+					$email = $data_lower[ $field ];
+				}
 				break;
 			}
 		}
