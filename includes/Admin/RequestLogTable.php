@@ -253,10 +253,10 @@ class RequestLogTable extends \WP_List_Table {
 			$status = \sanitize_text_field( \wp_unslash( $_GET['status'] ) );
 			if ( 'error' === $status ) {
 				// Include all error types.
-				$where .= " AND status IN ('error', 'client_error', 'server_error')";
+				$where .= ' AND status IN (\'error\', \'client_error\', \'server_error\')';
 			} elseif ( 'unresolved' === $status ) {
 				// Filter for unresolved errors (errors without successful retry).
-				$where             .= " AND status IN ('error', 'client_error', 'server_error')";
+				$where             .= ' AND status IN (\'error\', \'client_error\', \'server_error\')';
 				$filter_unresolved  = true;
 			} else {
 				$where         .= ' AND status = %s';
