@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Search by Sender Name/Lastname**: Extended search functionality to filter logs by sender name
+  - Search now includes name and lastname fields from form submissions
+  - Respects anonymization rules: fields marked as sensitive via settings are excluded from search
+  - Maintains existing search capability for endpoint and error_message
+  - PHP-based filtering ensures proper privacy compliance
+
 ## [1.3.13] - 2026-01-23
 
 ### Added
