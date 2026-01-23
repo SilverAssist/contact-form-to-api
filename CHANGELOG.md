@@ -5,6 +5,16 @@ All notable changes to CF7 to API will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [1.3.11] - 2026-01-22
+
+### Fixed
+- **Log Filters UI** (#50, #48): Fixed broken filters after refactor
+  * Filters now use the WordPress `.filtered-by` pattern
+  * Active filters are shown as removable tags
+  * "Clear all" link added, duplicate "Clear Filters" button removed
+  * Unified into a single filter bar with native admin styles
+
 ## [Unreleased]
 
 ## [1.3.10] - 2026-01-22
