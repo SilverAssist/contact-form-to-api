@@ -15,6 +15,7 @@
 namespace SilverAssist\ContactFormToAPI\Admin;
 
 use SilverAssist\ContactFormToAPI\Core\RequestLogger;
+use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
 
 \defined( 'ABSPATH' ) || exit;
@@ -398,6 +399,8 @@ class RequestLogTable extends \WP_List_Table {
 	 *
 	 * Attempts to find name, lastname and email from various common field names.
 	 * Uses static cache to avoid redundant decryption operations.
+	 * Respects user-configured sensitive data patterns - fields marked as sensitive
+	 * will not be extracted to maintain consistency with the anonymization settings.
 	 *
 	 * @since 1.3.12
 	 * @param array<string, mixed> $item Item data.
@@ -453,15 +456,20 @@ class RequestLogTable extends \WP_List_Table {
 		$lastname_fields = array( 'lastname', 'last_name', 'surname', 'your-lastname', 'apellido', 'nom' );
 		$email_fields    = array( 'email', 'your-email', 'youremail', 'mail', 'e-mail', 'correo', 'courriel', 'primaryEmail' );
 
-		$name     = '';
-		$lastname = '';
-		$email    = '';
+		$name           = '';
+		$lastname       = '';
+		$email          = '';
+		$found_field    = '';
 
 		// Search for fields (case-insensitive).
 		$data_lower = \array_change_key_case( $data, CASE_LOWER );
 
 		foreach ( $name_fields as $field ) {
 			if ( isset( $data_lower[ $field ] ) && ! empty( $data_lower[ $field ] ) ) {
+				// Check if field is marked as sensitive by user configuration.
+				if ( SensitiveDataPatterns::is_sensitive( $field ) ) {
+					continue;
+				}
 				$name = \is_array( $data_lower[ $field ] ) ? $data_lower[ $field ][0] : $data_lower[ $field ];
 				break;
 			}
@@ -469,6 +477,10 @@ class RequestLogTable extends \WP_List_Table {
 
 		foreach ( $lastname_fields as $field ) {
 			if ( isset( $data_lower[ $field ] ) && ! empty( $data_lower[ $field ] ) ) {
+				// Check if field is marked as sensitive by user configuration.
+				if ( SensitiveDataPatterns::is_sensitive( $field ) ) {
+					continue;
+				}
 				$lastname = \is_array( $data_lower[ $field ] ) ? $data_lower[ $field ][0] : $data_lower[ $field ];
 				break;
 			}
@@ -476,6 +488,10 @@ class RequestLogTable extends \WP_List_Table {
 
 		foreach ( $email_fields as $field ) {
 			if ( isset( $data_lower[ $field ] ) && ! empty( $data_lower[ $field ] ) ) {
+				// Check if field is marked as sensitive by user configuration.
+				if ( SensitiveDataPatterns::is_sensitive( $field ) ) {
+					continue;
+				}
 				$email = \is_array( $data_lower[ $field ] ) ? $data_lower[ $field ][0] : $data_lower[ $field ];
 				break;
 			}

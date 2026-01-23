@@ -608,4 +608,36 @@ class RequestLogTableTest extends TestCase {
 		$this->assertEquals( $result1, $result2, 'Cached results should match' );
 		$this->assertEquals( 'Cached', $result1['display_name'], 'Should extract name correctly' );
 	}
+
+	/**
+	 * Test extract_sender_info respects sensitive data patterns
+	 *
+	 * When a field is marked as sensitive in user configuration,
+	 * it should not be extracted even if present in the data.
+	 *
+	 * @return void
+	 */
+	public function testExtractSenderInfoRespectsSensitivePatterns(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'extract_sender_info' );
+		$method->setAccessible( true );
+
+		// Test with default sensitive patterns (password, token, etc.)
+		// These should never match name/email fields by default
+		$item = array(
+			'id'                 => 9,
+			'request_data'       => \wp_json_encode( array(
+				'name'     => 'TestUser',
+				'email'    => 'test@example.com',
+				'password' => 'secret123', // This should never be extracted
+			) ),
+			'encryption_version' => 0,
+		);
+
+		$result = $method->invoke( $this->table, $item );
+
+		// Name and email should be extracted (not in default sensitive patterns)
+		$this->assertEquals( 'TestUser', $result['display_name'], 'Name should be extracted when not sensitive' );
+		$this->assertEquals( 'test@example.com', $result['email'], 'Email should be extracted when not sensitive' );
+	}
 }
