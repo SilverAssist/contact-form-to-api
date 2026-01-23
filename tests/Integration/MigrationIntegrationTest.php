@@ -285,7 +285,7 @@ class MigrationIntegrationTest extends WP_UnitTestCase {
 		while ( $service->get_unencrypted_count() > 0 && $batch_count < $max_batches ) {
 			$result           = $service->migrate_batch( 50, false );
 			$total_processed += $result['processed'];
-			$batch_count++;
+			++$batch_count;
 		}
 
 		$this->assertSame( 250, $total_processed );

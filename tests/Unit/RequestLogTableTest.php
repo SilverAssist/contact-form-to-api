@@ -423,11 +423,13 @@ class RequestLogTableTest extends TestCase {
 
 		$item = array(
 			'id'                 => 1,
-			'request_data'       => \wp_json_encode( array(
-				'name'     => 'John',
-				'lastname' => 'Doe',
-				'email'    => 'john@example.com',
-			) ),
+			'request_data'       => \wp_json_encode(
+				array(
+					'name'     => 'John',
+					'lastname' => 'Doe',
+					'email'    => 'john@example.com',
+				)
+			),
 			'encryption_version' => 0,
 		);
 
@@ -449,10 +451,12 @@ class RequestLogTableTest extends TestCase {
 
 		$item = array(
 			'id'                 => 2,
-			'request_data'       => \wp_json_encode( array(
-				'your-name'  => 'Jane',
-				'your-email' => 'jane@example.com',
-			) ),
+			'request_data'       => \wp_json_encode(
+				array(
+					'your-name'  => 'Jane',
+					'your-email' => 'jane@example.com',
+				)
+			),
 			'encryption_version' => 0,
 		);
 
@@ -474,11 +478,13 @@ class RequestLogTableTest extends TestCase {
 
 		$item = array(
 			'id'                 => 3,
-			'request_data'       => \wp_json_encode( array(
-				'NAME'     => 'Bob',
-				'LASTNAME' => 'Smith',
-				'EMAIL'    => 'bob@example.com',
-			) ),
+			'request_data'       => \wp_json_encode(
+				array(
+					'NAME'     => 'Bob',
+					'LASTNAME' => 'Smith',
+					'EMAIL'    => 'bob@example.com',
+				)
+			),
 			'encryption_version' => 0,
 		);
 
@@ -500,10 +506,12 @@ class RequestLogTableTest extends TestCase {
 
 		$item = array(
 			'id'                 => 4,
-			'request_data'       => \wp_json_encode( array(
-				'name'  => array( 'Alice' ),
-				'email' => array( 'alice@example.com' ),
-			) ),
+			'request_data'       => \wp_json_encode(
+				array(
+					'name'  => array( 'Alice' ),
+					'email' => array( 'alice@example.com' ),
+				)
+			),
 			'encryption_version' => 0,
 		);
 
@@ -569,10 +577,12 @@ class RequestLogTableTest extends TestCase {
 
 		$item = array(
 			'id'                 => 7,
-			'request_data'       => \wp_json_encode( array(
-				'subject' => 'Test Subject',
-				'message' => 'Test message content',
-			) ),
+			'request_data'       => \wp_json_encode(
+				array(
+					'subject' => 'Test Subject',
+					'message' => 'Test message content',
+				)
+			),
 			'encryption_version' => 0,
 		);
 
@@ -594,10 +604,12 @@ class RequestLogTableTest extends TestCase {
 
 		$item = array(
 			'id'                 => 8,
-			'request_data'       => \wp_json_encode( array(
-				'name'  => 'Cached',
-				'email' => 'cached@example.com',
-			) ),
+			'request_data'       => \wp_json_encode(
+				array(
+					'name'  => 'Cached',
+					'email' => 'cached@example.com',
+				)
+			),
 			'encryption_version' => 0,
 		);
 
@@ -626,11 +638,13 @@ class RequestLogTableTest extends TestCase {
 		// These should never match name/email fields by default
 		$item = array(
 			'id'                 => 9,
-			'request_data'       => \wp_json_encode( array(
-				'name'     => 'TestUser',
-				'email'    => 'test@example.com',
-				'password' => 'secret123', // This should never be extracted
-			) ),
+			'request_data'       => \wp_json_encode(
+				array(
+					'name'     => 'TestUser',
+					'email'    => 'test@example.com',
+					'password' => 'secret123', // This should never be extracted
+				)
+			),
 			'encryption_version' => 0,
 		);
 

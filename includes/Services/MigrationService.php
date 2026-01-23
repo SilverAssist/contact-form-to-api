@@ -223,7 +223,7 @@ class MigrationService implements LoadableInterface {
 		$errors    = array();
 
 		foreach ( $logs as $log ) {
-			$processed++;
+			++$processed;
 
 			try {
 				// Encrypt fields (handle NULL values).
@@ -231,7 +231,7 @@ class MigrationService implements LoadableInterface {
 
 				// In dry-run mode, just count successes without updating.
 				if ( $dry_run ) {
-					$success++;
+					++$success;
 					continue;
 				}
 
@@ -256,9 +256,9 @@ class MigrationService implements LoadableInterface {
 				// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 				if ( false !== $updated ) {
-					$success++;
+					++$success;
 				} else {
-					$failed++;
+					++$failed;
 					$errors[] = \sprintf(
 						/* translators: %d: log ID */
 						\__( 'Failed to update log ID %d', 'contact-form-to-api' ),
@@ -266,7 +266,7 @@ class MigrationService implements LoadableInterface {
 					);
 				}
 			} catch ( \Exception $e ) {
-				$failed++;
+				++$failed;
 				$error_message = \sprintf(
 					/* translators: %1$d: log ID, %2$s: error message */
 					\__( 'Error encrypting log ID %1$d: %2$s', 'contact-form-to-api' ),
