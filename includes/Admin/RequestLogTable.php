@@ -8,7 +8,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Admin
  * @since 1.1.0
- * @version 1.3.14
+ * @version 1.3.13
  * @author Silver Assist
  */
 
@@ -249,10 +249,14 @@ class RequestLogTable extends \WP_List_Table {
 			$where_values[] = \absint( $_GET['form_id'] );
 		}
 
-		// Search term (PHP filtering will be applied for name/lastname).
+		// Search functionality - SQL handles endpoint/error_message, PHP handles name/lastname.
 		$search_term = '';
 		if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) {
-			$search_term = \sanitize_text_field( \wp_unslash( $_GET['s'] ) );
+			$search_term    = \sanitize_text_field( \wp_unslash( $_GET['s'] ) );
+			$search         = '%' . $wpdb->esc_like( $search_term ) . '%';
+			$where         .= ' AND (endpoint LIKE %s OR error_message LIKE %s)';
+			$where_values[] = $search;
+			$where_values[] = $search;
 		}
 
 		// Apply date filter.
@@ -283,8 +287,8 @@ class RequestLogTable extends \WP_List_Table {
 			$order = 'DESC';
 		}
 
-		// If search is active, we need to filter in PHP to include name/lastname search
-		// while respecting anonymization rules.
+		// If search is active, add PHP filtering for name/lastname (SQL already handles endpoint/error_message).
+		// This respects anonymization rules for sender data.
 		if ( ! empty( $search_term ) ) {
 			return $this->get_logs_data_with_search( $table_name, $where, $orderby, $order, $search_term, $per_page, $paged );
 		}
@@ -310,15 +314,14 @@ class RequestLogTable extends \WP_List_Table {
 	}
 
 	/**
-	 * Get logs data with search filtering in PHP
+	 * Get logs data with additional PHP filtering for name/lastname search
 	 *
-	 * This method handles search by endpoint, error_message, name, and lastname.
-	 * Name/lastname search respects anonymization rules - fields marked as sensitive
-	 * via SensitiveDataPatterns are not searched.
+	 * SQL already filters by endpoint/error_message. This method adds PHP-based
+	 * filtering for name/lastname which respects anonymization rules.
 	 *
-	 * @since 1.3.14
+	 * @since 1.3.13
 	 * @param string $table_name  Table name.
-	 * @param string $where       WHERE clause.
+	 * @param string $where       WHERE clause (already includes endpoint/error_message search).
 	 * @param string $orderby     Order by column.
 	 * @param string $order       Sort order (ASC/DESC).
 	 * @param string $search_term Search term.
@@ -337,12 +340,17 @@ class RequestLogTable extends \WP_List_Table {
 	): array {
 		global $wpdb;
 
-		// Get all matching records (without pagination) to filter in PHP.
-		// Limit to a reasonable max to avoid memory issues.
+		// Select only needed columns to reduce memory usage.
+		// We need request_data for sender extraction, encryption_version for decryption.
+		$columns = 'id, form_id, endpoint, method, status, error_message, request_data, '
+			. 'encryption_version, response_code, execution_time, retry_count, retry_of, created_at';
+
+		// Fetch records matching SQL filters, limit for memory safety.
+		// SQL already filters endpoint/error_message, PHP will add name/lastname filtering.
 		$max_records = 5000;
 		$all_items   = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$table_name} WHERE {$where} ORDER BY {$orderby} {$order} LIMIT %d",
+				"SELECT {$columns} FROM {$table_name} WHERE {$where} ORDER BY {$orderby} {$order} LIMIT %d",
 				$max_records
 			),
 			ARRAY_A
@@ -355,12 +363,12 @@ class RequestLogTable extends \WP_List_Table {
 			);
 		}
 
-		// Filter items by search term (includes name/lastname with anonymization respect).
+		// Additional PHP filtering for name/lastname (respects anonymization rules).
 		$filtered_items = array();
 		$search_lower   = \strtolower( $search_term );
 
 		foreach ( $all_items as $item ) {
-			if ( $this->item_matches_search( $item, $search_lower ) ) {
+			if ( $this->item_matches_sender_search( $item, $search_lower ) ) {
 				$filtered_items[] = $item;
 			}
 		}
@@ -378,28 +386,18 @@ class RequestLogTable extends \WP_List_Table {
 	}
 
 	/**
-	 * Check if an item matches the search term
+	 * Check if an item matches the search term in sender info
 	 *
-	 * Searches in endpoint, error_message, and sender info (name/lastname).
-	 * Name/lastname search respects anonymization - if a field is marked as
-	 * sensitive via SensitiveDataPatterns, it won't be included in search.
+	 * Searches in sender name/lastname only (endpoint/error_message handled by SQL).
+	 * Respects anonymization - fields marked as sensitive via SensitiveDataPatterns
+	 * are not included in search.
 	 *
-	 * @since 1.3.14
+	 * @since 1.3.13
 	 * @param array<string, mixed> $item         Log item.
 	 * @param string               $search_lower Lowercase search term.
-	 * @return bool True if item matches search.
+	 * @return bool True if item matches search in sender info.
 	 */
-	private function item_matches_search( array $item, string $search_lower ): bool {
-		// Check endpoint.
-		if ( ! empty( $item['endpoint'] ) && \strpos( \strtolower( $item['endpoint'] ), $search_lower ) !== false ) {
-			return true;
-		}
-
-		// Check error_message.
-		if ( ! empty( $item['error_message'] ) && \strpos( \strtolower( $item['error_message'] ), $search_lower ) !== false ) {
-			return true;
-		}
-
+	private function item_matches_sender_search( array $item, string $search_lower ): bool {
 		// Check sender info (name/lastname) - this respects anonymization rules.
 		$sender_info = $this->extract_sender_info( $item );
 

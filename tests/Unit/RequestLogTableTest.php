@@ -654,4 +654,165 @@ class RequestLogTableTest extends TestCase {
 		$this->assertEquals( 'TestUser', $result['display_name'], 'Name should be extracted when not sensitive' );
 		$this->assertEquals( 'test@example.com', $result['email'], 'Email should be extracted when not sensitive' );
 	}
+
+	/**
+	 * Test item_matches_sender_search with matching name
+	 *
+	 * @return void
+	 */
+	public function testItemMatchesSenderSearchWithMatchingName(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'item_matches_sender_search' );
+		$method->setAccessible( true );
+
+		$item = array(
+			'id'                 => 100,
+			'endpoint'           => 'https://api.example.com/test',
+			'error_message'      => '',
+			'request_data'       => \wp_json_encode(
+				array(
+					'name'  => 'John Doe',
+					'email' => 'john@example.com',
+				)
+			),
+			'encryption_version' => 0,
+		);
+
+		$this->assertTrue(
+			$method->invoke( $this->table, $item, 'john' ),
+			'Should match when search term is in sender name (case insensitive)'
+		);
+
+		$this->assertTrue(
+			$method->invoke( $this->table, $item, 'doe' ),
+			'Should match when search term is in sender lastname'
+		);
+	}
+
+	/**
+	 * Test item_matches_sender_search with non-matching name
+	 *
+	 * @return void
+	 */
+	public function testItemMatchesSenderSearchWithNonMatchingName(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'item_matches_sender_search' );
+		$method->setAccessible( true );
+
+		$item = array(
+			'id'                 => 101,
+			'endpoint'           => 'https://api.example.com/test',
+			'error_message'      => '',
+			'request_data'       => \wp_json_encode(
+				array(
+					'name'  => 'John Doe',
+					'email' => 'john@example.com',
+				)
+			),
+			'encryption_version' => 0,
+		);
+
+		$this->assertFalse(
+			$method->invoke( $this->table, $item, 'jane' ),
+			'Should not match when search term is not in sender info'
+		);
+	}
+
+	/**
+	 * Test item_matches_sender_search with empty sender info
+	 *
+	 * @return void
+	 */
+	public function testItemMatchesSenderSearchWithEmptySenderInfo(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'item_matches_sender_search' );
+		$method->setAccessible( true );
+
+		$item = array(
+			'id'                 => 102,
+			'endpoint'           => 'https://api.example.com/test',
+			'error_message'      => '',
+			'request_data'       => \wp_json_encode(
+				array(
+					'product_id' => '12345',
+					'quantity'   => 1,
+				)
+			),
+			'encryption_version' => 0,
+		);
+
+		$this->assertFalse(
+			$method->invoke( $this->table, $item, 'john' ),
+			'Should not match when no sender info is present'
+		);
+	}
+
+	/**
+	 * Test item_matches_sender_search is case insensitive
+	 *
+	 * @return void
+	 */
+	public function testItemMatchesSenderSearchCaseInsensitive(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'item_matches_sender_search' );
+		$method->setAccessible( true );
+
+		$item = array(
+			'id'                 => 103,
+			'endpoint'           => 'https://api.example.com/test',
+			'error_message'      => '',
+			'request_data'       => \wp_json_encode(
+				array(
+					'name'  => 'John DOE',
+					'email' => 'john@example.com',
+				)
+			),
+			'encryption_version' => 0,
+		);
+
+		$this->assertTrue(
+			$method->invoke( $this->table, $item, 'john doe' ),
+			'Should match case insensitively'
+		);
+
+		$this->assertTrue(
+			$method->invoke( $this->table, $item, 'JOHN' ),
+			'Should match uppercase search against mixed case name'
+		);
+	}
+
+	/**
+	 * Test item_matches_sender_search with firstname and lastname fields
+	 *
+	 * @return void
+	 */
+	public function testItemMatchesSenderSearchWithFirstnameLastname(): void {
+		$reflection = new ReflectionClass( RequestLogTable::class );
+		$method     = $reflection->getMethod( 'item_matches_sender_search' );
+		$method->setAccessible( true );
+
+		$item = array(
+			'id'                 => 104,
+			'endpoint'           => 'https://api.example.com/test',
+			'error_message'      => '',
+			'request_data'       => \wp_json_encode(
+				array(
+					'firstname' => 'María',
+					'lastname'  => 'García',
+					'email'     => 'maria@example.com',
+				)
+			),
+			'encryption_version' => 0,
+		);
+
+		$this->assertTrue(
+			$method->invoke( $this->table, $item, 'maría' ),
+			'Should match firstname'
+		);
+
+		$this->assertTrue(
+			$method->invoke( $this->table, $item, 'garcía' ),
+			'Should match lastname'
+		);
+	}
 }
