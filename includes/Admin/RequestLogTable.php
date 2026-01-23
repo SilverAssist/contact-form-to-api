@@ -216,6 +216,9 @@ class RequestLogTable extends \WP_List_Table {
 	/**
 	 * Get logs data from database
 	 *
+	 * When search is active, filtering by name/lastname is done in PHP to respect
+	 * anonymization rules (fields marked as sensitive are not searched).
+	 *
 	 * @param int $per_page Items per page.
 	 * @param int $paged    Current page.
 	 * @return array{items: array<int, array<string, mixed>>, total: int}
@@ -246,12 +249,11 @@ class RequestLogTable extends \WP_List_Table {
 			$where_values[] = \absint( $_GET['form_id'] );
 		}
 
-		// Search functionality.
+		// Search term - when active, all filtering is done in PHP to support
+		// endpoint/error_message/sender_name search with OR logic.
+		$search_term = '';
 		if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) {
-			$search         = '%' . $wpdb->esc_like( \sanitize_text_field( \wp_unslash( $_GET['s'] ) ) ) . '%';
-			$where         .= ' AND (endpoint LIKE %s OR error_message LIKE %s)';
-			$where_values[] = $search;
-			$where_values[] = $search;
+			$search_term = \sanitize_text_field( \wp_unslash( $_GET['s'] ) );
 		}
 
 		// Apply date filter.
@@ -282,6 +284,12 @@ class RequestLogTable extends \WP_List_Table {
 			$order = 'DESC';
 		}
 
+		// If search is active, use PHP filtering for full OR logic
+		// (endpoint OR error_message OR sender_name) with anonymization support.
+		if ( ! empty( $search_term ) ) {
+			return $this->get_logs_data_with_search( $table_name, $where, $orderby, $order, $search_term, $per_page, $paged );
+		}
+
 		// Get total count.
 		$total = $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name} WHERE {$where}" );
 
@@ -300,6 +308,111 @@ class RequestLogTable extends \WP_List_Table {
 			'items' => $items,
 			'total' => (int) $total,
 		);
+	}
+
+	/**
+	 * Get logs data with PHP-based search filtering
+	 *
+	 * This method handles search by endpoint, error_message, name, and lastname
+	 * using OR logic. Name/lastname search respects anonymization rules - fields
+	 * marked as sensitive via SensitiveDataPatterns are not searched.
+	 *
+	 * @since 1.3.13
+	 * @param string $table_name  Table name.
+	 * @param string $where       WHERE clause (without search filter).
+	 * @param string $orderby     Order by column.
+	 * @param string $order       Sort order (ASC/DESC).
+	 * @param string $search_term Search term.
+	 * @param int    $per_page    Items per page.
+	 * @param int    $paged       Current page.
+	 * @return array{items: array<int, array<string, mixed>>, total: int}
+	 */
+	private function get_logs_data_with_search(
+		string $table_name,
+		string $where,
+		string $orderby,
+		string $order,
+		string $search_term,
+		int $per_page,
+		int $paged
+	): array {
+		global $wpdb;
+
+		// Select only needed columns to reduce memory usage.
+		// We need request_data for sender extraction, encryption_version for decryption.
+		$columns = 'id, form_id, endpoint, method, status, error_message, request_data, '
+			. 'encryption_version, response_code, execution_time, retry_count, retry_of, created_at';
+
+		// Fetch records matching base filters (status, form, date), limit for memory safety.
+		// Search filtering is done in PHP to support OR logic with sender name.
+		$max_records = 5000;
+		$all_items   = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT {$columns} FROM {$table_name} WHERE {$where} ORDER BY {$orderby} {$order} LIMIT %d",
+				$max_records
+			),
+			ARRAY_A
+		);
+
+		if ( empty( $all_items ) ) {
+			return array(
+				'items' => array(),
+				'total' => 0,
+			);
+		}
+
+		// PHP filtering for search: matches endpoint OR error_message OR sender name.
+		// This respects anonymization rules for sender data.
+		$filtered_items = array();
+		$search_lower   = \strtolower( $search_term );
+
+		foreach ( $all_items as $item ) {
+			$endpoint      = isset( $item['endpoint'] ) ? \strtolower( (string) $item['endpoint'] ) : '';
+			$error_message = isset( $item['error_message'] ) ? \strtolower( (string) $item['error_message'] ) : '';
+
+			// Match if search term found in endpoint, error_message, or sender name.
+			if (
+				false !== \strpos( $endpoint, $search_lower ) ||
+				false !== \strpos( $error_message, $search_lower ) ||
+				$this->item_matches_sender_search( $item, $search_lower )
+			) {
+				$filtered_items[] = $item;
+			}
+		}
+
+		$total = \count( $filtered_items );
+
+		// Apply pagination to filtered results.
+		$offset = ( $paged - 1 ) * $per_page;
+		$items  = \array_slice( $filtered_items, $offset, $per_page );
+
+		return array(
+			'items' => $items,
+			'total' => $total,
+		);
+	}
+
+	/**
+	 * Check if an item matches the search term in sender info
+	 *
+	 * Searches in sender name/lastname only (endpoint/error_message handled by SQL).
+	 * Respects anonymization - fields marked as sensitive via SensitiveDataPatterns
+	 * are not included in search.
+	 *
+	 * @since 1.3.13
+	 * @param array<string, mixed> $item         Log item.
+	 * @param string               $search_lower Lowercase search term.
+	 * @return bool True if item matches search in sender info.
+	 */
+	private function item_matches_sender_search( array $item, string $search_lower ): bool {
+		// Check sender info (name/lastname) - this respects anonymization rules.
+		$sender_info = $this->extract_sender_info( $item );
+
+		if ( ! empty( $sender_info['display_name'] ) && \strpos( \strtolower( $sender_info['display_name'] ), $search_lower ) !== false ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
