@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - "Unresolved" tab in logs table shows errors pending resolution
   - "All Errors" renamed to distinguish from unresolved filter
   - Error resolution counts displayed in filter badges
+- **Search by Sender Name/Lastname**: Extended search functionality to filter logs by sender name
+  - Search now includes name and lastname fields from form submissions
+  - Respects anonymization rules: fields marked as sensitive via settings are excluded from search
+  - Maintains existing SQL-based search for endpoint and error_message (full dataset)
+  - PHP-based filtering for name/lastname applied to the first 5,000 logs in the current sort order; on sites with more than 5,000 logs, name/lastname searches may not include older matches
 
 ### Changed
 
