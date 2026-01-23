@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Unresolved Errors Filter**: New filter to show only errors that haven't been successfully retried
+  - "Unresolved" tab in logs table shows errors pending resolution
+  - "All Errors" renamed to distinguish from unresolved filter
+  - Error resolution counts displayed in filter badges
+
+### Changed
+
+- **Visual Resolved Indicator**: Errors with successful retries now show a "Resolved" badge
+  - Green badge appears next to error status when retry was successful
+  - Tooltip explains the error was resolved via manual retry
+  - Makes it easy to identify resolved errors at a glance
+
+### Developer
+
+- Added `RequestLogger::count_errors_by_resolution()` method for error statistics
+- Added `RequestLogger::get_resolved_error_ids()` method for efficient filtering
+
 ## [1.3.13] - 2026-01-23
 
 ### Added

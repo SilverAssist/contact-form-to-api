@@ -107,6 +107,14 @@
 	color: #646970;
 }
 
+.cf7-api-status-resolved {
+	background: #d7f5d7;
+	color: #00a32a;
+	margin-left: 4px;
+	font-size: 11px;
+	padding: 3px 6px;
+}
+
 /* Method Badges */
 .method-badge {
 	display: inline-block;

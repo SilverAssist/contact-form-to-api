@@ -9,7 +9,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Core
  * @since 1.1.0
- * @version 1.3.13
+ * @version 1.3.14
  * @author Silver Assist
  */
 
@@ -944,5 +944,68 @@ class RequestLogger {
 		);
 
 		return $retry_id ? (int) $retry_id : null;
+	}
+
+	/**
+	 * Count error logs by resolution status
+	 *
+	 * Returns counts of total errors, resolved (successfully retried), and unresolved.
+	 * Uses a single optimized query with LEFT JOIN to count resolved errors.
+	 *
+	 * @since 1.3.14
+	 * @return array{total: int, resolved: int, unresolved: int} Error counts by resolution status.
+	 */
+	public function count_errors_by_resolution(): array {
+		global $wpdb;
+
+		// Count total errors (not including retry entries themselves).
+		$total_errors = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM %i WHERE status IN ('error', 'client_error', 'server_error') AND retry_of IS NULL",
+				$this->table_name
+			)
+		);
+
+		// Count resolved errors (errors that have a successful retry).
+		$resolved_errors = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(DISTINCT e.id) FROM %i e
+				INNER JOIN %i r ON r.retry_of = e.id AND r.status = 'success'
+				WHERE e.status IN ('error', 'client_error', 'server_error') AND e.retry_of IS NULL",
+				$this->table_name,
+				$this->table_name
+			)
+		);
+
+		return array(
+			'total'      => $total_errors,
+			'resolved'   => $resolved_errors,
+			'unresolved' => $total_errors - $resolved_errors,
+		);
+	}
+
+	/**
+	 * Get IDs of error logs that have been successfully retried
+	 *
+	 * Returns an array of log IDs that are errors with at least one successful retry.
+	 * Used for filtering resolved errors in list views.
+	 *
+	 * @since 1.3.14
+	 * @return array<int> Array of resolved error log IDs.
+	 */
+	public function get_resolved_error_ids(): array {
+		global $wpdb;
+
+		$results = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT DISTINCT e.id FROM %i e
+				INNER JOIN %i r ON r.retry_of = e.id AND r.status = 'success'
+				WHERE e.status IN ('error', 'client_error', 'server_error') AND e.retry_of IS NULL",
+				$this->table_name,
+				$this->table_name
+			)
+		);
+
+		return \array_map( 'intval', $results ?: array() );
 	}
 }

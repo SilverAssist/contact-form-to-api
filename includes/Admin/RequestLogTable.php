@@ -8,7 +8,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Admin
  * @since 1.1.0
- * @version 1.3.13
+ * @version 1.3.14
  * @author Silver Assist
  */
 
@@ -150,6 +150,9 @@ class RequestLogTable extends \WP_List_Table {
 			$status_counts['all']           += (int) $row['count'];
 		}
 
+		// Get error resolution counts for the unresolved filter.
+		$error_resolution = $this->logger->count_errors_by_resolution();
+
 		$views = array();
 
 		$views['all'] = \sprintf(
@@ -172,8 +175,17 @@ class RequestLogTable extends \WP_List_Table {
 			'<a href="%s" class="%s">%s <span class="count">(%d)</span></a>',
 			\add_query_arg( 'status', 'error' ),
 			'error' === $current ? 'current' : '',
-			\__( 'Errors', 'contact-form-to-api' ),
+			\__( 'All Errors', 'contact-form-to-api' ),
 			$status_counts['error'] + $status_counts['client_error'] + $status_counts['server_error']
+		);
+
+		// Add unresolved errors filter (errors without successful retry).
+		$views['unresolved'] = \sprintf(
+			'<a href="%s" class="%s">%s <span class="count">(%d)</span></a>',
+			\add_query_arg( 'status', 'unresolved' ),
+			'unresolved' === $current ? 'current' : '',
+			\__( 'Unresolved', 'contact-form-to-api' ),
+			$error_resolution['unresolved']
 		);
 
 		return $views;
@@ -225,8 +237,9 @@ class RequestLogTable extends \WP_List_Table {
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
 		// Build WHERE clause.
-		$where        = '1=1';
-		$where_values = array();
+		$where               = '1=1';
+		$where_values        = array();
+		$filter_unresolved   = false;
 
 		// Filter by status.
 		if ( isset( $_GET['status'] ) && ! empty( $_GET['status'] ) && 'all' !== $_GET['status'] ) {
@@ -234,6 +247,10 @@ class RequestLogTable extends \WP_List_Table {
 			if ( 'error' === $status ) {
 				// Include all error types.
 				$where .= " AND status IN ('error', 'client_error', 'server_error')";
+			} elseif ( 'unresolved' === $status ) {
+				// Filter for unresolved errors (errors without successful retry).
+				$where             .= " AND status IN ('error', 'client_error', 'server_error')";
+				$filter_unresolved  = true;
 			} else {
 				$where         .= ' AND status = %s';
 				$where_values[] = $status;
@@ -280,6 +297,15 @@ class RequestLogTable extends \WP_List_Table {
 		$order = \strtoupper( $order );
 		if ( ! \in_array( $order, array( 'ASC', 'DESC' ), true ) ) {
 			$order = 'DESC';
+		}
+
+		// For unresolved filter, exclude errors that have successful retries.
+		if ( $filter_unresolved ) {
+			$resolved_ids = $this->logger->get_resolved_error_ids();
+			if ( ! empty( $resolved_ids ) ) {
+				$placeholders = \implode( ', ', \array_fill( 0, \count( $resolved_ids ), '%d' ) );
+				$where       .= $wpdb->prepare( " AND id NOT IN ({$placeholders})", ...$resolved_ids );
+			}
 		}
 
 		// Get total count.
@@ -652,18 +678,34 @@ class RequestLogTable extends \WP_List_Table {
 	/**
 	 * Column status
 	 *
+	 * Displays status badge with visual indicator for resolved errors.
+	 * Errors that have been successfully retried show a "Resolved" badge.
+	 *
+	 * @since 1.1.0
+	 * @since 1.3.14 Added resolved indicator for errors with successful retry.
 	 * @param array<string, mixed> $item Item data.
 	 * @return string
 	 */
 	public function column_status( $item ): string {
 		$status = $item['status'];
 		$label  = \ucfirst( \str_replace( '_', ' ', $status ) );
-
-		return \sprintf(
+		$output = \sprintf(
 			'<span class="cf7-api-status cf7-api-status-%s">%s</span>',
 			\esc_attr( $status ),
 			\esc_html( $label )
 		);
+
+		// Check if this is an error that has been successfully retried.
+		$is_error = \in_array( $status, array( 'error', 'client_error', 'server_error' ), true );
+		if ( $is_error && $this->logger->has_successful_retry( (int) $item['id'] ) ) {
+			$output .= \sprintf(
+				' <span class="cf7-api-status cf7-api-status-resolved" title="%s">%s</span>',
+				\esc_attr__( 'This error was resolved via manual retry', 'contact-form-to-api' ),
+				\esc_html__( 'Resolved', 'contact-form-to-api' )
+			);
+		}
+
+		return $output;
 	}
 
 	/**
