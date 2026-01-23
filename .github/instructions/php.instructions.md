@@ -16,7 +16,7 @@ applyTo: "**/*.php"
 
 **WordPress Plugin**: Contact Form to API v1.3.x (PSR-4, PHP 8.2+, WordPress 6.5+)  
 **Namespace**: `SilverAssist\ContactFormToAPI`  
-**Location**: `wp-content/plugins/contact-form-to-api/`  
+**Repository Root**: `/` (plugin files at repository root)  
 **Language Policy**: ALL code and comments MUST be in English
 
 ---
@@ -26,7 +26,7 @@ applyTo: "**/*.php"
 **CRITICAL**: ALWAYS run these validations BEFORE committing PHP code:
 
 ```bash
-cd wp-content/plugins/contact-form-to-api
+# From repository root
 
 # 1. Auto-fix formatting (REQUIRED FIRST)
 vendor/bin/phpcbf
@@ -193,10 +193,10 @@ $results = $wpdb->get_results(
 
 ## Plugin Architecture (PSR-4)
 
-### Directory Structure
+### Directory Structure (Repository Root)
 
 ```
-contact-form-to-api/
+/                          # Repository root
 ├── includes/              # PSR-4 classes (SilverAssist\ContactFormToAPI namespace)
 │   ├── Admin/            # Admin controllers and views
 │   │   ├── Views/        # HTML rendering classes
@@ -355,7 +355,7 @@ public function process_entry( array $log_entry ): array {
 ### Before Making Changes
 
 ```bash
-cd wp-content/plugins/contact-form-to-api
+# From repository root
 
 # Install dependencies if needed
 composer install
