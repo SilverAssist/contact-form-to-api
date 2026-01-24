@@ -6,14 +6,15 @@
  * using libsodium (Sodium) for secure, authenticated encryption.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Core
+ * @subpackage Service\Security
  * @since 1.3.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Core;
+namespace SilverAssist\ContactFormToAPI\Service\Security;
 
+use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Exception\DecryptionException;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;

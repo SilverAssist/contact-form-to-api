@@ -231,7 +231,66 @@ use SilverAssist\ContactFormToAPI\Repository\SettingsRepositoryInterface;
 - **Timeline**: New classes available now, deprecation warnings planned for 2.1.0, removal in 2.2.0
 - **Impact**: Zero breaking changes - new classes coexist with old Integration.php
 
-### Phase 4 (Planned - v2.0.0)
+### Phase 4 (Current - v2.0.0-rc)
+
+- **Status**: Complete - January 24, 2026
+- **Changes**: Namespace reorganization for services
+- **Impact**: Breaking changes for direct class usage
+- **Alternative**: Use new namespaces for moved classes
+- **Timeline**: Completed in PR #64
+
+**Breaking Changes:**
+```php
+// OLD namespaces (no longer valid):
+use SilverAssist\ContactFormToAPI\Core\EncryptionService;
+use SilverAssist\ContactFormToAPI\Core\Settings;
+use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
+
+// NEW namespaces (required):
+use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
+use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
+```
+
+**Who is affected:**
+- Developers who import these classes directly in custom code
+- Extensions that extend or modify these classes
+- No impact on WordPress admin users or CF7 form users
+
+### Phase 5 (Current - v2.0.0)
+
+- **Status**: Complete - January 24, 2026
+- **Changes**: View splitting into partials
+- **Impact**: Non-breaking (internal refactoring)
+- **Alternative**: Use new partial classes for better maintainability
+- **Timeline**: Completed in PR #65
+
+**Non-Breaking Changes:**
+```php
+// ✅ OLD (still works, deprecated):
+use SilverAssist\ContactFormToAPI\Admin\Views\RequestLogView;
+RequestLogView::render_statistics();
+RequestLogView::render_filters();
+
+// ✅ NEW (recommended):
+use SilverAssist\ContactFormToAPI\View\Admin\Logs\Partials\StatisticsPartial;
+use SilverAssist\ContactFormToAPI\View\Admin\Logs\Partials\DateFilterPartial;
+
+StatisticsPartial::render();
+DateFilterPartial::render();
+```
+
+**Benefits:**
+- 28% reduction in RequestLogView size (1,006 → 725 lines)
+- Better code organization and maintainability
+- Reusable UI components
+- No breaking changes for existing code
+
+**Who is affected:**
+- Only developers extending view classes (uncommon)
+- No impact on WordPress admin users or CF7 form users
+
+---
 
 - **Changes**: Namespace reorganization
 - **Impact**: Autoloader updates, no code changes needed
@@ -351,22 +410,21 @@ composer phpstan
 
 ## Migration Timeline
 
-### Current Status: Phase 3 ✅
+### Current Status: Phase 5 ✅
 
-- ✅ **Phase 1**: Foundation architecture complete
-- ✅ **Phase 2**: RequestLogger extracted into services
-- ✅ **Phase 3**: Integration split into Controller/Service layers
-- ⏳ **Phase 4**: Service reorganization (TBD)
-- ⏳ **Phase 5**: View splitting (TBD)
+- ✅ **Phase 1**: Foundation architecture complete (PR #58)
+- ✅ **Phase 2**: RequestLogger extracted into services (PR #62)
+- ✅ **Phase 3**: Integration split into Controller/Service layers (PR #63)
+- ✅ **Phase 4**: Service reorganization and namespace consolidation (PR #65)
+- ✅ **Phase 5**: View splitting into maintainable partials (PR #65)
 - ⏳ **Phase 6**: Final cleanup (TBD)
 
 ### Upcoming Phases
 
-- **Phase 4**: Reorganize Services (service namespace consolidation)
-- **Phase 5**: Split Views (partial view extraction)
-- **Phase 6**: Final cleanup (deprecation removal, documentation finalization)
-
-Each phase will have its own upgrade notes and deprecation warnings.
+- **Phase 6**: Final cleanup and documentation
+  - Remove any remaining deprecated code
+  - Comprehensive testing and validation
+  - Finalize 2.0.0 release notes
 
 ---
 
@@ -389,6 +447,6 @@ A: Phase 1 is safe to upgrade immediately. It's purely additive with no breaking
 
 ---
 
-**Document Version**: 1.0.0  
-**Last Updated**: January 23, 2026  
+**Document Version**: 2.0.0  
+**Last Updated**: January 24, 2026  
 **Maintained By**: Silver Assist Development Team

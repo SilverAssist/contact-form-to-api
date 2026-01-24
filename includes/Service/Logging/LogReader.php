@@ -14,7 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Service\Logging;
 
-use SilverAssist\ContactFormToAPI\Core\EncryptionService;
+use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 
 \defined( 'ABSPATH' ) || exit;

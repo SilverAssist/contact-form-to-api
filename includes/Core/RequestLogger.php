@@ -18,13 +18,12 @@
 
 namespace SilverAssist\ContactFormToAPI\Core;
 
-use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
-use SilverAssist\ContactFormToAPI\Core\Settings;
-use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
 use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
-use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
+use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
+use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
 use WP_Error;
 
 \defined( 'ABSPATH' ) || exit;

@@ -22,6 +22,8 @@ use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
 use SilverAssist\ContactFormToAPI\Services\EmailAlertService;
 use SilverAssist\ContactFormToAPI\Services\Loader as ServicesLoader;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
+use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 use SilverAssist\WpGithubUpdater\Updater;
 use SilverAssist\WpGithubUpdater\UpdaterConfig;
 

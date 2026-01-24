@@ -13,7 +13,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Tests\Unit;
 
-use SilverAssist\ContactFormToAPI\Core\EncryptionService;
+use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 use SilverAssist\ContactFormToAPI\Exception\DecryptionException;
 use WP_UnitTestCase;
 

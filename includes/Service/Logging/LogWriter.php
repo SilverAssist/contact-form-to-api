@@ -14,9 +14,9 @@
 
 namespace SilverAssist\ContactFormToAPI\Service\Logging;
 
-use SilverAssist\ContactFormToAPI\Core\EncryptionService;
-use SilverAssist\ContactFormToAPI\Core\Settings;
-use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
+use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
+use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 
 \defined( 'ABSPATH' ) || exit;

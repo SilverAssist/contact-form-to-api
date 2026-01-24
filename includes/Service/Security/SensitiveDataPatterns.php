@@ -6,13 +6,15 @@
  * in logs and exports for security and privacy compliance.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Core
+ * @subpackage Service\Security
  * @since 1.2.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Core;
+namespace SilverAssist\ContactFormToAPI\Service\Security;
+
+use SilverAssist\ContactFormToAPI\Config\Settings;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -122,6 +124,42 @@ final class SensitiveDataPatterns {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Anonymize sensitive data in arrays or JSON strings
+	 *
+	 * Recursively redacts values of fields that match sensitive patterns.
+	 * This method is public and static to allow views to anonymize data at render time.
+	 *
+	 * @since 2.0.0
+	 * @param mixed $data Data to anonymize (array or JSON string).
+	 * @return mixed Anonymized data.
+	 */
+	public static function anonymize( mixed $data ): mixed {
+		// If string, try to decode as JSON first.
+		if ( \is_string( $data ) ) {
+			$decoded = \json_decode( $data, true );
+			if ( \json_last_error() === JSON_ERROR_NONE && \is_array( $decoded ) ) {
+				$data = $decoded;
+			} else {
+				// Not JSON, return as is.
+				return $data;
+			}
+		}
+
+		// If array, anonymize recursively.
+		if ( \is_array( $data ) ) {
+			foreach ( $data as $key => $value ) {
+				if ( self::is_sensitive( (string) $key ) ) {
+					$data[ $key ] = '***REDACTED***';
+				} elseif ( \is_array( $value ) ) {
+					$data[ $key ] = self::anonymize( $value );
+				}
+			}
+		}
+
+		return $data;
 	}
 
 	/**
