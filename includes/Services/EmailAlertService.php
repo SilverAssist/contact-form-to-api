@@ -15,8 +15,8 @@
 namespace SilverAssist\ContactFormToAPI\Services;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
-use SilverAssist\ContactFormToAPI\Core\RequestLogger;
 use SilverAssist\ContactFormToAPI\Core\Settings;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 
 \defined( 'ABSPATH' ) || exit;
@@ -158,10 +158,10 @@ class EmailAlertService implements LoadableInterface {
 	 * @return array<string, mixed> Statistics array with errors, total, error_rate.
 	 */
 	private function get_hourly_stats(): array {
-		$logger = new RequestLogger();
+		$stats = new LogStatistics();
 
-		$total_requests = $logger->get_count_last_hours( 1 );
-		$error_count    = $logger->get_count_last_hours( 1, 'error' );
+		$total_requests = $stats->get_count_last_hours( 1 );
+		$error_count    = $stats->get_count_last_hours( 1, 'error' );
 
 		// Calculate error rate.
 		$error_rate = 0.0;
@@ -254,8 +254,8 @@ class EmailAlertService implements LoadableInterface {
 	 * @return string HTML email body.
 	 */
 	private function build_email_body( array $stats ): string {
-		$logger        = new RequestLogger();
-		$recent_errors = $logger->get_recent_errors( 5 );
+		$log_stats     = new LogStatistics();
+		$recent_errors = $log_stats->get_recent_errors( 5 );
 		$logs_url      = \admin_url( 'admin.php?page=cf7-api-logs' );
 		$site_name     = \get_bloginfo( 'name' );
 		$timestamp     = \current_time( 'mysql' );

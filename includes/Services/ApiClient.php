@@ -15,7 +15,8 @@
 namespace SilverAssist\ContactFormToAPI\Services;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
-use SilverAssist\ContactFormToAPI\Core\RequestLogger;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 use WP_Error;
 
@@ -151,27 +152,29 @@ class ApiClient implements LoadableInterface {
 		$url = $this->build_url( $url, $body, $method, $content_type );
 
 		// Start logging.
-		$logger = $this->get_api_logger();
-		$log_id = false;
+		$log_writer = new LogWriter();
+		$start_time = \microtime( true );
+		$log_id     = false;
 		if ( $form_id > 0 ) {
-			$log_id = $logger->start_request(
+			$log_id = $log_writer->start_request(
 				$form_id,
 				$url,
 				$method,
 				$args['body'] ?? '',
 				$args['headers'] ?? array(),
-				$retry_of
+				$retry_of,
+				$start_time
 			);
 		}
 
 		// Execute request with retries.
-		$result      = $this->execute_with_retries( $url, $method, $args, $retry_config, $logger, $log_id );
+		$result      = $this->execute_with_retries( $url, $method, $args, $retry_config, $log_writer, $log_id );
 		$retry_count = $result['retry_count'];
 		$response    = $result['response'];
 
 		// Complete logging.
 		if ( $log_id ) {
-			$logger->complete_request( $response, $retry_count );
+			$log_writer->complete_request( $log_id, $response, $retry_count, $start_time );
 		}
 
 		return $response;
@@ -188,9 +191,9 @@ class ApiClient implements LoadableInterface {
 	 * @return array<string, mixed> Result with success status and details
 	 */
 	public function retry_from_log( int $log_id ): array {
-		$logger = $this->get_api_logger();
+		$log_reader = new LogReader();
 
-		$request_data = $logger->get_request_for_retry( $log_id );
+		$request_data = $log_reader->get_request_for_retry( $log_id );
 
 		if ( ! $request_data ) {
 			return array(
@@ -253,7 +256,7 @@ class ApiClient implements LoadableInterface {
 			'success'       => $is_success,
 			'response_code' => $response_code,
 			'retry_of'      => $log_id,
-			'log_id'        => null, // Note: log_id is private in RequestLogger, use get_last_log_id() when available
+			'log_id'        => null, // Log ID from the new request is not tracked in this method.
 		);
 	}
 
@@ -395,11 +398,11 @@ class ApiClient implements LoadableInterface {
 	 * @param string                      $method       HTTP method.
 	 * @param array<string, mixed>        $args         Request arguments.
 	 * @param array<string, mixed>        $retry_config Retry configuration.
-	 * @param RequestLogger|null          $logger       API logger instance.
+	 * @param LogWriter|null              $log_writer   Log writer instance.
 	 * @param int|false                   $log_id       Log entry ID.
 	 * @return array<string, mixed> Response with retry count.
 	 */
-	private function execute_with_retries( string $url, string $method, array $args, array $retry_config, ?RequestLogger $logger, $log_id ): array {
+	private function execute_with_retries( string $url, string $method, array $args, array $retry_config, ?LogWriter $log_writer, $log_id ): array {
 		$max_retries      = $retry_config['max_retries'] ?? self::DEFAULT_MAX_RETRIES;
 		$retry_delay      = $retry_config['retry_delay'] ?? self::DEFAULT_RETRY_DELAY;
 		$retry_on_timeout = $retry_config['retry_on_timeout'] ?? true;
@@ -423,7 +426,7 @@ class ApiClient implements LoadableInterface {
 				// Server errors (5xx) might be transient.
 				if ( $response_code >= 500 && $attempt < $max_retries ) {
 					++$retry_count;
-					$this->log_retry( $logger, $log_id, $retry_count );
+					$this->log_retry( $log_writer, $log_id, $retry_count );
 					$this->wait_with_backoff( $retry_delay, $attempt );
 					continue;
 				}
@@ -440,7 +443,7 @@ class ApiClient implements LoadableInterface {
 				$retryable_errors = array( 'http_request_failed', 'timeout', 'connect_timeout' );
 				if ( in_array( $error_code, $retryable_errors, true ) ) {
 					++$retry_count;
-					$this->log_retry( $logger, $log_id, $retry_count );
+					$this->log_retry( $log_writer, $log_id, $retry_count );
 					$this->wait_with_backoff( $retry_delay, $attempt );
 					continue;
 				}
@@ -474,14 +477,14 @@ class ApiClient implements LoadableInterface {
 	/**
 	 * Log retry attempt
 	 *
-	 * @param RequestLogger|null $logger      API logger instance.
-	 * @param int|false          $log_id      Log entry ID.
-	 * @param int                $retry_count Retry count.
+	 * @param LogWriter|null $log_writer  Log writer instance.
+	 * @param int|false      $log_id      Log entry ID.
+	 * @param int            $retry_count Retry count.
 	 * @return void
 	 */
-	private function log_retry( ?RequestLogger $logger, $log_id, int $retry_count ): void {
-		if ( $log_id && $logger ) {
-			$logger->log_retry( $retry_count );
+	private function log_retry( ?LogWriter $log_writer, $log_id, int $retry_count ): void {
+		if ( $log_id && $log_writer ) {
+			$log_writer->update_retry_count( $log_id, $retry_count );
 		}
 
 		// Also log to plugin logger.
@@ -542,14 +545,5 @@ class ApiClient implements LoadableInterface {
 		}
 
 		return $xml;
-	}
-
-	/**
-	 * Get API Logger instance
-	 *
-	 * @return RequestLogger
-	 */
-	private function get_api_logger(): RequestLogger {
-		return new RequestLogger();
 	}
 }

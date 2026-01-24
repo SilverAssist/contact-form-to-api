@@ -16,7 +16,7 @@ namespace SilverAssist\ContactFormToAPI\Admin;
 
 use SilverAssist\ContactFormToAPI\Admin\Views\DashboardWidgetView;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
-use SilverAssist\ContactFormToAPI\Core\RequestLogger;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -131,15 +131,15 @@ class DashboardWidget implements LoadableInterface {
 	 * @return array<string, mixed> Statistics array
 	 */
 	private function get_statistics(): array {
-		$logger = new RequestLogger();
+		$stats = new LogStatistics();
 
 		return array(
-			'total_24h'          => $logger->get_count_last_hours( 24 ),
-			'success_24h'        => $logger->get_count_last_hours( 24, 'success' ),
-			'errors_24h'         => $logger->get_count_last_hours( 24, 'error' ),
-			'success_rate'       => $logger->get_success_rate_last_hours( 24 ),
-			'avg_response_time'  => $logger->get_avg_response_time_last_hours( 24 ),
-			'recent_errors'      => $logger->get_recent_errors( 5, 24 ),
+			'total_24h'          => $stats->get_count_last_hours( 24 ),
+			'success_24h'        => $stats->get_count_last_hours( 24, 'success' ),
+			'errors_24h'         => $stats->get_count_last_hours( 24, 'error' ),
+			'success_rate'       => $stats->get_success_rate_last_hours( 24 ),
+			'avg_response_time'  => $stats->get_avg_response_time_last_hours( 24 ),
+			'recent_errors'      => $stats->get_recent_errors( 5, 24 ),
 		);
 	}
 
