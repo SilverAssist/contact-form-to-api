@@ -14,7 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Admin\Views;
 
-use SilverAssist\ContactFormToAPI\Admin\RequestLogTable;
+use SilverAssist\ContactFormToAPI\Infrastructure\ListTable\RequestLogTable;
 use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
 use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;

@@ -6,13 +6,13 @@
  * Provides filtering, searching, sorting and pagination functionality.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Admin
+ * @subpackage Infrastructure\ListTable
  * @since 1.1.0
  * @version 1.3.14
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Admin;
+namespace SilverAssist\ContactFormToAPI\Infrastructure\ListTable;
 
 use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;

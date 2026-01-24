@@ -14,6 +14,7 @@
 namespace SilverAssist\ContactFormToAPI\Admin;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Infrastructure\Widget\DashboardWidget;
 
 \defined( 'ABSPATH' ) || exit;
 

@@ -14,7 +14,7 @@
 namespace SilverAssist\ContactFormToAPI\Tests\Unit;
 
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
-use SilverAssist\ContactFormToAPI\Admin\RequestLogTable;
+use SilverAssist\ContactFormToAPI\Infrastructure\ListTable\RequestLogTable;
 use ReflectionClass;
 use ReflectionMethod;
 
