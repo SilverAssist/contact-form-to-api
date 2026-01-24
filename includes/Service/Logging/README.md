@@ -146,19 +146,10 @@ See `Core/RequestLogger.php` for facade implementation.
 
 ---
 
-## Testing
-
-Each service has corresponding unit tests:
-- `tests/Unit/Service/Logging/LogWriterTest.php`
-- `tests/Unit/Service/Logging/LogReaderTest.php`
-- `tests/Unit/Service/Logging/LogStatisticsTest.php`
-- `tests/Unit/Service/Logging/RetryManagerTest.php`
-
----
-
 ## Future Enhancements
 
 Potential improvements for future versions:
+- Unit tests for all logging services
 - Repository pattern implementation for data access
 - Event dispatching for log creation/updates
 - Batch operations for improved performance

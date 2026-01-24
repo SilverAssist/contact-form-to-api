@@ -69,6 +69,13 @@ class RequestLogger {
 	private ?int $log_id = null;
 
 	/**
+	 * Start time for execution tracking
+	 *
+	 * @var float|null
+	 */
+	private ?float $start_time = null;
+
+	/**
 	 * Encryption service instance
 	 *
 	 * @var EncryptionService|null
@@ -140,8 +147,11 @@ class RequestLogger {
 	 * @return int|false Log entry ID or false on failure.
 	 */
 	public function start_request( int $form_id, string $endpoint, string $method, $request_data, array $request_headers = array(), ?int $retry_of = null ) {
+		// Capture start time for execution timing.
+		$this->start_time = \microtime( true );
+
 		// Delegate to LogWriter service.
-		$log_id = $this->log_writer->start_request( $form_id, $endpoint, $method, $request_data, $request_headers, $retry_of );
+		$log_id = $this->log_writer->start_request( $form_id, $endpoint, $method, $request_data, $request_headers, $retry_of, $this->start_time );
 
 		if ( $log_id ) {
 			$this->log_id = $log_id;
@@ -166,8 +176,8 @@ class RequestLogger {
 			return false;
 		}
 
-		// Delegate to LogWriter service.
-		return $this->log_writer->complete_request( $this->log_id, $response, $retry_count );
+		// Delegate to LogWriter service with start time for accurate execution timing.
+		return $this->log_writer->complete_request( $this->log_id, $response, $retry_count, $this->start_time );
 	}
 
 	/**
@@ -434,7 +444,7 @@ class RequestLogger {
 	 * @since 1.3.8
 	 * @deprecated 2.0.0 Use RetryManager::get_retries_for_log() instead.
 	 * @param int $log_id Original log entry ID.
-	 * @return array<int, array{id: string, status: string, response_code: string|null, created_at: string}> Array of retry entries with id, status, response_code, and created_at keys.
+	 * @return array<int, array{id: int, status: string, response_code: int|null, created_at: string}> Array of retry entries with id, status, response_code, and created_at keys.
 	 */
 	public function get_retries_for_log( int $log_id ): array {
 		// Delegate to RetryManager service.

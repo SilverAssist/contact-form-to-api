@@ -46,20 +46,6 @@ class LogWriter {
 	private ?EncryptionService $encryption = null;
 
 	/**
-	 * Current log entry ID
-	 *
-	 * @var int|null
-	 */
-	private ?int $current_log_id = null;
-
-	/**
-	 * Request start time
-	 *
-	 * @var float|null
-	 */
-	private ?float $start_time = null;
-
-	/**
 	 * Constructor
 	 *
 	 * @since 2.0.0
@@ -89,9 +75,10 @@ class LogWriter {
 	 * @param mixed                  $request_data    Request body data.
 	 * @param array<string, string>  $request_headers Request headers.
 	 * @param int|null               $retry_of        Original log ID if this is a retry.
+	 * @param float|null             $start_time      Request start time (microtime). If not provided, current time is used.
 	 * @return int|false Log entry ID or false on failure.
 	 */
-	public function start_request( int $form_id, string $endpoint, string $method, $request_data, array $request_headers = array(), ?int $retry_of = null ) {
+	public function start_request( int $form_id, string $endpoint, string $method, $request_data, array $request_headers = array(), ?int $retry_of = null, ?float $start_time = null ) {
 		// Check if logging is enabled via settings.
 		if ( ! $this->is_logging_enabled() ) {
 			return false;
@@ -99,7 +86,10 @@ class LogWriter {
 
 		global $wpdb;
 
-		$this->start_time = \microtime( true );
+		// Use provided start time or current time.
+		if ( null === $start_time ) {
+			$start_time = \microtime( true );
+		}
 
 		// Store original request body data (needed for retry functionality).
 		// Only redact authorization headers for security.
@@ -149,8 +139,7 @@ class LogWriter {
 		);
 
 		if ( $result ) {
-			$this->current_log_id = $wpdb->insert_id;
-			return $this->current_log_id ?: false;
+			return $wpdb->insert_id ?: false;
 		}
 
 		return false;
@@ -165,12 +154,13 @@ class LogWriter {
 	 * @param int                               $log_id      Log entry ID.
 	 * @param array<string, mixed>|\WP_Error $response    API response or error.
 	 * @param int|null                          $retry_count Number of retry attempts.
+	 * @param float|null                        $start_time  Request start time for calculating execution time. If not provided, execution time will be 0.
 	 * @return bool True on success, false on failure.
 	 */
-	public function complete_request( int $log_id, $response, ?int $retry_count = 0 ): bool {
+	public function complete_request( int $log_id, $response, ?int $retry_count = 0, ?float $start_time = null ): bool {
 		global $wpdb;
 
-		$execution_time = $this->start_time ? \microtime( true ) - $this->start_time : 0;
+		$execution_time = $start_time ? \microtime( true ) - $start_time : 0;
 
 		// Handle WP_Error responses.
 		if ( \is_wp_error( $response ) ) {

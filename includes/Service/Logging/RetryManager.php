@@ -92,7 +92,7 @@ class RetryManager {
 	 *
 	 * @since 2.0.0
 	 * @param int $log_id Original log entry ID.
-	 * @return array<int, array{id: string, status: string, response_code: string|null, created_at: string}> Array of retry entries with id, status, response_code, and created_at keys.
+	 * @return array<int, array{id: int, status: string, response_code: int|null, created_at: string}> Array of retry entries with id, status, response_code, and created_at keys.
 	 */
 	public function get_retries_for_log( int $log_id ): array {
 		global $wpdb;
