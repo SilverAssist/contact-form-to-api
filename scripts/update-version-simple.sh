@@ -12,7 +12,7 @@
 # @package ContactFormToAPI
 # @since 1.0.0
 # @author Silver Assist
-# @version     1.1.3
+# @version     script
 ###############################################################################
 
 # Colors for output
@@ -180,6 +180,11 @@ update_file() {
         if [ "$current_script_abs" = "$file_abs" ]; then
             print_status "  Deferring self-modification for $description"
             # Store the modification for later execution
+            # Ensure the deferred command file exists with secure permissions
+            if [ ! -f "${PROJECT_ROOT}/.version_update_deferred" ]; then
+                : > "${PROJECT_ROOT}/.version_update_deferred" || return 1
+                chmod 600 "${PROJECT_ROOT}/.version_update_deferred" || return 1
+            fi
             echo "perl -i -pe '$pattern' '$file'" >> "${PROJECT_ROOT}/.version_update_deferred"
             return 0
         fi
@@ -364,7 +369,7 @@ if [ -f "${PROJECT_ROOT}/.version_update_deferred" ]; then
     while IFS= read -r command; do
         if [ -n "$command" ]; then
             print_status "  Executing: $command"
-            if eval "$command" 2>/dev/null; then
+            if sh -c "$command" 2>/dev/null; then
                 print_status "  ✓ Deferred modification completed"
             else
                 print_warning "  ⚠ Deferred modification failed (continuing anyway)"
