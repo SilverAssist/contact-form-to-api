@@ -19,6 +19,9 @@ use SilverAssist\ContactFormToAPI\Core\RequestLogger;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
 use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
+use SilverAssist\ContactFormToAPI\View\Admin\Logs\Partials\DateFilterPartial;
+use SilverAssist\ContactFormToAPI\View\Admin\Logs\Partials\ExportButtonsPartial;
+use SilverAssist\ContactFormToAPI\View\Admin\Logs\Partials\StatisticsPartial;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -43,11 +46,11 @@ class RequestLogView {
 		?>
 		<div class="wrap">
 			<h1 class="wp-heading-inline"><?php \esc_html_e( 'API Logs', 'contact-form-to-api' ); ?></h1>
-			<?php self::render_export_buttons( $list_table->get_total_items() ); ?>
+			<?php ExportButtonsPartial::render( $list_table->get_total_items() ); ?>
 
-			<?php self::render_statistics(); ?>
+			<?php StatisticsPartial::render(); ?>
 
-			<?php self::render_date_filter(); ?>
+			<?php DateFilterPartial::render(); ?>
 
 			<form method="get">
 				<input type="hidden" name="page" value="<?php echo \esc_attr( $_REQUEST['page'] ?? '' ); ?>" />
@@ -63,67 +66,11 @@ class RequestLogView {
 	/**
 	 * Render statistics summary
 	 *
+	 * @deprecated 2.0.0 Use StatisticsPartial::render() instead.
 	 * @return void
 	 */
 	public static function render_statistics(): void {
-		$stats_service = new LogStatistics();
-
-		// Get form_id from query if filtering by form.
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only operation for filtering
-		$form_id = isset( $_GET['form_id'] ) ? \absint( $_GET['form_id'] ) : 0;
-
-		// Get date filter parameters using centralized helper
-		$date_params = self::get_date_range_from_filter();
-		$date_filter = $date_params['filter'];
-		$date_start  = $date_params['start'];
-		$date_end    = $date_params['end'];
-
-		$stats = $stats_service->get_statistics( $form_id, $date_start, $date_end );
-
-		if ( empty( $stats['total_requests'] ) ) {
-			return;
-		}
-
-		$success_rate = $stats['total_requests'] > 0
-			? \round( ( $stats['successful_requests'] / $stats['total_requests'] ) * 100, 1 )
-			: 0;
-
-		// Determine date context label
-		$date_context = self::get_date_context_label( $date_filter, $date_start, $date_end );
-
-		?>
-		<div class="cf7-api-stats-summary">
-			<div class="stats-grid">
-				<div class="stat-box">
-					<span class="stat-number"><?php echo \esc_html( \number_format_i18n( $stats['total_requests'] ) ); ?></span>
-					<span class="stat-label">
-						<?php
-						echo \esc_html(
-							\sprintf(
-								/* translators: %s: date context (e.g., "(Today)", "(All Time)") */
-								\__( 'Total Requests %s', 'contact-form-to-api' ),
-								$date_context
-							)
-						);
-						?>
-					</span>
-				</div>
-				<div class="stat-box stat-success">
-					<span class="stat-number"><?php echo \esc_html( \number_format_i18n( $stats['successful_requests'] ) ); ?></span>
-					<span class="stat-label"><?php \esc_html_e( 'Successful', 'contact-form-to-api' ); ?></span>
-					<span class="stat-percentage"><?php echo \esc_html( $success_rate ); ?>%</span>
-				</div>
-				<div class="stat-box stat-error">
-					<span class="stat-number"><?php echo \esc_html( \number_format_i18n( $stats['failed_requests'] ) ); ?></span>
-					<span class="stat-label"><?php \esc_html_e( 'Failed', 'contact-form-to-api' ); ?></span>
-				</div>
-				<div class="stat-box">
-					<span class="stat-number"><?php echo \esc_html( \number_format_i18n( (float) $stats['avg_execution_time'], 3 ) ); ?>s</span>
-					<span class="stat-label"><?php \esc_html_e( 'Avg Response Time', 'contact-form-to-api' ); ?></span>
-				</div>
-			</div>
-		</div>
-		<?php
+		StatisticsPartial::render();
 	}
 
 	/**
@@ -596,263 +543,35 @@ class RequestLogView {
 	 *
 	 * @return void
 	 */
+	/**
+	 * Render filter controls
+	 *
+	 * @deprecated 2.0.0 Use DateFilterPartial::render() instead.
+	 * @return void
+	 */
 	public static function render_filters(): void {
-		$current_date_filter = isset( $_GET['date_filter'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_filter'] ) ) : '';
-		$current_status      = isset( $_GET['status'] ) ? \sanitize_text_field( \wp_unslash( $_GET['status'] ) ) : '';
-		$date_start          = isset( $_GET['date_start'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_start'] ) ) : '';
-		$date_end            = isset( $_GET['date_end'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_end'] ) ) : '';
-		$page                = isset( $_GET['page'] ) ? \sanitize_text_field( \wp_unslash( $_GET['page'] ) ) : 'cf7-api-logs';
-		$form_id             = isset( $_GET['form_id'] ) ? \absint( $_GET['form_id'] ) : 0;
-		$search              = isset( $_GET['s'] ) ? \sanitize_text_field( \wp_unslash( $_GET['s'] ) ) : '';
-
-		$is_custom = 'custom' === $current_date_filter;
-		?>
-		<div class="cf7-api-filters">
-			<form method="get" action="<?php echo \esc_url( \admin_url( 'admin.php' ) ); ?>" id="cf7-date-filter-form">
-				<input type="hidden" name="page" value="<?php echo \esc_attr( $page ); ?>" />
-				<?php if ( $form_id > 0 ) : ?>
-					<input type="hidden" name="form_id" value="<?php echo \esc_attr( $form_id ); ?>" />
-				<?php endif; ?>
-				<?php if ( ! empty( $search ) ) : ?>
-					<input type="hidden" name="s" value="<?php echo \esc_attr( $search ); ?>" />
-				<?php endif; ?>
-				
-				<div class="filter-controls">
-					<!-- Status Filter -->
-					<div class="filter-group">
-						<label for="status_filter" class="filter-label">
-							<?php \esc_html_e( 'Status', 'contact-form-to-api' ); ?>:
-						</label>
-						
-						<select name="status" id="status_filter" class="filter-select">
-							<option value="" <?php \selected( $current_status, '' ); ?>>
-								<?php \esc_html_e( 'All', 'contact-form-to-api' ); ?>
-							</option>
-							<option value="success" <?php \selected( $current_status, 'success' ); ?>>
-								<?php \esc_html_e( 'Success', 'contact-form-to-api' ); ?>
-							</option>
-							<option value="error" <?php \selected( $current_status, 'error' ); ?>>
-								<?php \esc_html_e( 'Error', 'contact-form-to-api' ); ?>
-							</option>
-						</select>
-					</div>
-
-					<!-- Date Filter -->
-					<div class="filter-group">
-						<label for="date_filter" class="filter-label">
-							<?php \esc_html_e( 'Date', 'contact-form-to-api' ); ?>:
-						</label>
-						
-						<select name="date_filter" id="date_filter" class="filter-select">
-							<option value="" <?php \selected( $current_date_filter, '' ); ?>>
-								<?php \esc_html_e( 'All Time', 'contact-form-to-api' ); ?>
-							</option>
-							<option value="today" <?php \selected( $current_date_filter, 'today' ); ?>>
-								<?php \esc_html_e( 'Today', 'contact-form-to-api' ); ?>
-							</option>
-							<option value="yesterday" <?php \selected( $current_date_filter, 'yesterday' ); ?>>
-								<?php \esc_html_e( 'Yesterday', 'contact-form-to-api' ); ?>
-							</option>
-							<option value="7days" <?php \selected( $current_date_filter, '7days' ); ?>>
-								<?php \esc_html_e( 'Last 7 Days', 'contact-form-to-api' ); ?>
-							</option>
-							<option value="30days" <?php \selected( $current_date_filter, '30days' ); ?>>
-								<?php \esc_html_e( 'Last 30 Days', 'contact-form-to-api' ); ?>
-							</option>
-							<option value="month" <?php \selected( $current_date_filter, 'month' ); ?>>
-								<?php \esc_html_e( 'This Month', 'contact-form-to-api' ); ?>
-							</option>
-							<option value="custom" <?php \selected( $current_date_filter, 'custom' ); ?>>
-								<?php \esc_html_e( 'Custom Range', 'contact-form-to-api' ); ?>
-							</option>
-						</select>
-					</div>
-
-					<div class="custom-date-range<?php echo $is_custom ? '' : ' cf7-api-hidden'; ?>" id="custom-date-range">
-						<label for="date_start">
-							<?php \esc_html_e( 'From', 'contact-form-to-api' ); ?>:
-						</label>
-						<input type="date" name="date_start" id="date_start" value="<?php echo \esc_attr( $date_start ); ?>" class="date-input" />
-						
-						<label for="date_end">
-							<?php \esc_html_e( 'To', 'contact-form-to-api' ); ?>:
-						</label>
-						<input type="date" name="date_end" id="date_end" value="<?php echo \esc_attr( $date_end ); ?>" class="date-input" />
-					</div>
-
-					<button type="submit" class="button button-primary">
-						<?php \esc_html_e( 'Apply Filters', 'contact-form-to-api' ); ?>
-					</button>
-				</div>
-
-				<?php if ( ! empty( $current_date_filter ) || ! empty( $current_status ) ) : ?>
-					<div class="filtered-by">
-						<span><?php \esc_html_e( 'Filtered by:', 'contact-form-to-api' ); ?></span>
-						<div class="tags">
-							<?php
-							// Build base URL for removing individual filters
-							$base_args = array( 'page' => $page );
-							if ( $form_id > 0 ) {
-								$base_args['form_id'] = $form_id;
-							}
-							if ( ! empty( $search ) ) {
-								$base_args['s'] = $search;
-							}
-
-							// Status filter tag
-							if ( ! empty( $current_status ) ) :
-								$status_labels = array(
-									'success' => \__( 'Success', 'contact-form-to-api' ),
-									'error'   => \__( 'Error', 'contact-form-to-api' ),
-								);
-								$status_label = $status_labels[ $current_status ] ?? $current_status;
-								
-								// URL to remove only status filter (keep date filter)
-								$remove_status_args = $base_args;
-								if ( ! empty( $current_date_filter ) ) {
-									$remove_status_args['date_filter'] = $current_date_filter;
-									if ( 'custom' === $current_date_filter ) {
-										$remove_status_args['date_start'] = $date_start;
-										if ( ! empty( $date_end ) ) {
-											$remove_status_args['date_end'] = $date_end;
-										}
-									}
-								}
-								$remove_status_url = \add_query_arg( $remove_status_args, \admin_url( 'admin.php' ) );
-								?>
-								<span class="tag">
-									<?php echo \esc_html( $status_label ); ?>
-									<a href="<?php echo \esc_url( $remove_status_url ); ?>" class="remove-tag" aria-label="<?php \esc_attr_e( 'Remove status filter', 'contact-form-to-api' ); ?>">
-										<span class="dashicons dashicons-no-alt"></span>
-									</a>
-								</span>
-							<?php endif; ?>
-
-							<?php
-							// Date filter tag
-							if ( ! empty( $current_date_filter ) ) :
-								$date_labels = array(
-									'today'     => \__( 'Today', 'contact-form-to-api' ),
-									'yesterday' => \__( 'Yesterday', 'contact-form-to-api' ),
-									'7days'     => \__( 'Last 7 Days', 'contact-form-to-api' ),
-									'30days'    => \__( 'Last 30 Days', 'contact-form-to-api' ),
-									'month'     => \__( 'This Month', 'contact-form-to-api' ),
-									'custom'    => \__( 'Custom Range', 'contact-form-to-api' ),
-								);
-
-								$date_label = $date_labels[ $current_date_filter ] ?? $current_date_filter;
-								
-								if ( 'custom' === $current_date_filter && ! empty( $date_start ) ) {
-									/* translators: %1$s: start date, %2$s: end date */
-									$date_label = \sprintf(
-										\__( '%1$s to %2$s', 'contact-form-to-api' ),
-										$date_start,
-										! empty( $date_end ) ? $date_end : \__( 'now', 'contact-form-to-api' )
-									);
-								}
-
-								// URL to remove only date filter (keep status filter)
-								$remove_date_args = $base_args;
-								if ( ! empty( $current_status ) ) {
-									$remove_date_args['status'] = $current_status;
-								}
-								$remove_date_url = \add_query_arg( $remove_date_args, \admin_url( 'admin.php' ) );
-								?>
-								<span class="tag">
-									<?php echo \esc_html( $date_label ); ?>
-									<a href="<?php echo \esc_url( $remove_date_url ); ?>" class="remove-tag" aria-label="<?php \esc_attr_e( 'Remove date filter', 'contact-form-to-api' ); ?>">
-										<span class="dashicons dashicons-no-alt"></span>
-									</a>
-								</span>
-							<?php endif; ?>
-						</div>
-						<a href="<?php echo \esc_url( \add_query_arg( $base_args, \admin_url( 'admin.php' ) ) ); ?>" class="button-link clear-filters">
-							<?php \esc_html_e( 'Clear all', 'contact-form-to-api' ); ?>
-						</a>
-					</div>
-				<?php endif; ?>
-			</form>
-		</div>
-		<?php
+		DateFilterPartial::render();
 	}
 
 	/**
 	 * Render date filter UI
 	 *
-	 * @deprecated 1.4.0 Use render_filters() instead
+	 * @deprecated 2.0.0 Use DateFilterPartial::render() instead.
 	 * @return void
 	 */
 	public static function render_date_filter(): void {
-		self::render_filters();
+		DateFilterPartial::render();
 	}
 
 	/**
 	 * Render export buttons
 	 *
+	 * @deprecated 2.0.0 Use ExportButtonsPartial::render() instead.
 	 * @param int $total_items Total number of items available for export.
 	 * @return void
 	 */
 	private static function render_export_buttons( int $total_items ): void {
-		$has_logs = $total_items > 0;
-
-		// Build export URLs with nonce and current filters.
-		$page      = isset( $_GET['page'] ) ? \sanitize_text_field( \wp_unslash( $_GET['page'] ) ) : 'cf7-api-logs';
-		$base_args = array(
-			'page'     => $page,
-			'_wpnonce' => \wp_create_nonce( 'cf7_api_export_logs' ),
-		);
-
-		// Preserve current filters.
-		if ( isset( $_GET['status'] ) && ! empty( $_GET['status'] ) ) {
-			$base_args['status'] = \sanitize_text_field( \wp_unslash( $_GET['status'] ) );
-		}
-
-		if ( isset( $_GET['form_id'] ) && ! empty( $_GET['form_id'] ) ) {
-			$base_args['form_id'] = \absint( $_GET['form_id'] );
-		}
-
-		if ( isset( $_GET['s'] ) && ! empty( $_GET['s'] ) ) {
-			$base_args['s'] = \sanitize_text_field( \wp_unslash( $_GET['s'] ) );
-		}
-
-		// Preserve date filter parameters.
-		if ( isset( $_GET['date_filter'] ) && ! empty( $_GET['date_filter'] ) ) {
-			$base_args['date_filter'] = \sanitize_text_field( \wp_unslash( $_GET['date_filter'] ) );
-
-			if ( 'custom' === $base_args['date_filter'] ) {
-				if ( isset( $_GET['date_start'] ) && ! empty( $_GET['date_start'] ) ) {
-					$base_args['date_start'] = \sanitize_text_field( \wp_unslash( $_GET['date_start'] ) );
-				}
-				if ( isset( $_GET['date_end'] ) && ! empty( $_GET['date_end'] ) ) {
-					$base_args['date_end'] = \sanitize_text_field( \wp_unslash( $_GET['date_end'] ) );
-				}
-			}
-		}
-
-		// CSV export URL.
-		$csv_args = \array_merge( $base_args, array( 'action' => 'export_csv' ) );
-		$csv_url  = \add_query_arg( $csv_args, \admin_url( 'admin.php' ) );
-
-		// JSON export URL.
-		$json_args = \array_merge( $base_args, array( 'action' => 'export_json' ) );
-		$json_url  = \add_query_arg( $json_args, \admin_url( 'admin.php' ) );
-
-		$disabled_class = $has_logs ? '' : ' disabled';
-		$disabled_attr  = $has_logs ? '' : ' aria-disabled="true" tabindex="-1"';
-		?>
-		<div class="cf7-api-export-buttons">
-			<div class="button-group">
-				<a href="<?php echo $has_logs ? \esc_url( $csv_url ) : '#'; ?>" class="button<?php echo \esc_attr( $disabled_class ); ?>"<?php echo $disabled_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static string. ?>>
-					<span class="dashicons dashicons-download"></span>
-					<?php \esc_html_e( 'Export as CSV', 'contact-form-to-api' ); ?>
-				</a>
-				<a href="<?php echo $has_logs ? \esc_url( $json_url ) : '#'; ?>" class="button<?php echo \esc_attr( $disabled_class ); ?>"<?php echo $disabled_attr; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Static string. ?>>
-					<span class="dashicons dashicons-download"></span>
-					<?php \esc_html_e( 'Export as JSON', 'contact-form-to-api' ); ?>
-				</a>
-			</div>
-		</div>
-		<?php
+		ExportButtonsPartial::render( $total_items );
 	}
 
 	/**

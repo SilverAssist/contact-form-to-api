@@ -18,6 +18,7 @@ use SilverAssist\ContactFormToAPI\Admin\GlobalSettingsController;
 use SilverAssist\ContactFormToAPI\Admin\Views\MigrationView;
 use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\View\Admin\Settings\Partials\GlobalSettingsPartial;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -44,7 +45,7 @@ class SettingsView {
 		<div class="cf7-api-settings-page">
 			<?php self::render_accordion_styles(); ?>
 			<?php self::render_notices( $notices ); ?>
-			<?php self::render_global_settings_section(); ?>
+			<?php GlobalSettingsPartial::render(); ?>
 			<?php self::render_how_to_section(); ?>
 			<?php self::render_quick_links_section(); ?>
 			<?php self::render_status_section(); ?>
@@ -329,33 +330,14 @@ class SettingsView {
 	 * @since 1.2.0
 	 * @return void
 	 */
+	/**
+	 * Render global settings section
+	 *
+	 * @deprecated 2.0.0 Use GlobalSettingsPartial::render() instead.
+	 * @return void
+	 */
 	private static function render_global_settings_section(): void {
-		$settings = Settings::instance();
-		?>
-		<div class="cf7-api-section">
-			<h2>
-				<span class="dashicons dashicons-admin-settings"></span>
-				<?php \esc_html_e( 'Global Settings', 'contact-form-to-api' ); ?>
-			</h2>
-			<p class="description">
-				<?php \esc_html_e( 'Configure plugin-wide settings for retry limits, sensitive data patterns, logging control, and log retention.', 'contact-form-to-api' ); ?>
-			</p>
-
-			<form method="post" action="<?php echo \esc_url( \admin_url( 'admin-post.php' ) ); ?>">
-				<input type="hidden" name="action" value="cf7_api_save_global_settings">
-				<?php \wp_nonce_field( GlobalSettingsController::get_nonce_action(), GlobalSettingsController::get_nonce_name() ); ?>
-
-				<?php self::render_retry_settings( $settings ); ?>
-				<?php self::render_sensitive_patterns_settings( $settings ); ?>
-				<?php self::render_logging_settings( $settings ); ?>
-				<?php self::render_log_retention_settings( $settings ); ?>
-				<?php self::render_encryption_settings( $settings ); ?>
-				<?php self::render_email_alerts_settings( $settings ); ?>
-
-				<?php \submit_button( \__( 'Save Settings', 'contact-form-to-api' ) ); ?>
-			</form>
-		</div>
-		<?php
+		GlobalSettingsPartial::render();
 	}
 
 	/**
@@ -364,7 +346,7 @@ class SettingsView {
 	 * @param Settings $settings Settings instance.
 	 * @return void
 	 */
-	private static function render_retry_settings( Settings $settings ): void {
+	public static function render_retry_settings_partial( Settings $settings ): void {
 		$max_manual_retries   = $settings->get_max_manual_retries();
 		$max_retries_per_hour = $settings->get_max_retries_per_hour();
 		?>
@@ -420,7 +402,7 @@ class SettingsView {
 	 * @param Settings $settings Settings instance.
 	 * @return void
 	 */
-	private static function render_sensitive_patterns_settings( Settings $settings ): void {
+	public static function render_sensitive_patterns_partial( Settings $settings ): void {
 		$patterns      = $settings->get_sensitive_patterns();
 		$patterns_text = \implode( "\n", $patterns );
 		?>
@@ -456,7 +438,7 @@ class SettingsView {
 	 * @param Settings $settings Settings instance.
 	 * @return void
 	 */
-	private static function render_logging_settings( Settings $settings ): void {
+	public static function render_logging_settings_partial( Settings $settings ): void {
 		$logging_enabled = $settings->is_logging_enabled();
 		?>
 		<h3><?php \esc_html_e( 'Logging', 'contact-form-to-api' ); ?></h3>
@@ -493,7 +475,7 @@ class SettingsView {
 	 * @param Settings $settings Settings instance.
 	 * @return void
 	 */
-	private static function render_log_retention_settings( Settings $settings ): void {
+	public static function render_log_retention_partial( Settings $settings ): void {
 		$retention_days = $settings->get_log_retention_days();
 		?>
 		<h3><?php \esc_html_e( 'Log Retention', 'contact-form-to-api' ); ?></h3>
@@ -558,7 +540,7 @@ class SettingsView {
 	 * @param Settings $settings Settings instance.
 	 * @return void
 	 */
-	private static function render_encryption_settings( Settings $settings ): void {
+	public static function render_encryption_settings_partial( Settings $settings ): void {
 		$encryption_enabled = $settings->is_encryption_enabled();
 		$sodium_available   = EncryptionService::is_sodium_available();
 
@@ -688,7 +670,7 @@ value="1"
 	 * @param Settings $settings Settings instance.
 	 * @return void
 	 */
-	private static function render_email_alerts_settings( Settings $settings ): void {
+	public static function render_email_alerts_partial( Settings $settings ): void {
 		$alerts_enabled   = $settings->is_alerts_enabled();
 		$alert_recipients = $settings->get_alert_recipients();
 		$error_threshold  = $settings->get_alert_error_threshold();
