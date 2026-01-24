@@ -58,8 +58,8 @@ class RequestLogTableTest extends TestCase {
 	 */
 	public function testRequestLogTableClassExists(): void {
 		$this->assertTrue(
-			class_exists( 'SilverAssist\\ContactFormToAPI\\Admin\\RequestLogTable' ),
-			'RequestLogTable class should exist in the Admin namespace'
+			class_exists( 'SilverAssist\\ContactFormToAPI\\Infrastructure\\ListTable\\RequestLogTable' ),
+			'RequestLogTable class should exist in the Infrastructure\\ListTable namespace'
 		);
 	}
 

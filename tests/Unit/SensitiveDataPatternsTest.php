@@ -30,8 +30,8 @@ class SensitiveDataPatternsTest extends TestCase {
 	 */
 	public function testSensitiveDataPatternsClassExists(): void {
 		$this->assertTrue(
-			\class_exists( 'SilverAssist\\ContactFormToAPI\\Core\\SensitiveDataPatterns' ),
-			'SensitiveDataPatterns class should exist in the Core namespace'
+			\class_exists( 'SilverAssist\\ContactFormToAPI\\Service\\Security\\SensitiveDataPatterns' ),
+			'SensitiveDataPatterns class should exist in the Service\\Security namespace'
 		);
 	}
 

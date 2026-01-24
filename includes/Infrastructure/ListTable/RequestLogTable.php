@@ -147,7 +147,10 @@ class RequestLogTable extends \WP_List_Table {
 
 		// Get counts for each status.
 		$counts = $wpdb->get_results(
-			"SELECT status, COUNT(*) as count FROM {$table_name} GROUP BY status",
+			$wpdb->prepare(
+				'SELECT status, COUNT(*) as count FROM %i GROUP BY status',
+				$table_name
+			),
 			ARRAY_A
 		);
 
@@ -255,31 +258,31 @@ class RequestLogTable extends \WP_List_Table {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// Build WHERE clause.
-		$where               = '1=1';
-		$where_values        = array();
-		$filter_unresolved   = false;
+		// Build WHERE conditions and values for single prepare() call.
+		$conditions        = array( '1=1' );
+		$values            = array( $table_name ); // First value is table name for %i.
+		$filter_unresolved = false;
 
 		// Filter by status.
 		if ( isset( $_GET['status'] ) && ! empty( $_GET['status'] ) && 'all' !== $_GET['status'] ) {
 			$status = \sanitize_text_field( \wp_unslash( $_GET['status'] ) );
 			if ( 'error' === $status ) {
-				// Include all error types.
-				$where .= ' AND status IN (\'error\', \'client_error\', \'server_error\')';
+				// Include all error types (hardcoded values, no placeholder needed).
+				$conditions[] = "status IN ('error', 'client_error', 'server_error')";
 			} elseif ( 'unresolved' === $status ) {
 				// Filter for unresolved errors (errors without successful retry).
-				$where             .= ' AND status IN (\'error\', \'client_error\', \'server_error\')';
-				$filter_unresolved  = true;
+				$conditions[]      = "status IN ('error', 'client_error', 'server_error')";
+				$filter_unresolved = true;
 			} else {
-				$where         .= ' AND status = %s';
-				$where_values[] = $status;
+				$conditions[] = 'status = %s';
+				$values[]     = $status;
 			}
 		}
 
 		// Filter by form ID.
 		if ( isset( $_GET['form_id'] ) && ! empty( $_GET['form_id'] ) ) {
-			$where         .= ' AND form_id = %d';
-			$where_values[] = \absint( $_GET['form_id'] );
+			$conditions[] = 'form_id = %d';
+			$values[]     = \absint( $_GET['form_id'] );
 		}
 
 		// Search term - when active, all filtering is done in PHP to support
@@ -292,59 +295,51 @@ class RequestLogTable extends \WP_List_Table {
 		// Apply date filter.
 		$date_filter = $this->get_date_filter_clause();
 		if ( ! empty( $date_filter['clause'] ) ) {
-			$where         .= ' ' . $date_filter['clause'];
-			$where_values   = \array_merge( $where_values, $date_filter['values'] );
+			// Remove leading AND from clause since we join with AND later.
+			$clause = \ltrim( $date_filter['clause'], ' AND' );
+			if ( ! empty( $clause ) ) {
+				$conditions[] = $clause;
+				$values       = \array_merge( $values, $date_filter['values'] );
+			}
 		}
 
-		// Prepare WHERE clause.
-		if ( ! empty( $where_values ) ) {
-			$where = $wpdb->prepare( $where, ...$where_values );
-		}
-
-		// Get sorting parameters.
-		$orderby = isset( $_GET['orderby'] ) ? \sanitize_text_field( \wp_unslash( $_GET['orderby'] ) ) : 'created_at';
-		$order   = isset( $_GET['order'] ) ? \sanitize_text_field( \wp_unslash( $_GET['order'] ) ) : 'DESC';
-
-		// Validate orderby.
+		// Get sorting parameters with whitelist validation.
+		$orderby       = isset( $_GET['orderby'] ) ? \sanitize_text_field( \wp_unslash( $_GET['orderby'] ) ) : 'created_at';
+		$order         = isset( $_GET['order'] ) ? \sanitize_text_field( \wp_unslash( $_GET['order'] ) ) : 'DESC';
 		$valid_orderby = array( 'form_id', 'status', 'response_code', 'execution_time', 'retry_count', 'created_at' );
-		if ( ! \in_array( $orderby, $valid_orderby, true ) ) {
-			$orderby = 'created_at';
-		}
-
-		// Validate order.
-		$order = \strtoupper( $order );
-		if ( ! \in_array( $order, array( 'ASC', 'DESC' ), true ) ) {
-			$order = 'DESC';
-		}
+		$orderby       = \in_array( $orderby, $valid_orderby, true ) ? $orderby : 'created_at';
+		$order         = \in_array( \strtoupper( $order ), array( 'ASC', 'DESC' ), true ) ? \strtoupper( $order ) : 'DESC';
 
 		// For unresolved filter, exclude errors that have successful retries.
 		if ( $filter_unresolved ) {
 			$resolved_ids = $this->retry_manager->get_resolved_error_ids();
 			if ( ! empty( $resolved_ids ) ) {
-				$placeholders = \implode( ', ', \array_fill( 0, \count( $resolved_ids ), '%d' ) );
-				$where       .= $wpdb->prepare( " AND id NOT IN ({$placeholders})", ...$resolved_ids );
+				$id_placeholders = \implode( ', ', \array_fill( 0, \count( $resolved_ids ), '%d' ) );
+				$conditions[]    = 'id NOT IN (' . $id_placeholders . ')';
+				$values          = \array_merge( $values, $resolved_ids );
 			}
 		}
 
-		// If search is active, use PHP filtering for full OR logic
-		// (endpoint OR error_message OR sender_name) with anonymization support.
+		// Build WHERE clause from conditions.
+		$where_clause = \implode( ' AND ', $conditions );
+
+		// If search is active, use PHP filtering for full OR logic.
 		if ( ! empty( $search_term ) ) {
-			return $this->get_logs_data_with_search( $table_name, $where, $orderby, $order, $search_term, $per_page, $paged );
+			return $this->get_logs_data_with_search( $table_name, $where_clause, $values, $orderby, $order, $search_term, $per_page, $paged );
 		}
 
-		// Get total count.
-		$total = $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name} WHERE {$where}" );
+		// Get total count with single prepare() call.
+		// $where_clause contains only placeholders, all values go through prepare().
+		$count_query = "SELECT COUNT(*) FROM %i WHERE {$where_clause}"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$total       = $wpdb->get_var( $wpdb->prepare( $count_query, ...$values ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
-		// Get paginated results.
-		$offset = ( $paged - 1 ) * $per_page;
-		$items  = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT * FROM {$table_name} WHERE {$where} ORDER BY {$orderby} {$order} LIMIT %d OFFSET %d",
-				$per_page,
-				$offset
-			),
-			ARRAY_A
-		);
+		// Get paginated results with single prepare() call.
+		// $orderby and $order are validated against whitelists above.
+		$offset       = ( $paged - 1 ) * $per_page;
+		$query_values = \array_merge( $values, array( $per_page, $offset ) );
+		// $where_clause contains only placeholders, $orderby/$order are whitelist-validated.
+		$query = "SELECT * FROM %i WHERE {$where_clause} ORDER BY {$orderby} {$order} LIMIT %d OFFSET %d"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$items = $wpdb->get_results( $wpdb->prepare( $query, ...$query_values ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		return array(
 			'items' => $items,
@@ -360,18 +355,20 @@ class RequestLogTable extends \WP_List_Table {
 	 * marked as sensitive via SensitiveDataPatterns are not searched.
 	 *
 	 * @since 1.3.13
-	 * @param string $table_name  Table name.
-	 * @param string $where       WHERE clause (without search filter).
-	 * @param string $orderby     Order by column.
-	 * @param string $order       Sort order (ASC/DESC).
-	 * @param string $search_term Search term.
-	 * @param int    $per_page    Items per page.
-	 * @param int    $paged       Current page.
+	 * @param string              $table_name   Table name.
+	 * @param string              $where_clause WHERE clause with placeholders.
+	 * @param array<int, mixed>   $values       Values for placeholders.
+	 * @param string              $orderby      Order by column (whitelist-validated).
+	 * @param string              $order        Sort order (ASC/DESC, whitelist-validated).
+	 * @param string              $search_term  Search term.
+	 * @param int                 $per_page     Items per page.
+	 * @param int                 $paged        Current page.
 	 * @return array{items: array<int, array<string, mixed>>, total: int}
 	 */
 	private function get_logs_data_with_search(
 		string $table_name,
-		string $where,
+		string $where_clause,
+		array $values,
 		string $orderby,
 		string $order,
 		string $search_term,
@@ -387,14 +384,11 @@ class RequestLogTable extends \WP_List_Table {
 
 		// Fetch records matching base filters (status, form, date), limit for memory safety.
 		// Search filtering is done in PHP to support OR logic with sender name.
-		$max_records = 5000;
-		$all_items   = $wpdb->get_results(
-			$wpdb->prepare(
-				"SELECT {$columns} FROM {$table_name} WHERE {$where} ORDER BY {$orderby} {$order} LIMIT %d",
-				$max_records
-			),
-			ARRAY_A
-		);
+		// $columns is hardcoded, $where_clause contains only placeholders, $orderby/$order are whitelist-validated.
+		$max_records  = 5000;
+		$query_values = \array_merge( $values, array( $max_records ) );
+		$query        = "SELECT {$columns} FROM %i WHERE {$where_clause} ORDER BY {$orderby} {$order} LIMIT %d"; // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$all_items    = $wpdb->get_results( $wpdb->prepare( $query, ...$query_values ), ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		if ( empty( $all_items ) ) {
 			return array(
@@ -504,7 +498,7 @@ class RequestLogTable extends \WP_List_Table {
 		$form_id = (int) $item['form_id'];
 
 		// Try to get form title.
-		$form       = \get_post( $form_id );
+		$form = \get_post( $form_id );
 		/* translators: %d: Form ID number */
 		$form_title = ( $form instanceof \WP_Post ) ? $form->post_title : \sprintf( \__( 'Form #%d', 'contact-form-to-api' ), $form_id );
 

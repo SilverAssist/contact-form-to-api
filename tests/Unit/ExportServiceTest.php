@@ -48,8 +48,8 @@ class ExportServiceTest extends TestCase {
 	 */
 	public function testExportServiceClassExists(): void {
 		$this->assertTrue(
-			\class_exists( 'SilverAssist\\ContactFormToAPI\\Services\\ExportService' ),
-			'ExportService class should exist in the Services namespace'
+			\class_exists( 'SilverAssist\\ContactFormToAPI\\Service\\Export\\ExportService' ),
+			'ExportService class should exist in the Service\\Export namespace'
 		);
 	}
 

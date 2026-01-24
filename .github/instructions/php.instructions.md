@@ -173,21 +173,43 @@ $array  = \array_map( 'sanitize_text_field', $_POST['items'] );
 **ALWAYS use prepared statements with placeholders:**
 
 ```php
-// ✅ CORRECT - Prepared statement with placeholders.
+// ✅ CORRECT - Prepared statement with %i for table name (WordPress 6.2+).
 $results = $wpdb->get_results(
     $wpdb->prepare(
-        "SELECT * FROM {$table_name} WHERE status = %s AND form_id = %d",
+        'SELECT * FROM %i WHERE status = %s AND form_id = %d',
+        $table_name,
         $status,
         $form_id
     ),
     ARRAY_A
 );
 
+// ✅ CORRECT - Dynamic WHERE with single prepare() call.
+$conditions = array( '1=1' );
+$values     = array( $table_name ); // First value is table name for %i.
+
+if ( $filter_status ) {
+    $conditions[] = 'status = %s';
+    $values[]     = $status;
+}
+
+$where_clause = implode( ' AND ', $conditions );
+$query        = "SELECT * FROM %i WHERE {$where_clause}";
+$results      = $wpdb->get_results( $wpdb->prepare( $query, ...$values ), ARRAY_A );
+
 // ❌ WRONG - Direct interpolation (SQL injection risk).
 $results = $wpdb->get_results(
     "SELECT * FROM {$table_name} WHERE status = '{$status}'"
 );
 ```
+
+**Placeholder Reference:**
+| Placeholder | Use Case | Example |
+|-------------|----------|---------|
+| `%i` | Identifiers (table/column names) | `SELECT * FROM %i` |
+| `%s` | Strings | `WHERE status = %s` |
+| `%d` | Integers | `WHERE id = %d` |
+| `%f` | Floats | `WHERE price = %f` |
 
 ---
 
