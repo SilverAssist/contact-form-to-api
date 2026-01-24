@@ -570,13 +570,13 @@ class IntegrationView {
 				<textarea rows="1"><?php echo \esc_textarea( \trim( $debug_info['url'] ?? '' ) ); ?></textarea>
 
 				<h4><?php \esc_html_e( 'Params', 'contact-form-to-api' ); ?>:</h4>
-				<textarea rows="10"><?php \print_r( $debug_info['params'] ?? '' ); ?></textarea>
+				<textarea rows="10"><?php echo \esc_textarea( \print_r( $debug_info['params'] ?? '', true ) ); ?></textarea>
 
 				<h4><?php \esc_html_e( 'Remote server result', 'contact-form-to-api' ); ?>:</h4>
-				<textarea rows="10"><?php \print_r( $debug_info['result'] ?? '' ); ?></textarea>
+				<textarea rows="10"><?php echo \esc_textarea( \print_r( $debug_info['result'] ?? '', true ) ); ?></textarea>
 
 				<h4><?php \esc_html_e( 'Error logs', 'contact-form-to-api' ); ?>:</h4>
-				<textarea rows="10"><?php \print_r( $debug_info['errors'] ?? '' ); ?></textarea>
+				<textarea rows="10"><?php echo \esc_textarea( \print_r( $debug_info['errors'] ?? '', true ) ); ?></textarea>
 			</div>
 		</div>
 		<?php

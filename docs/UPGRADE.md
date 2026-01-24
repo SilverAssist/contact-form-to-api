@@ -122,7 +122,7 @@ $entry = new LogEntry(
 
 ## New Features in 2.0.0-alpha
 
-### Model Layer
+### Phase 1: Model Layer (Complete)
 
 Type-safe domain models for better code quality:
 
@@ -149,7 +149,52 @@ if ( $entry->is_retry() ) {
 }
 ```
 
-### Repository Interfaces
+### Phase 2: Logging Services (Complete)
+
+Specialized services for log management:
+
+```php
+use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
+use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
+
+// Example: Create log entry
+$writer = LogWriter::instance();
+$log_id = $writer->save( $log_entry );
+
+// Example: Query logs
+$reader = LogReader::instance();
+$logs = $reader->get_logs( array( 'status' => 'success' ) );
+
+// Example: Get statistics
+$stats = LogStatistics::instance();
+$metrics = $stats->get_overview();
+
+// Example: Manage retries
+$retry = RetryManager::instance();
+$retry_id = $retry->create_retry_entry( $original_log_id );
+```
+
+### Phase 3: Controller & Service Separation (Complete)
+
+Cleaner separation between routing and business logic:
+
+```php
+use SilverAssist\ContactFormToAPI\Controller\ContactForm\SubmissionController;
+use SilverAssist\ContactFormToAPI\Service\ContactForm\SubmissionProcessor;
+
+// Controller handles hooks and routing (automatically loaded)
+$controller = SubmissionController::instance();
+
+// Service handles business logic (automatically loaded)
+$processor = SubmissionProcessor::instance();
+
+// You typically don't need to interact with these directly -
+// they work automatically via WordPress hooks
+```
+
+### Repository Interfaces (Complete)
 
 Clear contracts for data access:
 
@@ -175,12 +220,16 @@ use SilverAssist\ContactFormToAPI\Repository\SettingsRepositoryInterface;
 - **Deprecates**: Direct usage of `RequestLogger` methods
 - **Alternative**: Use `LogWriter`, `LogReader`, `LogStatistics` services
 - **Timeline**: Warnings in 2.0.0-beta, removal in 2.2.0
+- **Status**: Complete - Phase 2 merged (PR #62)
 
-### Phase 3 (Planned - v2.0.0-rc)
+### Phase 3 (Current - v2.0.0-rc)
 
-- **Deprecates**: Direct usage of `Integration` class methods
-- **Alternative**: Use `SubmissionController` and `SubmissionProcessor`
-- **Timeline**: Warnings in 2.0.0-rc, removal in 2.2.0
+- **Status**: Complete
+- **New Classes**: `SubmissionController`, `SubmissionProcessor`
+- **Deprecates**: Direct usage of `Integration` class methods (in future release)
+- **Alternative**: Use `SubmissionController` (Controller layer) and `SubmissionProcessor` (Service layer)
+- **Timeline**: New classes available now, deprecation warnings planned for 2.1.0, removal in 2.2.0
+- **Impact**: Zero breaking changes - new classes coexist with old Integration.php
 
 ### Phase 4 (Planned - v2.0.0)
 
@@ -302,21 +351,20 @@ composer phpstan
 
 ## Migration Timeline
 
-### Current Status: Phase 1 ✅
+### Current Status: Phase 3 ✅
 
-- ✅ Foundation architecture complete
-- ✅ Model layer implemented
-- ✅ Repository interfaces defined
-- ✅ Documentation created
-- ✅ All tests passing
+- ✅ **Phase 1**: Foundation architecture complete
+- ✅ **Phase 2**: RequestLogger extracted into services
+- ✅ **Phase 3**: Integration split into Controller/Service layers
+- ⏳ **Phase 4**: Service reorganization (TBD)
+- ⏳ **Phase 5**: View splitting (TBD)
+- ⏳ **Phase 6**: Final cleanup (TBD)
 
 ### Upcoming Phases
 
-- **Phase 2**: Extract RequestLogger (TBD)
-- **Phase 3**: Split Integration.php (TBD)
-- **Phase 4**: Reorganize Services (TBD)
-- **Phase 5**: Split Views (TBD)
-- **Phase 6**: Final cleanup (TBD)
+- **Phase 4**: Reorganize Services (service namespace consolidation)
+- **Phase 5**: Split Views (partial view extraction)
+- **Phase 6**: Final cleanup (deprecation removal, documentation finalization)
 
 Each phase will have its own upgrade notes and deprecation warnings.
 
