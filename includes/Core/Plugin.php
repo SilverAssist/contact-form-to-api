@@ -15,10 +15,11 @@
 namespace SilverAssist\ContactFormToAPI\Core;
 
 use SilverAssist\ContactFormToAPI\Admin\Loader as AdminLoader;
-use SilverAssist\ContactFormToAPI\ContactForm\Integration;
+use SilverAssist\ContactFormToAPI\Controller\ContactForm\SubmissionController;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Services\EmailAlertService;
 use SilverAssist\ContactFormToAPI\Services\Loader as ServicesLoader;
+use SilverAssist\ContactFormToAPI\Service\ContactForm\SubmissionProcessor;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 use SilverAssist\WpGithubUpdater\Updater;
 use SilverAssist\WpGithubUpdater\UpdaterConfig;
@@ -212,15 +213,26 @@ class Plugin implements LoadableInterface {
 			$this->log_error( 'Services\\Loader', $e->getMessage() );
 		}
 
-		// Load ContactForm integration (priority 20 - Services).
+		// Load ContactForm submission processor (priority 20 - Service).
 		try {
-			$integration = Integration::instance();
-			if ( $integration->should_load() ) {
-				$integration->init();
-				$this->components[] = $integration;
+			$processor = SubmissionProcessor::instance();
+			if ( $processor->should_load() ) {
+				$processor->init();
+				$this->components[] = $processor;
 			}
 		} catch ( \Exception $e ) {
-			$this->log_error( 'ContactForm\\Integration', $e->getMessage() );
+			$this->log_error( 'Service\\ContactForm\\SubmissionProcessor', $e->getMessage() );
+		}
+
+		// Load ContactForm submission controller (priority 30 - Controller).
+		try {
+			$controller = SubmissionController::instance();
+			if ( $controller->should_load() ) {
+				$controller->init();
+				$this->components[] = $controller;
+			}
+		} catch ( \Exception $e ) {
+			$this->log_error( 'Controller\\ContactForm\\SubmissionController', $e->getMessage() );
 		}
 
 		// Load Admin Loader (priority 30 - Admin components).
