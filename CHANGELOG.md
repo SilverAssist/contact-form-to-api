@@ -18,9 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Created `Repository/` directory with data access interfaces
     - `LogRepositoryInterface`: Contract for log data access
     - `SettingsRepositoryInterface`: Contract for settings data access
-  - Created `Controller/`, `View/`, `Infrastructure/` directories for future refactoring
   - Added `docs/ARCHITECTURE.md`: Comprehensive architecture documentation
   - Added `docs/UPGRADE.md`: Migration guide for version 2.0.0
+  - Note: `Controller/`, `View/`, `Infrastructure/` directories will be created in future phases
 - **Unresolved Errors Filter**: New filter to show only errors that haven't been successfully retried
   - "Unresolved" tab in logs table shows errors pending resolution
   - "All Errors" renamed to distinguish from unresolved filter

@@ -38,7 +38,7 @@ class ApiResponse {
 	 *
 	 * @var mixed
 	 */
-	private $body;
+	private mixed $body;
 
 	/**
 	 * Response headers
@@ -82,7 +82,7 @@ class ApiResponse {
 	 */
 	public function __construct(
 		int $status_code,
-		$body,
+		mixed $body,
 		array $headers = array(),
 		bool $is_success = true,
 		float $execution_time = 0.0,
@@ -114,7 +114,7 @@ class ApiResponse {
 	 *
 	 * @return mixed Response body.
 	 */
-	public function get_body() {
+	public function get_body(): mixed {
 		return $this->body;
 	}
 

@@ -265,12 +265,32 @@ class Statistics {
 	 * @return Statistics Statistics instance.
 	 */
 	public static function from_query( array $stats, array $recent_logs = array() ): Statistics {
+		// Support both old format (total_requests, successful_requests, failed_requests)
+		// and new format (total, success, error, client_error, server_error, pending).
+		$total   = (int) ( $stats['total'] ?? $stats['total_requests'] ?? 0 );
+		$success = (int) ( $stats['success'] ?? $stats['successful_requests'] ?? 0 );
+
+		// Old format has 'failed_requests', new format has separate error types.
+		$failed = (int) ( $stats['failed_requests'] ?? 0 );
+		$error  = (int) ( $stats['error'] ?? 0 );
+
+		// If we have new format error details, use them; otherwise use failed count for error.
+		if ( isset( $stats['client_error'] ) || isset( $stats['server_error'] ) ) {
+			$client_error = (int) ( $stats['client_error'] ?? 0 );
+			$server_error = (int) ( $stats['server_error'] ?? 0 );
+		} else {
+			// Old format - put all failed into 'error' category.
+			$error        = $failed;
+			$client_error = 0;
+			$server_error = 0;
+		}
+
 		return new self(
-			(int) ( $stats['total'] ?? 0 ),
-			(int) ( $stats['success'] ?? 0 ),
-			(int) ( $stats['error'] ?? 0 ),
-			(int) ( $stats['client_error'] ?? 0 ),
-			(int) ( $stats['server_error'] ?? 0 ),
+			$total,
+			$success,
+			$error,
+			$client_error,
+			$server_error,
 			(int) ( $stats['pending'] ?? 0 ),
 			(float) ( $stats['avg_execution_time'] ?? 0.0 ),
 			$recent_logs

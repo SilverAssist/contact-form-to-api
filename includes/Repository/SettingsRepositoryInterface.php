@@ -37,7 +37,7 @@ interface SettingsRepositoryInterface {
 	 * @param mixed  $default_value Default value if not set.
 	 * @return mixed Setting value.
 	 */
-	public function get( string $key, $default_value = null );
+	public function get( string $key, mixed $default_value = null ): mixed;
 
 	/**
 	 * Set global plugin setting

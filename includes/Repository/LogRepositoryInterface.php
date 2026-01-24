@@ -37,7 +37,7 @@ interface LogRepositoryInterface {
 	 * @param LogEntry $entry Log entry to save.
 	 * @return int|false Log ID on success, false on failure.
 	 */
-	public function save( LogEntry $entry );
+	public function save( LogEntry $entry ): int|false;
 
 	/**
 	 * Find log entry by ID

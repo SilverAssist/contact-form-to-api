@@ -224,11 +224,13 @@ $log_data = $log_entry->to_array();
 
 ## Testing
 
-All models have comprehensive unit tests:
+Current unit tests:
 - `tests/Unit/Model/LogEntryTest.php`
-- `tests/Unit/Model/FormSettingsTest.php` (planned)
-- `tests/Unit/Model/ApiResponseTest.php` (planned)
-- `tests/Unit/Model/StatisticsTest.php` (planned)
+
+Planned additional unit tests:
+- `tests/Unit/Model/FormSettingsTest.php`
+- `tests/Unit/Model/ApiResponseTest.php`
+- `tests/Unit/Model/StatisticsTest.php`
 
 ---
 

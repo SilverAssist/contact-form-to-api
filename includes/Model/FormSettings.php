@@ -278,17 +278,32 @@ class FormSettings {
 	 * @return FormSettings FormSettings instance.
 	 */
 	public static function from_meta( int $form_id, array $meta ): FormSettings {
+		// Support both direct meta keys and the wpcf7_api_data structure.
+		$api_data = array();
+		if ( isset( $meta['_wpcf7_api_data'] ) && \is_array( $meta['_wpcf7_api_data'] ) ) {
+			$api_data = $meta['_wpcf7_api_data'];
+		} elseif ( isset( $meta['wpcf7_api_data'] ) && \is_array( $meta['wpcf7_api_data'] ) ) {
+			$api_data = $meta['wpcf7_api_data'];
+		}
+
+		$api_data_map = array();
+		if ( isset( $meta['_wpcf7_api_data_map'] ) && \is_array( $meta['_wpcf7_api_data_map'] ) ) {
+			$api_data_map = $meta['_wpcf7_api_data_map'];
+		} elseif ( isset( $meta['wpcf7_api_data_map'] ) && \is_array( $meta['wpcf7_api_data_map'] ) ) {
+			$api_data_map = $meta['wpcf7_api_data_map'];
+		}
+
 		return new self(
 			$form_id,
-			! empty( $meta['_cf7_api_enable'] ),
-			(string) ( $meta['_cf7_api_url'] ?? '' ),
-			(string) ( $meta['_cf7_api_method'] ?? 'POST' ),
-			(string) ( $meta['_cf7_api_input_type'] ?? 'params' ),
-			(array) ( $meta['_cf7_api_params_mapping'] ?? array() ),
-			(array) ( $meta['_cf7_api_auth'] ?? array() ),
-			(array) ( $meta['_cf7_api_headers'] ?? array() ),
-			(array) ( $meta['_cf7_api_retry'] ?? array() ),
-			! empty( $meta['_cf7_api_debug'] )
+			! empty( $api_data['send_to_api'] ),
+			(string) ( $api_data['base_url'] ?? '' ),
+			(string) ( $api_data['method'] ?? 'POST' ),
+			(string) ( $api_data['input_type'] ?? 'params' ),
+			$api_data_map,
+			(array) ( $meta['_wpcf7_api_auth'] ?? $meta['wpcf7_api_auth'] ?? array() ),
+			(array) ( $meta['custom_headers'] ?? array() ),
+			(array) ( $meta['retry_config'] ?? array() ),
+			! empty( $api_data['debug_log'] )
 		);
 	}
 }

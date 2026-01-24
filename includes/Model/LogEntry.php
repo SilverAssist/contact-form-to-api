@@ -66,7 +66,7 @@ class LogEntry {
 	 *
 	 * @var int|null
 	 */
-	private ?int $status_code = null;
+	private ?int $response_code = null;
 
 	/**
 	 * Request data
@@ -129,7 +129,7 @@ class LogEntry {
 	 *
 	 * @var int|null
 	 */
-	private ?int $parent_log_id = null;
+	private ?int $retry_of = null;
 
 	/**
 	 * Constructor
@@ -245,8 +245,8 @@ class LogEntry {
 	 *
 	 * @return int|null HTTP status code.
 	 */
-	public function get_status_code(): ?int {
-		return $this->status_code;
+	public function get_response_code(): ?int {
+		return $this->response_code;
 	}
 
 	/**
@@ -254,11 +254,11 @@ class LogEntry {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param int|null $status_code HTTP status code.
+	 * @param int|null $response_code HTTP status code.
 	 * @return void
 	 */
-	public function set_status_code( ?int $status_code ): void {
-		$this->status_code = $status_code;
+	public function set_response_code( ?int $response_code ): void {
+		$this->response_code = $response_code;
 	}
 
 	/**
@@ -428,8 +428,8 @@ class LogEntry {
 	 *
 	 * @return int|null Parent log ID.
 	 */
-	public function get_parent_log_id(): ?int {
-		return $this->parent_log_id;
+	public function get_retry_of(): ?int {
+		return $this->retry_of;
 	}
 
 	/**
@@ -437,11 +437,11 @@ class LogEntry {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param int|null $parent_log_id Parent log ID.
+	 * @param int|null $retry_of Parent log ID.
 	 * @return void
 	 */
-	public function set_parent_log_id( ?int $parent_log_id ): void {
-		$this->parent_log_id = $parent_log_id;
+	public function set_retry_of( ?int $retry_of ): void {
+		$this->retry_of = $retry_of;
 	}
 
 	/**
@@ -452,7 +452,7 @@ class LogEntry {
 	 * @return bool True if this is a retry.
 	 */
 	public function is_retry(): bool {
-		return null !== $this->parent_log_id;
+		return null !== $this->retry_of;
 	}
 
 	/**
@@ -491,7 +491,7 @@ class LogEntry {
 			'endpoint'         => $this->endpoint,
 			'method'           => $this->method,
 			'status'           => $this->status,
-			'status_code'      => $this->status_code,
+			'response_code'    => $this->response_code,
 			'request_data'     => $this->request_data,
 			'request_headers'  => $this->request_headers,
 			'response_data'    => $this->response_data,
@@ -500,7 +500,7 @@ class LogEntry {
 			'execution_time'   => $this->execution_time,
 			'created_at'       => $this->created_at,
 			'retry_count'      => $this->retry_count,
-			'parent_log_id'    => $this->parent_log_id,
+			'retry_of'         => $this->retry_of,
 		);
 	}
 
@@ -513,29 +513,38 @@ class LogEntry {
 	 * @return LogEntry LogEntry instance.
 	 */
 	public static function from_array( array $data ): LogEntry {
+		// Helper to decode JSON strings or return arrays.
+		$decode_json = function ( $value ) {
+			if ( \is_string( $value ) && ! empty( $value ) ) {
+				$decoded = \json_decode( $value, true );
+				return \is_array( $decoded ) ? $decoded : array();
+			}
+			return \is_array( $value ) ? $value : array();
+		};
+
 		$entry = new self(
 			(int) $data['form_id'],
 			(string) $data['endpoint'],
 			(string) $data['method'],
 			(string) $data['status'],
-			isset( $data['request_data'] ) ? (array) $data['request_data'] : array(),
-			isset( $data['request_headers'] ) ? (array) $data['request_headers'] : array()
+			isset( $data['request_data'] ) ? $decode_json( $data['request_data'] ) : array(),
+			isset( $data['request_headers'] ) ? $decode_json( $data['request_headers'] ) : array()
 		);
 
 		if ( isset( $data['id'] ) ) {
 			$entry->set_id( (int) $data['id'] );
 		}
 
-		if ( isset( $data['status_code'] ) ) {
-			$entry->set_status_code( (int) $data['status_code'] );
+		if ( isset( $data['response_code'] ) ) {
+			$entry->set_response_code( (int) $data['response_code'] );
 		}
 
 		if ( isset( $data['response_data'] ) ) {
-			$entry->set_response_data( (array) $data['response_data'] );
+			$entry->set_response_data( $decode_json( $data['response_data'] ) );
 		}
 
 		if ( isset( $data['response_headers'] ) ) {
-			$entry->set_response_headers( (array) $data['response_headers'] );
+			$entry->set_response_headers( $decode_json( $data['response_headers'] ) );
 		}
 
 		if ( isset( $data['error_message'] ) ) {
@@ -554,8 +563,8 @@ class LogEntry {
 			$entry->set_retry_count( (int) $data['retry_count'] );
 		}
 
-		if ( isset( $data['parent_log_id'] ) ) {
-			$entry->set_parent_log_id( (int) $data['parent_log_id'] );
+		if ( isset( $data['retry_of'] ) ) {
+			$entry->set_retry_of( (int) $data['retry_of'] );
 		}
 
 		return $entry;

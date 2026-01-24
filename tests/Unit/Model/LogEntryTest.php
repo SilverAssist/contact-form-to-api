@@ -7,8 +7,8 @@
 
 namespace SilverAssist\ContactFormToAPI\Tests\Unit\Model;
 
-use PHPUnit\Framework\TestCase;
 use SilverAssist\ContactFormToAPI\Model\LogEntry;
+use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 
 /**
  * LogEntry test case.
@@ -106,7 +106,7 @@ class LogEntryTest extends TestCase {
 			method: 'POST',
 			status: 'success'
 		);
-		$retry_entry->set_parent_log_id( 42 );
+		$retry_entry->set_retry_of( 42 );
 
 		$this->assertFalse( $original_entry->is_retry() );
 		$this->assertTrue( $retry_entry->is_retry() );
@@ -124,7 +124,7 @@ class LogEntryTest extends TestCase {
 		);
 
 		$entry->set_id( 456 );
-		$entry->set_status_code( 200 );
+		$entry->set_response_code( 200 );
 		$entry->set_execution_time( 1.5 );
 
 		$array = $entry->to_array();
@@ -134,7 +134,7 @@ class LogEntryTest extends TestCase {
 		$this->assertSame( 'https://api.example.com', $array['endpoint'] );
 		$this->assertSame( 'POST', $array['method'] );
 		$this->assertSame( 'success', $array['status'] );
-		$this->assertSame( 200, $array['status_code'] );
+		$this->assertSame( 200, $array['response_code'] );
 		$this->assertSame( 1.5, $array['execution_time'] );
 	}
 
@@ -148,7 +148,7 @@ class LogEntryTest extends TestCase {
 			'endpoint'         => 'https://api.example.com',
 			'method'           => 'POST',
 			'status'           => 'success',
-			'status_code'      => 200,
+			'response_code'    => 200,
 			'request_data'     => array( 'name' => 'John' ),
 			'request_headers'  => array( 'Content-Type' => 'application/json' ),
 			'response_data'    => array( 'id' => 456 ),
@@ -157,7 +157,7 @@ class LogEntryTest extends TestCase {
 			'execution_time'   => 1.5,
 			'created_at'       => '2026-01-23 10:00:00',
 			'retry_count'      => 0,
-			'parent_log_id'    => null,
+			'retry_of'         => null,
 		);
 
 		$entry = LogEntry::from_array( $data );
@@ -167,8 +167,33 @@ class LogEntryTest extends TestCase {
 		$this->assertSame( 'https://api.example.com', $entry->get_endpoint() );
 		$this->assertSame( 'POST', $entry->get_method() );
 		$this->assertSame( 'success', $entry->get_status() );
-		$this->assertSame( 200, $entry->get_status_code() );
+		$this->assertSame( 200, $entry->get_response_code() );
 		$this->assertSame( 1.5, $entry->get_execution_time() );
 		$this->assertSame( '2026-01-23 10:00:00', $entry->get_created_at() );
+	}
+
+	/**
+	 * Test from_array handles JSON strings
+	 */
+	public function testFromArrayWithJsonStrings(): void {
+		$data = array(
+			'id'               => 789,
+			'form_id'          => 123,
+			'endpoint'         => 'https://api.example.com',
+			'method'           => 'POST',
+			'status'           => 'success',
+			'response_code'    => 200,
+			'request_data'     => '{"name":"John"}',
+			'request_headers'  => '{"Content-Type":"application/json"}',
+			'response_data'    => '{"id":456}',
+			'response_headers' => '{"X-Response":"OK"}',
+		);
+
+		$entry = LogEntry::from_array( $data );
+
+		$this->assertSame( array( 'name' => 'John' ), $entry->get_request_data() );
+		$this->assertSame( array( 'Content-Type' => 'application/json' ), $entry->get_request_headers() );
+		$this->assertSame( array( 'id' => 456 ), $entry->get_response_data() );
+		$this->assertSame( array( 'X-Response' => 'OK' ), $entry->get_response_headers() );
 	}
 }
