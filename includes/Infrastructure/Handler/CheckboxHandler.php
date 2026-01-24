@@ -6,13 +6,13 @@
  * Converts various checkbox formats to standardized yes/no values for API consumption.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Services
+ * @subpackage Infrastructure\Handler
  * @since 1.1.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Services;
+namespace SilverAssist\ContactFormToAPI\Infrastructure\Handler;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Utils\StringHelper;

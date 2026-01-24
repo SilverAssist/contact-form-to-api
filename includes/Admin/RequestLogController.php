@@ -18,10 +18,10 @@ use SilverAssist\ContactFormToAPI\Admin\Views\RequestLogView;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\RequestLogger;
 use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\Service\Api\ApiClient;
+use SilverAssist\ContactFormToAPI\Service\Export\ExportService;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
-use SilverAssist\ContactFormToAPI\Services\ApiClient;
-use SilverAssist\ContactFormToAPI\Services\ExportService;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
 
 \defined( 'ABSPATH' ) || exit;

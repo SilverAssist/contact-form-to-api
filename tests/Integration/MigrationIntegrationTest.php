@@ -14,7 +14,7 @@ namespace SilverAssist\ContactFormToAPI\Tests\Integration;
 
 use SilverAssist\ContactFormToAPI\Admin\GlobalSettingsController;
 use SilverAssist\ContactFormToAPI\Core\Activator;
-use SilverAssist\ContactFormToAPI\Services\MigrationService;
+use SilverAssist\ContactFormToAPI\Service\Migration\MigrationService;
 use WP_UnitTestCase;
 
 /**

@@ -17,8 +17,8 @@ namespace SilverAssist\ContactFormToAPI\Admin;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\Plugin;
 use SilverAssist\ContactFormToAPI\Config\Settings;
-use SilverAssist\ContactFormToAPI\Services\EmailAlertService;
-use SilverAssist\ContactFormToAPI\Services\MigrationService;
+use SilverAssist\ContactFormToAPI\Service\Migration\MigrationService;
+use SilverAssist\ContactFormToAPI\Service\Notification\EmailAlertService;
 
 \defined( 'ABSPATH' ) || exit;
 

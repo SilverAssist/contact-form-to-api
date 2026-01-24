@@ -15,7 +15,7 @@
 namespace SilverAssist\ContactFormToAPI\Tests\Unit;
 
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
-use SilverAssist\ContactFormToAPI\Services\ExportService;
+use SilverAssist\ContactFormToAPI\Service\Export\ExportService;
 
 /**
  * Test cases for the ExportService class
