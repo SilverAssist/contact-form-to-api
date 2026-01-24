@@ -14,7 +14,6 @@
 namespace SilverAssist\ContactFormToAPI\View\Admin\Logs\Partials;
 
 use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
-use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -26,8 +25,6 @@ use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
  * @since 2.0.0
  */
 class StatisticsPartial {
-
-	use DateFilterTrait;
 
 	/**
 	 * Render statistics summary
