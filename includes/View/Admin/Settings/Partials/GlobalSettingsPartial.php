@@ -14,8 +14,8 @@
 namespace SilverAssist\ContactFormToAPI\View\Admin\Settings\Partials;
 
 use SilverAssist\ContactFormToAPI\Admin\GlobalSettingsController;
-use SilverAssist\ContactFormToAPI\Admin\Views\SettingsView;
 use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\View\Admin\Settings\SettingsView;
 
 \defined( 'ABSPATH' ) || exit;
 

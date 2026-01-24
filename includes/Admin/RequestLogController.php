@@ -14,16 +14,16 @@
 
 namespace SilverAssist\ContactFormToAPI\Admin;
 
-use SilverAssist\ContactFormToAPI\Admin\Views\RequestLogView;
+use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\RequestLogger;
-use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Infrastructure\ListTable\RequestLogTable;
 use SilverAssist\ContactFormToAPI\Service\Api\ApiClient;
 use SilverAssist\ContactFormToAPI\Service\Export\ExportService;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
+use SilverAssist\ContactFormToAPI\View\Admin\Logs\RequestLogView;
 
 \defined( 'ABSPATH' ) || exit;
 

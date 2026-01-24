@@ -6,13 +6,13 @@
  * Separates view logic from controller logic following MVC pattern.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage ContactForm\Views
+ * @subpackage View\ContactForm
  * @since 1.1.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\ContactForm\Views;
+namespace SilverAssist\ContactFormToAPI\View\ContactForm;
 
 use SilverAssist\ContactFormToAPI\Config\Settings;
 use WPCF7_ContactForm;

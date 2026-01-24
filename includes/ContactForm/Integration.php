@@ -15,12 +15,12 @@
 
 namespace SilverAssist\ContactFormToAPI\ContactForm;
 
-use SilverAssist\ContactFormToAPI\ContactForm\Views\IntegrationView;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Infrastructure\Handler\CheckboxHandler;
 use SilverAssist\ContactFormToAPI\Service\Api\ApiClient;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
+use SilverAssist\ContactFormToAPI\View\ContactForm\IntegrationView;
 use WPCF7_ContactForm;
 use WPCF7_Submission;
 use WP_Error;

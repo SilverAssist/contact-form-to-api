@@ -14,9 +14,9 @@
 
 namespace SilverAssist\ContactFormToAPI\Infrastructure\Widget;
 
-use SilverAssist\ContactFormToAPI\Admin\Views\DashboardWidgetView;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
+use SilverAssist\ContactFormToAPI\View\Admin\Dashboard\DashboardWidgetView;
 
 \defined( 'ABSPATH' ) || exit;
 

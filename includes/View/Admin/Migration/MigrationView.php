@@ -6,13 +6,13 @@
  * Separates view logic from controller logic.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Admin\Views
+ * @subpackage View\Admin\Migration
  * @since 1.3.4
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Admin\Views;
+namespace SilverAssist\ContactFormToAPI\View\Admin\Migration;
 
 use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 
