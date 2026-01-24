@@ -11,7 +11,6 @@
 # @package ContactFormToAPI
 # @since 1.0.0
 # @author Silver Assist
-# @version     1.1.3
 ###############################################################################
 
 # Colors for output
