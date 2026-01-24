@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Architecture Refactoring (Phase 2 - In Progress)**: Extract RequestLogger into specialized services
+  - Created `Service/Logging/` directory with four focused services
+    - `LogWriter`: Handles log creation, updates, and deletion (346 lines)
+    - `LogReader`: Handles log retrieval and decryption (229 lines)
+    - `LogStatistics`: Handles statistical calculations and metrics (298 lines)
+    - `RetryManager`: Handles retry logic and error resolution tracking (255 lines)
+  - Created `Exception/` directory with custom exceptions
+    - `ApiException`: For API-related errors
+    - `ValidationException`: For validation errors with detailed error tracking
+  - Refactored `RequestLogger` as facade pattern (1,011 → 505 lines, 50% reduction)
+    - Delegates all operations to specialized services
+    - Maintains full backward compatibility
+    - Added @deprecated tags for future migration
+  - All services pass PHPCS (WordPress-Extra) and PHPStan Level 8
+  - See `includes/Service/Logging/README.md` for service documentation
 - **Architecture Foundation (Phase 1)**: New MVC structure for version 2.0.0
   - Created `Model/` directory with type-safe domain models
     - `LogEntry`: Type-safe API request log representation
@@ -40,6 +55,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Developer
 
+- **Phase 2 Services**: Four new logging services following Single Responsibility Principle
+  - `Service\Logging\LogWriter`: Write operations with encryption
+  - `Service\Logging\LogReader`: Read operations with decryption
+  - `Service\Logging\LogStatistics`: Statistics and metrics calculations
+  - `Service\Logging\RetryManager`: Retry management and error resolution
+- **Facade Pattern**: RequestLogger maintains backward compatibility while delegating to new services
 - Added `RequestLogger::count_errors_by_resolution()` method for error statistics
 - Added `RequestLogger::get_resolved_error_ids()` method for efficient filtering
 - **New Model Layer**: Type-safe domain models following SOLID principles
@@ -48,6 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Notes
 
+- Phase 2 contains NO BREAKING CHANGES - facade pattern maintains full compatibility
 - Phase 1 contains NO BREAKING CHANGES - all additions are backward compatible
 - Existing code continues to work unchanged
 - Foundation for future architecture improvements in version 2.0.0
