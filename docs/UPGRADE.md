@@ -415,8 +415,8 @@ composer phpstan
 - ✅ **Phase 1**: Foundation architecture complete (PR #58)
 - ✅ **Phase 2**: RequestLogger extracted into services (PR #62)
 - ✅ **Phase 3**: Integration split into Controller/Service layers (PR #63)
-- ✅ **Phase 4**: Service reorganization and namespace consolidation (PR #XX)
-- ✅ **Phase 5**: View splitting into maintainable partials (PR #XX)
+- ✅ **Phase 4**: Service reorganization and namespace consolidation (PR #75)
+- ✅ **Phase 5**: View splitting into maintainable partials (PR #75)
 - ⏳ **Phase 6**: Final cleanup (TBD)
 
 ### Upcoming Phases
