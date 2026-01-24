@@ -6,13 +6,13 @@
  * Used to differentiate decryption failures from other exceptions.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Exceptions
+ * @subpackage Exception
  * @since 1.3.0
- * @version 1.3.13
+ * @version 2.0.0
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Exceptions;
+namespace SilverAssist\ContactFormToAPI\Exception;
 
 use Exception;
 
