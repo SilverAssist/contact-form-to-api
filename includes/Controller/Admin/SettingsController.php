@@ -14,9 +14,9 @@
 
 namespace SilverAssist\ContactFormToAPI\Controller\Admin;
 
+use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\Plugin;
-use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Service\Migration\MigrationService;
 use SilverAssist\ContactFormToAPI\Service\Notification\EmailAlertService;
 

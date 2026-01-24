@@ -49,8 +49,8 @@ class LogsControllerTest extends TestCase {
 	 */
 	public function testLogsControllerClassExists(): void {
 		$this->assertTrue(
-			class_exists( 'SilverAssist\\ContactFormToAPI\\Admin\\LogsController' ),
-			'LogsController class should exist in the Admin namespace'
+			class_exists( 'SilverAssist\\ContactFormToAPI\\Controller\\Admin\\LogsController' ),
+			'LogsController class should exist in the Controller\\Admin namespace'
 		);
 	}
 
