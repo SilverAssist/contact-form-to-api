@@ -15,6 +15,7 @@
 namespace SilverAssist\ContactFormToAPI\Core;
 
 use SilverAssist\ContactFormToAPI\Admin\Loader as AdminLoader;
+use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Controller\ContactForm\SubmissionController;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Infrastructure\Handler\CheckboxHandler;
@@ -26,7 +27,6 @@ use SilverAssist\ContactFormToAPI\Service\Migration\MigrationService;
 use SilverAssist\ContactFormToAPI\Service\Notification\EmailAlertService;
 use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
-use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\WpGithubUpdater\Updater;
 use SilverAssist\WpGithubUpdater\UpdaterConfig;
 
