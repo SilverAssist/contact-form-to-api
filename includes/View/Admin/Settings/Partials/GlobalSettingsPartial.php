@@ -14,6 +14,7 @@
 namespace SilverAssist\ContactFormToAPI\View\Admin\Settings\Partials;
 
 use SilverAssist\ContactFormToAPI\Admin\GlobalSettingsController;
+use SilverAssist\ContactFormToAPI\Admin\Views\SettingsView;
 use SilverAssist\ContactFormToAPI\Config\Settings;
 
 \defined( 'ABSPATH' ) || exit;
@@ -52,12 +53,12 @@ class GlobalSettingsPartial {
 				<?php
 				// Call methods from SettingsView for backward compatibility.
 				// These could be further extracted into sub-partials in future iterations.
-				\SilverAssist\ContactFormToAPI\Admin\Views\SettingsView::render_retry_settings_partial( $settings );
-				\SilverAssist\ContactFormToAPI\Admin\Views\SettingsView::render_sensitive_patterns_partial( $settings );
-				\SilverAssist\ContactFormToAPI\Admin\Views\SettingsView::render_logging_settings_partial( $settings );
-				\SilverAssist\ContactFormToAPI\Admin\Views\SettingsView::render_log_retention_partial( $settings );
-				\SilverAssist\ContactFormToAPI\Admin\Views\SettingsView::render_encryption_settings_partial( $settings );
-				\SilverAssist\ContactFormToAPI\Admin\Views\SettingsView::render_email_alerts_partial( $settings );
+				SettingsView::render_retry_settings_partial( $settings );
+				SettingsView::render_sensitive_patterns_partial( $settings );
+				SettingsView::render_logging_settings_partial( $settings );
+				SettingsView::render_log_retention_partial( $settings );
+				SettingsView::render_encryption_settings_partial( $settings );
+				SettingsView::render_email_alerts_partial( $settings );
 				?>
 
 				<?php \submit_button( \__( 'Save Settings', 'contact-form-to-api' ) ); ?>
