@@ -14,8 +14,8 @@
 
 namespace SilverAssist\ContactFormToAPI\Service\Logging;
 
-use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 

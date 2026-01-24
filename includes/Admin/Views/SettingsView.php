@@ -16,8 +16,8 @@ namespace SilverAssist\ContactFormToAPI\Admin\Views;
 
 use SilverAssist\ContactFormToAPI\Admin\GlobalSettingsController;
 use SilverAssist\ContactFormToAPI\Admin\Views\MigrationView;
-use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 use SilverAssist\ContactFormToAPI\View\Admin\Settings\Partials\GlobalSettingsPartial;
 
 \defined( 'ABSPATH' ) || exit;

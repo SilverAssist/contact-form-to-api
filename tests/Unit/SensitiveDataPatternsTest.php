@@ -14,9 +14,9 @@
 
 namespace SilverAssist\ContactFormToAPI\Tests\Unit;
 
-use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
-use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
 use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
+use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 
 /**
  * Test cases for the SensitiveDataPatterns class
