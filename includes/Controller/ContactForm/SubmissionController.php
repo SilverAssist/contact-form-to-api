@@ -41,11 +41,17 @@ use WPCF7_ContactForm;
 class SubmissionController implements LoadableInterface {
 
 	/**
-	 * Retry configuration defaults
+	 * Maximum number of retry attempts.
 	 *
 	 * @since 2.0.0
 	 */
 	private const DEFAULT_MAX_RETRIES = 3;
+
+	/**
+	 * Default delay between retries in seconds.
+	 *
+	 * @since 2.0.0
+	 */
 	private const DEFAULT_RETRY_DELAY = 2;
 
 	/**
@@ -519,7 +525,7 @@ class SubmissionController implements LoadableInterface {
 	 * @return void
 	 */
 	public function enqueue_admin_assets( string $hook ): void {
-		if ( strpos( $hook, 'wpcf7' ) === false ) {
+		if ( \strpos( $hook, 'wpcf7' ) === false ) {
 			return;
 		}
 
