@@ -76,12 +76,13 @@ class RequestLogView {
 	/**
 	 * Get date context label for statistics
 	 *
+	 * @deprecated 2.0.0 Use StatisticsPartial methods instead.
 	 * @param string      $date_filter Date filter type
 	 * @param string|null $date_start  Start date
 	 * @param string|null $date_end    End date
 	 * @return string Date context label (e.g., "(Today)", "(All Time)")
 	 */
-	private static function get_date_context_label( string $date_filter, ?string $date_start, ?string $date_end ): string {
+	public static function get_date_context_label( string $date_filter, ?string $date_start, ?string $date_end ): string {
 		if ( empty( $date_filter ) ) {
 			return '(' . \__( 'All Time', 'contact-form-to-api' ) . ')';
 		}
@@ -111,9 +112,10 @@ class RequestLogView {
 	 * Converts date filter type to start/end date strings.
 	 * Uses DateFilterTrait validation for custom date ranges.
 	 *
+	 * @deprecated 2.0.0 Use DateFilterPartial methods instead.
 	 * @return array{filter: string, start: string|null, end: string|null} Date range parameters
 	 */
-	private static function get_date_range_from_filter(): array {
+	public static function get_date_range_from_filter(): array {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only operation for filtering
 		$date_filter = isset( $_GET['date_filter'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_filter'] ) ) : '';
 		// phpcs:enable
@@ -570,7 +572,7 @@ class RequestLogView {
 	 * @param int $total_items Total number of items available for export.
 	 * @return void
 	 */
-	private static function render_export_buttons( int $total_items ): void {
+	public static function render_export_buttons( int $total_items ): void {
 		ExportButtonsPartial::render( $total_items );
 	}
 

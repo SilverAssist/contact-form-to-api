@@ -336,7 +336,7 @@ class SettingsView {
 	 * @deprecated 2.0.0 Use GlobalSettingsPartial::render() instead.
 	 * @return void
 	 */
-	private static function render_global_settings_section(): void {
+	public static function render_global_settings_section(): void {
 		GlobalSettingsPartial::render();
 	}
 
