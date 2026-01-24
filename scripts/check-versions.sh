@@ -20,6 +20,12 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Number of header lines to scan for @version
+HEADER_LINES_TO_CHECK=20
+
+# Version regex (e.g., 1.2.3)
+VERSION_REGEX='[0-9]\+\.[0-9]\+\.[0-9]\+'
+
 # Function to print colored output
 print_status() {
     echo -e "${BLUE}[INFO]${NC} $1"
@@ -50,7 +56,7 @@ if [ ! -f "${PROJECT_ROOT}/contact-form-to-api.php" ]; then
 fi
 
 # Get the main plugin version (the authoritative version)
-MAIN_VERSION=$(grep -o "Version: [0-9]\+\.[0-9]\+\.[0-9]\+" "${PROJECT_ROOT}/contact-form-to-api.php" | cut -d' ' -f2)
+MAIN_VERSION=$(grep -o "Version: ${VERSION_REGEX}" "${PROJECT_ROOT}/contact-form-to-api.php" | cut -d' ' -f2)
 
 if [ -z "$MAIN_VERSION" ]; then
     print_error "Could not detect main plugin version from contact-form-to-api.php"
@@ -75,7 +81,7 @@ check_file_version() {
     fi
     
     # Search for @version in the first 20 lines only (header section)
-    local version=$(head -20 "$file" | grep -o "@version [0-9]\+\.[0-9]\+\.[0-9]\+" | cut -d' ' -f2 | head -1)
+    local version=$(head -n "$HEADER_LINES_TO_CHECK" "$file" | grep -o "@version ${VERSION_REGEX}" | cut -d' ' -f2 | head -1)
     
     if [ -n "$version" ]; then
         TOTAL_FILES=$((TOTAL_FILES + 1))
@@ -95,7 +101,7 @@ check_file_version() {
 print_status "Checking main plugin file..."
 
 # Check the constant definition (handles both with and without spaces)
-CONSTANT_VERSION=$(grep -E "define\(\s*'CF7_API_VERSION'" "${PROJECT_ROOT}/contact-form-to-api.php" | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+" | head -1)
+CONSTANT_VERSION=$(grep -E "define\(\s*'CF7_API_VERSION'" "${PROJECT_ROOT}/contact-form-to-api.php" | grep -o "${VERSION_REGEX}" | head -1)
 
 if [ -n "$CONSTANT_VERSION" ]; then
     TOTAL_FILES=$((TOTAL_FILES + 1))
@@ -120,14 +126,14 @@ print_status "Checking PHP source files..."
 
 # Check includes/ directory (current structure)
 if [ -d "${PROJECT_ROOT}/includes" ]; then
-    find "${PROJECT_ROOT}/includes" -name "*.php" -type f | while read -r php_file; do
+    while IFS= read -r php_file; do
         check_file_version "$php_file" "PHP file"
-    done
+    done < <(find "${PROJECT_ROOT}/includes" -name "*.php" -type f)
 # Fallback to src/ directory (legacy structure)
 elif [ -d "${PROJECT_ROOT}/src" ]; then
-    find "${PROJECT_ROOT}/src" -name "*.php" -type f | while read -r php_file; do
+    while IFS= read -r php_file; do
         check_file_version "$php_file" "PHP file"
-    done
+    done < <(find "${PROJECT_ROOT}/src" -name "*.php" -type f)
 else
     print_warning "Source directory (includes/ or src/) not found"
 fi
@@ -201,12 +207,12 @@ echo ""
 print_status "Checking documentation files..."
 
 if [ -f "${PROJECT_ROOT}/README.md" ]; then
-    README_VERSIONS=$(grep -o "Version: [0-9]\+\.[0-9]\+\.[0-9]\+" "${PROJECT_ROOT}/README.md" | cut -d' ' -f2)
+    README_VERSIONS=$(grep -o "Version: ${VERSION_REGEX}" "${PROJECT_ROOT}/README.md" | cut -d' ' -f2)
     
     if [ -n "$README_VERSIONS" ]; then
         # Count unique versions in README
         UNIQUE_README_VERSIONS=$(echo "$README_VERSIONS" | sort -u)
-        VERSION_COUNT=$(echo "$UNIQUE_README_VERSIONS" | wc -l | tr -d ' ')
+        VERSION_COUNT=$(echo "$UNIQUE_README_VERSIONS" | wc -l)
         
         if [ "$VERSION_COUNT" -eq 1 ] && [ "$UNIQUE_README_VERSIONS" = "$MAIN_VERSION" ]; then
             print_success "✓ Documentation: README.md (all version references match $MAIN_VERSION)"
@@ -260,7 +266,7 @@ echo "=================================================="
 
 # Check if composer.json version matches
 if [ -f "${PROJECT_ROOT}/composer.json" ]; then
-    COMPOSER_VERSION=$(grep '"version"' "${PROJECT_ROOT}/composer.json" | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+" | head -1)
+    COMPOSER_VERSION=$(grep '"version"' "${PROJECT_ROOT}/composer.json" | grep -o "${VERSION_REGEX}" | head -1)
     if [ -n "$COMPOSER_VERSION" ]; then
         if [ "$COMPOSER_VERSION" = "$MAIN_VERSION" ]; then
             print_success "Composer.json version matches: $COMPOSER_VERSION"
