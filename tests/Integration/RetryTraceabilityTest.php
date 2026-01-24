@@ -28,8 +28,8 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 	 * Set up before class - runs ONCE before any tests
 	 * CRITICAL: Use this for CREATE TABLE to avoid MySQL implicit COMMIT
 	 */
-	public static function wpSetUpBeforeClass(): void {
-		parent::wpSetUpBeforeClass();
+	public static function set_up_before_class(): void {
+		parent::set_up_before_class();
 
 		// Create tables BEFORE inserting any test data
 		Activator::create_tables();

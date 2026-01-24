@@ -399,6 +399,10 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 	/**
 	 * Test get_recent_errors includes errors with only failed retries
 	 *
+	 * When an error has a failed retry (not successful), both the original
+	 * error and the failed retry should appear in recent errors since
+	 * we only exclude errors that have a SUCCESSFUL retry.
+	 *
 	 * @return void
 	 */
 	public function test_get_recent_errors_includes_errors_with_only_failed_retries(): void {
@@ -420,11 +424,14 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 		// Reset logger
 		$this->logger = new RequestLogger();
 
-		// Get recent errors - should return the original error since retry was not successful
+		// Get recent errors - both errors should be returned since retry was not successful
+		// The exclusion logic only removes errors that have a successful retry
 		$recent_errors = $this->logger->get_recent_errors( 10 );
 
-		$this->assertCount( 1, $recent_errors );
-		$this->assertEquals( 'Original error', $recent_errors[0]['error_message'] );
+		$this->assertCount( 2, $recent_errors );
+		$error_messages = array_column( $recent_errors, 'error_message' );
+		$this->assertContains( 'Original error', $error_messages );
+		$this->assertContains( 'Retry also failed', $error_messages );
 	}
 
 	/**

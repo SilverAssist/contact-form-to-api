@@ -16,6 +16,8 @@ namespace SilverAssist\ContactFormToAPI\Admin\Views;
 
 use SilverAssist\ContactFormToAPI\Admin\RequestLogTable;
 use SilverAssist\ContactFormToAPI\Core\RequestLogger;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
+use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
 
 \defined( 'ABSPATH' ) || exit;
@@ -64,7 +66,7 @@ class RequestLogView {
 	 * @return void
 	 */
 	public static function render_statistics(): void {
-		$logger = new RequestLogger();
+		$stats_service = new LogStatistics();
 
 		// Get form_id from query if filtering by form.
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only operation for filtering
@@ -76,7 +78,7 @@ class RequestLogView {
 		$date_start  = $date_params['start'];
 		$date_end    = $date_params['end'];
 
-		$stats = $logger->get_statistics( $form_id, $date_start, $date_end );
+		$stats = $stats_service->get_statistics( $form_id, $date_start, $date_end );
 
 		if ( empty( $stats['total_requests'] ) ) {
 			return;
@@ -255,7 +257,7 @@ class RequestLogView {
 	 * @return void
 	 */
 	public static function render_detail( array $log ): void {
-		$logger = new RequestLogger();
+		$retry_manager = new RetryManager();
 		?>
 		<div class="wrap">
 			<h1><?php \esc_html_e( 'API Log Detail', 'contact-form-to-api' ); ?></h1>
@@ -264,13 +266,13 @@ class RequestLogView {
 				<a href="<?php echo \esc_url( \admin_url( 'admin.php?page=cf7-api-logs' ) ); ?>" class="button">
 					← <?php \esc_html_e( 'Back to Logs', 'contact-form-to-api' ); ?>
 				</a>
-				<?php self::render_retry_button( $log, $logger ); ?>
+				<?php self::render_retry_button( $log, $retry_manager ); ?>
 			</p>
 
-			<?php self::render_retry_information( $log, $logger ); ?>
+			<?php self::render_retry_information( $log, $retry_manager ); ?>
 
 			<div class="cf7-api-log-detail">
-				<?php self::render_request_section( $log, $logger ); ?>
+				<?php self::render_request_section( $log, $retry_manager ); ?>
 				<?php self::render_request_headers( $log ); ?>
 				<?php self::render_request_data( $log ); ?>
 				<?php self::render_response_section( $log ); ?>
@@ -284,13 +286,13 @@ class RequestLogView {
 	/**
 	 * Render request information section
 	 *
-	 * @param array<string, mixed> $log    Log entry data.
-	 * @param RequestLogger        $logger Logger instance.
+	 * @param array<string, mixed> $log           Log entry data.
+	 * @param RetryManager         $retry_manager Retry manager instance.
 	 * @return void
 	 */
-	private static function render_request_section( array $log, RequestLogger $logger ): void {
-		// Get manual retry count from provided logger instance
-		$manual_retry_count = $logger->count_retries( (int) $log['id'] );
+	private static function render_request_section( array $log, RetryManager $retry_manager ): void {
+		// Get manual retry count from provided retry manager instance.
+		$manual_retry_count = $retry_manager->count_retries( (int) $log['id'] );
 
 		?>
 		<div class="log-section">
@@ -859,19 +861,19 @@ class RequestLogView {
 	 * Shows retry button only for failed requests that haven't exceeded retry limit
 	 * or haven't been successfully retried yet.
 	 *
-	 * @param array<string, mixed> $log    Log entry data.
-	 * @param RequestLogger        $logger Logger instance.
+	 * @param array<string, mixed> $log           Log entry data.
+	 * @param RetryManager         $retry_manager Retry manager instance.
 	 * @return void
 	 */
-	private static function render_retry_button( array $log, RequestLogger $logger ): void {
+	private static function render_retry_button( array $log, RetryManager $retry_manager ): void {
 		$retryable_statuses = array( 'error', 'client_error', 'server_error' );
 		if ( ! \in_array( $log['status'], $retryable_statuses, true ) ) {
 			return;
 		}
 
-		$retry_count         = $logger->count_retries( (int) $log['id'] );
-		$max_retries         = RequestLogger::get_max_manual_retries();
-		$has_successful_retry = $logger->has_successful_retry( (int) $log['id'] );
+		$retry_count          = $retry_manager->count_retries( (int) $log['id'] );
+		$max_retries          = RequestLogger::get_max_manual_retries();
+		$has_successful_retry = $retry_manager->has_successful_retry( (int) $log['id'] );
 
 		// Disable if already successfully retried
 		if ( $has_successful_retry ) {
@@ -917,11 +919,11 @@ class RequestLogView {
 	 *
 	 * Shows if this is a retry and links to original/retried entries.
 	 *
-	 * @param array<string, mixed> $log    Log entry data.
-	 * @param RequestLogger        $logger Logger instance.
+	 * @param array<string, mixed> $log           Log entry data.
+	 * @param RetryManager         $retry_manager Retry manager instance.
 	 * @return void
 	 */
-	private static function render_retry_information( array $log, RequestLogger $logger ): void {
+	private static function render_retry_information( array $log, RetryManager $retry_manager ): void {
 		$retry_of = isset( $log['retry_of'] ) ? (int) $log['retry_of'] : 0;
 
 		// Show if this is a retry of another request
@@ -953,10 +955,10 @@ class RequestLogView {
 		}
 
 		// Show retry attempts for this request
-		$retry_count = $logger->count_retries( (int) $log['id'] );
+		$retry_count = $retry_manager->count_retries( (int) $log['id'] );
 		if ( $retry_count > 0 ) {
 			// Check if there's a successful retry
-			$successful_retry_id = $logger->get_successful_retry_id( (int) $log['id'] );
+			$successful_retry_id = $retry_manager->get_successful_retry_id( (int) $log['id'] );
 			$notice_class        = $successful_retry_id ? 'notice-success' : 'notice-info';
 			?>
 			<div class="notice <?php echo \esc_attr( $notice_class ); ?> inline">

@@ -16,8 +16,8 @@ namespace SilverAssist\ContactFormToAPI\Services;
 
 use SilverAssist\ContactFormToAPI\Core\EncryptionService;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
-use SilverAssist\ContactFormToAPI\Core\RequestLogger;
 use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -210,9 +210,9 @@ class ExportService implements LoadableInterface {
 			return $log;
 		}
 
-		// Use RequestLogger to decrypt fields.
-		$logger = new RequestLogger();
-		$log    = $logger->decrypt_log_fields( $log );
+		// Use LogReader to decrypt fields.
+		$reader = new LogReader();
+		$log    = $reader->decrypt_log_fields( $log );
 
 		return $log;
 	}
