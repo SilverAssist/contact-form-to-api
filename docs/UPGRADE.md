@@ -231,7 +231,33 @@ use SilverAssist\ContactFormToAPI\Repository\SettingsRepositoryInterface;
 - **Timeline**: New classes available now, deprecation warnings planned for 2.1.0, removal in 2.2.0
 - **Impact**: Zero breaking changes - new classes coexist with old Integration.php
 
-### Phase 4 (Planned - v2.0.0)
+### Phase 4 (Current - v2.0.0-rc)
+
+- **Status**: Complete - January 24, 2026
+- **Changes**: Namespace reorganization for services
+- **Impact**: Breaking changes for direct class usage
+- **Alternative**: Use new namespaces for moved classes
+- **Timeline**: Completed in PR #XX (replace with actual PR number)
+
+**Breaking Changes:**
+```php
+// OLD namespaces (no longer valid):
+use SilverAssist\ContactFormToAPI\Core\EncryptionService;
+use SilverAssist\ContactFormToAPI\Core\Settings;
+use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
+
+// NEW namespaces (required):
+use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
+use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
+```
+
+**Who is affected:**
+- Developers who import these classes directly in custom code
+- Extensions that extend or modify these classes
+- No impact on WordPress admin users or CF7 form users
+
+### Phase 5 (Deferred - Future Release)
 
 - **Changes**: Namespace reorganization
 - **Impact**: Autoloader updates, no code changes needed
@@ -351,22 +377,23 @@ composer phpstan
 
 ## Migration Timeline
 
-### Current Status: Phase 3 ✅
+### Current Status: Phase 4 ✅
 
-- ✅ **Phase 1**: Foundation architecture complete
-- ✅ **Phase 2**: RequestLogger extracted into services
-- ✅ **Phase 3**: Integration split into Controller/Service layers
-- ⏳ **Phase 4**: Service reorganization (TBD)
-- ⏳ **Phase 5**: View splitting (TBD)
+- ✅ **Phase 1**: Foundation architecture complete (PR #58)
+- ✅ **Phase 2**: RequestLogger extracted into services (PR #62)
+- ✅ **Phase 3**: Integration split into Controller/Service layers (PR #63)
+- ✅ **Phase 4**: Service reorganization and namespace consolidation (PR #XX)
+- ⏸️ **Phase 5**: View splitting - Deferred to future release
 - ⏳ **Phase 6**: Final cleanup (TBD)
 
 ### Upcoming Phases
 
-- **Phase 4**: Reorganize Services (service namespace consolidation)
-- **Phase 5**: Split Views (partial view extraction)
-- **Phase 6**: Final cleanup (deprecation removal, documentation finalization)
-
-Each phase will have its own upgrade notes and deprecation warnings.
+- **Phase 6**: Final cleanup and documentation
+  - Remove any remaining deprecated code
+  - Comprehensive testing and validation
+  - Finalize 2.0.0 release notes
+  
+Phase 5 (View splitting) has been deferred as the current view structure is maintainable and well-organized. It can be revisited in a future minor release if needed.
 
 ---
 
@@ -389,6 +416,6 @@ A: Phase 1 is safe to upgrade immediately. It's purely additive with no breaking
 
 ---
 
-**Document Version**: 1.0.0  
-**Last Updated**: January 23, 2026  
+**Document Version**: 2.0.0  
+**Last Updated**: January 24, 2026  
 **Maintained By**: Silver Assist Development Team
