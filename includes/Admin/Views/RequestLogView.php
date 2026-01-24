@@ -15,9 +15,8 @@
 namespace SilverAssist\ContactFormToAPI\Admin\Views;
 
 use SilverAssist\ContactFormToAPI\Admin\RequestLogTable;
-use SilverAssist\ContactFormToAPI\Core\RequestLogger;
-use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
 use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
+use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
 use SilverAssist\ContactFormToAPI\View\Admin\Logs\Partials\DateFilterPartial;
 use SilverAssist\ContactFormToAPI\View\Admin\Logs\Partials\ExportButtonsPartial;
@@ -311,7 +310,7 @@ class RequestLogView {
 		$data = $log['request_data'] ?? '';
 		
 		// Anonymize sensitive data at render time
-		$anonymized_data = RequestLogger::anonymize_data( $data );
+		$anonymized_data = SensitiveDataPatterns::anonymize( $data );
 		
 		?>
 		<div class="log-section">
@@ -379,7 +378,7 @@ class RequestLogView {
 		$data = $log['response_data'];
 		
 		// Anonymize sensitive data at render time
-		$anonymized_data = RequestLogger::anonymize_data( $data );
+		$anonymized_data = SensitiveDataPatterns::anonymize( $data );
 		
 		?>
 		<div class="log-section">
@@ -593,7 +592,7 @@ class RequestLogView {
 		}
 
 		$retry_count          = $retry_manager->count_retries( (int) $log['id'] );
-		$max_retries          = RequestLogger::get_max_manual_retries();
+		$max_retries          = RetryManager::get_max_manual_retries();
 		$has_successful_retry = $retry_manager->has_successful_retry( (int) $log['id'] );
 
 		// Disable if already successfully retried
