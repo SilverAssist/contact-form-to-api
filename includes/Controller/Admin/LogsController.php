@@ -6,13 +6,13 @@
  * Uses RequestLogView for HTML rendering and RequestLogTable for list display.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Admin
+ * @subpackage Controller\Admin
  * @since 1.1.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Admin;
+namespace SilverAssist\ContactFormToAPI\Controller\Admin;
 
 use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
@@ -35,16 +35,16 @@ use SilverAssist\ContactFormToAPI\View\Admin\Logs\RequestLogView;
  *
  * @since 1.1.0
  */
-class RequestLogController implements LoadableInterface {
+class LogsController implements LoadableInterface {
 
 	use DateFilterTrait;
 
 	/**
 	 * Singleton instance
 	 *
-	 * @var RequestLogController|null
+	 * @var LogsController|null
 	 */
-	private static ?RequestLogController $instance = null;
+	private static ?LogsController $instance = null;
 
 	/**
 	 * List table instance
@@ -63,9 +63,9 @@ class RequestLogController implements LoadableInterface {
 	/**
 	 * Get singleton instance
 	 *
-	 * @return RequestLogController
+	 * @return LogsController
 	 */
-	public static function instance(): RequestLogController {
+	public static function instance(): LogsController {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
