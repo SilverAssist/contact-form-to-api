@@ -529,18 +529,30 @@ class ApiClient implements LoadableInterface {
 	/**
 	 * Parse XML string
 	 *
+	 * Parses XML with secure settings to prevent XXE attacks.
+	 *
 	 * @param string $xml_string XML string.
 	 * @return \SimpleXMLElement|WP_Error Parsed XML or error.
 	 */
 	public function parse_xml( string $xml_string ) {
-		if ( ! function_exists( 'simplexml_load_string' ) ) {
+		if ( ! \function_exists( 'simplexml_load_string' ) ) {
 			return new WP_Error( 'xml-error', \__( 'XML functions not available', 'contact-form-to-api' ) );
 		}
 
-		libxml_use_internal_errors( true );
-		$xml = simplexml_load_string( $xml_string );
+		\libxml_use_internal_errors( true );
 
-		if ( $xml === false ) {
+		// Parse with secure options: disable network access and don't substitute entities.
+		// LIBXML_NONET: Disable network access when loading external resources.
+		// LIBXML_NOENT is NOT used as it would expand entities - we want them ignored.
+		// LIBXML_DTDLOAD and LIBXML_DTDATTR are not set, preventing DTD loading.
+		$xml = \simplexml_load_string(
+			$xml_string,
+			'SimpleXMLElement',
+			LIBXML_NONET
+		);
+
+		if ( false === $xml ) {
+			\libxml_clear_errors();
 			return new WP_Error( 'xml-error', \__( 'XML Structure is incorrect', 'contact-form-to-api' ) );
 		}
 

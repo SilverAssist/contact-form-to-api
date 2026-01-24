@@ -14,8 +14,9 @@
 
 namespace SilverAssist\ContactFormToAPI\Admin;
 
-use SilverAssist\ContactFormToAPI\Core\RequestLogger;
 use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
+use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
 
 \defined( 'ABSPATH' ) || exit;
@@ -37,11 +38,18 @@ class RequestLogTable extends \WP_List_Table {
 	use DateFilterTrait;
 
 	/**
-	 * Logger instance for retry checks
+	 * Log reader instance for decryption
 	 *
-	 * @var RequestLogger
+	 * @var LogReader
 	 */
-	private RequestLogger $logger;
+	private LogReader $log_reader;
+
+	/**
+	 * Retry manager instance for retry checks
+	 *
+	 * @var RetryManager
+	 */
+	private RetryManager $retry_manager;
 
 	/**
 	 * Cached resolved error IDs to avoid N+1 queries
@@ -62,8 +70,9 @@ class RequestLogTable extends \WP_List_Table {
 			)
 		);
 
-		// Initialize logger instance once for reuse
-		$this->logger = new RequestLogger();
+		// Initialize logging service instances once for reuse.
+		$this->log_reader    = new LogReader();
+		$this->retry_manager = new RetryManager();
 	}
 
 	/**
@@ -158,7 +167,7 @@ class RequestLogTable extends \WP_List_Table {
 		}
 
 		// Get error resolution counts for the unresolved filter.
-		$error_resolution = $this->logger->count_errors_by_resolution();
+		$error_resolution = $this->retry_manager->count_errors_by_resolution();
 
 		$views = array();
 
@@ -310,7 +319,7 @@ class RequestLogTable extends \WP_List_Table {
 
 		// For unresolved filter, exclude errors that have successful retries.
 		if ( $filter_unresolved ) {
-			$resolved_ids = $this->logger->get_resolved_error_ids();
+			$resolved_ids = $this->retry_manager->get_resolved_error_ids();
 			if ( ! empty( $resolved_ids ) ) {
 				$placeholders = \implode( ', ', \array_fill( 0, \count( $resolved_ids ), '%d' ) );
 				$where       .= $wpdb->prepare( " AND id NOT IN ({$placeholders})", ...$resolved_ids );
@@ -582,7 +591,7 @@ class RequestLogTable extends \WP_List_Table {
 
 			// Decrypt if encrypted.
 			if ( isset( $item['encryption_version'] ) && $item['encryption_version'] > 0 ) {
-				$decrypted_item = $this->logger->decrypt_log_fields( $item );
+				$decrypted_item = $this->log_reader->decrypt_log_fields( $item );
 				$request_data   = $decrypted_item['request_data'] ?? '';
 			}
 
@@ -727,7 +736,7 @@ class RequestLogTable extends \WP_List_Table {
 		// Only show retry action for failed requests that haven't been successfully retried
 		if ( 'error' === $item['status'] || 'client_error' === $item['status'] || 'server_error' === $item['status'] ) {
 			// Check if already successfully retried using cached logger instance
-			if ( ! $this->logger->has_successful_retry( (int) $item['id'] ) ) {
+			if ( ! $this->retry_manager->has_successful_retry( (int) $item['id'] ) ) {
 				$actions['retry'] = \sprintf(
 					'<a href="%s">%s</a>',
 					\esc_url(
@@ -821,7 +830,7 @@ class RequestLogTable extends \WP_List_Table {
 		if ( $is_error ) {
 			// Lazy load resolved IDs once per request.
 			if ( null === $this->resolved_error_ids ) {
-				$this->resolved_error_ids = $this->logger->get_resolved_error_ids();
+				$this->resolved_error_ids = $this->retry_manager->get_resolved_error_ids();
 			}
 			if ( \in_array( (int) $item['id'], $this->resolved_error_ids, true ) ) {
 				$output .= \sprintf(

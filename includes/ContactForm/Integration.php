@@ -17,7 +17,8 @@ namespace SilverAssist\ContactFormToAPI\ContactForm;
 
 use SilverAssist\ContactFormToAPI\ContactForm\Views\IntegrationView;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
-use SilverAssist\ContactFormToAPI\Core\RequestLogger;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
 use SilverAssist\ContactFormToAPI\Services\ApiClient;
 use SilverAssist\ContactFormToAPI\Services\CheckboxHandler;
 use WPCF7_ContactForm;
@@ -391,10 +392,11 @@ class Integration implements LoadableInterface {
 		$debug_params = \get_post_meta( $form_id, 'cf7_api_debug_params', true );
 		$error_logs   = \get_post_meta( $form_id, 'api_errors', true );
 
-		// Get recent logs and statistics
-		$logger      = new RequestLogger();
-		$recent_logs = $logger->get_recent_logs( $form_id, 5 );
-		$statistics  = $logger->get_statistics( $form_id );
+		// Get recent logs and statistics using new logging services.
+		$log_reader  = new LogReader();
+		$log_stats   = new LogStatistics();
+		$recent_logs = $log_reader->get_recent_logs( $form_id, 5 );
+		$statistics  = $log_stats->get_statistics( $form_id );
 
 		// Prepare debug info array
 		$debug_info = array(

@@ -18,6 +18,8 @@ use SilverAssist\ContactFormToAPI\Admin\Views\RequestLogView;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\RequestLogger;
 use SilverAssist\ContactFormToAPI\Core\Settings;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
+use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
 use SilverAssist\ContactFormToAPI\Services\ApiClient;
 use SilverAssist\ContactFormToAPI\Services\ExportService;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
@@ -299,8 +301,8 @@ class RequestLogController implements LoadableInterface {
 	 * @return void
 	 */
 	private function handle_retry_action( array $log_ids ): void {
-		$logger     = new RequestLogger();
-		$api_client = ApiClient::instance();
+		$api_client    = ApiClient::instance();
+		$retry_manager = new RetryManager();
 
 		$success_count = 0;
 		$failed_count  = 0;
@@ -324,14 +326,14 @@ class RequestLogController implements LoadableInterface {
 		}
 
 		foreach ( $log_ids as $log_id ) {
-			// Skip if already successfully retried
-			if ( $logger->has_successful_retry( $log_id ) ) {
+			// Skip if already successfully retried.
+			if ( $retry_manager->has_successful_retry( $log_id ) ) {
 				++$skipped_count;
 				continue;
 			}
 
-			// Check per-entry retry limit
-			$retry_count = $logger->count_retries( $log_id );
+			// Check per-entry retry limit.
+			$retry_count = $retry_manager->count_retries( $log_id );
 			if ( $retry_count >= $max_retries_per_entry ) {
 				++$skipped_count;
 				continue;
@@ -481,8 +483,8 @@ class RequestLogController implements LoadableInterface {
 		}
 
 		// Decrypt log fields if encryption is enabled.
-		$logger = new RequestLogger();
-		$log    = $logger->decrypt_log_fields( $log );
+		$log_reader = new LogReader();
+		$log        = $log_reader->decrypt_log_fields( $log );
 
 		return $log;
 	}

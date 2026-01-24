@@ -18,6 +18,7 @@ use SilverAssist\ContactFormToAPI\Admin\Loader as AdminLoader;
 use SilverAssist\ContactFormToAPI\Controller\ContactForm\SubmissionController;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Service\ContactForm\SubmissionProcessor;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
 use SilverAssist\ContactFormToAPI\Services\EmailAlertService;
 use SilverAssist\ContactFormToAPI\Services\Loader as ServicesLoader;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
@@ -500,9 +501,9 @@ class Plugin implements LoadableInterface {
 			return;
 		}
 
-		// Use RequestLogger to clean old logs.
-		$logger  = new RequestLogger();
-		$deleted = $logger->clean_old_logs( $retention_days );
+		// Use LogWriter to clean old logs.
+		$log_writer = new LogWriter();
+		$deleted    = $log_writer->delete_old_logs( $retention_days );
 
 		// Log cleanup result.
 		if ( $deleted > 0 ) {
