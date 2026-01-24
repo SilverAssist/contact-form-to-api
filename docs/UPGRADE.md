@@ -237,7 +237,7 @@ use SilverAssist\ContactFormToAPI\Repository\SettingsRepositoryInterface;
 - **Changes**: Namespace reorganization for services
 - **Impact**: Breaking changes for direct class usage
 - **Alternative**: Use new namespaces for moved classes
-- **Timeline**: Completed in PR #XX (replace with actual PR number)
+- **Timeline**: Completed in PR #64
 
 **Breaking Changes:**
 ```php
