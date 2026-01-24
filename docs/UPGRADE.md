@@ -263,7 +263,7 @@ use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
 - **Changes**: View splitting into partials
 - **Impact**: Non-breaking (internal refactoring)
 - **Alternative**: Use new partial classes for better maintainability
-- **Timeline**: Completed in PR #XX (replace with actual PR number)
+- **Timeline**: Completed in PR #65
 
 **Non-Breaking Changes:**
 ```php
@@ -415,8 +415,8 @@ composer phpstan
 - ✅ **Phase 1**: Foundation architecture complete (PR #58)
 - ✅ **Phase 2**: RequestLogger extracted into services (PR #62)
 - ✅ **Phase 3**: Integration split into Controller/Service layers (PR #63)
-- ✅ **Phase 4**: Service reorganization and namespace consolidation (PR #75)
-- ✅ **Phase 5**: View splitting into maintainable partials (PR #75)
+- ✅ **Phase 4**: Service reorganization and namespace consolidation (PR #65)
+- ✅ **Phase 5**: View splitting into maintainable partials (PR #65)
 - ⏳ **Phase 6**: Final cleanup (TBD)
 
 ### Upcoming Phases
