@@ -14,7 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\ContactForm\Views;
 
-use SilverAssist\ContactFormToAPI\Core\Settings;
+use SilverAssist\ContactFormToAPI\Config\Settings;
 use WPCF7_ContactForm;
 use WPCF7_FormTag;
 

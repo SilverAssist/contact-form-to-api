@@ -6,13 +6,15 @@
  * in logs and exports for security and privacy compliance.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Core
+ * @subpackage Service\Security
  * @since 1.2.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Core;
+namespace SilverAssist\ContactFormToAPI\Service\Security;
+
+use SilverAssist\ContactFormToAPI\Config\Settings;
 
 \defined( 'ABSPATH' ) || exit;
 

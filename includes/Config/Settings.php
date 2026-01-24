@@ -6,13 +6,13 @@
  * Provides defaults, getters, and setters for all global settings.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Core
+ * @subpackage Config
  * @since 1.2.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Core;
+namespace SilverAssist\ContactFormToAPI\Config;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 

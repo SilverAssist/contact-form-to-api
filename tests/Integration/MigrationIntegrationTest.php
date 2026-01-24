@@ -170,7 +170,7 @@ class MigrationIntegrationTest extends WP_UnitTestCase {
 		$this->assertSame( 1, (int) $log['encryption_version'] );
 
 		// Decrypt and verify data integrity.
-		$encryption = \SilverAssist\ContactFormToAPI\Core\EncryptionService::instance();
+		$encryption = \SilverAssist\ContactFormToAPI\Service\Security\EncryptionService::instance();
 		$encryption->init();
 
 		$decrypted_data = $encryption->decrypt( $log['request_data'] );

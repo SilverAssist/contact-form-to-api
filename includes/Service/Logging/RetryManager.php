@@ -14,7 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Service\Logging;
 
-use SilverAssist\ContactFormToAPI\Core\Settings;
+use SilverAssist\ContactFormToAPI\Config\Settings;
 
 \defined( 'ABSPATH' ) || exit;
 

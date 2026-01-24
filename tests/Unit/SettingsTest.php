@@ -13,7 +13,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Tests\Unit;
 
-use SilverAssist\ContactFormToAPI\Core\Settings;
+use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 
 /**

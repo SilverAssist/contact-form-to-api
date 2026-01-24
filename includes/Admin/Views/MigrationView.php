@@ -14,7 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Admin\Views;
 
-use SilverAssist\ContactFormToAPI\Core\EncryptionService;
+use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 
 \defined( 'ABSPATH' ) || exit;
 
