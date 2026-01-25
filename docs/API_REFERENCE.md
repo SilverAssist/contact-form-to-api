@@ -409,6 +409,89 @@ Filter the API URL before sending request.
 }, 10, 1);
 ```
 
+#### `cf7_api_after_response`
+
+> **Since**: 2.1.0
+
+Fires after an API response is received, allowing custom actions based on the response content. This is the primary extension point for developers who need to act on API responses (store lead IDs, trigger notifications, log to external services, etc.).
+
+**Parameters**:
+
+- `array $response` - API response data:
+  - `int $status_code` - HTTP status code (200, 400, 500, etc.)
+  - `array $headers` - Response headers as key-value pairs
+  - `string $body` - Raw response body
+  - `array|null $body_parsed` - Parsed response (if JSON), null otherwise
+  - `float $duration` - Request duration in seconds
+
+- `array $context` - Submission context:
+  - `int $log_id` - The log entry ID
+  - `int $form_id` - The CF7 form ID
+  - `string $form_title` - The CF7 form title
+  - `array $form_data` - Original form submission data
+  - `string $endpoint` - The API endpoint URL
+  - `bool $is_retry` - Whether this was a retry attempt
+  - `int $attempt` - Attempt number (1 = first try)
+
+**Return**: `array` Modified response array (or original if no changes)
+
+**Example 1: Store CRM lead ID in custom table**
+
+```php
+\add_filter("cf7_api_after_response", function($response, $context) {
+    if ($response["status_code"] !== 200) {
+        return $response;
+    }
+    
+    $body = $response["body_parsed"];
+    if (!empty($body["lead_id"])) {
+        global $wpdb;
+        $wpdb->insert($wpdb->prefix . "my_leads", [
+            "log_id"  => $context["log_id"],
+            "lead_id" => $body["lead_id"],
+            "email"   => $context["form_data"]["your-email"] ?? "",
+        ]);
+    }
+    
+    return $response;
+}, 10, 2);
+```
+
+**Example 2: Send Slack notification on high-priority leads**
+
+```php
+\add_filter("cf7_api_after_response", function($response, $context) {
+    $body = $response["body_parsed"];
+    
+    if (!empty($body["priority"]) && $body["priority"] === "high") {
+        \wp_remote_post("https://hooks.slack.com/...", [
+            "body" => \json_encode([
+                "text" => "🚨 High priority lead from {$context['form_title']}!"
+            ])
+        ]);
+    }
+    
+    return $response;
+}, 10, 2);
+```
+
+**Example 3: Log errors to external monitoring service**
+
+```php
+\add_filter("cf7_api_after_response", function($response, $context) {
+    if ($response["status_code"] >= 400) {
+        \error_log(\sprintf(
+            "[CF7-API] Error %d on form %s: %s",
+            $response["status_code"],
+            $context["form_title"],
+            $response["body"]
+        ));
+    }
+    
+    return $response;
+}, 10, 2);
+```
+
 ---
 
 ## Legacy Hook Compatibility
