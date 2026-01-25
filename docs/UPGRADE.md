@@ -1,35 +1,24 @@
 # Upgrade Guide
 
 **Plugin**: Contact Form to API  
-**From**: Version 1.x  
-**To**: Version 2.0.0  
+**Version**: 2.0.0  
 **Last Updated**: January 25, 2026
 
 ---
 
 ## Overview
 
-Version 2.0.0 introduces a comprehensive architecture refactoring to improve code quality, maintainability, and adherence to SOLID principles. This guide helps you upgrade from 1.x to 2.0.0.
+This guide helps you upgrade to version 2.0.0 of Contact Form to API.
 
 ---
 
-## Breaking Changes Summary
+## Requirements
 
-### Phase 1 (v2.0.0-alpha) - ✅ Current Release
-
-**Status**: **NO BREAKING CHANGES**
-
-Phase 1 is purely additive:
-- New Model classes added
-- New Repository interfaces added
-- New directory structure created
-- All existing code continues to work unchanged
-
-**Action Required**: None - upgrade is safe and transparent.
-
-### Future Phases (v2.0.0-beta and beyond)
-
-Future phases will introduce breaking changes with deprecation warnings. This guide will be updated as each phase is released.
+| Component | Minimum Version |
+|-----------|-----------------|
+| PHP | 8.2+ |
+| WordPress | 6.5+ |
+| Contact Form 7 | 5.9+ |
 
 ---
 
@@ -38,8 +27,8 @@ Future phases will introduce breaking changes with deprecation warnings. This gu
 ### For End Users (WordPress Admin)
 
 1. **Backup Your Database**
+
    ```bash
-   # Create database backup before upgrading
    wp db export backup-before-upgrade.sql
    ```
 
@@ -59,7 +48,6 @@ Future phases will introduce breaking changes with deprecation warnings. This gu
 5. **Clear Caches**
    - Clear WordPress object cache
    - Clear any page caching plugins
-   - Regenerate autoloader: `composer dump-autoload -o`
 
 ### For Developers
 
@@ -74,64 +62,47 @@ composer dump-autoload -o
 #### 2. Run Quality Checks
 
 ```bash
-# Check for deprecation warnings
 composer phpcs
-
-# Verify no errors
 composer phpstan
-
-# Run tests
 composer test
 ```
 
-#### 3. Update Custom Integrations (If Any)
+#### 3. Update Custom Code
 
-If your code directly uses plugin classes, review deprecation notices:
+If your code directly uses plugin classes, update the namespace imports:
 
 ```php
-// Old way (deprecated in future phases)
-$logger = new \SilverAssist\ContactFormToAPI\Core\RequestLogger();
-$logger->log( $data );
+// Security services
+use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
+use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
 
-// New way (recommended for new code)
-use SilverAssist\ContactFormToAPI\Model\LogEntry;
+// Configuration
+use SilverAssist\ContactFormToAPI\Config\Settings;
 
-$entry = new LogEntry(
-    form_id: 123,
-    endpoint: 'https://api.example.com',
-    method: 'POST',
-    status: 'success',
-    request_data: $data
-);
+// Logging services
+use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
+use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
+
+// Controllers
+use SilverAssist\ContactFormToAPI\Controller\ContactForm\SubmissionController;
+
+// Services
+use SilverAssist\ContactFormToAPI\Service\ContactForm\SubmissionProcessor;
 ```
 
 ---
 
-## Compatibility Matrix
+## What's New in 2.0.0
 
-| Component | 1.x | 2.0.0-alpha | Notes |
-|-----------|-----|-------------|-------|
-| WordPress | 6.5+ | 6.5+ | No change |
-| PHP | 8.2+ | 8.2+ | No change |
-| CF7 | 5.9+ | 5.9+ | No change |
-| Database | v1 schema | v1 schema | No migration needed |
-| Settings | Compatible | Compatible | No migration needed |
-| Hooks | Compatible | Compatible | All hooks maintained |
-
----
-
-## New Features in 2.0.0-alpha
-
-### Phase 1: Model Layer (Complete)
-
-Type-safe domain models for better code quality:
+### Type-Safe Domain Models
 
 ```php
 use SilverAssist\ContactFormToAPI\Model\LogEntry;
 use SilverAssist\ContactFormToAPI\Model\FormSettings;
 use SilverAssist\ContactFormToAPI\Model\Statistics;
 
-// Example: Create log entry
 $entry = new LogEntry(
     form_id: 123,
     endpoint: 'https://api.example.com/webhook',
@@ -139,19 +110,12 @@ $entry = new LogEntry(
     status: 'success'
 );
 
-// Type-safe methods
 if ( $entry->is_successful() ) {
     // Handle success
 }
-
-if ( $entry->is_retry() ) {
-    // Handle retry
-}
 ```
 
-### Phase 2: Logging Services (Complete)
-
-Specialized services for log management:
+### Specialized Logging Services
 
 ```php
 use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
@@ -159,164 +123,64 @@ use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
 use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
 
-// Example: Create log entry
+// Write logs
 $writer = LogWriter::instance();
 $log_id = $writer->save( $log_entry );
 
-// Example: Query logs
+// Query logs
 $reader = LogReader::instance();
 $logs = $reader->get_logs( array( 'status' => 'success' ) );
 
-// Example: Get statistics
+// Get statistics
 $stats = LogStatistics::instance();
 $metrics = $stats->get_overview();
 
-// Example: Manage retries
+// Manage retries
 $retry = RetryManager::instance();
 $retry_id = $retry->create_retry_entry( $original_log_id );
 ```
 
-### Phase 3: Controller & Service Separation (Complete)
-
-Cleaner separation between routing and business logic:
+### Controller/Service Separation
 
 ```php
 use SilverAssist\ContactFormToAPI\Controller\ContactForm\SubmissionController;
 use SilverAssist\ContactFormToAPI\Service\ContactForm\SubmissionProcessor;
 
-// Controller handles hooks and routing (automatically loaded)
-$controller = SubmissionController::instance();
-
-// Service handles business logic (automatically loaded)
-$processor = SubmissionProcessor::instance();
-
-// You typically don't need to interact with these directly -
-// they work automatically via WordPress hooks
+// These are automatically loaded via WordPress hooks
+// You typically don't need to interact with them directly
 ```
 
-### Repository Interfaces (Complete)
-
-Clear contracts for data access:
+### Repository Interfaces
 
 ```php
 use SilverAssist\ContactFormToAPI\Repository\LogRepositoryInterface;
 use SilverAssist\ContactFormToAPI\Repository\SettingsRepositoryInterface;
-
-// Future implementations will follow these interfaces
-// Existing code continues to work during transition
 ```
-
----
-
-## Deprecation Timeline
-
-### Phase 1 (Current - v2.0.0-alpha)
-
-- **Status**: No deprecations
-- **Action**: None required
-
-### Phase 2 (Planned - v2.0.0-beta)
-
-- **Deprecates**: Direct usage of `RequestLogger` methods
-- **Alternative**: Use `LogWriter`, `LogReader`, `LogStatistics` services
-- **Timeline**: Warnings in 2.0.0-beta, removal in 2.2.0
-- **Status**: Complete - Phase 2 merged (PR #62)
-
-### Phase 3 (Current - v2.0.0-rc)
-
-- **Status**: Complete
-- **New Classes**: `SubmissionController`, `SubmissionProcessor`
-- **Deprecates**: Direct usage of `Integration` class methods (in future release)
-- **Alternative**: Use `SubmissionController` (Controller layer) and `SubmissionProcessor` (Service layer)
-- **Timeline**: New classes available now, deprecation warnings planned for 2.1.0, removal in 2.2.0
-- **Impact**: Zero breaking changes - new classes coexist with old Integration.php
-
-### Phase 4 (Current - v2.0.0-rc)
-
-- **Status**: Complete - January 24, 2026
-- **Changes**: Namespace reorganization for services
-- **Impact**: Breaking changes for direct class usage
-- **Alternative**: Use new namespaces for moved classes
-- **Timeline**: Completed in PR #64
-
-**Breaking Changes:**
-```php
-// OLD namespaces (no longer valid):
-use SilverAssist\ContactFormToAPI\Core\EncryptionService;
-use SilverAssist\ContactFormToAPI\Core\Settings;
-use SilverAssist\ContactFormToAPI\Core\SensitiveDataPatterns;
-
-// NEW namespaces (required):
-use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
-use SilverAssist\ContactFormToAPI\Config\Settings;
-use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
-```
-
-**Who is affected:**
-- Developers who import these classes directly in custom code
-- Extensions that extend or modify these classes
-- No impact on WordPress admin users or CF7 form users
-
-### Phase 5 (Current - v2.0.0)
-
-- **Status**: Complete - January 24, 2026
-- **Changes**: View splitting into partials
-- **Impact**: Non-breaking (internal refactoring)
-- **Alternative**: Use new partial classes for better maintainability
-- **Timeline**: Completed in PR #65
-
-**Non-Breaking Changes:**
-```php
-// ✅ OLD (still works, deprecated):
-use SilverAssist\ContactFormToAPI\Admin\Views\RequestLogView;
-RequestLogView::render_statistics();
-RequestLogView::render_filters();
-
-// ✅ NEW (recommended):
-use SilverAssist\ContactFormToAPI\View\Admin\Logs\Partials\StatisticsPartial;
-use SilverAssist\ContactFormToAPI\View\Admin\Logs\Partials\DateFilterPartial;
-
-StatisticsPartial::render();
-DateFilterPartial::render();
-```
-
-**Benefits:**
-- 28% reduction in RequestLogView size (1,006 → 725 lines)
-- Better code organization and maintainability
-- Reusable UI components
-- No breaking changes for existing code
-
-**Who is affected:**
-- Only developers extending view classes (uncommon)
-- No impact on WordPress admin users or CF7 form users
-
----
-
-- **Changes**: Namespace reorganization
-- **Impact**: Autoloader updates, no code changes needed
-- **Timeline**: Immediate with fallback support
 
 ---
 
 ## Rollback Procedure
 
-If you need to rollback to 1.x:
+If you need to rollback:
 
 1. **Deactivate Plugin**
+
    ```bash
    wp plugin deactivate contact-form-to-api
    ```
 
 2. **Restore Old Version**
-   - Download 1.x release from GitHub
+   - Download previous release from GitHub
    - Replace plugin files
 
-3. **Restore Database** (if schema changed in later phases)
+3. **Restore Database** (if needed)
+
    ```bash
    wp db import backup-before-upgrade.sql
    ```
 
 4. **Reactivate Plugin**
+
    ```bash
    wp plugin activate contact-form-to-api
    ```
@@ -330,6 +194,7 @@ If you need to rollback to 1.x:
 **Cause**: Autoloader cache not regenerated
 
 **Solution**:
+
 ```bash
 cd wp-content/plugins/contact-form-to-api
 composer dump-autoload -o
@@ -340,6 +205,7 @@ composer dump-autoload -o
 **Cause**: PHP version incompatibility
 
 **Solution**: Ensure PHP 8.2+ is installed:
+
 ```bash
 php -v
 # Should show PHP 8.2.0 or higher
@@ -350,10 +216,51 @@ php -v
 **Cause**: Cache not cleared
 
 **Solution**:
+
 ```bash
 wp cache flush
 wp transient delete --all
 ```
+
+---
+
+## Testing Checklist
+
+### Manual Testing
+
+- [ ] Plugin activates without errors
+- [ ] Settings page loads correctly
+- [ ] API Logs page displays data
+- [ ] Form submission creates log entry
+- [ ] API request is sent successfully
+- [ ] Error logs capture failures
+- [ ] Retry functionality works
+- [ ] Export functionality works
+- [ ] Dashboard widget displays stats
+
+### Automated Testing
+
+```bash
+composer test
+composer phpcs
+composer phpstan
+```
+
+---
+
+## FAQ
+
+**Q: Do I need to update my form configurations?**  
+A: No, all existing form configurations continue to work without changes.
+
+**Q: Will my API logs be preserved?**  
+A: Yes, all log data is preserved. Database schema remains unchanged.
+
+**Q: Are custom hooks affected?**  
+A: No, all existing hooks continue to work.
+
+**Q: What about performance?**  
+A: No performance changes expected. The refactoring is purely architectural.
 
 ---
 
@@ -369,94 +276,17 @@ wp transient delete --all
 ### Reporting Issues
 
 Include in your bug report:
+
 - WordPress version
 - PHP version
 - Plugin version
 - Error messages from debug log
 - Steps to reproduce
 
-**GitHub Issues**: https://github.com/SilverAssist/contact-form-to-api/issues
-
----
-
-## Testing Recommendations
-
-### Manual Testing Checklist
-
-- [ ] Plugin activates without errors
-- [ ] Settings page loads correctly
-- [ ] API Logs page displays data
-- [ ] Form submission creates log entry
-- [ ] API request is sent successfully
-- [ ] Error logs capture failures
-- [ ] Retry functionality works
-- [ ] Export functionality works
-- [ ] Dashboard widget displays stats
-
-### Automated Testing
-
-```bash
-# Run full test suite
-composer test
-
-# Check coding standards
-composer phpcs
-
-# Run static analysis
-composer phpstan
-```
-
----
-
-## Migration Timeline
-
-### Current Status: Phase 6 Complete ✅
-
-- ✅ **Phase 1**: Foundation architecture complete (PR #58)
-- ✅ **Phase 2**: RequestLogger extracted into services (PR #62)
-- ✅ **Phase 3**: Integration split into Controller/Service layers (PR #63)
-- ✅ **Phase 4**: Service reorganization and namespace consolidation (PR #64)
-- ✅ **Phase 5**: View splitting into maintainable partials (PR #65)
-- ✅ **Phase 6**: Documentation & cleanup complete (PR #XX)
-
-### Architecture Refactoring Complete
-
-**All phases of the 2.0.0 architecture refactoring have been completed**:
-
-- ✅ Foundation layer with type-safe models and repository interfaces
-- ✅ Service layer properly organized with focused, single-responsibility classes
-- ✅ Controller/Service separation following MVC principles
-- ✅ View layer split into maintainable partials
-- ✅ Complete documentation with PHPDoc coverage
-- ✅ Quality gates passing (PHPCS, PHPStan Level 8)
-
-**Next Steps**:
-
-- Release version 2.0.0 with new architecture
-- Monitor adoption of new patterns
-- Plan deprecation removal for version 2.2.0
-
----
-
-## FAQ
-
-**Q: Do I need to update my form configurations?**  
-A: No, all existing form configurations continue to work without changes.
-
-**Q: Will my API logs be preserved?**  
-A: Yes, all log data is preserved. Database schema remains unchanged in Phase 1.
-
-**Q: Are custom hooks affected?**  
-A: No, all existing hooks continue to work. New hooks may be added in future phases.
-
-**Q: What about performance?**  
-A: Phase 1 is purely architectural - no performance changes expected.
-
-**Q: When should I upgrade?**  
-A: Phase 1 is safe to upgrade immediately. It's purely additive with no breaking changes.
+**GitHub Issues**: <https://github.com/SilverAssist/contact-form-to-api/issues>
 
 ---
 
 **Document Version**: 2.0.0  
-**Last Updated**: January 24, 2026  
+**Last Updated**: January 25, 2026  
 **Maintained By**: Silver Assist Development Team
