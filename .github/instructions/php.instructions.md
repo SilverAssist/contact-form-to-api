@@ -372,6 +372,118 @@ public function process_entry( array $log_entry ): array {
 
 ---
 
+## Internationalization (i18n)
+
+### Pre-PR Requirement: Update .pot File
+
+**MANDATORY before every PR** - regenerate translation template to capture new/changed strings:
+
+```bash
+wp i18n make-pot . languages/contact-form-to-api.pot --domain=contact-form-to-api
+```
+
+### Text Domain (CRITICAL)
+
+**Always use literal string** - extraction tools cannot parse variables:
+
+```php
+// ✅ CORRECT - Literal text domain (extractable).
+__( 'Error occurred', 'contact-form-to-api' );
+esc_html_e( 'Success!', 'contact-form-to-api' );
+
+// ❌ WRONG - Variable/constant (NOT extractable).
+__( 'Error', $text_domain );
+__( 'Error', PLUGIN_TEXT_DOMAIN );
+```
+
+### Ordered Placeholders (MANDATORY for Multiple Args)
+
+```php
+// ✅ CORRECT - Positional placeholders with translator comment.
+sprintf(
+    /* translators: %1$s: form name, %2$d: submission count */
+    __( 'Form "%1$s" has %2$d submissions', 'contact-form-to-api' ),
+    $form_name,
+    $count
+);
+
+// ❌ WRONG - Unordered placeholders (PHPCS error).
+sprintf( __( 'Form "%s" has %d submissions', 'contact-form-to-api' ), $form_name, $count );
+```
+
+### Translation Functions Reference
+
+| Function | Use Case |
+|----------|----------|
+| `__()` | Return translated string |
+| `_e()` | Echo translated string |
+| `esc_html__()` | Return translated + escaped for HTML |
+| `esc_html_e()` | Echo translated + escaped for HTML |
+| `esc_attr__()` | Return translated + escaped for attribute |
+| `_n()` | Singular/plural forms |
+| `_x()` | Translation with context |
+
+---
+
+## Data Encryption (libsodium)
+
+### Architecture Overview
+
+The plugin encrypts sensitive API data using **libsodium** (PHP Sodium extension):
+- **Algorithm**: XSalsa20 stream cipher with Poly1305 MAC (authenticated encryption)
+- **Key Derivation**: HKDF from WordPress `AUTH_KEY` constant
+- **Storage**: Encrypted data stored in `{prefix}cf7_api_logs` table
+
+### Encrypted Fields
+
+| Column | Content |
+|--------|---------|
+| `request_data` | Form submission data sent to API |
+| `request_headers` | HTTP headers including auth tokens |
+| `response_data` | API response body |
+| `response_headers` | API response headers |
+| `encryption_version` | Tracks encryption version (0 = unencrypted) |
+
+### Using EncryptionService
+
+```php
+use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
+
+// Encrypt data before storage.
+$encryption = EncryptionService::instance();
+$encrypted = $encryption->encrypt( wp_json_encode( $sensitive_data ) );
+
+// Store in database.
+$wpdb->insert( $table_name, [
+    'request_data' => $encrypted,
+    'encryption_version' => $encryption->get_version(),
+] );
+
+// Decrypt when reading.
+$encrypted_data = $row->request_data;
+$decrypted = $encryption->decrypt( $encrypted_data );
+$data = json_decode( $decrypted, true );
+```
+
+### Key Methods
+
+| Method | Purpose |
+|--------|---------|
+| `encrypt( string $plaintext )` | Encrypt data (returns base64) |
+| `decrypt( string $data )` | Decrypt data (handles legacy plaintext) |
+| `is_encrypted( string $data )` | Check if data appears encrypted |
+| `is_encryption_enabled()` | Check if encryption is enabled in settings |
+| `get_version()` | Get current encryption version |
+
+### Important Notes
+
+1. **Decryption handles legacy data**: If data is plaintext JSON, it's returned as-is
+2. **Graceful degradation**: If Sodium unavailable, data stored unencrypted
+3. **Memory cleanup**: Service uses `sodium_memzero()` to clear sensitive data
+4. **Always decrypt for display**: Use `RequestLogger::decrypt_log_fields()` before showing logs in admin UI
+
+---
+
 ## Build & Validation Workflow
 
 ### Before Making Changes
