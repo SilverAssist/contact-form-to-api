@@ -25,25 +25,145 @@ This document outlines potential features for future versions of Contact Form 7 
 
 **Solution**: Implement WordPress Privacy Tools integration.
 
+**How WordPress Privacy Eraser Works**:
+1. Admin enters user's email in Tools → Erase Personal Data
+2. WordPress sends confirmation email to user
+3. User confirms → WordPress calls all registered erasers with `callback($email_address, $page)`
+4. Each eraser must find and delete data associated with that email
+
+**Technical Challenge: Encryption Compatibility**
+
+When encryption is enabled, the email is stored encrypted inside `request_data` JSON:
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ request_data (encrypted) = "eyJub25jZSI6IjEyM..."              │
+│                                                                 │
+│ After decrypt:                                                  │
+│ {"your-name": "Miguel", "your-email": "miguel@example.com"}    │
+└─────────────────────────────────────────────────────────────────┘
+
+WordPress calls: eraser_callback("miguel@example.com", 1)
+Problem: Cannot do SQL LIKE '%miguel@example.com%' on encrypted data!
+```
+
+**Recommended Solution**: Add `email_hash` column to logs table.
+
+**Database Migration**:
+```sql
+ALTER TABLE {prefix}cf7_api_logs 
+ADD COLUMN email_hash varchar(64) DEFAULT NULL,
+ADD INDEX email_hash (email_hash);
+```
+
 **Implementation**:
 ```php
-// Hook: wp_privacy_personal_data_erasers
-// Allows deletion of logs for a specific email from Tools > Erase Personal Data
+// 1. On form submission (LogWriter::start_request)
+$email = $this->extract_email_from_data($request_data);
+$email_hash = $email ? hash('sha256', strtolower(trim($email))) : null;
+$insert_data['email_hash'] = $email_hash;
+
+// 2. Privacy eraser callback
+function cf7_api_privacy_eraser($email_address, $page = 1) {
+    global $wpdb;
+    $table = $wpdb->prefix . 'cf7_api_logs';
+    
+    // Hash the email we're looking for
+    $email_hash = hash('sha256', strtolower(trim($email_address)));
+    
+    // Fast indexed lookup and delete
+    $deleted = $wpdb->query($wpdb->prepare(
+        "DELETE FROM %i WHERE email_hash = %s LIMIT 500",
+        $table,
+        $email_hash
+    ));
+    
+    // Check if more remain
+    $remaining = $wpdb->get_var($wpdb->prepare(
+        "SELECT COUNT(*) FROM %i WHERE email_hash = %s",
+        $table,
+        $email_hash
+    ));
+    
+    return [
+        'items_removed'  => $deleted > 0,
+        'items_retained' => false,
+        'messages'       => [],
+        'done'           => $remaining == 0,
+    ];
+}
+
+// 3. Register the eraser
 add_filter('wp_privacy_personal_data_erasers', function($erasers) {
     $erasers['cf7-api-logs'] = [
         'eraser_friendly_name' => __('CF7 to API Logs', 'contact-form-to-api'),
-        'callback' => 'cf7_api_privacy_eraser',
+        'callback'             => 'cf7_api_privacy_eraser',
     ];
     return $erasers;
 });
 ```
 
+**Email Field Detection**:
+
+CF7 forms can have different email field names. Add setting to configure:
+```php
+// Settings option
+'email_fields' => ['your-email', 'email', 'correo', 'user-email'],
+
+// Extract email from form data
+function extract_email_from_data($data) {
+    $email_fields = Settings::instance()->get('email_fields', ['your-email', 'email']);
+    foreach ($email_fields as $field) {
+        if (!empty($data[$field]) && is_email($data[$field])) {
+            return $data[$field];
+        }
+    }
+    return null;
+}
+```
+
+**Migration for Existing Logs**:
+
+Existing logs need their `email_hash` populated:
+```php
+// Background migration (run via cron or admin action)
+function migrate_email_hashes_batch($batch_size = 100) {
+    global $wpdb;
+    $encryption = EncryptionService::instance();
+    
+    $logs = $wpdb->get_results($wpdb->prepare(
+        "SELECT id, request_data FROM %i 
+         WHERE email_hash IS NULL LIMIT %d",
+        $wpdb->prefix . 'cf7_api_logs',
+        $batch_size
+    ));
+    
+    foreach ($logs as $log) {
+        $decrypted = $encryption->decrypt($log->request_data);
+        $data = json_decode($decrypted, true);
+        $email = extract_email_from_data($data);
+        
+        $hash = $email ? hash('sha256', strtolower(trim($email))) : '';
+        $wpdb->update($table, ['email_hash' => $hash], ['id' => $log->id]);
+    }
+    
+    return count($logs); // Return processed count
+}
+```
+
+**Synergy with Contact Book Feature**:
+
+This `email_hash` column benefits both features:
+- **GDPR Eraser**: Fast lookup to delete user's logs
+- **Contact Book**: Index for unique contacts table
+
 **Benefits**:
 - GDPR compliance out of the box
+- Works with encrypted data (O(1) lookup via hash index)
 - Users can request their data deletion
 - Reduces legal liability for site owners
+- Scales to millions of logs
 
-**Reference**: Flamingo implements this in `admin/includes/privacy.php`
+**Reference**: Flamingo implements this in `admin/includes/privacy.php` (but without encryption support)
 
 ---
 
