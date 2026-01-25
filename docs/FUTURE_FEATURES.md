@@ -230,28 +230,9 @@ $email_hash = hash('sha256', strtolower(trim($email)));
 
 ---
 
-### 3. Spam Detection Integration
-
-**Problem**: No spam filtering before sending to external APIs.
-
-**Solution**: Integrate with Akismet (optional) and add spam management.
-
-**Features**:
-- Check submission against Akismet before API call
-- Mark logs as spam/not-spam
-- Filter logs by spam status
-- Option to skip API call for detected spam
-- Spam log cleanup (separate from regular cleanup)
-
-**Settings**:
-- Enable Akismet integration (if Akismet is active)
-- Action on spam: "Log only" / "Skip API call" / "Send anyway"
-
----
-
 ## Medium Priority
 
-### 4. Channels / Categories for Logs
+### 3. Channels / Categories for Logs
 
 **Problem**: Hard to organize and filter logs when managing multiple forms.
 
@@ -270,7 +251,7 @@ $email_hash = hash('sha256', strtolower(trim($email)));
 
 ---
 
-### 5. Webhook Notifications
+### 4. Webhook Notifications
 
 **Problem**: Currently only sends to one API endpoint per form.
 
@@ -299,7 +280,7 @@ Per-form settings:
 
 ---
 
-### 6. Field Mapping Templates
+### 5. Field Mapping Templates
 
 **Problem**: Manual field mapping for each form is tedious.
 
@@ -328,7 +309,7 @@ Per-form settings:
 
 ---
 
-### 7. Enhanced Bulk Actions
+### 6. Enhanced Bulk Actions
 
 **Problem**: Limited batch operations on logs.
 
@@ -342,7 +323,7 @@ Per-form settings:
 - Export selection (CSV/JSON) - Currently exports filtered results, not checkbox selection
 - Re-send to different endpoint
 - Mark as read/unread
-- Add/remove tags (requires Channels feature #4)
+- Add/remove tags (requires Channels feature #3)
 
 **UI Improvements**:
 - Select all matching filter (not just current page)
@@ -351,7 +332,7 @@ Per-form settings:
 
 ---
 
-### 8. Response Parsing & Conditional Actions
+### 7. Response Parsing & Conditional Actions
 
 **Problem**: No way to act on API response content.
 
@@ -381,7 +362,7 @@ IF response.error CONTAINS "rate_limit" THEN:
 
 ## Low Priority
 
-### 9. REST API Endpoints
+### 8. REST API Endpoints
 
 **Problem**: No programmatic access to log data.
 
@@ -406,7 +387,7 @@ GET  /wp-json/cf7-api/v1/contacts
 
 ---
 
-### 10. Multi-Endpoint per Form
+### 9. Multi-Endpoint per Form
 
 **Problem**: Can only send form data to one API.
 
@@ -430,7 +411,7 @@ Form Settings:
 
 ---
 
-### 11. Field Transformations
+### 10. Field Transformations
 
 **Problem**: Form data often needs transformation before API submission.
 
@@ -454,7 +435,7 @@ Field: [your-phone]
 
 ---
 
-### 12. Import/Export Configuration
+### 11. Import/Export Configuration
 
 **Problem**: Difficult to migrate settings between environments.
 
@@ -475,7 +456,7 @@ Field: [your-phone]
 
 ---
 
-### 13. Advanced Statistics & Reporting
+### 12. Advanced Statistics & Reporting
 
 **Problem**: Current statistics are basic.
 
@@ -513,7 +494,7 @@ Field: [your-phone]
 | **Response Logging** | ✅ Full request/response | ❌ N/A |
 | **Contact Book** | ❌ Not yet | ✅ Address Book |
 | **GDPR Eraser** | ❌ Not yet | ✅ Integrated |
-| **Spam Detection** | ❌ Not yet | ✅ Akismet |
+| **Spam Detection** | N/A (CF7 handles) | ✅ Akismet |
 | **Auto Cleanup** | ✅ Cron + retention | ✅ Cron jobs |
 | **Channels/Tags** | ❌ Not yet | ✅ Taxonomies |
 | **CSV Export** | ✅ Yes | ✅ Yes |
@@ -523,9 +504,10 @@ Field: [your-phone]
 
 ### Key Takeaways
 
-1. **Flamingo excels at**: Contact management, spam handling, GDPR compliance
+1. **Flamingo excels at**: Contact management, GDPR compliance, message storage
 2. **CF7 to API excels at**: API integration, retry logic, security, code quality
-3. **Opportunity**: Combine best of both worlds while maintaining our technical superiority
+3. **Spam handling**: Delegated to CF7 (Akismet, reCAPTCHA) - not our responsibility
+4. **Opportunity**: Combine best of both worlds while maintaining our technical superiority
 
 ---
 
