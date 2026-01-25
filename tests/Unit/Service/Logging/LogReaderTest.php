@@ -268,7 +268,7 @@ class LogReaderTest extends TestCase {
 	 *
 	 * @dataProvider errorStatusProvider
 	 */
-	public function testGetRequestForRetryWithErrorStatuses( int $http_code, string $expected_status ): void {
+	public function testGetRequestForRetryWithErrorStatuses( int $http_code ): void {
 		$log_id = $this->log_writer->start_request(
 			form_id: 444,
 			endpoint: 'https://api.example.com/test',
@@ -286,21 +286,23 @@ class LogReaderTest extends TestCase {
 		$request = $this->log_reader->get_request_for_retry( $log_id );
 
 		// All error statuses should be retryable.
-		$this->assertNotNull( $request );
-		$this->assertSame( $expected_status, $request['status'] );
+		$this->assertNotNull( $request, "HTTP code $http_code should be retryable" );
+		$this->assertArrayHasKey( 'url', $request );
+		$this->assertArrayHasKey( 'method', $request );
+		$this->assertArrayHasKey( 'original_log_id', $request );
 	}
 
 	/**
 	 * Data provider for error status codes
 	 *
-	 * @return array<string, array{int, string}>
+	 * @return array<string, array{int}>
 	 */
 	public static function errorStatusProvider(): array {
 		return array(
-			'400 Bad Request'  => array( 400, 'error' ),
-			'404 Not Found'    => array( 404, 'error' ),
-			'500 Server Error' => array( 500, 'error' ),
-			'503 Unavailable'  => array( 503, 'error' ),
+			'400 Bad Request'  => array( 400 ),
+			'404 Not Found'    => array( 404 ),
+			'500 Server Error' => array( 500 ),
+			'503 Unavailable'  => array( 503 ),
 		);
 	}
 
