@@ -397,38 +397,7 @@ public function maybe_send_individual_alert(int $log_id, int $form_id): void {
 
 ---
 
-### 5. Field Mapping Templates
-
-**Problem**: Manual field mapping for each form is tedious.
-
-**Solution**: Save and reuse mapping configurations.
-
-**Features**:
-
-- Save current mapping as template
-- Apply template to new forms
-- Import/export templates
-- Default template for new forms
-
-**Template Structure**:
-
-```json
-{
-    "name": "CRM Integration",
-    "mappings": {
-        "[your-name]": "customer_name",
-        "[your-email]": "email_address",
-        "[your-phone]": "phone_number"
-    },
-    "headers": {
-        "Content-Type": "application/json"
-    }
-}
-```
-
----
-
-### 6. Enhanced Bulk Actions
+### 5. Enhanced Bulk Actions
 
 **Problem**: Limited batch operations on logs.
 
@@ -453,7 +422,7 @@ public function maybe_send_individual_alert(int $log_id, int $form_id): void {
 
 ---
 
-### 7. Response Parsing & Conditional Actions
+### 6. Response Parsing & Conditional Actions
 
 **Problem**: No way to act on API response content.
 
@@ -485,7 +454,7 @@ IF response.error CONTAINS "rate_limit" THEN:
 
 ## Low Priority
 
-### 8. REST API Endpoints
+### 7. REST API Endpoints
 
 **Problem**: No programmatic access to log data.
 
@@ -512,7 +481,7 @@ GET  /wp-json/cf7-api/v1/contacts
 
 ---
 
-### 9. Multi-Endpoint per Form
+### 8. Multi-Endpoint per Form
 
 **Problem**: Can only send form data to one API.
 
@@ -538,7 +507,7 @@ Form Settings:
 
 ---
 
-### 10. Field Transformations
+### 9. Field Transformations
 
 **Problem**: Form data often needs transformation before API submission.
 
@@ -564,7 +533,7 @@ Field: [your-phone]
 
 ---
 
-### 11. Import/Export Configuration
+### 10. Import/Export Configuration
 
 **Problem**: Difficult to migrate settings between environments.
 
@@ -574,8 +543,6 @@ Field: [your-phone]
 
 - Global plugin settings
 - Per-form API configurations
-- Field mapping templates
-- Webhook configurations
 
 **Format**: JSON or encrypted JSON (for sensitive data like API keys).
 
@@ -587,7 +554,7 @@ Field: [your-phone]
 
 ---
 
-### 12. Advanced Statistics & Reporting
+### 11. Advanced Statistics & Reporting
 
 **Problem**: Current statistics are basic.
 
