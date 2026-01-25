@@ -20,7 +20,7 @@ namespace SilverAssist\ContactFormToAPI\Model;
  * LogEntry Model Class
  *
  * Represents an API request log entry with type safety.
- * Part of Phase 1 foundation for 2.0.0 architecture refactoring.
+ * Provides immutable access to request/response log data.
  *
  * @since 2.0.0
  */

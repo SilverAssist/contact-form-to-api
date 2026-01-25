@@ -22,7 +22,7 @@ use SilverAssist\ContactFormToAPI\Model\FormSettings;
  * SettingsRepositoryInterface
  *
  * Defines data access operations for settings.
- * Part of Phase 1 foundation for 2.0.0 architecture refactoring.
+ * Provides abstraction layer for CRUD operations on form configurations.
  *
  * @since 2.0.0
  */

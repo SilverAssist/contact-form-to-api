@@ -3,7 +3,7 @@
  * Log Reader Service
  *
  * Handles reading and querying of API request logs.
- * Extracted from RequestLogger as part of Phase 2 refactoring.
+ * Handles reading API request logs from the database.
  *
  * @package    SilverAssist\ContactFormToAPI
  * @subpackage Service\Logging

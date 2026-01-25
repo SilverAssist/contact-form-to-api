@@ -16,7 +16,6 @@ namespace SilverAssist\ContactFormToAPI\Controller\Admin;
 
 use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
-use SilverAssist\ContactFormToAPI\Core\RequestLogger;
 use SilverAssist\ContactFormToAPI\Infrastructure\ListTable\RequestLogTable;
 use SilverAssist\ContactFormToAPI\Service\Api\ApiClient;
 use SilverAssist\ContactFormToAPI\Service\Export\ExportService;
@@ -310,8 +309,8 @@ class LogsController implements LoadableInterface {
 		$skipped_count = 0;
 
 		// Rate limiting from settings
-		$max_retries_per_entry = RequestLogger::get_max_manual_retries();
-		$max_retries_per_hour  = RequestLogger::get_max_retries_per_hour();
+		$max_retries_per_entry = RetryManager::get_max_manual_retries();
+		$max_retries_per_hour  = RetryManager::get_max_retries_per_hour();
 
 		// Check global rate limit (hourly)
 		$recent_retries = $this->count_recent_retries( 1 ); // Last 1 hour

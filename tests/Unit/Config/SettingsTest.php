@@ -232,7 +232,6 @@ class SettingsTest extends TestCase {
 		// by resetting its internal initialization flag.
 		$reflection  = new \ReflectionClass( Settings::class );
 		$initialized = $reflection->getProperty( 'initialized' );
-		$initialized->setAccessible( true );
 		$initialized->setValue( $this->settings, false );
 
 		$this->settings->init();

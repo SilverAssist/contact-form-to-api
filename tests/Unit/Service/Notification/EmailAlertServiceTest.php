@@ -262,7 +262,6 @@ class EmailAlertServiceTest extends TestCase {
 		// Use reflection to test private method.
 		$reflection = new \ReflectionClass( $this->service );
 		$method     = $reflection->getMethod( 'should_alert' );
-		$method->setAccessible( true );
 
 		// Stats exceeding error threshold.
 		$stats = array(
@@ -287,7 +286,6 @@ class EmailAlertServiceTest extends TestCase {
 		// Use reflection to test private method.
 		$reflection = new \ReflectionClass( $this->service );
 		$method     = $reflection->getMethod( 'should_alert' );
-		$method->setAccessible( true );
 
 		// Stats exceeding rate threshold.
 		$stats = array(
@@ -312,7 +310,6 @@ class EmailAlertServiceTest extends TestCase {
 		// Use reflection to test private method.
 		$reflection = new \ReflectionClass( $this->service );
 		$method     = $reflection->getMethod( 'should_alert' );
-		$method->setAccessible( true );
 
 		// Stats below thresholds.
 		$stats = array(

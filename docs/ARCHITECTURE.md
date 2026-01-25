@@ -29,7 +29,6 @@ includes/
 ├── Core/                           # Bootstrap & lifecycle
 │   ├── Plugin.php                 # Main plugin controller
 │   ├── Activator.php              # Activation/deactivation hooks
-│   ├── RequestLogger.php          # API request logging facade
 │   └── Interfaces/
 │       └── LoadableInterface.php  # Component loading contract
 │
@@ -120,7 +119,6 @@ The Core layer handles plugin bootstrap and lifecycle:
 
 - **Plugin.php**: Main plugin controller implementing singleton pattern
 - **Activator.php**: Database table creation and plugin activation/deactivation
-- **RequestLogger.php**: Facade for logging services
 - **LoadableInterface.php**: Contract for component loading with priorities
 
 ### Model Layer
@@ -254,7 +252,7 @@ All components implement `LoadableInterface` with priority-based loading:
 
 | Priority | Layer | Components |
 |----------|-------|------------|
-| 10 | Core | Plugin, Activator, RequestLogger |
+| 10 | Core | Plugin, Activator |
 | 20 | Services | ApiClient, LogWriter, LogReader, etc. |
 | 30 | Admin/Controllers | SettingsPage, RequestLogController, SubmissionController |
 | 40 | Utilities | DebugLogger, StringHelper |
@@ -269,13 +267,13 @@ interface LoadableInterface {
 
 ---
 
-## Dual Logger Architecture
+## Logging Architecture
 
 The plugin has two distinct logging systems:
 
 | Logger | Purpose | Storage |
-|--------|---------|---------|
-| `Core\RequestLogger` | API request/response tracking | Database (admin UI) |
+|--------|---------|--------|
+| `Service\Logging\*` | API request/response tracking | Database (admin UI) |
 | `Utils\DebugLogger` | Plugin debugging | File (development) |
 
 ---

@@ -23,7 +23,7 @@ use SilverAssist\ContactFormToAPI\Model\Statistics;
  * LogRepositoryInterface
  *
  * Defines data access operations for log entries.
- * Part of Phase 1 foundation for 2.0.0 architecture refactoring.
+ * Provides abstraction layer for CRUD operations on request logs.
  *
  * @since 2.0.0
  */

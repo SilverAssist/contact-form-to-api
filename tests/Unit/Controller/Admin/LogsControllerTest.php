@@ -232,7 +232,6 @@ class LogsControllerTest extends TestCase {
 		// Use reflection to check the list_table property
 		$reflection = new ReflectionClass( LogsController::class );
 		$property   = $reflection->getProperty( 'list_table' );
-		$property->setAccessible( true );
 
 		// Get a fresh instance (but singleton, so same instance)
 		$controller = LogsController::instance();

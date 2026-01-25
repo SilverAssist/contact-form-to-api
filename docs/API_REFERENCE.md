@@ -22,7 +22,6 @@ SilverAssist\ContactFormToAPI\
 ├── Core\                           # Bootstrap & lifecycle
 │   ├── Plugin.php                 # Main plugin controller
 │   ├── Activator.php              # Lifecycle management
-│   ├── RequestLogger.php          # API request logging facade
 │   └── Interfaces\
 │       └── LoadableInterface.php  # Component contract
 │
@@ -99,16 +98,16 @@ SilverAssist\ContactFormToAPI\
 
 All components implement `LoadableInterface` with priority-based loading:
 
-- **Priority 10**: Core (Plugin, Activator, RequestLogger)
+- **Priority 10**: Core (Plugin, Activator)
 - **Priority 20**: Services (ApiClient, LogWriter, etc.)
 - **Priority 30**: Admin & ContactForm (Controllers, Views)
 - **Priority 40**: Utilities (DebugLogger, StringHelper)
 
-### Dual Logger Architecture
+### Logging Architecture
 
 | Logger | Purpose | Storage |
-|--------|---------|---------|
-| `Core\RequestLogger` | API request/response tracking | Database |
+|--------|---------|--------|
+| `Service\Logging\*` | API request/response tracking | Database |
 | `Utils\DebugLogger` | Plugin debugging | File |
 
 ---
@@ -489,47 +488,28 @@ Handles plugin activation, deactivation, and lifecycle.
 | `uninstall()` | `void` | Plugin uninstallation handler |
 | `create_tables()` | `void` | Create database tables |
 
-### Core\RequestLogger
+### Service\Logging\LogWriter
 
-Database-backed logging for API requests/responses.
+Create and update log entries.
 
-**Implements**: `LoadableInterface`
 **Storage**: Custom database table `{prefix}cf7_api_logs`
 
 ```php
-use SilverAssist\ContactFormToAPI\Core\RequestLogger;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
 
-$logger = RequestLogger::instance();
-$log_id = $logger->log($data);
-$logs = $logger->get_logs(['per_page' => 20]);
+$writer = new LogWriter();
+$log_id = $writer->start_request($form_id, $endpoint, $method, $data, $headers);
+$writer->complete_request($log_id, $response, $retry_count);
 ```
 
 #### Methods
 
 | Method | Return | Description |
 |--------|--------|-------------|
-| `instance()` | `RequestLogger` | Get singleton instance |
-| `log(array $data)` | `int\|false` | Log request/response |
-| `get_logs(array $args)` | `array` | Retrieve logs with filtering |
-| `get_log(int $id)` | `array\|null` | Get single log entry |
+| `start_request(...)` | `int\|false` | Start logging a request |
+| `complete_request(...)` | `bool` | Complete log with response |
 | `delete_logs(array $ids)` | `int` | Delete log entries |
-| `get_statistics(?int $form_id, ?string $start, ?string $end)` | `array` | Get statistics |
-| `get_recent_errors(int $limit, ?int $hours)` | `array` | Get recent errors |
-| `get_request_for_retry(int $log_id)` | `?array` | Get request data for retry |
-| `count_retries(int $log_id)` | `int` | Count retries for log |
-| `has_successful_retry(int $log_id)` | `bool` | Check for successful retry |
-| `decrypt_log_fields(array $log)` | `array` | Decrypt log fields |
-
-### Service\Logging\LogWriter
-
-Create and update log entries.
-
-```php
-use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
-
-$writer = LogWriter::instance();
-$log_id = $writer->save($log_entry);
-```
+| `delete_old_logs(int $days)` | `int` | Delete logs older than days |
 
 ### Service\Logging\LogReader
 
@@ -538,9 +518,18 @@ Query and retrieve log entries.
 ```php
 use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 
-$reader = LogReader::instance();
+$reader = new LogReader();
 $logs = $reader->get_logs(['status' => 'success']);
 ```
+
+#### Methods
+
+| Method | Return | Description |
+|--------|--------|-------------|
+| `get_logs(array $args)` | `array` | Retrieve logs with filtering |
+| `get_log(int $id)` | `array\|null` | Get single log entry |
+| `get_request_for_retry(int $log_id)` | `?array` | Get request data for retry |
+| `decrypt_log_fields(array $log)` | `array` | Decrypt log fields |
 
 ### Service\Logging\LogStatistics
 
@@ -549,9 +538,17 @@ Calculate log statistics.
 ```php
 use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
 
-$stats = LogStatistics::instance();
-$metrics = $stats->get_overview();
+$stats = new LogStatistics();
+$metrics = $stats->get_statistics();
 ```
+
+#### Methods
+
+| Method | Return | Description |
+|--------|--------|-------------|
+| `get_statistics(?int $form_id, ?string $start, ?string $end)` | `array` | Get statistics |
+| `get_count_last_hours(int $hours, ?string $status)` | `int` | Count requests in time window |
+| `get_recent_errors(int $limit, ?int $hours)` | `array` | Get recent errors |
 
 ### Service\Logging\RetryManager
 
@@ -560,9 +557,20 @@ Manage retry operations.
 ```php
 use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
 
-$retry = RetryManager::instance();
-$retry_id = $retry->create_retry_entry($original_log_id);
+$retry = new RetryManager();
+$can_retry = $retry->can_retry($log_id);
 ```
+
+#### Methods
+
+| Method | Return | Description |
+|--------|--------|-------------|
+| `can_retry(int $log_id)` | `bool` | Check if log can be retried |
+| `count_retries(int $log_id)` | `int` | Count retries for log |
+| `has_successful_retry(int $log_id)` | `bool` | Check for successful retry |
+| `get_successful_retry_id(int $log_id)` | `?int` | Get ID of successful retry |
+| `get_retries_for_log(int $log_id)` | `array` | Get all retries for log |
+| `count_errors_by_resolution()` | `array` | Count resolved/unresolved errors |
 
 ### Service\Api\ApiClient
 
@@ -811,21 +819,29 @@ use SilverAssist\ContactFormToAPI\Tests\Helpers\CF7TestCase;
 
 ```php
 use SilverAssist\ContactFormToAPI\Core\Activator;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 
-class RequestLoggerTest extends TestCase {
+class LoggingServiceTest extends TestCase {
     public static function wpSetUpBeforeClass(): void {
         Activator::create_tables();
     }
     
     public function test_log_creation(): void {
-        $logger = RequestLogger::instance();
-        $log_id = $logger->log([
-            "form_id" => 123,
-            "url" => "https://api.example.com/endpoint",
-            "status" => 200
-        ]);
+        $writer = new LogWriter();
+        $log_id = $writer->start_request(
+            form_id: 123,
+            endpoint: "https://api.example.com/endpoint",
+            method: "POST",
+            request_data: ["name" => "Test"],
+            request_headers: []
+        );
         
         $this->assertIsInt($log_id);
+        
+        $reader = new LogReader();
+        $log = $reader->get_log($log_id);
+        $this->assertNotNull($log);
     }
 }
 ```

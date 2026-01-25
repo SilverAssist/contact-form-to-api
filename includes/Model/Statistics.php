@@ -20,7 +20,7 @@ namespace SilverAssist\ContactFormToAPI\Model;
  * Statistics Model Class
  *
  * Represents aggregated log statistics with type safety.
- * Part of Phase 1 foundation for 2.0.0 architecture refactoring.
+ * Provides structured access to computed log metrics and counts.
  *
  * @since 2.0.0
  */

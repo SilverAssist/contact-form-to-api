@@ -39,10 +39,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Green badge appears next to error status when retry was successful
   - Tooltip explains the error was resolved via manual retry
   - Makes it easy to identify resolved errors at a glance
-- **RequestLogger Refactored**: Now acts as facade delegating to specialized services
-  - Reduced from 1,011 to 505 lines (50% reduction)
-  - Maintains full backward compatibility via facade pattern
-  - All original methods continue to work unchanged
 
 ### Developer
 
@@ -63,18 +59,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **PSR-4 Namespace Organization**: Proper directory structure
   - `Service\Security\*`: Security-related services
   - `Config\Settings`: Configuration management
-- **Facade Pattern**: Backward compatibility for deprecated classes
-  - RequestLogger, EncryptionService (original location), SensitiveDataPatterns (original location)
-  - Legacy methods marked with `@deprecated` for migration guidance
 - **Architecture Documentation**: See `docs/ARCHITECTURE.md` for complete structure
 - **Migration Guide**: See `docs/UPGRADE.md` for 2.0.0 migration instructions
 
 ### Notes
 
-- **NO BREAKING CHANGES**: Facade pattern maintains full backward compatibility
 - **Quality Gates**: PHPCS WordPress-Extra (0 errors) and PHPStan Level 8 (0 errors) compliance
-- Existing code continues to work unchanged
-- Deprecated methods will be removed in version 2.2.0
+- All logging functionality migrated to dedicated services in `Service\Logging\`
 - See `docs/UPGRADE.md` for migration guidance
 
 ## [1.3.13] - 2026-01-23

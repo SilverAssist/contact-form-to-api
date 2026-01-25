@@ -3,7 +3,7 @@
  * Retry Manager Service
  *
  * Handles retry logic and tracking for failed API requests.
- * Extracted from RequestLogger as part of Phase 2 refactoring.
+ * Handles retry logic for API requests.
  *
  * @package    SilverAssist\ContactFormToAPI
  * @subpackage Service\Logging

@@ -4,7 +4,6 @@
  *
  * Handles business logic for Contact Form 7 submission processing.
  * Transforms form data, sends to API, manages retries and logging.
- * Extracted from Integration.php as part of Phase 3 refactoring.
  *
  * @package    SilverAssist\ContactFormToAPI
  * @subpackage Service\ContactForm

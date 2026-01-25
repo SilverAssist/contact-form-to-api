@@ -7,7 +7,7 @@
  *
  * @package SilverAssist\ContactFormToAPI\Tests
  * @since   1.3.0
- * @version 1.3.0
+ * @version 2.0.0
  * @author  Silver Assist
  */
 
@@ -15,7 +15,8 @@ namespace SilverAssist\ContactFormToAPI\Tests\Integration;
 
 use SilverAssist\ContactFormToAPI\Core\Activator;
 use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
-use SilverAssist\ContactFormToAPI\Core\RequestLogger;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 use SilverAssist\ContactFormToAPI\Service\Export\ExportService;
 use WP_UnitTestCase;
 
@@ -25,11 +26,18 @@ use WP_UnitTestCase;
 class EncryptedLoggingTest extends WP_UnitTestCase {
 
 	/**
-	 * Request logger instance
+	 * Log writer instance
 	 *
-	 * @var RequestLogger
+	 * @var LogWriter
 	 */
-	private RequestLogger $logger;
+	private LogWriter $log_writer;
+
+	/**
+	 * Log reader instance
+	 *
+	 * @var LogReader
+	 */
+	private LogReader $log_reader;
 
 	/**
 	 * Encryption service instance
@@ -64,7 +72,8 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		$this->encryption = EncryptionService::instance();
 		$this->encryption->init();
 
-		$this->logger = new RequestLogger();
+		$this->log_writer = new LogWriter();
+		$this->log_reader = new LogReader();
 	}
 
 	/**
@@ -100,7 +109,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		);
 
 		// Start request.
-		$log_id = $this->logger->start_request( $form_id, $endpoint, $method, $data );
+		$log_id = $this->log_writer->start_request( $form_id, $endpoint, $method, $data );
 
 		$this->assertIsInt( $log_id );
 		$this->assertGreaterThan( 0, $log_id );
@@ -140,11 +149,11 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		);
 
 		// Start request.
-		$log_id = $this->logger->start_request( $form_id, $endpoint, $method, $data );
+		$log_id = $this->log_writer->start_request( $form_id, $endpoint, $method, $data );
 
 		// Get log and decrypt it.
-		$log = $this->logger->get_log( $log_id );
-		$log = $this->logger->decrypt_log_fields( $log );
+		$log = $this->log_reader->get_log( $log_id );
+		$log = $this->log_reader->decrypt_log_fields( $log );
 
 		// Verify decryption worked.
 		$this->assertIsArray( $log );
@@ -173,13 +182,13 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		);
 
 		// Create a failed log entry.
-		$log_id = $this->logger->start_request( $form_id, $endpoint, $method, $data );
+		$log_id = $this->log_writer->start_request( $form_id, $endpoint, $method, $data );
 
 		// Complete with error.
-		$this->logger->complete_request( new \WP_Error( 'test_error', 'Test error message' ), 0 );
+		$this->log_writer->complete_request( $log_id, new \WP_Error( 'test_error', 'Test error message' ), 0 );
 
 		// Get request for retry.
-		$retry_data = $this->logger->get_request_for_retry( $log_id );
+		$retry_data = $this->log_reader->get_request_for_retry( $log_id );
 
 		// Verify retry data contains decrypted information.
 		$this->assertIsArray( $retry_data );
@@ -203,7 +212,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		$data     = array( 'test' => 'data' );
 
 		// Start request.
-		$log_id = $this->logger->start_request( $form_id, $endpoint, $method, $data );
+		$log_id = $this->log_writer->start_request( $form_id, $endpoint, $method, $data );
 
 		// Mock response with sensitive data.
 		$response = array(
@@ -218,7 +227,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		);
 
 		// Complete request.
-		$this->logger->complete_request( $response, 0 );
+		$this->log_writer->complete_request( $log_id, $response );
 
 		// Read raw data from database.
 		global $wpdb;
@@ -232,7 +241,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'secret_token_12345', $raw_log['response_data'], 'Token should not be visible in encrypted response' );
 
 		// Decrypt and verify.
-		$log     = $this->logger->decrypt_log_fields( $raw_log );
+		$log     = $this->log_reader->decrypt_log_fields( $raw_log );
 		$decoded = \json_decode( $log['response_data'], true );
 
 		$this->assertEquals( 'secret_token_12345', $decoded['token'], 'Decrypted response should contain token' );
@@ -253,7 +262,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		);
 
 		// Create log entry.
-		$log_id = $this->logger->start_request( $form_id, $endpoint, $method, $data );
+		$log_id = $this->log_writer->start_request( $form_id, $endpoint, $method, $data );
 
 		// Complete successfully.
 		$response = array(
@@ -261,7 +270,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 			'body'     => '{"success": true}',
 			'headers'  => array(),
 		);
-		$this->logger->complete_request( $response, 0 );
+		$this->log_writer->complete_request( $log_id, $response, 0 );
 
 		// Get log from database.
 		global $wpdb;
@@ -322,8 +331,8 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		$log_id = $wpdb->insert_id;
 
 		// Try to get and decrypt.
-		$log = $this->logger->get_log( $log_id );
-		$log = $this->logger->decrypt_log_fields( $log );
+		$log = $this->log_reader->get_log( $log_id );
+		$log = $this->log_reader->decrypt_log_fields( $log );
 
 		// Verify plaintext is returned as-is.
 		$decoded = \json_decode( $log['request_data'], true );
@@ -341,7 +350,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 	public function test_list_page_decryption_performance(): void {
 		// Create 25 encrypted logs.
 		for ( $i = 0; $i < 25; $i++ ) {
-			$this->logger->start_request(
+			$this->log_writer->start_request(
 				123,
 				'https://api.example.com/test',
 				'POST',
@@ -360,7 +369,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		$start = \microtime( true );
 
 		foreach ( $logs as $log ) {
-			$this->logger->decrypt_log_fields( $log );
+			$this->log_reader->decrypt_log_fields( $log );
 		}
 
 		$elapsed = ( \microtime( true ) - $start ) * 1000; // Convert to milliseconds.
