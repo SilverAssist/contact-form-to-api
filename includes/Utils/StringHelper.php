@@ -28,6 +28,8 @@ class StringHelper {
 	 * Transforms camelCase field names to kebab-case format for form field matching.
 	 * Example: "infoForLife" becomes "info-for-life"
 	 *
+	 * @since 1.1.0
+	 *
 	 * @param string $input The camelCase string to convert.
 	 * @return string The converted kebab-case string.
 	 */
@@ -40,6 +42,8 @@ class StringHelper {
 	 *
 	 * Transforms kebab-case field names to camelCase format for form field matching.
 	 * Example: "info-for-life" becomes "infoForLife"
+	 *
+	 * @since 1.1.0
 	 *
 	 * @param string $input The kebab-case string to convert.
 	 * @return string The converted camelCase string.
@@ -54,6 +58,8 @@ class StringHelper {
 	 * Transforms snake_case field names to camelCase format.
 	 * Example: "info_for_life" becomes "infoForLife"
 	 *
+	 * @since 1.1.0
+	 *
 	 * @param string $input The snake_case string to convert.
 	 * @return string The converted camelCase string.
 	 */
@@ -66,6 +72,8 @@ class StringHelper {
 	 *
 	 * Transforms camelCase field names to snake_case format.
 	 * Example: "infoForLife" becomes "info_for_life"
+	 *
+	 * @since 1.1.0
 	 *
 	 * @param string $input The camelCase string to convert.
 	 * @return string The converted snake_case string.
@@ -81,6 +89,8 @@ class StringHelper {
 	 * - Direct comparison
 	 * - camelCase vs kebab-case
 	 * - camelCase vs snake_case
+	 *
+	 * @since 1.1.0
 	 *
 	 * @param string $field_a First field name.
 	 * @param string $field_b Second field name.
@@ -124,6 +134,8 @@ class StringHelper {
 	 *
 	 * Removes special characters and normalizes the field name.
 	 *
+	 * @since 1.1.0
+	 *
 	 * @param string $field_name The field name to sanitize.
 	 * @return string The sanitized field name.
 	 */
@@ -137,6 +149,8 @@ class StringHelper {
 	 * Extract field name from template placeholder
 	 *
 	 * Extracts the field name from template placeholders like {{field_name}} or {field_name}.
+	 *
+	 * @since 1.1.0
 	 *
 	 * @param string $placeholder The placeholder string.
 	 * @return string The extracted field name.

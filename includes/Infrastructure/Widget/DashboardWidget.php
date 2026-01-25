@@ -134,12 +134,12 @@ class DashboardWidget implements LoadableInterface {
 		$stats = new LogStatistics();
 
 		return array(
-			'total_24h'          => $stats->get_count_last_hours( 24 ),
-			'success_24h'        => $stats->get_count_last_hours( 24, 'success' ),
-			'errors_24h'         => $stats->get_count_last_hours( 24, 'error' ),
-			'success_rate'       => $stats->get_success_rate_last_hours( 24 ),
-			'avg_response_time'  => $stats->get_avg_response_time_last_hours( 24 ),
-			'recent_errors'      => $stats->get_recent_errors( 5, 24 ),
+			'total_24h'         => $stats->get_count_last_hours( 24 ),
+			'success_24h'       => $stats->get_count_last_hours( 24, 'success' ),
+			'errors_24h'        => $stats->get_count_last_hours( 24, 'error' ),
+			'success_rate'      => $stats->get_success_rate_last_hours( 24 ),
+			'avg_response_time' => $stats->get_avg_response_time_last_hours( 24 ),
+			'recent_errors'     => $stats->get_recent_errors( 5, 24 ),
 		);
 	}
 
