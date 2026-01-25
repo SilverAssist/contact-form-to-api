@@ -53,7 +53,10 @@ class LogWriterTest extends TestCase {
 			form_id: 123,
 			endpoint: 'https://api.example.com/webhook',
 			method: 'POST',
-			request_data: array( 'name' => 'Test User', 'email' => 'test@example.com' ),
+			request_data: array(
+				'name'  => 'Test User',
+				'email' => 'test@example.com',
+			),
 			request_headers: array( 'Content-Type' => 'application/json' )
 		);
 

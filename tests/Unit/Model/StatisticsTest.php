@@ -24,8 +24,14 @@ class StatisticsTest extends TestCase {
 	 */
 	public function testConstructor(): void {
 		$recent_logs = array(
-			array( 'id' => 1, 'status' => 'success' ),
-			array( 'id' => 2, 'status' => 'error' ),
+			array(
+				'id'     => 1,
+				'status' => 'success',
+			),
+			array(
+				'id'     => 2,
+				'status' => 'error',
+			),
 		);
 
 		$stats = new Statistics(
@@ -145,7 +151,10 @@ class StatisticsTest extends TestCase {
 	 */
 	public function testToArray(): void {
 		$recent_logs = array(
-			array( 'id' => 1, 'status' => 'success' ),
+			array(
+				'id'     => 1,
+				'status' => 'success',
+			),
 		);
 
 		$stats = new Statistics(
@@ -178,18 +187,24 @@ class StatisticsTest extends TestCase {
 	 */
 	public function testFromQueryWithNewFormat(): void {
 		$query_result = array(
-			'total'        => 150,
-			'success'      => 120,
-			'error'        => 10,
-			'client_error' => 15,
-			'server_error' => 5,
-			'pending'      => 3,
+			'total'              => 150,
+			'success'            => 120,
+			'error'              => 10,
+			'client_error'       => 15,
+			'server_error'       => 5,
+			'pending'            => 3,
 			'avg_execution_time' => 0.8,
 		);
 
 		$recent_logs = array(
-			array( 'id' => 1, 'status' => 'success' ),
-			array( 'id' => 2, 'status' => 'error' ),
+			array(
+				'id'     => 1,
+				'status' => 'success',
+			),
+			array(
+				'id'     => 2,
+				'status' => 'error',
+			),
 		);
 
 		$stats = Statistics::from_query( $query_result, $recent_logs );

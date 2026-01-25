@@ -25,7 +25,10 @@ class ApiResponseTest extends TestCase {
 	public function testConstructor(): void {
 		$response = new ApiResponse(
 			status_code: 200,
-			body: array( 'id' => 123, 'status' => 'created' ),
+			body: array(
+				'id'     => 123,
+				'status' => 'created',
+			),
 			headers: array( 'Content-Type' => 'application/json' ),
 			is_success: true,
 			execution_time: 1.25,
@@ -33,7 +36,13 @@ class ApiResponseTest extends TestCase {
 		);
 
 		$this->assertSame( 200, $response->get_status_code() );
-		$this->assertSame( array( 'id' => 123, 'status' => 'created' ), $response->get_body() );
+		$this->assertSame(
+			array(
+				'id'     => 123,
+				'status' => 'created',
+			),
+			$response->get_body()
+		);
 		$this->assertSame( array( 'Content-Type' => 'application/json' ), $response->get_headers() );
 		$this->assertTrue( $response->is_success() );
 		$this->assertSame( 1.25, $response->get_execution_time() );
@@ -152,8 +161,14 @@ class ApiResponseTest extends TestCase {
 			body: array(
 				'data' => array(
 					'users' => array(
-						array( 'id' => 1, 'name' => 'John' ),
-						array( 'id' => 2, 'name' => 'Jane' ),
+						array(
+							'id'   => 1,
+							'name' => 'John',
+						),
+						array(
+							'id'   => 2,
+							'name' => 'Jane',
+						),
 					),
 				),
 			)
@@ -222,9 +237,9 @@ class ApiResponseTest extends TestCase {
 	 */
 	public function testHeaders(): void {
 		$headers = array(
-			'Content-Type'     => 'application/json',
+			'Content-Type'          => 'application/json',
 			'X-RateLimit-Remaining' => '99',
-			'Cache-Control'    => 'no-cache',
+			'Cache-Control'         => 'no-cache',
 		);
 
 		$response = new ApiResponse(
@@ -261,18 +276,18 @@ class ApiResponseTest extends TestCase {
 	 */
 	public static function httpStatusCodeProvider(): array {
 		return array(
-			'200 OK'              => array( 200, true ),
-			'201 Created'         => array( 201, true ),
-			'204 No Content'      => array( 204, true ),
-			'400 Bad Request'     => array( 400, false ),
-			'401 Unauthorized'    => array( 401, false ),
-			'403 Forbidden'       => array( 403, false ),
-			'404 Not Found'       => array( 404, false ),
-			'422 Unprocessable'   => array( 422, false ),
-			'429 Too Many'        => array( 429, false ),
-			'500 Server Error'    => array( 500, false ),
-			'502 Bad Gateway'     => array( 502, false ),
-			'503 Unavailable'     => array( 503, false ),
+			'200 OK'            => array( 200, true ),
+			'201 Created'       => array( 201, true ),
+			'204 No Content'    => array( 204, true ),
+			'400 Bad Request'   => array( 400, false ),
+			'401 Unauthorized'  => array( 401, false ),
+			'403 Forbidden'     => array( 403, false ),
+			'404 Not Found'     => array( 404, false ),
+			'422 Unprocessable' => array( 422, false ),
+			'429 Too Many'      => array( 429, false ),
+			'500 Server Error'  => array( 500, false ),
+			'502 Bad Gateway'   => array( 502, false ),
+			'503 Unavailable'   => array( 503, false ),
 		);
 	}
 }

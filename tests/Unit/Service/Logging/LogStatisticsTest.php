@@ -174,7 +174,7 @@ class LogStatisticsTest extends TestCase {
 	 */
 	public function testGetStatisticsForAllForms(): void {
 		// Create entries for different forms.
-		$log_id = $this->log_writer->start_request(
+		$log_id   = $this->log_writer->start_request(
 			form_id: 111,
 			endpoint: 'https://api.example.com/form1',
 			method: 'POST',
@@ -365,12 +365,12 @@ class LogStatisticsTest extends TestCase {
 	 */
 	public static function errorStatusProvider(): array {
 		return array(
-			'400 Bad Request'     => array( 400 ),
-			'403 Forbidden'       => array( 403 ),
-			'404 Not Found'       => array( 404 ),
-			'500 Server Error'    => array( 500 ),
-			'502 Bad Gateway'     => array( 502 ),
-			'503 Unavailable'     => array( 503 ),
+			'400 Bad Request'  => array( 400 ),
+			'403 Forbidden'    => array( 403 ),
+			'404 Not Found'    => array( 404 ),
+			'500 Server Error' => array( 500 ),
+			'502 Bad Gateway'  => array( 502 ),
+			'503 Unavailable'  => array( 503 ),
 		);
 	}
 }

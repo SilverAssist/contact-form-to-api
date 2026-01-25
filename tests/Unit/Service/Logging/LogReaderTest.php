@@ -282,10 +282,10 @@ class LogReaderTest extends TestCase {
 	 */
 	public static function errorStatusProvider(): array {
 		return array(
-			'400 Bad Request'     => array( 400, 'client_error' ),
-			'404 Not Found'       => array( 404, 'client_error' ),
-			'500 Server Error'    => array( 500, 'server_error' ),
-			'503 Unavailable'     => array( 503, 'server_error' ),
+			'400 Bad Request'  => array( 400, 'client_error' ),
+			'404 Not Found'    => array( 404, 'client_error' ),
+			'500 Server Error' => array( 500, 'server_error' ),
+			'503 Unavailable'  => array( 503, 'server_error' ),
 		);
 	}
 

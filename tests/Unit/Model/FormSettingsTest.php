@@ -29,10 +29,19 @@ class FormSettingsTest extends TestCase {
 			endpoint: 'https://api.example.com/webhook',
 			method: 'POST',
 			input_type: 'json',
-			field_mappings: array( 'email' => 'user_email', 'name' => 'full_name' ),
-			auth_config: array( 'type' => 'bearer', 'token' => 'secret' ),
+			field_mappings: array(
+				'email' => 'user_email',
+				'name'  => 'full_name',
+			),
+			auth_config: array(
+				'type'  => 'bearer',
+				'token' => 'secret',
+			),
 			custom_headers: array( 'X-Custom' => 'value' ),
-			retry_config: array( 'max_retries' => 3, 'delay' => 300 ),
+			retry_config: array(
+				'max_retries' => 3,
+				'delay'       => 300,
+			),
 			debug_mode: true
 		);
 
@@ -41,10 +50,28 @@ class FormSettingsTest extends TestCase {
 		$this->assertSame( 'https://api.example.com/webhook', $settings->get_endpoint() );
 		$this->assertSame( 'POST', $settings->get_method() );
 		$this->assertSame( 'json', $settings->get_input_type() );
-		$this->assertSame( array( 'email' => 'user_email', 'name' => 'full_name' ), $settings->get_field_mappings() );
-		$this->assertSame( array( 'type' => 'bearer', 'token' => 'secret' ), $settings->get_auth_config() );
+		$this->assertSame(
+			array(
+				'email' => 'user_email',
+				'name'  => 'full_name',
+			),
+			$settings->get_field_mappings()
+		);
+		$this->assertSame(
+			array(
+				'type'  => 'bearer',
+				'token' => 'secret',
+			),
+			$settings->get_auth_config()
+		);
 		$this->assertSame( array( 'X-Custom' => 'value' ), $settings->get_custom_headers() );
-		$this->assertSame( array( 'max_retries' => 3, 'delay' => 300 ), $settings->get_retry_config() );
+		$this->assertSame(
+			array(
+				'max_retries' => 3,
+				'delay'       => 300,
+			),
+			$settings->get_retry_config()
+		);
 		$this->assertTrue( $settings->is_debug_mode() );
 	}
 
@@ -173,8 +200,20 @@ class FormSettingsTest extends TestCase {
 		$this->assertSame( 'https://api.example.com/submit', $settings->get_endpoint() );
 		$this->assertSame( 'POST', $settings->get_method() );
 		$this->assertSame( 'json', $settings->get_input_type() );
-		$this->assertSame( array( 'your-email' => 'email', 'your-name' => 'name' ), $settings->get_field_mappings() );
-		$this->assertSame( array( 'type' => 'bearer', 'token' => 'test-token' ), $settings->get_auth_config() );
+		$this->assertSame(
+			array(
+				'your-email' => 'email',
+				'your-name'  => 'name',
+			),
+			$settings->get_field_mappings()
+		);
+		$this->assertSame(
+			array(
+				'type'  => 'bearer',
+				'token' => 'test-token',
+			),
+			$settings->get_auth_config()
+		);
 		$this->assertTrue( $settings->is_debug_mode() );
 	}
 
