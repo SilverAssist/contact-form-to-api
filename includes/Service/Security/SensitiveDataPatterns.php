@@ -22,7 +22,7 @@ use SilverAssist\ContactFormToAPI\Config\Settings;
  * Class SensitiveDataPatterns
  *
  * Centralized definition of sensitive data field patterns.
- * Used by RequestLogger and ExportService for consistent data redaction.
+ * Used by LogWriter and ExportService for consistent data redaction.
  *
  * @since 1.2.0
  */

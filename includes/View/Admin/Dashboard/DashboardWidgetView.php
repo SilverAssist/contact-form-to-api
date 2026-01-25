@@ -14,7 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\View\Admin\Dashboard;
 
-use SilverAssist\ContactFormToAPI\Core\RequestLogger;
+use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -175,8 +175,9 @@ class DashboardWidgetView {
 		$form_name = self::get_form_name( $form_id );
 		$error_msg = isset( $error['error_message'] ) ? $error['error_message'] : \__( 'Unknown error', 'contact-form-to-api' );
 		
-		// Anonymize sensitive data in error message using static method
-		$anonymized_msg  = RequestLogger::anonymize_data( $error_msg );
+		// Note: SensitiveDataPatterns::anonymize() only works with JSON strings or arrays.
+		// Plain text error messages are returned unchanged.
+		$anonymized_msg  = SensitiveDataPatterns::anonymize( $error_msg );
 		$displayed_msg   = \is_string( $anonymized_msg ) ? $anonymized_msg : $error_msg;
 		
 		$time_ago  = self::time_ago( $error['created_at'] ?? '' );

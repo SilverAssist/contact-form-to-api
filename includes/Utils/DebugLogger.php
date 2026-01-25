@@ -5,7 +5,7 @@
  * Provides PSR-3 compliant logging functionality for the Contact Form to API plugin.
  * Supports multiple log levels and configurable output destinations with file rotation.
  *
- * This logger is for general plugin debugging, distinct from Core\RequestLogger which
+ * This logger is for general plugin debugging, distinct from the logging services which
  * handles API request/response logging to the database.
  *
  * @package SilverAssist\ContactFormToAPI

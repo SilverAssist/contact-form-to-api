@@ -11,7 +11,7 @@
  * @author  Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Tests\Unit;
+namespace SilverAssist\ContactFormToAPI\Tests\Unit\Service\Migration;
 
 use SilverAssist\ContactFormToAPI\Core\Activator;
 use SilverAssist\ContactFormToAPI\Service\Migration\MigrationService;
@@ -55,8 +55,8 @@ class MigrationServiceTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 
 		// Enable encryption for tests.
 		\update_option( 'cf7_api_global_settings', array( 'encryption_enabled' => true ) );
@@ -73,13 +73,13 @@ class MigrationServiceTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function tearDown(): void {
+	public function tear_down(): void {
 		global $wpdb;
 
 		// Clean up test logs.
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$wpdb->query( "TRUNCATE TABLE {$table_name}" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( $wpdb->prepare( 'TRUNCATE TABLE %i', $table_name ) );
 
 		// Clean up settings.
 		\delete_option( 'cf7_api_global_settings' );
@@ -87,7 +87,7 @@ class MigrationServiceTest extends WP_UnitTestCase {
 		// Clean up transients.
 		\delete_transient( 'cf7_api_migration_progress' );
 
-		parent::tearDown();
+		parent::tear_down();
 	}
 
 	/**
@@ -194,8 +194,8 @@ class MigrationServiceTest extends WP_UnitTestCase {
 		$this->assertSame( 0, $result['failed'] );
 
 		// Verify log is encrypted.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$log = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$log = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 
 		$this->assertSame( 1, (int) $log['encryption_version'] );
 		$this->assertNotSame( $test_data, $log['request_data'] );
@@ -231,8 +231,8 @@ class MigrationServiceTest extends WP_UnitTestCase {
 		$this->service->migrate_batch( 10, false );
 
 		// Verify encryption_version is updated.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$log = $wpdb->get_row( $wpdb->prepare( "SELECT encryption_version FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$log = $wpdb->get_row( $wpdb->prepare( 'SELECT encryption_version FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 
 		$this->assertSame( 1, (int) $log['encryption_version'] );
 	}
@@ -270,8 +270,8 @@ class MigrationServiceTest extends WP_UnitTestCase {
 		$this->assertSame( 0, $result['processed'] );
 
 		// Verify log data unchanged.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$log = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$log = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 
 		$this->assertSame( $encrypted_data, $log['request_data'] );
 		$this->assertSame( 1, (int) $log['encryption_version'] );
@@ -413,8 +413,8 @@ class MigrationServiceTest extends WP_UnitTestCase {
 		$this->assertSame( 1, $result['success'] );
 
 		// Verify log data unchanged.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$log = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$log = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 
 		$this->assertSame( $test_data, $log['request_data'] );
 		$this->assertSame( 0, (int) $log['encryption_version'] );
@@ -515,8 +515,8 @@ class MigrationServiceTest extends WP_UnitTestCase {
 		$this->assertSame( 0, $result2['processed'] );
 
 		// Verify log is still encrypted and unchanged.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$log = $wpdb->get_row( $wpdb->prepare( "SELECT encryption_version FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$log = $wpdb->get_row( $wpdb->prepare( 'SELECT encryption_version FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 
 		$this->assertSame( 1, (int) $log['encryption_version'] );
 	}

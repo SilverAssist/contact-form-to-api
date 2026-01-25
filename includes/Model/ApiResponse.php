@@ -20,7 +20,7 @@ namespace SilverAssist\ContactFormToAPI\Model;
  * ApiResponse Model Class
  *
  * Represents an API response with type safety.
- * Part of Phase 1 foundation for 2.0.0 architecture refactoring.
+ * Encapsulates HTTP response data including status, headers, and body.
  *
  * @since 2.0.0
  */

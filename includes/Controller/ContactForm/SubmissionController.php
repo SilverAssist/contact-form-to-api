@@ -4,7 +4,6 @@
  *
  * Handles WordPress hook registration and routing for Contact Form 7 integration.
  * Manages admin interface, form settings, and delegates processing to service layer.
- * Extracted from Integration.php as part of Phase 3 refactoring.
  *
  * @package    SilverAssist\ContactFormToAPI
  * @subpackage Controller\ContactForm

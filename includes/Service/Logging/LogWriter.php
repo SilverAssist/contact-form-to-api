@@ -3,7 +3,7 @@
  * Log Writer Service
  *
  * Handles creation and updating of API request logs.
- * Extracted from RequestLogger as part of Phase 2 refactoring.
+ * Handles writing API request logs to the database.
  *
  * @package    SilverAssist\ContactFormToAPI
  * @subpackage Service\Logging

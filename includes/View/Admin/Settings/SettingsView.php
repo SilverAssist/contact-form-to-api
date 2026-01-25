@@ -15,7 +15,6 @@
 namespace SilverAssist\ContactFormToAPI\View\Admin\Settings;
 
 use SilverAssist\ContactFormToAPI\Config\Settings;
-use SilverAssist\ContactFormToAPI\Controller\Admin\SettingsController;
 use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 use SilverAssist\ContactFormToAPI\View\Admin\Migration\MigrationView;
 use SilverAssist\ContactFormToAPI\View\Admin\Settings\Partials\GlobalSettingsPartial;

@@ -12,7 +12,7 @@
  * @author  Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Tests\Unit;
+namespace SilverAssist\ContactFormToAPI\Tests\Unit\Service\Export;
 
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 use SilverAssist\ContactFormToAPI\Service\Export\ExportService;
@@ -34,8 +34,8 @@ class ExportServiceTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	protected function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 
 		// Get singleton instance.
 		$this->export_service = ExportService::instance();

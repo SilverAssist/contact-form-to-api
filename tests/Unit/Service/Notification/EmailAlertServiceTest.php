@@ -11,7 +11,7 @@
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Tests\Unit;
+namespace SilverAssist\ContactFormToAPI\Tests\Unit\Service\Notification;
 
 use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Service\Notification\EmailAlertService;
@@ -41,8 +41,8 @@ class EmailAlertServiceTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	protected function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 
 		// Get fresh instances.
 		$this->service  = EmailAlertService::instance();
@@ -262,7 +262,6 @@ class EmailAlertServiceTest extends TestCase {
 		// Use reflection to test private method.
 		$reflection = new \ReflectionClass( $this->service );
 		$method     = $reflection->getMethod( 'should_alert' );
-		$method->setAccessible( true );
 
 		// Stats exceeding error threshold.
 		$stats = array(
@@ -287,7 +286,6 @@ class EmailAlertServiceTest extends TestCase {
 		// Use reflection to test private method.
 		$reflection = new \ReflectionClass( $this->service );
 		$method     = $reflection->getMethod( 'should_alert' );
-		$method->setAccessible( true );
 
 		// Stats exceeding rate threshold.
 		$stats = array(
@@ -312,7 +310,6 @@ class EmailAlertServiceTest extends TestCase {
 		// Use reflection to test private method.
 		$reflection = new \ReflectionClass( $this->service );
 		$method     = $reflection->getMethod( 'should_alert' );
-		$method->setAccessible( true );
 
 		// Stats below thresholds.
 		$stats = array(

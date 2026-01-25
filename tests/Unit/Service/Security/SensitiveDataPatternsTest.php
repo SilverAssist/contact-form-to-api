@@ -12,7 +12,7 @@
  * @author  Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Tests\Unit;
+namespace SilverAssist\ContactFormToAPI\Tests\Unit\Service\Security;
 
 use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
@@ -222,13 +222,13 @@ class SensitiveDataPatternsTest extends TestCase {
 	}
 
 	/**
-	 * Test integration with RequestLogger patterns
+	 * Test integration with LogWriter patterns
 	 *
 	 * @return void
 	 */
-	public function testPatternsMatchRequestLoggerRequirements(): void {
-		// These are the patterns that were originally in RequestLogger
-		$original_patterns = array(
+	public function testPatternsMatchLoggingServiceRequirements(): void {
+		// These are the patterns required by logging services.
+		$required_patterns = array(
 			'password',
 			'passwd',
 			'secret',
@@ -246,11 +246,11 @@ class SensitiveDataPatternsTest extends TestCase {
 
 		$current_patterns = SensitiveDataPatterns::get_all();
 
-		foreach ( $original_patterns as $pattern ) {
+		foreach ( $required_patterns as $pattern ) {
 			$this->assertContains(
 				$pattern,
 				$current_patterns,
-				"Pattern '{$pattern}' from original RequestLogger should be present"
+				"Pattern '{$pattern}' required by logging services should be present"
 			);
 		}
 	}

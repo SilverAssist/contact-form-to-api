@@ -2,17 +2,18 @@
 /**
  * Manual Retry Traceability Integration Tests
  *
- * Tests the new retry traceability features added in version 1.3.8.
+ * Tests the retry traceability features.
  *
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Tests\Integration
- * @since 1.3.8
+ * @since   1.3.8
+ * @version 2.0.0
  */
 
 namespace SilverAssist\ContactFormToAPI\Tests\Integration;
 
 use SilverAssist\ContactFormToAPI\Core\Activator;
-use SilverAssist\ContactFormToAPI\Core\RequestLogger;
+use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
 use WP_UnitTestCase;
 
 /**
@@ -25,13 +26,20 @@ use WP_UnitTestCase;
 class RetryTraceabilityTest extends WP_UnitTestCase {
 
 	/**
+	 * RetryManager instance
+	 *
+	 * @var RetryManager
+	 */
+	private RetryManager $retry_manager;
+
+	/**
 	 * Set up before class - runs ONCE before any tests
 	 * CRITICAL: Use this for CREATE TABLE to avoid MySQL implicit COMMIT
 	 */
 	public static function set_up_before_class(): void {
 		parent::set_up_before_class();
 
-		// Create tables BEFORE inserting any test data
+		// Create tables BEFORE inserting any test data.
 		Activator::create_tables();
 	}
 
@@ -42,8 +50,9 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+		$this->retry_manager = new RetryManager();
 
-		// Clean logs table before each test
+		// Clean logs table before each test.
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -59,7 +68,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// Create original failed request
+		// Create original failed request.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -75,7 +84,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		// Create first retry (also failed)
+		// Create first retry (also failed).
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -92,7 +101,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%s' )
 		);
 
-		// Create second retry (success!)
+		// Create second retry (success!).
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -110,8 +119,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%s' )
 		);
 
-		$logger = new RequestLogger();
-		$result = $logger->get_successful_retry_id( 100 );
+		$result = $this->retry_manager->get_successful_retry_id( 100 );
 
 		$this->assertSame( 102, $result, 'Should return ID of successful retry' );
 	}
@@ -125,7 +133,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// Create original failed request
+		// Create original failed request.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -141,7 +149,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		// Create retry that also failed
+		// Create retry that also failed.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -158,8 +166,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%s' )
 		);
 
-		$logger = new RequestLogger();
-		$result = $logger->get_successful_retry_id( 200 );
+		$result = $this->retry_manager->get_successful_retry_id( 200 );
 
 		$this->assertNull( $result, 'Should return null when no successful retry exists' );
 	}
@@ -173,7 +180,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// Create original failed request
+		// Create original failed request.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -189,7 +196,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		// Create successful retry
+		// Create successful retry.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -207,8 +214,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%s' )
 		);
 
-		$logger = new RequestLogger();
-		$result = $logger->has_successful_retry( 300 );
+		$result = $this->retry_manager->has_successful_retry( 300 );
 
 		$this->assertTrue( $result, 'Should return true when successful retry exists' );
 	}
@@ -222,7 +228,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// Create original failed request with no retries
+		// Create original failed request with no retries.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -238,8 +244,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		$logger = new RequestLogger();
-		$result = $logger->has_successful_retry( 400 );
+		$result = $this->retry_manager->has_successful_retry( 400 );
 
 		$this->assertFalse( $result, 'Should return false when no retry exists' );
 	}
@@ -253,7 +258,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// Create original failed request
+		// Create original failed request.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -269,7 +274,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		// Create first retry (failed)
+		// Create first retry (failed).
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -286,7 +291,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%s' )
 		);
 
-		// Create second retry (success)
+		// Create second retry (success).
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -304,8 +309,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%s' )
 		);
 
-		$logger  = new RequestLogger();
-		$retries = $logger->get_retries_for_log( 500 );
+		$retries = $this->retry_manager->get_retries_for_log( 500 );
 
 		$this->assertIsArray( $retries, 'Should return an array' );
 		$this->assertCount( 2, $retries, 'Should return 2 retry entries' );
@@ -324,7 +328,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// Create original failed request with no retries
+		// Create original failed request with no retries.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -340,8 +344,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		$logger  = new RequestLogger();
-		$retries = $logger->get_retries_for_log( 600 );
+		$retries = $this->retry_manager->get_retries_for_log( 600 );
 
 		$this->assertIsArray( $retries, 'Should return an array' );
 		$this->assertEmpty( $retries, 'Should return empty array when no retries exist' );
@@ -357,7 +360,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// Create unresolved error (no retry)
+		// Create unresolved error (no retry).
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -373,7 +376,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		// Create another unresolved error (retry also failed)
+		// Create another unresolved error (retry also failed).
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -389,7 +392,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		// Create failed retry for 701 (still unresolved)
+		// Create failed retry for 701 (still unresolved).
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -406,7 +409,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%s' )
 		);
 
-		// Create resolved error (has successful retry)
+		// Create resolved error (has successful retry).
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -422,7 +425,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		// Create successful retry for 703 (resolved)
+		// Create successful retry for 703 (resolved).
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -440,7 +443,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%s' )
 		);
 
-		// Create a success log (should not be counted as error)
+		// Create a success log (should not be counted as error).
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -456,19 +459,18 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		$logger = new RequestLogger();
-		$result = $logger->count_errors_by_resolution();
+		$result = $this->retry_manager->count_errors_by_resolution();
 
 		$this->assertIsArray( $result, 'Should return an array' );
 		$this->assertArrayHasKey( 'total', $result, 'Should have total key' );
 		$this->assertArrayHasKey( 'resolved', $result, 'Should have resolved key' );
 		$this->assertArrayHasKey( 'unresolved', $result, 'Should have unresolved key' );
 
-		// Total errors (originals only): 700, 701, 703 = 3 (702 is a retry of 701 and not counted)
+		// Total errors (originals only): 700, 701, 703 = 3 (702 is a retry of 701 and not counted).
 		$this->assertSame( 3, $result['total'], 'Should count 3 total errors' );
-		// Resolved: only 703 has successful retry
+		// Resolved: only 703 has successful retry.
 		$this->assertSame( 1, $result['resolved'], 'Should count 1 resolved error' );
-		// Unresolved: 700, 701 = 2
+		// Unresolved: 700, 701 = 2.
 		$this->assertSame( 2, $result['unresolved'], 'Should count 2 unresolved errors' );
 	}
 
@@ -482,7 +484,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// Create only success logs
+		// Create only success logs.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -498,8 +500,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		$logger = new RequestLogger();
-		$result = $logger->count_errors_by_resolution();
+		$result = $this->retry_manager->count_errors_by_resolution();
 
 		$this->assertSame( 0, $result['total'], 'Should count 0 total errors' );
 		$this->assertSame( 0, $result['resolved'], 'Should count 0 resolved errors' );
@@ -516,7 +517,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// Create unresolved error
+		// Create unresolved error.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -532,7 +533,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		// Create resolved error #1
+		// Create resolved error #1.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -548,7 +549,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		// Successful retry for 901
+		// Successful retry for 901.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -566,7 +567,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%s' )
 		);
 
-		// Create resolved error #2
+		// Create resolved error #2.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -582,7 +583,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		// Successful retry for 903
+		// Successful retry for 903.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -600,8 +601,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%d', '%s' )
 		);
 
-		$logger = new RequestLogger();
-		$result = $logger->get_resolved_error_ids();
+		$result = $this->retry_manager->get_resolved_error_ids();
 
 		$this->assertIsArray( $result, 'Should return an array' );
 		$this->assertCount( 2, $result, 'Should return 2 resolved error IDs' );
@@ -620,7 +620,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// Create only unresolved errors
+		// Create only unresolved errors.
 		$wpdb->insert(
 			$table_name,
 			array(
@@ -636,8 +636,7 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
 			array( '%d', '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
 		);
 
-		$logger = new RequestLogger();
-		$result = $logger->get_resolved_error_ids();
+		$result = $this->retry_manager->get_resolved_error_ids();
 
 		$this->assertIsArray( $result, 'Should return an array' );
 		$this->assertEmpty( $result, 'Should return empty array when no resolved errors' );

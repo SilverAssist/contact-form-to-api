@@ -3,7 +3,7 @@
  * Log Statistics Service
  *
  * Handles statistical calculations for API request logs.
- * Extracted from RequestLogger as part of Phase 2 refactoring.
+ * Provides statistics for API request logs.
  *
  * @package    SilverAssist\ContactFormToAPI
  * @subpackage Service\Logging

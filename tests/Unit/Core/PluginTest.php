@@ -12,7 +12,7 @@
  * @author  Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Tests\Unit;
+namespace SilverAssist\ContactFormToAPI\Tests\Unit\Core;
 
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 use SilverAssist\ContactFormToAPI\Core\Plugin;
@@ -181,18 +181,14 @@ class PluginTest extends TestCase {
 	 * @return void
 	 */
 	public function testI18nTextDomain(): void {
-		// Mock WordPress i18n functions if not available
-		if ( ! function_exists( '__' ) ) {
-			$this->mockWordPressFunction( '__', 'mocked_translation' );
-		}
+		// WordPress i18n functions should be available via WP_UnitTestCase.
+		$this->assertTrue( function_exists( '__' ), 'Translation function __ should be available' );
+		$this->assertTrue( function_exists( 'esc_html__' ), 'esc_html__ should be available' );
 
-		if ( ! function_exists( 'esc_html__' ) ) {
-			$this->mockWordPressFunction( 'esc_html__', 'mocked_escaped_translation' );
-		}
-
-		// Text domain 'contact-form-to-api' should be used as literal string in all i18n calls
-		// WordPress i18n tools (wp i18n make-pot) require literal strings, not constants
-		$this->assertTrue( true, 'i18n functions available' );
+		// Text domain 'contact-form-to-api' should be used as literal string in all i18n calls.
+		// WordPress i18n tools (wp i18n make-pot) require literal strings, not constants.
+		$translated = __( 'Test String', 'contact-form-to-api' );
+		$this->assertIsString( $translated, 'Translation function should return a string' );
 	}
 
 	/**

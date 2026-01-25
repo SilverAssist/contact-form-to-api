@@ -7,7 +7,7 @@ applyTo: "tests/**/*.php"
 # PHPUnit Testing Standards for Contact Form to API Plugin
 
 **Applies to**: `tests/**/*.php`  
-**Last Updated**: January 23, 2026  
+**Last Updated**: January 24, 2026  
 **Project**: Contact Form to API WordPress Plugin
 
 ---
@@ -18,21 +18,37 @@ applyTo: "tests/**/*.php"
 tests/
 ├── bootstrap.php            # Test setup and WordPress loading
 ├── Helpers/
-│   ├── TestCase.php        # Base test case for unit tests
+│   ├── TestCase.php        # Base test case (extends WP_UnitTestCase)
 │   └── CF7TestCase.php     # Base test case for CF7 tests
-├── Unit/                    # Unit tests (no WordPress required)
-│   ├── DataAnonymizationTest.php
-│   ├── EmailAlertServiceTest.php
-│   ├── EncryptionServiceTest.php
-│   ├── ExportServiceTest.php
-│   ├── LoggerTest.php
-│   ├── MigrationServiceTest.php
-│   ├── PluginTest.php
-│   ├── RequestLogControllerTest.php
-│   ├── RequestLogTableTest.php
-│   ├── RequestLoggerStatisticsTest.php
-│   ├── SensitiveDataPatternsTest.php
-│   └── SettingsTest.php
+├── Unit/                    # Unit tests (MVC folder structure)
+│   ├── Config/
+│   │   └── SettingsTest.php
+│   ├── Controller/
+│   │   └── Admin/
+│   │       └── LogsControllerTest.php
+│   ├── Core/
+│   │   ├── DataAnonymizationTest.php
+│   │   ├── PluginTest.php
+│   │   ├── RequestLoggerStatisticsTest.php
+│   │   └── RequestLoggerTest.php
+│   ├── Infrastructure/
+│   │   └── ListTable/
+│   │       └── RequestLogTableTest.php
+│   └── Service/
+│       ├── Export/
+│       │   └── ExportServiceTest.php
+│       ├── Logging/
+│       │   ├── LogReaderTest.php
+│       │   ├── LogStatisticsTest.php
+│       │   ├── LogWriterTest.php
+│       │   └── RetryManagerTest.php
+│       ├── Migration/
+│       │   └── MigrationServiceTest.php
+│       ├── Notification/
+│       │   └── EmailAlertServiceTest.php
+│       └── Security/
+│           ├── EncryptionServiceTest.php
+│           └── SensitiveDataPatternsTest.php
 ├── Integration/             # Integration tests (WordPress required)
 │   ├── EncryptedLoggingTest.php
 │   ├── FormSubmissionLoggingTest.php
@@ -48,24 +64,40 @@ tests/
 
 ## ✅ Must-Follow Rules
 
-### 1. Method Names Are camelCase
+### 1. Base Class: All Tests Extend TestCase (WP_UnitTestCase)
 
 ```php
-// ✅ CORRECT
-public function setUp(): void
-public function tearDown(): void
-public function testMethodReturnsExpectedValue(): void
+// ✅ CORRECT - Use our TestCase which extends WP_UnitTestCase
+use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 
-// ❌ WRONG - WordPress snake_case style
-public function set_up(): void
-public function tear_down(): void
-public function test_method_returns_expected_value(): void
+class MyTest extends TestCase {
+    // Tests here
+}
 ```
 
-### 2. Test Method Naming Convention
+### 2. Method Names Use WordPress snake_case Convention
+
+Since TestCase extends WP_UnitTestCase, use WordPress-style snake_case for lifecycle methods:
 
 ```php
-// ✅ CORRECT - Descriptive test names
+// ✅ CORRECT - WordPress snake_case style (WP_UnitTestCase)
+public function set_up(): void
+public function tear_down(): void
+public static function set_up_before_class(): void
+public static function tear_down_after_class(): void
+
+// Test methods use camelCase
+public function testMethodReturnsExpectedValue(): void
+
+// ❌ WRONG - PHPUnit camelCase style (don't use with WP_UnitTestCase)
+public function setUp(): void
+public function tearDown(): void
+```
+
+### 3. Test Method Naming Convention
+
+```php
+// ✅ CORRECT - Descriptive test names in camelCase
 public function testStartRequestCreatesLogEntry(): void
 public function testCompleteRequestUpdatesStatus(): void
 public function testSearchMatchesSenderName(): void
@@ -75,42 +107,51 @@ public function testMethod(): void
 public function testItWorks(): void
 ```
 
-### 3. Skip When Dependencies Missing
+### 4. Database Queries: Use %i for Table Names
+
+WordPress 6.2+ supports `%i` placeholder for identifiers (table/column names):
 
 ```php
-public function setUp(): void {
-    parent::setUp();
-    
-    // Skip if WordPress not loaded.
-    if ( ! function_exists( 'add_action' ) ) {
-        $this->markTestSkipped( 'WordPress not loaded' );
-        return; // IMPORTANT: always return after skip.
-    }
+// ✅ CORRECT - Use %i for table names
+$wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $id );
+$wpdb->prepare( 'DELETE FROM %i WHERE form_id = %d', $table_name, $form_id );
+$wpdb->query( $wpdb->prepare( 'TRUNCATE TABLE %i', $table_name ) );
+
+// ❌ WRONG - Variable interpolation in queries
+$wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $id );
+$wpdb->query( "DELETE FROM {$table_name}" );
+```
+
+### 5. Skip When Dependencies Missing
+
+```php
+public function set_up(): void {
+    parent::set_up();
     
     // Skip if CF7 not available.
     if ( ! class_exists( 'WPCF7_ContactForm' ) ) {
         $this->markTestSkipped( 'Contact Form 7 not loaded' );
-        return;
+        return; // IMPORTANT: always return after skip.
     }
     
     $this->service = new MyService();
 }
 ```
 
-### 4. Always Clean Up Resources
+### 6. Always Clean Up Resources
 
 ```php
-public function tearDown(): void {
+public function tear_down(): void {
     // Clean up test data.
     $this->service = null;
     $this->logger = null;
     
     // Reset any global state.
-    parent::tearDown();
+    parent::tear_down();
 }
 ```
 
-### 5. Use PHPDoc Group Annotations
+### 7. Use PHPDoc Group Annotations
 
 ```php
 /**
@@ -130,7 +171,7 @@ class RequestLoggerTest extends TestCase {
  * @group retry
  * @requires extension pdo_mysql
  */
-class RetryTraceabilityTest extends WP_UnitTestCase {
+class RetryTraceabilityTest extends TestCase {
 }
 ```
 
@@ -148,16 +189,18 @@ class RetryTraceabilityTest extends WP_UnitTestCase {
  * @package SilverAssist\ContactFormToAPI\Tests\Unit
  */
 
-namespace SilverAssist\ContactFormToAPI\Tests\Unit;
+namespace SilverAssist\ContactFormToAPI\Tests\Unit\Service\Logging;
 
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
-use SilverAssist\ContactFormToAPI\Core\ClassName;
+use SilverAssist\ContactFormToAPI\Service\Logging\ClassName;
 
 /**
  * ClassName test case.
  *
  * @group unit
- * @covers \SilverAssist\ContactFormToAPI\Core\ClassName
+ * @group service
+ * @group logging
+ * @covers \SilverAssist\ContactFormToAPI\Service\Logging\ClassName
  */
 class ClassNameTest extends TestCase {
 
@@ -171,17 +214,17 @@ class ClassNameTest extends TestCase {
     /**
      * Set up test fixtures.
      */
-    public function setUp(): void {
-        parent::setUp();
+    public function set_up(): void {
+        parent::set_up();
         $this->instance = new ClassName();
     }
 
     /**
      * Tear down test fixtures.
      */
-    public function tearDown(): void {
+    public function tear_down(): void {
         $this->instance = null;
-        parent::tearDown();
+        parent::tear_down();
     }
 
     /**
@@ -203,7 +246,7 @@ class ClassNameTest extends TestCase {
  *
  * @return array<string, array{item: array<string, mixed>, search: string, expected: bool}>
  */
-public function searchMatchingDataProvider(): array {
+public static function searchMatchingDataProvider(): array {
     return array(
         'exact match' => array(
             'item'     => array( 'name' => 'John Doe' ),
@@ -307,15 +350,21 @@ $this->assertTrue(
  * @group integration
  * @group database
  */
-class DatabaseIntegrationTest extends WP_UnitTestCase {
+class DatabaseIntegrationTest extends TestCase {
+
+    /**
+     * Table name for tests.
+     *
+     * @var string
+     */
+    private string $table_name;
 
     /**
      * Set up test fixtures.
      */
-    public function setUp(): void {
-        parent::setUp();
+    public function set_up(): void {
+        parent::set_up();
         
-        // Create test table or use WordPress tables.
         global $wpdb;
         $this->table_name = $wpdb->prefix . 'cf7_api_logs';
     }
@@ -323,13 +372,13 @@ class DatabaseIntegrationTest extends WP_UnitTestCase {
     /**
      * Clean up after each test.
      */
-    public function tearDown(): void {
+    public function tear_down(): void {
         global $wpdb;
         
-        // Clean up test data.
-        $wpdb->query( "DELETE FROM {$this->table_name} WHERE form_id = 99999" );
+        // ✅ CORRECT - Use %i for table name
+        $wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE form_id = %d', $this->table_name, 99999 ) );
         
-        parent::tearDown();
+        parent::tear_down();
     }
 
     /**
@@ -350,9 +399,9 @@ class DatabaseIntegrationTest extends WP_UnitTestCase {
         
         $id = $wpdb->insert_id;
         
-        // Retrieve and verify.
+        // ✅ CORRECT - Use %i for table name
         $row = $wpdb->get_row(
-            $wpdb->prepare( "SELECT * FROM {$this->table_name} WHERE id = %d", $id ),
+            $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $this->table_name, $id ),
             ARRAY_A
         );
         
@@ -361,20 +410,29 @@ class DatabaseIntegrationTest extends WP_UnitTestCase {
 }
 ```
 
-### Mocking WordPress Functions
+### Using WP_UnitTestCase Features
 
 ```php
 /**
- * Test with mocked WordPress functions.
+ * Test using WP_UnitTestCase factory methods.
  */
-public function testWithMockedFunction(): void {
-    // Use WP_Mock or Brain\Monkey for function mocking.
-    // Or use WordPress test suite's built-in mocking.
+public function testWithFactory(): void {
+    // Create a test user using factory.
+    $user_id = $this->factory->user->create( array(
+        'role' => 'administrator',
+    ) );
     
-    // Example: Test that function is called.
-    $this->expectAction( 'cf7_api_log_created' );
+    // Create a test post.
+    $post_id = $this->factory->post->create( array(
+        'post_author' => $user_id,
+        'post_title'  => 'Test Post',
+    ) );
     
-    $this->logger->start_request( 1, 'https://api.test', 'POST', array() );
+    // Set current user.
+    wp_set_current_user( $user_id );
+    
+    // Your test assertions...
+    $this->assertTrue( current_user_can( 'manage_options' ) );
 }
 ```
 
@@ -387,9 +445,11 @@ public function testWithMockedFunction(): void {
 - [ ] All tests pass: `composer test`
 - [ ] PHPCS clean: `composer phpcs tests/`
 - [ ] PHPStan Level 8: `composer phpstan`
-- [ ] Test names are descriptive
+- [ ] Test names are descriptive (camelCase)
+- [ ] Lifecycle methods use snake_case (set_up, tear_down)
 - [ ] PHPDoc annotations present (@group, @covers)
-- [ ] setUp/tearDown clean resources
+- [ ] Database queries use %i for table names
+- [ ] set_up/tear_down clean resources
 - [ ] Assertion messages are helpful
 - [ ] Edge cases covered
 
@@ -412,7 +472,7 @@ public function testWithMockedFunction(): void {
 composer test
 
 # Run specific test file
-vendor/bin/phpunit tests/Unit/RequestLoggerTest.php
+vendor/bin/phpunit tests/Unit/Service/Logging/LogWriterTest.php
 
 # Run specific test method
 vendor/bin/phpunit --filter testSearchMatchesSenderName
@@ -421,7 +481,7 @@ vendor/bin/phpunit --filter testSearchMatchesSenderName
 vendor/bin/phpunit --group unit
 vendor/bin/phpunit --group integration
 
-# Run with coverage (requires Xdebug)
+# Run with coverage (requires Xdebug or PCOV)
 composer test:coverage
 
 # Run in verbose mode
@@ -438,6 +498,6 @@ The `phpunit.xml` file configures:
 
 ---
 
-**Last Updated**: January 23, 2026  
+**Last Updated**: January 24, 2026  
 **Maintained By**: Silver Assist  
 **Repository**: https://github.com/SilverAssist/contact-form-to-api

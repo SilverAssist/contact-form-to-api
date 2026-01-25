@@ -11,12 +11,11 @@
  * @author  Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Tests\Unit;
+namespace SilverAssist\ContactFormToAPI\Tests\Unit\Infrastructure\ListTable;
 
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 use SilverAssist\ContactFormToAPI\Infrastructure\ListTable\RequestLogTable;
 use ReflectionClass;
-use ReflectionMethod;
 
 /**
  * Test cases for the RequestLogTable class
@@ -35,8 +34,8 @@ class RequestLogTableTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	protected function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 		$this->table = new RequestLogTable();
 	}
 
@@ -47,8 +46,8 @@ class RequestLogTableTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	protected function tearDown(): void {
-		parent::tearDown();
+	public function tear_down(): void {
+		parent::tear_down();
 	}
 
 	/**
@@ -71,7 +70,6 @@ class RequestLogTableTest extends TestCase {
 	public function testValidateDateFormatWithValidDate(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'validate_date_format' );
-		$method->setAccessible( true );
 
 		$this->assertTrue(
 			$method->invoke( $this->table, '2026-01-03' ),
@@ -87,7 +85,6 @@ class RequestLogTableTest extends TestCase {
 	public function testValidateDateFormatWithInvalidFormat(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'validate_date_format' );
-		$method->setAccessible( true );
 
 		$this->assertFalse(
 			$method->invoke( $this->table, '01/03/2026' ),
@@ -113,7 +110,6 @@ class RequestLogTableTest extends TestCase {
 	public function testValidateDateFormatWithEmptyString(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'validate_date_format' );
-		$method->setAccessible( true );
 
 		$this->assertFalse(
 			$method->invoke( $this->table, '' ),
@@ -129,7 +125,6 @@ class RequestLogTableTest extends TestCase {
 	public function testBuildCustomRangeClauseWithBothDates(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'build_custom_date_range_clause' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table, '2026-01-01', '2026-01-31' );
 
@@ -148,7 +143,6 @@ class RequestLogTableTest extends TestCase {
 	public function testBuildCustomRangeClauseWithStartDateOnly(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'build_custom_date_range_clause' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table, '2026-01-01', '' );
 
@@ -165,7 +159,6 @@ class RequestLogTableTest extends TestCase {
 	public function testBuildCustomRangeClauseWithInvalidStartDate(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'build_custom_date_range_clause' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table, 'invalid', '2026-01-31' );
 
@@ -182,7 +175,6 @@ class RequestLogTableTest extends TestCase {
 	public function testBuildCustomRangeClauseWithInvalidEndDate(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'build_custom_date_range_clause' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table, '2026-01-01', 'invalid' );
 
@@ -199,7 +191,6 @@ class RequestLogTableTest extends TestCase {
 	public function testGetDateFilterClauseWithNoFilter(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'get_date_filter_clause' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table );
 
@@ -218,7 +209,6 @@ class RequestLogTableTest extends TestCase {
 
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'get_date_filter_clause' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table );
 
@@ -236,7 +226,6 @@ class RequestLogTableTest extends TestCase {
 
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'get_date_filter_clause' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table );
 
@@ -254,7 +243,6 @@ class RequestLogTableTest extends TestCase {
 
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'get_date_filter_clause' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table );
 
@@ -272,7 +260,6 @@ class RequestLogTableTest extends TestCase {
 
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'get_date_filter_clause' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table );
 
@@ -290,7 +277,6 @@ class RequestLogTableTest extends TestCase {
 
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'get_date_filter_clause' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table );
 
@@ -310,7 +296,6 @@ class RequestLogTableTest extends TestCase {
 
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'get_date_filter_clause' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table );
 
@@ -328,7 +313,6 @@ class RequestLogTableTest extends TestCase {
 
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'get_date_filter_clause' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table );
 
@@ -344,7 +328,6 @@ class RequestLogTableTest extends TestCase {
 	public function testMaskEmailWithStandardEmail(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'mask_email' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table, 'john.doe@example.com' );
 
@@ -359,7 +342,6 @@ class RequestLogTableTest extends TestCase {
 	public function testMaskEmailWithTwoCharLocalPart(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'mask_email' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table, 'ab@example.com' );
 
@@ -374,7 +356,6 @@ class RequestLogTableTest extends TestCase {
 	public function testMaskEmailWithSingleCharLocalPart(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'mask_email' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table, 'a@example.com' );
 
@@ -389,7 +370,6 @@ class RequestLogTableTest extends TestCase {
 	public function testMaskEmailWithEmptyString(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'mask_email' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table, '' );
 
@@ -404,7 +384,6 @@ class RequestLogTableTest extends TestCase {
 	public function testMaskEmailWithNoAtSymbol(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'mask_email' );
-		$method->setAccessible( true );
 
 		$result = $method->invoke( $this->table, 'notanemail' );
 
@@ -419,7 +398,6 @@ class RequestLogTableTest extends TestCase {
 	public function testExtractSenderInfoWithStandardData(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'extract_sender_info' );
-		$method->setAccessible( true );
 
 		$item = array(
 			'id'                 => 1,
@@ -447,7 +425,6 @@ class RequestLogTableTest extends TestCase {
 	public function testExtractSenderInfoWithCF7FieldNames(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'extract_sender_info' );
-		$method->setAccessible( true );
 
 		$item = array(
 			'id'                 => 2,
@@ -474,7 +451,6 @@ class RequestLogTableTest extends TestCase {
 	public function testExtractSenderInfoCaseInsensitive(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'extract_sender_info' );
-		$method->setAccessible( true );
 
 		$item = array(
 			'id'                 => 3,
@@ -502,7 +478,6 @@ class RequestLogTableTest extends TestCase {
 	public function testExtractSenderInfoWithArrayValues(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'extract_sender_info' );
-		$method->setAccessible( true );
 
 		$item = array(
 			'id'                 => 4,
@@ -529,7 +504,6 @@ class RequestLogTableTest extends TestCase {
 	public function testExtractSenderInfoWithEmptyData(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'extract_sender_info' );
-		$method->setAccessible( true );
 
 		$item = array(
 			'id'                 => 5,
@@ -551,7 +525,6 @@ class RequestLogTableTest extends TestCase {
 	public function testExtractSenderInfoWithInvalidJson(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'extract_sender_info' );
-		$method->setAccessible( true );
 
 		$item = array(
 			'id'                 => 6,
@@ -573,7 +546,6 @@ class RequestLogTableTest extends TestCase {
 	public function testExtractSenderInfoWithMissingFields(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'extract_sender_info' );
-		$method->setAccessible( true );
 
 		$item = array(
 			'id'                 => 7,
@@ -600,7 +572,6 @@ class RequestLogTableTest extends TestCase {
 	public function testExtractSenderInfoCaching(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'extract_sender_info' );
-		$method->setAccessible( true );
 
 		$item = array(
 			'id'                 => 8,
@@ -632,7 +603,6 @@ class RequestLogTableTest extends TestCase {
 	public function testExtractSenderInfoRespectsSensitivePatterns(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'extract_sender_info' );
-		$method->setAccessible( true );
 
 		// Test with default sensitive patterns (password, token, etc.)
 		// These should never match name/email fields by default
@@ -663,7 +633,6 @@ class RequestLogTableTest extends TestCase {
 	public function testItemMatchesSenderSearchWithMatchingName(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'item_matches_sender_search' );
-		$method->setAccessible( true );
 
 		$item = array(
 			'id'                 => 100,
@@ -697,7 +666,6 @@ class RequestLogTableTest extends TestCase {
 	public function testItemMatchesSenderSearchWithNonMatchingName(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'item_matches_sender_search' );
-		$method->setAccessible( true );
 
 		$item = array(
 			'id'                 => 101,
@@ -726,7 +694,6 @@ class RequestLogTableTest extends TestCase {
 	public function testItemMatchesSenderSearchWithEmptySenderInfo(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'item_matches_sender_search' );
-		$method->setAccessible( true );
 
 		$item = array(
 			'id'                 => 102,
@@ -755,7 +722,6 @@ class RequestLogTableTest extends TestCase {
 	public function testItemMatchesSenderSearchCaseInsensitive(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'item_matches_sender_search' );
-		$method->setAccessible( true );
 
 		$item = array(
 			'id'                 => 103,
@@ -790,7 +756,6 @@ class RequestLogTableTest extends TestCase {
 	public function testItemMatchesSenderSearchWithFirstnameLastname(): void {
 		$reflection = new ReflectionClass( RequestLogTable::class );
 		$method     = $reflection->getMethod( 'item_matches_sender_search' );
-		$method->setAccessible( true );
 
 		$item = array(
 			'id'                 => 104,

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Integration Tests for Form Submission Logging
  *
@@ -8,7 +7,7 @@
  *
  * @package SilverAssist\ContactFormToAPI\Tests
  * @since   1.3.0
- * @version 1.3.1
+ * @version 2.0.0
  * @author  Silver Assist
  */
 
@@ -16,7 +15,7 @@ namespace SilverAssist\ContactFormToAPI\Tests\Integration;
 
 use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Core\Activator;
-use SilverAssist\ContactFormToAPI\Core\RequestLogger;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
 use SilverAssist\ContactFormToAPI\Service\Api\ApiClient;
 use SilverAssist\ContactFormToAPI\Tests\Helpers\CF7TestCase;
 
@@ -26,11 +25,18 @@ use SilverAssist\ContactFormToAPI\Tests\Helpers\CF7TestCase;
 class FormSubmissionLoggingTest extends CF7TestCase {
 
 	/**
-	 * Logger instance
+	 * LogWriter instance
 	 *
-	 * @var RequestLogger|null
+	 * @var LogWriter|null
 	 */
-	protected ?RequestLogger $logger;
+	protected ?LogWriter $log_writer;
+
+	/**
+	 * Current log ID being tracked
+	 *
+	 * @var int|null
+	 */
+	protected ?int $current_log_id = null;
 
 	/**
 	 * Original pre_http_request filter callbacks
@@ -47,15 +53,15 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 
-		// Ensure tables exist
+		// Ensure tables exist.
 		if ( function_exists( '\\dbDelta' ) || class_exists( Activator::class ) ) {
 			Activator::create_tables();
 		}
 
-		// Initialize logger
-		$this->logger = new RequestLogger();
+		// Initialize log writer.
+		$this->log_writer = new LogWriter();
 
-		// Ensure logging is enabled in settings
+		// Ensure logging is enabled in settings.
 		$this->enable_logging();
 	}
 
@@ -65,10 +71,10 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 	 * @return void
 	 */
 	protected function tearDown(): void {
-		// Clean up test logs
+		// Clean up test logs.
 		$this->cleanup_test_logs();
 
-		// Restore HTTP filters
+		// Restore HTTP filters.
 		$this->restore_http_filters();
 
 		parent::tearDown();
@@ -167,9 +173,9 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// Delete logs from test forms (form_id starting with 999)
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$wpdb->query( "DELETE FROM {$table_name} WHERE form_id >= 99900" );
+		// Delete logs from test forms (form_id starting with 999).
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE form_id >= 99900', $table_name ) );
 	}
 
 	/**
@@ -182,10 +188,11 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$table_name} WHERE form_id = %d ORDER BY id DESC",
+				'SELECT * FROM %i WHERE form_id = %d ORDER BY id DESC',
+				$table_name,
 				$form_id
 			),
 			ARRAY_A
@@ -198,12 +205,12 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 	 * @return void
 	 */
 	public function test_logs_created_on_successful_api_request(): void {
-		// Skip if WordPress functions not available
+		// Skip if WordPress functions not available.
 		if ( ! function_exists( '\\add_filter' ) ) {
 			$this->markTestSkipped( 'WordPress functions not available' );
 		}
 
-		// Mock successful API response
+		// Mock successful API response.
 		$this->mock_http_response(
 			200,
 			array(
@@ -212,11 +219,11 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 			)
 		);
 
-		// Test form ID
+		// Test form ID.
 		$form_id = 99901;
 
-		// Start a log entry
-		$log_id = $this->logger->start_request(
+		// Start a log entry.
+		$log_id = $this->log_writer->start_request(
 			$form_id,
 			'https://api.example.com/webhook',
 			'POST',
@@ -230,7 +237,7 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 		$this->assertNotFalse( $log_id, 'Log entry should be created' );
 		$this->assertIsInt( $log_id, 'Log ID should be an integer' );
 
-		// Simulate response
+		// Simulate response.
 		$response = array(
 			'response' => array(
 				'code'    => 200,
@@ -240,12 +247,12 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 			'headers'  => array( 'content-type' => 'application/json' ),
 		);
 
-		// Complete the log entry
-		$completed = $this->logger->complete_request( $response, 0 );
+		// Complete the log entry.
+		$completed = $this->log_writer->complete_request( $log_id, $response, 0 );
 
 		$this->assertTrue( $completed, 'Log entry should be completed successfully' );
 
-		// Verify log was saved
+		// Verify log was saved.
 		$logs = $this->get_logs_for_form( $form_id );
 
 		$this->assertNotEmpty( $logs, 'At least one log should exist' );
@@ -265,8 +272,8 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 
 		$form_id = 99902;
 
-		// Start a log entry
-		$log_id = $this->logger->start_request(
+		// Start a log entry.
+		$log_id = $this->log_writer->start_request(
 			$form_id,
 			'https://api.example.com/webhook',
 			'POST',
@@ -276,15 +283,15 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 
 		$this->assertNotFalse( $log_id, 'Log entry should be created' );
 
-		// Simulate error response
+		// Simulate error response.
 		$error = new \WP_Error( 'http_request_failed', 'Connection timeout' );
 
-		// Complete the log entry with error
-		$completed = $this->logger->complete_request( $error, 0 );
+		// Complete the log entry with error.
+		$completed = $this->log_writer->complete_request( $log_id, $error, 0 );
 
 		$this->assertTrue( $completed, 'Log entry should be completed' );
 
-		// Verify log was saved with error
+		// Verify log was saved with error.
 		$logs = $this->get_logs_for_form( $form_id );
 
 		$this->assertNotEmpty( $logs, 'At least one log should exist' );
@@ -304,27 +311,32 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 
 		$form_id = 99903;
 
-		// Start a log entry
-		$log_id = $this->logger->start_request(
+		// Record start time before starting log.
+		$start_time = \microtime( true );
+
+		// Start a log entry.
+		$log_id = $this->log_writer->start_request(
 			$form_id,
 			'https://api.example.com/webhook',
 			'POST',
 			array( 'data' => 'test' ),
-			array()
+			array(),
+			null,
+			$start_time
 		);
 
-		// Simulate some processing time
-		usleep( 50000 ); // 50ms
+		// Simulate some processing time.
+		usleep( 50000 ); // 50ms.
 
-		// Complete the log
+		// Complete the log.
 		$response = array(
 			'response' => array( 'code' => 200 ),
 			'body'     => '{}',
 			'headers'  => array(),
 		);
-		$this->logger->complete_request( $response, 0 );
+		$this->log_writer->complete_request( $log_id, $response, 0, $start_time );
 
-		// Verify execution time was recorded
+		// Verify execution time was recorded.
 		$logs = $this->get_logs_for_form( $form_id );
 
 		$this->assertNotEmpty( $logs, 'Log should exist' );
@@ -341,16 +353,16 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 			$this->markTestSkipped( 'WordPress functions not available' );
 		}
 
-		// Disable logging
+		// Disable logging.
 		$this->disable_logging();
 
-		// Need to create new logger instance to pick up settings change
-		$logger = new RequestLogger();
+		// Need to create new logger instance to pick up settings change.
+		$log_writer = new LogWriter();
 
 		$form_id = 99904;
 
-		// Try to start a log entry
-		$log_id = $logger->start_request(
+		// Try to start a log entry.
+		$log_id = $log_writer->start_request(
 			$form_id,
 			'https://api.example.com/webhook',
 			'POST',
@@ -360,11 +372,11 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 
 		$this->assertFalse( $log_id, 'Log entry should NOT be created when logging is disabled' );
 
-		// Verify no log was saved
+		// Verify no log was saved.
 		$logs = $this->get_logs_for_form( $form_id );
 		$this->assertEmpty( $logs, 'No logs should exist when logging is disabled' );
 
-		// Re-enable logging for other tests
+		// Re-enable logging for other tests.
 		$this->enable_logging();
 	}
 
@@ -380,8 +392,8 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 
 		$form_id = 99905;
 
-		// Start a log entry
-		$log_id = $this->logger->start_request(
+		// Start a log entry.
+		$log_id = $this->log_writer->start_request(
 			$form_id,
 			'https://api.example.com/webhook',
 			'POST',
@@ -389,15 +401,15 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 			array()
 		);
 
-		// Complete with retry count
+		// Complete with retry count.
 		$response = array(
 			'response' => array( 'code' => 200 ),
 			'body'     => '{}',
 			'headers'  => array(),
 		);
-		$this->logger->complete_request( $response, 2 );
+		$this->log_writer->complete_request( $log_id, $response, 2 );
 
-		// Verify retry count was recorded
+		// Verify retry count was recorded.
 		$logs = $this->get_logs_for_form( $form_id );
 
 		$this->assertNotEmpty( $logs, 'Log should exist' );
@@ -414,7 +426,7 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 			$this->markTestSkipped( 'WordPress functions not available' );
 		}
 
-		// Mock successful HTTP response
+		// Mock successful HTTP response.
 		$this->mock_http_response(
 			200,
 			array( 'status' => 'received' )
@@ -422,7 +434,7 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 
 		$form_id = 99906;
 
-		// Use ApiClient to send request
+		// Use ApiClient to send request.
 		$client = ApiClient::instance();
 		$client->init();
 
@@ -443,10 +455,10 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 			)
 		);
 
-		// Response should not be an error
+		// Response should not be an error.
 		$this->assertNotInstanceOf( \WP_Error::class, $response, 'Response should not be an error' );
 
-		// Verify log was created
+		// Verify log was created.
 		$logs = $this->get_logs_for_form( $form_id );
 
 		$this->assertNotEmpty( $logs, 'Log should be created by ApiClient' );
@@ -465,7 +477,7 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 			$this->markTestSkipped( 'WordPress functions not available' );
 		}
 
-		// Mock HTTP error
+		// Mock HTTP error.
 		$this->mock_http_error( 'Connection refused', 'http_request_failed' );
 
 		$form_id = 99907;
@@ -486,10 +498,10 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 			)
 		);
 
-		// Response should be a WP_Error
+		// Response should be a WP_Error.
 		$this->assertInstanceOf( \WP_Error::class, $response, 'Response should be a WP_Error' );
 
-		// Verify log was created with error
+		// Verify log was created with error.
 		$logs = $this->get_logs_for_form( $form_id );
 
 		$this->assertNotEmpty( $logs, 'Error log should be created' );
@@ -512,7 +524,7 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 		$this->restore_http_filters();
 		$this->mock_http_response( $status_code, array( 'code' => $status_code ) );
 
-		// Use unique form_id for each status code
+		// Use unique form_id for each status code.
 		$form_id = 99910 + $status_code;
 
 		$client = ApiClient::instance();
@@ -577,8 +589,8 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 			'X-Custom-Header' => 'custom-value',
 		);
 
-		// Start log
-		$this->logger->start_request(
+		// Start log.
+		$log_id = $this->log_writer->start_request(
 			$form_id,
 			'https://api.example.com/submit',
 			'POST',
@@ -586,26 +598,26 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 			$headers
 		);
 
-		// Complete log
+		// Complete log.
 		$response = array(
 			'response' => array( 'code' => 200 ),
 			'body'     => '{"received":true}',
 			'headers'  => array( 'content-type' => 'application/json' ),
 		);
-		$this->logger->complete_request( $response, 0 );
+		$this->log_writer->complete_request( $log_id, $response, 0 );
 
-		// Get and verify log
+		// Get and verify log.
 		$logs = $this->get_logs_for_form( $form_id );
 
 		$this->assertNotEmpty( $logs, 'Log should exist' );
 
-		// Request data should be stored (may be encrypted)
+		// Request data should be stored (may be encrypted).
 		$this->assertNotEmpty( $logs[0]['request_data'], 'Request data should be stored' );
 
-		// Endpoint should match
+		// Endpoint should match.
 		$this->assertEquals( 'https://api.example.com/submit', $logs[0]['endpoint'], 'Endpoint should match' );
 
-		// Method should match
+		// Method should match.
 		$this->assertEquals( 'POST', $logs[0]['method'], 'Method should match' );
 	}
 
@@ -621,8 +633,8 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 
 		$form_id = 99909;
 
-		// Start log
-		$this->logger->start_request(
+		// Start log.
+		$log_id = $this->log_writer->start_request(
 			$form_id,
 			'https://api.example.com/submit',
 			'POST',
@@ -630,7 +642,7 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 			array()
 		);
 
-		// Complete with specific response
+		// Complete with specific response.
 		$response = array(
 			'response' => array(
 				'code'    => 201,
@@ -642,9 +654,9 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 				'x-request-id' => 'abc123',
 			),
 		);
-		$this->logger->complete_request( $response, 0 );
+		$this->log_writer->complete_request( $log_id, $response, 0 );
 
-		// Get and verify log
+		// Get and verify log.
 		$logs = $this->get_logs_for_form( $form_id );
 
 		$this->assertNotEmpty( $logs, 'Log should exist' );

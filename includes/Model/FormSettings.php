@@ -20,7 +20,7 @@ namespace SilverAssist\ContactFormToAPI\Model;
  * FormSettings Model Class
  *
  * Represents CF7 form API integration configuration.
- * Part of Phase 1 foundation for 2.0.0 architecture refactoring.
+ * Encapsulates endpoint URL, headers, and mapping settings.
  *
  * @since 2.0.0
  */

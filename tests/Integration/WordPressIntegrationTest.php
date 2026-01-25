@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Integration Tests for WordPress Integration
  *
@@ -8,13 +7,14 @@
  *
  * @package SilverAssist\ContactFormToAPI\Tests
  * @since   1.0.0
- * @version 1.0.0
+ * @version 2.0.0
  * @author  Silver Assist
  */
 
 namespace SilverAssist\ContactFormToAPI\Tests\Integration;
 
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
+use WP_Error;
 
 /**
  * Test cases for WordPress Integration
@@ -26,8 +26,7 @@ class WordPressIntegrationTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testWordPressEnvironmentSetup(): void {
-		// Test WordPress testing environment is properly set up
+	public function test_wordpress_environment_setup(): void {
 		$this->assertTrue(
 			defined( 'CF7_API_TESTING' ),
 			'Testing constant should be defined'
@@ -37,94 +36,102 @@ class WordPressIntegrationTest extends TestCase {
 			CF7_API_TESTING,
 			'Should be running in testing mode'
 		);
+
+		$this->assertTrue(
+			defined( 'ABSPATH' ),
+			'WordPress ABSPATH should be defined'
+		);
 	}
 
 	/**
-	 * Test WordPress hooks registration
+	 * Test WordPress hooks are available
 	 *
 	 * @return void
 	 */
-	public function testWordPressHooksRegistration(): void {
-		// Mock WordPress hook functions
-		$this->mockWordPressFunction( 'add_action' );
-		$this->mockWordPressFunction( 'add_filter' );
-		$this->mockWordPressFunction( 'remove_action' );
-		$this->mockWordPressFunction( 'remove_filter' );
-
-		// Test that WordPress functions are available or mocked
+	public function test_wordpress_hooks_available(): void {
 		$this->assertTrue( function_exists( 'add_action' ), 'add_action should be available' );
 		$this->assertTrue( function_exists( 'add_filter' ), 'add_filter should be available' );
+		$this->assertTrue( function_exists( 'do_action' ), 'do_action should be available' );
+		$this->assertTrue( function_exists( 'apply_filters' ), 'apply_filters should be available' );
 	}
 
 	/**
-	 * Test WordPress i18n functionality
+	 * Test hook registration and execution
 	 *
 	 * @return void
 	 */
-	public function testWordPressi18n(): void {
-		// Mock WordPress i18n functions
-		$this->mockWordPressFunction( '__', 'translated_text' );
-		$this->mockWordPressFunction( 'esc_html__', 'escaped_translated_text' );
-		$this->mockWordPressFunction( '_e', null );
-		$this->mockWordPressFunction( 'esc_html_e', null );
+	public function test_hook_registration_and_execution(): void {
+		$callback_executed = false;
 
-		// Text domain 'contact-form-to-api' is used as literal string in all i18n calls
-		// WordPress i18n tools require literal strings for extraction
-		$expected_text_domain = 'contact-form-to-api';
-		$this->assertIsString( $expected_text_domain, 'Text domain should be a string' );
+		add_action(
+			'cf7_api_test_action',
+			function () use ( &$callback_executed ) {
+				$callback_executed = true;
+			}
+		);
 
-		// Test translation functions are available
+		do_action( 'cf7_api_test_action' );
+
+		$this->assertTrue( $callback_executed, 'Action callback should have been executed' );
+	}
+
+	/**
+	 * Test filter registration and execution
+	 *
+	 * @return void
+	 */
+	public function test_filter_registration_and_execution(): void {
+		add_filter(
+			'cf7_api_test_filter',
+			function ( $value ) {
+				return $value . '_filtered';
+			}
+		);
+
+		$result = apply_filters( 'cf7_api_test_filter', 'original' );
+
+		$this->assertSame( 'original_filtered', $result, 'Filter should modify the value' );
+	}
+
+	/**
+	 * Test WordPress i18n functions available
+	 *
+	 * @return void
+	 */
+	public function test_wordpress_i18n_functions(): void {
 		$this->assertTrue( function_exists( '__' ), 'Translation function __ should be available' );
-		$this->assertTrue( function_exists( 'esc_html__' ), 'Escaped translation function should be available' );
+		$this->assertTrue( function_exists( 'esc_html__' ), 'esc_html__ should be available' );
+		$this->assertTrue( function_exists( '_e' ), '_e should be available' );
+
+		// Test translation returns string
+		$translated = __( 'Test String', 'contact-form-to-api' );
+		$this->assertIsString( $translated );
 	}
 
 	/**
-	 * Test WordPress database integration
+	 * Test WordPress option operations
 	 *
 	 * @return void
 	 */
-	public function testWordPressDatabaseIntegration(): void {
-		// Mock WordPress database functions
-		$this->mockWordPressFunction( 'get_option', array() );
-		$this->mockWordPressFunction( 'update_option', true );
-		$this->mockWordPressFunction( 'delete_option', true );
+	public function test_wordpress_option_operations(): void {
+		$option_name = 'cf7_api_test_option';
+		$test_value  = array( 'api_url' => 'https://example.com/api' );
 
-		if ( function_exists( 'get_option' ) ) {
-			// Test option operations
-			$test_value = array( 'api_url' => 'https://example.com/api' );
+		// Save option
+		$save_result = update_option( $option_name, $test_value );
+		$this->assertTrue( $save_result, 'Should be able to save option' );
 
-			// Simulate saving plugin options
-			$save_result = \update_option( 'cf7_api_settings', $test_value );
-			$this->assertTrue( $save_result, 'Should be able to save plugin options' );
+		// Retrieve option
+		$retrieved = get_option( $option_name );
+		$this->assertSame( $test_value, $retrieved, 'Retrieved value should match saved value' );
 
-			// Simulate retrieving plugin options
-			$retrieved_value = \get_option( 'cf7_api_settings', array() );
-			$this->assertIsArray( $retrieved_value, 'Retrieved options should be an array' );
-		}
-	}
+		// Delete option
+		$delete_result = delete_option( $option_name );
+		$this->assertTrue( $delete_result, 'Should be able to delete option' );
 
-	/**
-	 * Test WordPress admin integration
-	 *
-	 * @return void
-	 */
-	public function testWordPressAdminIntegration(): void {
-		// Mock WordPress admin functions
-		$this->mockWordPressFunction( 'is_admin', false );
-		$this->mockWordPressFunction( 'current_user_can', true );
-		$this->mockWordPressFunction( 'wp_verify_nonce', true );
-
-		// Test admin detection
-		if ( function_exists( 'is_admin' ) ) {
-			$is_admin = \is_admin();
-			$this->assertIsBool( $is_admin, 'is_admin should return boolean' );
-		}
-
-		// Test capability checking
-		if ( function_exists( 'current_user_can' ) ) {
-			$can_manage = \current_user_can( 'manage_options' );
-			$this->assertIsBool( $can_manage, 'current_user_can should return boolean' );
-		}
+		// Verify deleted
+		$after_delete = get_option( $option_name, 'default' );
+		$this->assertSame( 'default', $after_delete, 'Option should be deleted' );
 	}
 
 	/**
@@ -132,60 +139,22 @@ class WordPressIntegrationTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testWordPressNonceSecurity(): void {
-		// Mock WordPress nonce functions
-		$this->mockWordPressFunction( 'wp_create_nonce', 'test_nonce_12345' );
-		$this->mockWordPressFunction( 'wp_verify_nonce', true );
-		$this->mockWordPressFunction( 'check_admin_referer', true );
+	public function test_wordpress_nonce_security(): void {
+		$action = 'cf7_api_test_action';
 
-		if ( function_exists( 'wp_create_nonce' ) && function_exists( 'wp_verify_nonce' ) ) {
-			// Test nonce creation
-			$nonce = \wp_create_nonce( 'cf7_api_action' );
-			$this->assertIsString( $nonce, 'Nonce should be a string' );
-			$this->assertNotEmpty( $nonce, 'Nonce should not be empty' );
+		// Create nonce
+		$nonce = wp_create_nonce( $action );
+		$this->assertIsString( $nonce, 'Nonce should be a string' );
+		$this->assertNotEmpty( $nonce, 'Nonce should not be empty' );
 
-			// Test nonce verification
-			$is_valid = \wp_verify_nonce( $nonce, 'cf7_api_action' );
-			// wp_verify_nonce returns 1 or 2 on success (real WordPress)
-			// OR returns true in isolation mode (mocked)
-			$this->assertNotFalse( $is_valid, 'Nonce should be valid' );
-			$this->assertTrue( true === $is_valid || is_int( $is_valid ), 'Nonce verification should return truthy value' );
-		}
-	}
+		// Verify nonce - returns 1 or 2 on success, false on failure
+		$is_valid = wp_verify_nonce( $nonce, $action );
+		$this->assertNotFalse( $is_valid, 'Nonce should be valid' );
+		$this->assertContains( $is_valid, array( 1, 2 ), 'Valid nonce returns 1 or 2' );
 
-	/**
-	 * Test WordPress HTTP API integration
-	 *
-	 * @group external-http
-	 * @return void
-	 */
-	public function test_wordpress_http_api_integration(): void {
-		// Mock WordPress HTTP functions
-		$mock_response = $this->createMockHttpResponse(
-			array(
-				'success' => true,
-				'data'    => 'test response',
-			)
-		);
-
-		$this->mockWordPressFunction( 'wp_remote_post', $mock_response );
-		$this->mockWordPressFunction( 'wp_remote_get', $mock_response );
-		$this->mockWordPressFunction( 'is_wp_error', false );
-
-		if ( function_exists( 'wp_remote_post' ) ) {
-			// Test HTTP POST request
-			$response = \wp_remote_post(
-				'https://httpbin.org/post',
-				array(
-					'body'    => json_encode( array( 'test' => 'data' ) ),
-					'headers' => array( 'Content-Type' => 'application/json' ),
-				)
-			);
-
-			$this->assertIsArray( $response, 'HTTP response should be an array' );
-			$this->assertArrayHasKey( 'response', $response, 'Response should have response key' );
-			$this->assertArrayHasKey( 'body', $response, 'Response should have body key' );
-		}
+		// Invalid nonce
+		$invalid = wp_verify_nonce( 'invalid_nonce', $action );
+		$this->assertFalse( $invalid, 'Invalid nonce should fail verification' );
 	}
 
 	/**
@@ -193,120 +162,148 @@ class WordPressIntegrationTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	public function testWordPressErrorHandling(): void {
-		// Mock WordPress error functions
-		$this->mockWordPressFunction( 'is_wp_error', false );
+	public function test_wordpress_error_handling(): void {
+		// Normal data is not an error
+		$this->assertFalse( is_wp_error( array( 'success' => true ) ) );
+		$this->assertFalse( is_wp_error( 'string' ) );
+		$this->assertFalse( is_wp_error( 123 ) );
 
-		// Test error detection
-		if ( function_exists( 'is_wp_error' ) ) {
-			$test_data = array( 'success' => true );
-			$is_error  = \is_wp_error( $test_data );
-			$this->assertFalse( $is_error, 'Normal data should not be considered an error' );
-		}
+		// WP_Error is an error
+		$error = new WP_Error( 'test_error', 'Test error message' );
+		$this->assertTrue( is_wp_error( $error ) );
+		$this->assertSame( 'test_error', $error->get_error_code() );
+		$this->assertSame( 'Test error message', $error->get_error_message() );
 	}
 
 	/**
-	 * Test WordPress cron integration
+	 * Test WordPress sanitization functions
 	 *
 	 * @return void
 	 */
-	public function testWordPressCronIntegration(): void {
-		// Mock WordPress cron functions
-		$this->mockWordPressFunction( 'wp_schedule_event', true );
-		$this->mockWordPressFunction( 'wp_next_scheduled', false );
-		$this->mockWordPressFunction( 'wp_clear_scheduled_hook', true );
+	public function test_wordpress_sanitization(): void {
+		// sanitize_text_field removes HTML and extra whitespace
+		$dirty     = "  Test <script>alert('xss')</script>  ";
+		$sanitized = sanitize_text_field( $dirty );
+		$this->assertStringNotContainsString( '<script>', $sanitized );
+		$this->assertStringNotContainsString( '</script>', $sanitized );
 
-		if ( function_exists( 'wp_schedule_event' ) && function_exists( 'wp_next_scheduled' ) ) {
-			// Test cron scheduling
-			$next_run = \wp_next_scheduled( 'cf7_api_cleanup' );
-			$this->assertIsBool( $next_run, 'wp_next_scheduled should return boolean or timestamp' );
+		// sanitize_email
+		$this->assertSame( 'test@example.com', sanitize_email( 'test@example.com' ) );
+		$this->assertSame( '', sanitize_email( 'not-an-email' ) );
 
-			if ( ! $next_run ) {
-				$scheduled = \wp_schedule_event( time() + 3600, 'hourly', 'cf7_api_cleanup' );
-				$this->assertTrue( $scheduled, 'Should be able to schedule cron event' );
-			}
-		}
+		// sanitize_url
+		$this->assertSame( 'https://example.com/', sanitize_url( 'https://example.com/' ) );
 	}
 
 	/**
-	 * Test WordPress plugin lifecycle
+	 * Test WordPress escaping functions
 	 *
 	 * @return void
 	 */
-	public function testWordPressPluginLifecycle(): void {
-		// Mock WordPress plugin functions
-		$this->mockWordPressFunction( 'register_activation_hook', true );
-		$this->mockWordPressFunction( 'register_deactivation_hook', true );
-		$this->mockWordPressFunction( 'register_uninstall_hook', true );
+	public function test_wordpress_escaping(): void {
+		// esc_html escapes HTML entities
+		$html    = "<script>alert('xss')</script>";
+		$escaped = esc_html( $html );
+		$this->assertStringNotContainsString( '<script>', $escaped );
+		$this->assertStringContainsString( '&lt;script&gt;', $escaped );
 
-		// Test plugin constants
-		$this->assertTrue(
-			defined( 'CF7_API_FILE' ),
-			'Plugin file constant should be defined'
-		);
+		// esc_attr for attribute values
+		$attr = 'value" onclick="alert(1)';
+		$this->assertStringNotContainsString( '"', esc_attr( $attr ) );
 
-		if ( function_exists( 'register_activation_hook' ) ) {
-			// Test activation hook registration
-			// register_activation_hook returns void, so we just verify it doesn't throw
-			$callback = function () {
-			};
-			\register_activation_hook(
-				CF7_API_FILE,
-				$callback
-			);
-			// If we got here without error, registration worked
-			$this->assertTrue( true, 'Should be able to register activation hook' );
-		}
+		// esc_url for URLs
+		$this->assertSame( 'https://example.com/', esc_url( 'https://example.com/' ) );
 	}
 
 	/**
-	 * Test WordPress multisite compatibility
+	 * Test WordPress cron functions
 	 *
 	 * @return void
 	 */
-	public function testWordPressMultisiteCompatibility(): void {
-		// Mock WordPress multisite functions
-		$this->mockWordPressFunction( 'is_multisite', false );
-		$this->mockWordPressFunction( 'get_current_blog_id', 1 );
-		$this->mockWordPressFunction( 'switch_to_blog', true );
-		$this->mockWordPressFunction( 'restore_current_blog', true );
+	public function test_wordpress_cron_functions(): void {
+		$hook = 'cf7_api_test_cron';
 
-		if ( function_exists( 'is_multisite' ) ) {
-			$is_multisite = \is_multisite();
-			$this->assertIsBool( $is_multisite, 'is_multisite should return boolean' );
+		// Clear any existing scheduled events
+		wp_clear_scheduled_hook( $hook );
 
-			if ( $is_multisite && function_exists( 'get_current_blog_id' ) ) {
-				$blog_id = \get_current_blog_id();
-				$this->assertIsInt( $blog_id, 'Blog ID should be an integer' );
-				$this->assertGreaterThan( 0, $blog_id, 'Blog ID should be positive' );
-			}
+		// Verify not scheduled
+		$this->assertFalse( wp_next_scheduled( $hook ) );
+
+		// Schedule event
+		$timestamp = time() + 3600;
+		$result    = wp_schedule_event( $timestamp, 'hourly', $hook );
+
+		// wp_schedule_event returns true on success in WP 5.7+
+		if ( false !== $result ) {
+			$this->assertTrue( $result );
+			$next = wp_next_scheduled( $hook );
+			$this->assertIsInt( $next );
 		}
+
+		// Cleanup
+		wp_clear_scheduled_hook( $hook );
 	}
 
 	/**
-	 * Test WordPress security features
+	 * Test WordPress plugin constants
 	 *
 	 * @return void
 	 */
-	public function testWordPressSecurityFeatures(): void {
-		// Mock WordPress security functions
-		$this->mockWordPressFunction( 'sanitize_text_field', 'sanitized_text' );
-		$this->mockWordPressFunction( 'sanitize_email', 'test@example.com' );
-		$this->mockWordPressFunction( 'esc_html', 'escaped_html' );
-		$this->mockWordPressFunction( 'esc_attr', 'escaped_attr' );
-		$this->mockWordPressFunction( 'esc_url', 'https://example.com' );
+	public function test_plugin_constants(): void {
+		$this->assertTrue( defined( 'CF7_API_FILE' ), 'CF7_API_FILE should be defined' );
+		$this->assertTrue( defined( 'CF7_API_VERSION' ), 'CF7_API_VERSION should be defined' );
 
-		// Test sanitization functions
-		if ( function_exists( 'sanitize_text_field' ) ) {
-			$sanitized = \sanitize_text_field( "  Test Input  <script>alert('xss')</script>  " );
-			$this->assertIsString( $sanitized, 'Sanitized text should be a string' );
-			$this->assertNotEmpty( $sanitized, 'Sanitized text should not be empty' );
-		}
+		$this->assertFileExists( CF7_API_FILE, 'Plugin file should exist' );
+	}
 
-		// Test escaping functions
-		if ( function_exists( 'esc_html' ) ) {
-			$escaped = \esc_html( "<script>alert('xss')</script>" );
-			$this->assertIsString( $escaped, 'Escaped HTML should be a string' );
-		}
+	/**
+	 * Test WordPress multisite detection
+	 *
+	 * @return void
+	 */
+	public function test_wordpress_multisite_detection(): void {
+		$is_multisite = is_multisite();
+		$this->assertIsBool( $is_multisite );
+
+		$blog_id = get_current_blog_id();
+		$this->assertIsInt( $blog_id );
+		$this->assertGreaterThan( 0, $blog_id );
+	}
+
+	/**
+	 * Test WordPress user capabilities
+	 *
+	 * @return void
+	 */
+	public function test_wordpress_user_capabilities(): void {
+		// Create admin user for testing
+		$admin_id = static::factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+
+		$this->assertTrue( current_user_can( 'manage_options' ) );
+		$this->assertTrue( current_user_can( 'edit_posts' ) );
+
+		// Create subscriber
+		$subscriber_id = static::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$this->assertFalse( current_user_can( 'manage_options' ) );
+		$this->assertFalse( current_user_can( 'edit_posts' ) );
+	}
+
+	/**
+	 * Test WordPress database operations via $wpdb
+	 *
+	 * @return void
+	 */
+	public function test_wordpress_database_operations(): void {
+		global $wpdb;
+
+		$this->assertInstanceOf( 'wpdb', $wpdb );
+		$this->assertNotEmpty( $wpdb->prefix );
+
+		// Test simple query
+		$result = $wpdb->get_var( 'SELECT 1' );
+		$this->assertEquals( '1', $result );
 	}
 }

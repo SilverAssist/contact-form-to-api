@@ -11,7 +11,7 @@
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Tests\Unit;
+namespace SilverAssist\ContactFormToAPI\Tests\Unit\Config;
 
 use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
@@ -33,8 +33,8 @@ class SettingsTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	protected function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 
 		// Delete any existing settings.
 		\delete_option( 'cf7_api_global_settings' );
@@ -232,7 +232,6 @@ class SettingsTest extends TestCase {
 		// by resetting its internal initialization flag.
 		$reflection  = new \ReflectionClass( Settings::class );
 		$initialized = $reflection->getProperty( 'initialized' );
-		$initialized->setAccessible( true );
 		$initialized->setValue( $this->settings, false );
 
 		$this->settings->init();

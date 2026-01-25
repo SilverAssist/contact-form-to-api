@@ -12,7 +12,7 @@
  * @author  Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Tests\Unit;
+namespace SilverAssist\ContactFormToAPI\Tests\Unit\Controller\Admin;
 
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 use SilverAssist\ContactFormToAPI\Controller\Admin\LogsController;
@@ -35,8 +35,8 @@ class LogsControllerTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	protected function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 
 		// Get singleton instance
 		$this->controller = LogsController::instance();
@@ -232,7 +232,6 @@ class LogsControllerTest extends TestCase {
 		// Use reflection to check the list_table property
 		$reflection = new ReflectionClass( LogsController::class );
 		$property   = $reflection->getProperty( 'list_table' );
-		$property->setAccessible( true );
 
 		// Get a fresh instance (but singleton, so same instance)
 		$controller = LogsController::instance();

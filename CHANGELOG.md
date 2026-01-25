@@ -9,33 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Architecture Refactoring (Phase 2 - In Progress)**: Extract RequestLogger into specialized services
-  - Created `Service/Logging/` directory with four focused services
-    - `LogWriter`: Handles log creation, updates, and deletion (346 lines)
-    - `LogReader`: Handles log retrieval and decryption (229 lines)
-    - `LogStatistics`: Handles statistical calculations and metrics (298 lines)
-    - `RetryManager`: Handles retry logic and error resolution tracking (255 lines)
-  - Created `Exception/` directory with custom exceptions
-    - `ApiException`: For API-related errors
-    - `ValidationException`: For validation errors with detailed error tracking
-  - Refactored `RequestLogger` as facade pattern (1,011 → 505 lines, 50% reduction)
-    - Delegates all operations to specialized services
-    - Maintains full backward compatibility
-    - Added @deprecated tags for future migration
-  - All services pass PHPCS (WordPress-Extra) and PHPStan Level 8
-  - See `includes/Service/Logging/README.md` for service documentation
-- **Architecture Foundation (Phase 1)**: New MVC structure for version 2.0.0
-  - Created `Model/` directory with type-safe domain models
-    - `LogEntry`: Type-safe API request log representation
-    - `FormSettings`: Type-safe form configuration
-    - `ApiResponse`: Type-safe API response data
-    - `Statistics`: Type-safe aggregated statistics
-  - Created `Repository/` directory with data access interfaces
-    - `LogRepositoryInterface`: Contract for log data access
-    - `SettingsRepositoryInterface`: Contract for settings data access
-  - Added `docs/ARCHITECTURE.md`: Comprehensive architecture documentation
-  - Added `docs/UPGRADE.md`: Migration guide for version 2.0.0
-  - Note: `Controller/`, `View/`, `Infrastructure/` directories will be created in future phases
+- **MVC Architecture**: Complete restructuring following Model-View-Controller principles
+  - **Model Layer**: Type-safe domain models (`LogEntry`, `FormSettings`, `ApiResponse`, `Statistics`)
+  - **Repository Layer**: Data access interfaces (`LogRepositoryInterface`, `SettingsRepositoryInterface`)
+  - **Controller Layer**: Request routing and hook management
+    - `Controller/Admin/LogsController`: Admin logs page routing
+    - `Controller/ContactForm/SubmissionController`: Form submission handling
+  - **Service Layer**: Business logic separated from controllers
+    - `Service/Logging/`: LogWriter, LogReader, LogStatistics, RetryManager
+    - `Service/Security/`: EncryptionService, SensitiveDataPatterns
+    - `Service/ContactForm/SubmissionProcessor`: API communication logic
+  - **View Layer**: Reusable partials for maintainability
+    - `View/Admin/Logs/Partials/`: StatisticsPartial, DateFilterPartial, ExportButtonsPartial
+    - `View/Admin/Settings/Partials/GlobalSettingsPartial`
+  - **Config Layer**: Centralized configuration (`Config/Settings`)
 - **Unresolved Errors Filter**: New filter to show only errors that haven't been successfully retried
   - "Unresolved" tab in logs table shows errors pending resolution
   - "All Errors" renamed to distinguish from unresolved filter
@@ -55,24 +42,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Developer
 
-- **Phase 2 Services**: Four new logging services following Single Responsibility Principle
-  - `Service\Logging\LogWriter`: Write operations with encryption
-  - `Service\Logging\LogReader`: Read operations with decryption
+- **New Service Classes**: Specialized services following Single Responsibility Principle
+  - `Service\Logging\LogWriter`: Log creation, updates, deletion with encryption
+  - `Service\Logging\LogReader`: Log retrieval with decryption
   - `Service\Logging\LogStatistics`: Statistics and metrics calculations
-  - `Service\Logging\RetryManager`: Retry management and error resolution
-- **Facade Pattern**: RequestLogger maintains backward compatibility while delegating to new services
-- Added `RequestLogger::count_errors_by_resolution()` method for error statistics
-- Added `RequestLogger::get_resolved_error_ids()` method for efficient filtering
-- **New Model Layer**: Type-safe domain models following SOLID principles
-- **Repository Pattern**: Interfaces for future data access abstraction
-- **Architecture Documentation**: See `docs/ARCHITECTURE.md` for complete refactoring plan
+  - `Service\Logging\RetryManager`: Retry management and error resolution tracking
+  - `Service\ContactForm\SubmissionProcessor`: Form submission business logic
+- **New Model Classes**: Type-safe domain models with full PHPStan Level 8 compliance
+  - `Model\LogEntry`: API request log representation
+  - `Model\FormSettings`: Form configuration
+  - `Model\ApiResponse`: API response data
+  - `Model\Statistics`: Aggregated statistics
+- **Exception Classes**: Custom exceptions for better error handling
+  - `Exception\ApiException`: API-related errors
+  - `Exception\ValidationException`: Validation errors with detailed tracking
+- **PSR-4 Namespace Organization**: Proper directory structure
+  - `Service\Security\*`: Security-related services
+  - `Config\Settings`: Configuration management
+- **Architecture Documentation**: See `docs/ARCHITECTURE.md` for complete structure
+- **Migration Guide**: See `docs/UPGRADE.md` for 2.0.0 migration instructions
 
 ### Notes
 
-- Phase 2 contains NO BREAKING CHANGES - facade pattern maintains full compatibility
-- Phase 1 contains NO BREAKING CHANGES - all additions are backward compatible
-- Existing code continues to work unchanged
-- Foundation for future architecture improvements in version 2.0.0
+- **Quality Gates**: PHPCS WordPress-Extra (0 errors) and PHPStan Level 8 (0 errors) compliance
+- All logging functionality migrated to dedicated services in `Service\Logging\`
 - See `docs/UPGRADE.md` for migration guidance
 
 ## [1.3.13] - 2026-01-23
