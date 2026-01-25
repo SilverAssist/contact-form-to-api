@@ -26,6 +26,7 @@ This document outlines potential features for future versions of Contact Form 7 
 **Solution**: Implement WordPress Privacy Tools integration.
 
 **How WordPress Privacy Eraser Works**:
+
 1. Admin enters user's email in Tools → Erase Personal Data
 2. WordPress sends confirmation email to user
 3. User confirms → WordPress calls all registered erasers with `callback($email_address, $page)`
@@ -34,6 +35,7 @@ This document outlines potential features for future versions of Contact Form 7 
 **Technical Challenge: Encryption Compatibility**
 
 When encryption is enabled, the email is stored encrypted inside `request_data` JSON:
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ request_data (encrypted) = "eyJub25jZSI6IjEyM..."              │
@@ -49,6 +51,7 @@ Problem: Cannot do SQL LIKE '%miguel@example.com%' on encrypted data!
 **Recommended Solution**: Add `email_hash` column to logs table.
 
 **Database Migration**:
+
 ```sql
 ALTER TABLE {prefix}cf7_api_logs 
 ADD COLUMN email_hash varchar(64) DEFAULT NULL,
@@ -56,6 +59,7 @@ ADD INDEX email_hash (email_hash);
 ```
 
 **Implementation**:
+
 ```php
 // 1. On form submission (LogWriter::start_request)
 $email = $this->extract_email_from_data($request_data);
@@ -105,6 +109,7 @@ add_filter('wp_privacy_personal_data_erasers', function($erasers) {
 **Email Field Detection**:
 
 CF7 forms can have different email field names. Add setting to configure:
+
 ```php
 // Settings option
 'email_fields' => ['your-email', 'email', 'correo', 'user-email'],
@@ -124,6 +129,7 @@ function extract_email_from_data($data) {
 **Migration for Existing Logs**:
 
 Existing logs need their `email_hash` populated:
+
 ```php
 // Background migration (run via cron or admin action)
 function migrate_email_hashes_batch($batch_size = 100) {
@@ -153,10 +159,12 @@ function migrate_email_hashes_batch($batch_size = 100) {
 **Synergy with Contact Book Feature**:
 
 This `email_hash` column benefits both features:
+
 - **GDPR Eraser**: Fast lookup to delete user's logs
 - **Contact Book**: Index for unique contacts table
 
 **Benefits**:
+
 - GDPR compliance out of the box
 - Works with encrypted data (O(1) lookup via hash index)
 - Users can request their data deletion
@@ -174,6 +182,7 @@ This `email_hash` column benefits both features:
 **Solution**: Extract unique emails from logs and create a contact directory.
 
 **Features**:
+
 - List of unique email addresses from all submissions
 - Per-contact submission history
 - Metrics: "This email has submitted 15 forms"
@@ -182,11 +191,12 @@ This `email_hash` column benefits both features:
 
 **Technical Challenge: Encryption Compatibility**
 
-When encryption is enabled, email/name fields are stored encrypted inside `request_data` JSON. This prevents direct SQL queries like `SELECT DISTINCT email`. 
+When encryption is enabled, email/name fields are stored encrypted inside `request_data` JSON. This prevents direct SQL queries like `SELECT DISTINCT email`.
 
 **Recommended Solution**: Use SHA-256 hashes for indexing while keeping real data encrypted.
 
 **Database Schema**:
+
 ```sql
 CREATE TABLE {prefix}cf7_api_contacts (
     id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -203,6 +213,7 @@ CREATE TABLE {prefix}cf7_api_contacts (
 ```
 
 **How It Works**:
+
 ```php
 // On form submission:
 $email_hash = hash('sha256', strtolower(trim($email)));
@@ -224,6 +235,7 @@ $email_hash = hash('sha256', strtolower(trim($email)));
 | Search by name | ⚠️ Requires name_hash | ✅ Direct |
 
 **Admin UI**:
+
 - New submenu: "Contacts" under main plugin menu
 - List table with search/filter (searches by hash)
 - Click contact to see all related logs (decrypts on display)
@@ -234,14 +246,17 @@ $email_hash = hash('sha256', strtolower(trim($email)));
 
 ### 3. Form Filter Dropdown
 
-**Problem**: Currently, filtering by form requires clicking on a form name in the table, which isn't discoverable.
+**Problem**: Filtering by form works but isn't discoverable - users must click on a form name in the table or manually add `?form_id=X` to the URL.
 
-**Solution**: Add a dropdown selector in the filters section to filter logs by form.
+**Solution**: Add a visible dropdown selector in the filters section.
 
-**Current State**:
+**Current State** (already implemented):
+
 - ✅ Filter by form works via `?form_id=X` URL parameter
 - ✅ Stats update when filtering by form
-- ❌ No UI element to select form (must click form name in table)
+- ✅ Export respects form filter
+- ✅ Clicking form name in table applies filter
+- ❌ **Missing**: Visible dropdown in filters section
 
 **Implementation**:
 
@@ -268,6 +283,7 @@ $forms_with_logs = $wpdb->get_results(
 ```
 
 **UI Location**:
+
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │ cf7-api-filters section:                                        │
@@ -283,6 +299,7 @@ $forms_with_logs = $wpdb->get_results(
 ```
 
 **Benefits**:
+
 - Discoverable UI for form filtering
 - Consistent with existing date filter UX
 - No database changes required
@@ -298,6 +315,7 @@ $forms_with_logs = $wpdb->get_results(
 **Solution**: Support multiple notification channels.
 
 **Supported Channels**:
+
 - Slack webhooks
 - Discord webhooks
 - Microsoft Teams
@@ -305,6 +323,7 @@ $forms_with_logs = $wpdb->get_results(
 - Enhanced email notifications
 
 **Configuration**:
+
 ```
 Per-form settings:
 ├── Primary API endpoint (existing)
@@ -314,6 +333,7 @@ Per-form settings:
 ```
 
 **Notification Triggers**:
+
 - On successful submission
 - On failed submission (after all retries)
 - On specific response codes
@@ -327,12 +347,14 @@ Per-form settings:
 **Solution**: Save and reuse mapping configurations.
 
 **Features**:
+
 - Save current mapping as template
 - Apply template to new forms
 - Import/export templates
 - Default template for new forms
 
 **Template Structure**:
+
 ```json
 {
     "name": "CRM Integration",
@@ -356,15 +378,18 @@ Per-form settings:
 **Solution**: Expand bulk action capabilities.
 
 **Current Bulk Actions** (already implemented):
+
 - ✅ Delete selection
 - ✅ Retry failed logs
 
 **New Actions to Add**:
+
 - Export selection (CSV/JSON) - Currently exports filtered results, not checkbox selection
 - Re-send to different endpoint
 - Mark as read/unread
 
 **UI Improvements**:
+
 - Select all matching filter (not just current page)
 - Progress indicator for long operations
 - Background processing for large batches
@@ -378,6 +403,7 @@ Per-form settings:
 **Solution**: Parse responses and trigger conditional actions.
 
 **Features**:
+
 ```
 IF response.status == "duplicate" THEN:
   - Skip confirmation email
@@ -393,6 +419,7 @@ IF response.error CONTAINS "rate_limit" THEN:
 ```
 
 **Configuration UI**:
+
 - Response field path (JSONPath-like)
 - Condition (equals, contains, exists, regex)
 - Action to perform
@@ -408,6 +435,7 @@ IF response.error CONTAINS "rate_limit" THEN:
 **Solution**: Expose logs via WordPress REST API.
 
 **Endpoints**:
+
 ```
 GET  /wp-json/cf7-api/v1/logs
 GET  /wp-json/cf7-api/v1/logs/{id}
@@ -419,6 +447,7 @@ GET  /wp-json/cf7-api/v1/contacts
 **Authentication**: Standard WordPress REST API authentication (nonce, application passwords, OAuth).
 
 **Use Cases**:
+
 - External dashboards
 - Mobile app integration
 - Custom reporting tools
@@ -433,6 +462,7 @@ GET  /wp-json/cf7-api/v1/contacts
 **Solution**: Support multiple endpoints per form submission.
 
 **Features**:
+
 - Primary endpoint (required)
 - Secondary endpoints (optional, array)
 - Failover mode: If primary fails, try secondary
@@ -440,6 +470,7 @@ GET  /wp-json/cf7-api/v1/contacts
 - Conditional: Send to endpoint B only if endpoint A returns X
 
 **Configuration**:
+
 ```
 Form Settings:
 ├── Endpoint 1: CRM API (primary)
@@ -457,6 +488,7 @@ Form Settings:
 **Solution**: Built-in field transformation functions.
 
 **Available Transformations**:
+
 - Text: uppercase, lowercase, trim, truncate
 - Date: format conversion (d/m/Y → Y-m-d)
 - Phone: normalization (+1-555-123-4567 → 15551234567)
@@ -465,6 +497,7 @@ Form Settings:
 - Computed: Concatenate fields, math operations
 
 **UI**:
+
 ```
 Field: [your-phone]
 ├── API Field: phone_number
@@ -481,6 +514,7 @@ Field: [your-phone]
 **Solution**: Full configuration import/export.
 
 **Exportable Data**:
+
 - Global plugin settings
 - Per-form API configurations
 - Field mapping templates
@@ -489,6 +523,7 @@ Field: [your-phone]
 **Format**: JSON or encrypted JSON (for sensitive data like API keys).
 
 **Use Cases**:
+
 - Staging → Production migration
 - Backup before updates
 - Share configurations between sites
@@ -502,6 +537,7 @@ Field: [your-phone]
 **Solution**: Comprehensive analytics dashboard.
 
 **Features**:
+
 - Response time trends (graphs)
 - Error rate by endpoint
 - Peak submission hours/days
@@ -510,6 +546,7 @@ Field: [your-phone]
 - Export reports as PDF
 
 **Metrics**:
+
 - Average response time
 - 95th percentile response time
 - Success rate by form
