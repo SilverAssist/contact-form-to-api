@@ -143,7 +143,7 @@ abstract class TestCase extends \WP_UnitTestCase {
 				'code'    => $status_code,
 				'message' => $this->getHttpStatusMessage( $status_code ),
 			),
-			'body'     => json_encode( $response_data ),
+			'body'     => wp_json_encode( $response_data ),
 			'headers'  => array(
 				'content-type' => 'application/json',
 			),

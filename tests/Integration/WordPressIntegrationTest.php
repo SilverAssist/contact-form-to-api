@@ -177,7 +177,7 @@ class WordPressIntegrationTest extends TestCase {
 			$response = \wp_remote_post(
 				'https://httpbin.org/post',
 				array(
-					'body'    => json_encode( array( 'test' => 'data' ) ),
+					'body'    => wp_json_encode( array( 'test' => 'data' ) ),
 					'headers' => array( 'Content-Type' => 'application/json' ),
 				)
 			);

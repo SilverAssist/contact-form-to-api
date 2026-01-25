@@ -79,7 +79,7 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 
 			$response = array(
 				'response' => array( 'code' => 200 ),
-				'body'     => \json_encode( array( 'success' => true ) ),
+				'body'     => \wp_json_encode( array( 'success' => true ) ),
 			);
 			$this->logger->complete_request( $response );
 
@@ -131,7 +131,7 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 
 			$response = array(
 				'response' => array( 'code' => 200 ),
-				'body'     => \json_encode( array( 'success' => true ) ),
+				'body'     => \wp_json_encode( array( 'success' => true ) ),
 			);
 			$this->logger->complete_request( $response );
 
@@ -180,7 +180,7 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 		$log_id   = $this->logger->start_request( $form_id, 'https://example.com/api/1', 'POST', 'test data' );
 		$response = array(
 			'response' => array( 'code' => 200 ),
-			'body'     => \json_encode( array( 'success' => true ) ),
+			'body'     => \wp_json_encode( array( 'success' => true ) ),
 		);
 		$this->logger->complete_request( $response );
 		// Update execution time to 0.1 seconds (100ms)
@@ -223,7 +223,7 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 
 			$response = array(
 				'response' => array( 'code' => 200 ),
-				'body'     => \json_encode( array( 'success' => true ) ),
+				'body'     => \wp_json_encode( array( 'success' => true ) ),
 			);
 			$this->logger->complete_request( $response );
 
@@ -289,7 +289,7 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 
 			$response = array(
 				'response' => array( 'code' => 200 ),
-				'body'     => \json_encode( array( 'success' => true ) ),
+				'body'     => \wp_json_encode( array( 'success' => true ) ),
 			);
 			$this->logger->complete_request( $response );
 
@@ -373,7 +373,7 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 			$retry_log_id = $this->logger->start_request( $form_id, "https://example.com/api/error{$i}", 'POST', 'test data', array(), $original_log_id );
 			$response     = array(
 				'response' => array( 'code' => 200 ),
-				'body'     => \json_encode( array( 'success' => true ) ),
+				'body'     => \wp_json_encode( array( 'success' => true ) ),
 			);
 			$this->logger->complete_request( $response );
 
@@ -446,7 +446,7 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 
 			$response = array(
 				'response' => array( 'code' => 200 ),
-				'body'     => \json_encode( array( 'success' => true ) ),
+				'body'     => \wp_json_encode( array( 'success' => true ) ),
 			);
 			$this->logger->complete_request( $response );
 
@@ -478,7 +478,7 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 			$retry_log_id = $this->logger->start_request( $form_id, "https://example.com/api/retried{$i}", 'POST', 'test data', array(), $original_log_id );
 			$response     = array(
 				'response' => array( 'code' => 200 ),
-				'body'     => \json_encode( array( 'success' => true ) ),
+				'body'     => \wp_json_encode( array( 'success' => true ) ),
 			);
 			$this->logger->complete_request( $response );
 
@@ -513,7 +513,7 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 
 			$response = array(
 				'response' => array( 'code' => 200 ),
-				'body'     => \json_encode( array( 'success' => true ) ),
+				'body'     => \wp_json_encode( array( 'success' => true ) ),
 			);
 			$this->logger->complete_request( $response );
 
@@ -545,7 +545,7 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 			$retry_log_id = $this->logger->start_request( $form_id, "https://example.com/api/retried{$i}", 'POST', 'test data', array(), $original_log_id );
 			$response     = array(
 				'response' => array( 'code' => 200 ),
-				'body'     => \json_encode( array( 'success' => true ) ),
+				'body'     => \wp_json_encode( array( 'success' => true ) ),
 			);
 			$this->logger->complete_request( $response );
 

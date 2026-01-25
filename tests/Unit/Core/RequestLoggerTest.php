@@ -118,7 +118,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 
 		$response = array(
 			'response' => array( 'code' => 200 ),
-			'body'     => json_encode(
+			'body'     => wp_json_encode(
 				array(
 					'success' => true,
 					'id'      => 456,
@@ -234,7 +234,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 
 			$response = array(
 				'response' => array( 'code' => 200 ),
-				'body'     => json_encode( array( 'success' => true ) ),
+				'body'     => wp_json_encode( array( 'success' => true ) ),
 			);
 			$this->logger->complete_request( $response );
 
@@ -263,7 +263,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 
 			$response = array(
 				'response' => array( 'code' => 200 ),
-				'body'     => json_encode( array( 'success' => true ) ),
+				'body'     => wp_json_encode( array( 'success' => true ) ),
 			);
 			$this->logger->complete_request( $response );
 
@@ -298,7 +298,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 
 		$response = array(
 			'response' => array( 'code' => 200 ),
-			'body'     => json_encode( array( 'success' => true ) ),
+			'body'     => wp_json_encode( array( 'success' => true ) ),
 		);
 		$this->logger->complete_request( $response );
 

@@ -108,7 +108,7 @@ class IntegrationTest extends CF7TestCase {
 	 */
 	public function testJsonFormatProcessing(): void {
 		$submission_data = $this->createMockSubmissionData();
-		$json_data       = json_encode( $submission_data );
+		$json_data       = wp_json_encode( $submission_data );
 
 		$this->assertJsonString( $json_data, 'Should produce valid JSON' );
 
