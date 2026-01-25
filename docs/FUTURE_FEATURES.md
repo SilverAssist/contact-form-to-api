@@ -401,24 +401,31 @@ public function maybe_send_individual_alert(int $log_id, int $form_id): void {
 
 **Problem**: Limited batch operations on logs.
 
-**Solution**: Expand bulk action capabilities.
+**Solution**: Improve existing bulk action UX and add export selection.
 
 **Current Bulk Actions** (already implemented):
 
 - ✅ Delete selection
 - ✅ Retry failed logs
 
-**New Actions to Add**:
+**Enhancements to Add**:
 
-- Export selection (CSV/JSON) - Currently exports filtered results, not checkbox selection
-- Re-send to different endpoint
-- Mark as read/unread
+- **Export selection**: Export only checkbox-selected logs (currently exports all filtered results)
+- **Select all matching filter**: Option to select all logs matching current filter, not just current page (with confirmation dialog for large selections)
+- **Progress indicator**: Show progress for operations on many logs
+- **Background processing**: Use AJAX for large batches to prevent timeouts
 
-**UI Improvements**:
+**Implementation Notes**:
 
-- Select all matching filter (not just current page)
-- Progress indicator for long operations
-- Background processing for large batches
+```php
+// "Select all matching filter" needs count + confirmation
+$matching_count = $list_table->get_total_items();
+if ($matching_count > 100) {
+    // Show confirmation: "Apply action to all {$matching_count} matching logs?"
+}
+```
+
+**Effort**: ~150 lines (mostly JS for progress UI)
 
 ---
 
