@@ -13,6 +13,8 @@
 
 namespace SilverAssist\ContactFormToAPI\View\Admin\Logs\Partials;
 
+use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
+
 \defined( 'ABSPATH' ) || exit;
 
 /**
@@ -42,13 +44,14 @@ class DateFilterPartial {
 		// phpcs:enable
 
 		$is_custom = 'custom' === $current_date_filter;
+
+		// Get forms that have logs for the dropdown.
+		$log_reader       = new LogReader();
+		$forms_with_logs = $log_reader->get_forms_with_logs();
 		?>
 		<div class="cf7-api-filters">
 			<form method="get" action="<?php echo \esc_url( \admin_url( 'admin.php' ) ); ?>" id="cf7-date-filter-form">
 				<input type="hidden" name="page" value="<?php echo \esc_attr( $page ); ?>" />
-				<?php if ( $form_id > 0 ) : ?>
-					<input type="hidden" name="form_id" value="<?php echo \esc_attr( $form_id ); ?>" />
-				<?php endif; ?>
 				<?php if ( ! empty( $search ) ) : ?>
 					<input type="hidden" name="s" value="<?php echo \esc_attr( $search ); ?>" />
 				<?php endif; ?>
@@ -70,6 +73,29 @@ class DateFilterPartial {
 							<option value="error" <?php \selected( $current_status, 'error' ); ?>>
 								<?php \esc_html_e( 'Error', 'contact-form-to-api' ); ?>
 							</option>
+						</select>
+					</div>
+
+					<!-- Form Filter -->
+					<div class="filter-group">
+						<label for="form_filter" class="filter-label">
+							<?php \esc_html_e( 'Form', 'contact-form-to-api' ); ?>:
+						</label>
+						
+						<select name="form_id" id="form_filter" class="filter-select">
+							<option value="" <?php \selected( $form_id, 0 ); ?>>
+								<?php \esc_html_e( 'All Forms', 'contact-form-to-api' ); ?>
+							</option>
+							<?php foreach ( $forms_with_logs as $form ) : ?>
+								<?php
+								$current_form_id = (int) $form['form_id'];
+								/* translators: %d: form ID */
+								$form_title      = ! empty( $form['post_title'] ) ? $form['post_title'] : \sprintf( \__( 'Form #%d', 'contact-form-to-api' ), $current_form_id );
+								?>
+								<option value="<?php echo \esc_attr( $current_form_id ); ?>" <?php \selected( $form_id, $current_form_id ); ?>>
+									<?php echo \esc_html( $form_title ); ?>
+								</option>
+							<?php endforeach; ?>
 						</select>
 					</div>
 
@@ -141,7 +167,7 @@ class DateFilterPartial {
 	 * @return void
 	 */
 	private static function render_active_filters( string $current_date_filter, string $current_status, string $date_start, string $date_end, string $page, int $form_id, string $search ): void {
-		if ( empty( $current_date_filter ) && empty( $current_status ) ) {
+		if ( empty( $current_date_filter ) && empty( $current_status ) && 0 === $form_id ) {
 			return;
 		}
 		?>
@@ -151,13 +177,42 @@ class DateFilterPartial {
 				<?php
 				// Build base URL for removing individual filters.
 				$base_args = array( 'page' => $page );
-				if ( $form_id > 0 ) {
-					$base_args['form_id'] = $form_id;
-				}
 				if ( ! empty( $search ) ) {
 					$base_args['s'] = $search;
 				}
 
+				// Form filter tag.
+				if ( $form_id > 0 ) :
+					// Get form title for display.
+					$form = \get_post( $form_id );
+					/* translators: %d: form ID */
+					$form_label = ( $form instanceof \WP_Post ) ? $form->post_title : \sprintf( \__( 'Form #%d', 'contact-form-to-api' ), $form_id );
+
+					// URL to remove only form filter (keep status and date filters).
+					$remove_form_args = $base_args;
+					if ( ! empty( $current_status ) ) {
+						$remove_form_args['status'] = $current_status;
+					}
+					if ( ! empty( $current_date_filter ) ) {
+						$remove_form_args['date_filter'] = $current_date_filter;
+						if ( 'custom' === $current_date_filter ) {
+							$remove_form_args['date_start'] = $date_start;
+							if ( ! empty( $date_end ) ) {
+								$remove_form_args['date_end'] = $date_end;
+							}
+						}
+					}
+					$remove_form_url = \add_query_arg( $remove_form_args, \admin_url( 'admin.php' ) );
+					?>
+					<span class="tag">
+						<?php echo \esc_html( $form_label ); ?>
+						<a href="<?php echo \esc_url( $remove_form_url ); ?>" class="remove-tag" aria-label="<?php \esc_attr_e( 'Remove form filter', 'contact-form-to-api' ); ?>">
+							<span class="dashicons dashicons-no-alt"></span>
+						</a>
+					</span>
+				<?php endif; ?>
+
+				<?php
 				// Status filter tag.
 				if ( ! empty( $current_status ) ) :
 					$status_labels = array(
@@ -166,8 +221,11 @@ class DateFilterPartial {
 					);
 					$status_label = $status_labels[ $current_status ] ?? $current_status;
 					
-					// URL to remove only status filter (keep date filter).
+					// URL to remove only status filter (keep form and date filter).
 					$remove_status_args = $base_args;
+					if ( $form_id > 0 ) {
+						$remove_status_args['form_id'] = $form_id;
+					}
 					if ( ! empty( $current_date_filter ) ) {
 						$remove_status_args['date_filter'] = $current_date_filter;
 						if ( 'custom' === $current_date_filter ) {
@@ -210,8 +268,11 @@ class DateFilterPartial {
 						);
 					}
 
-					// URL to remove only date filter (keep status filter).
+					// URL to remove only date filter (keep form and status filter).
 					$remove_date_args = $base_args;
+					if ( $form_id > 0 ) {
+						$remove_date_args['form_id'] = $form_id;
+					}
 					if ( ! empty( $current_status ) ) {
 						$remove_date_args['status'] = $current_status;
 					}
