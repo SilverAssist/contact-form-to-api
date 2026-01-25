@@ -277,14 +277,14 @@ class WordPressIntegrationTest extends TestCase {
 	 */
 	public function test_wordpress_user_capabilities(): void {
 		// Create admin user for testing
-		$admin_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		$admin_id = static::factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
 
 		$this->assertTrue( current_user_can( 'manage_options' ) );
 		$this->assertTrue( current_user_can( 'edit_posts' ) );
 
 		// Create subscriber
-		$subscriber_id = $this->factory->user->create( array( 'role' => 'subscriber' ) );
+		$subscriber_id = static::factory()->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $subscriber_id );
 
 		$this->assertFalse( current_user_can( 'manage_options' ) );

@@ -50,7 +50,7 @@ class MigrationIntegrationTest extends WP_UnitTestCase {
 		parent::setUp();
 
 		// Create admin user for capability tests.
-		$this->admin_user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+		$this->admin_user_id = static::factory()->user->create( array( 'role' => 'administrator' ) );
 
 		// Enable encryption for tests.
 		\update_option( 'cf7_api_global_settings', array( 'encryption_enabled' => true ) );
@@ -218,7 +218,7 @@ class MigrationIntegrationTest extends WP_UnitTestCase {
 	 */
 	public function test_ajax_start_migration_requires_capability(): void {
 		// Create subscriber user (no manage_options capability).
-		$subscriber_id = $this->factory->user->create( array( 'role' => 'subscriber' ) );
+		$subscriber_id = static::factory()->user->create( array( 'role' => 'subscriber' ) );
 		\wp_set_current_user( $subscriber_id );
 
 		// Initialize controller.
