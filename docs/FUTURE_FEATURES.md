@@ -1,7 +1,7 @@
 # Future Features Roadmap
 
-**Document Version**: 1.0.0  
-**Last Updated**: January 24, 2026  
+**Document Version**: 1.1.0  
+**Last Updated**: January 25, 2026  
 **Status**: Planning / Ideas
 
 This document outlines potential features for future versions of Contact Form 7 to API, based on competitive analysis (Flamingo) and user needs.
@@ -10,9 +10,9 @@ This document outlines potential features for future versions of Contact Form 7 
 
 ## Table of Contents
 
-1. [High Priority](#high-priority)
-2. [Medium Priority](#medium-priority)
-3. [Low Priority](#low-priority)
+1. [High Priority](#high-priority) (2 features)
+2. [Medium Priority](#medium-priority) (4 features)
+3. [Low Priority](#low-priority) (1 feature)
 4. [Competitive Analysis](#competitive-analysis)
 
 ---
@@ -537,145 +537,56 @@ In `SubmissionProcessor.php` after receiving response (~20 lines).
 - Follows WordPress hook conventions
 
 **Effort**: ~20 lines of code + API_REFERENCE.md documentation
-- Example use cases (CRM integration, Slack notifications, error logging)
-- Code snippets
-
-**Benefits**:
-
-- Zero UI complexity
-- Plugin stays focused on core purpose  
-- Unlimited extensibility for developers
-- No maintenance burden for edge-case features
-- Follows WordPress hook conventions
-
-**Effort**: ~20 lines of code (documentation already in API_REFERENCE.md)
 
 ---
 
 ## Low Priority
 
-### 7. REST API Endpoints
+### 7. Import/Export Configuration
 
-**Problem**: No programmatic access to log data.
+**Problem**: Difficult to migrate plugin settings between environments (staging → production).
 
-**Solution**: Expose logs via WordPress REST API.
+**Solution**: Export/import global plugin settings as JSON.
 
-**Endpoints**:
+**Scope** (intentionally limited):
 
+- ✅ Global plugin settings (retention, alerts, encryption toggle, etc.)
+- ❌ Per-form API configurations (form IDs differ between environments)
+- ❌ Logs or contacts data
+
+**Implementation**:
+
+```php
+// Export
+$settings = get_option('cf7_api_settings', []);
+$export = json_encode($settings, JSON_PRETTY_PRINT);
+
+// Import (with validation)
+$import = json_decode($json, true);
+if ($this->validate_settings($import)) {
+    update_option('cf7_api_settings', $import);
+}
 ```
-GET  /wp-json/cf7-api/v1/logs
-GET  /wp-json/cf7-api/v1/logs/{id}
-POST /wp-json/cf7-api/v1/logs/{id}/retry
-GET  /wp-json/cf7-api/v1/stats
-GET  /wp-json/cf7-api/v1/contacts
-```
-
-**Authentication**: Standard WordPress REST API authentication (nonce, application passwords, OAuth).
-
-**Use Cases**:
-
-- External dashboards
-- Mobile app integration
-- Custom reporting tools
-- Automation workflows (Zapier, n8n)
-
----
-
-### 8. Multi-Endpoint per Form
-
-**Problem**: Can only send form data to one API.
-
-**Solution**: Support multiple endpoints per form submission.
-
-**Features**:
-
-- Primary endpoint (required)
-- Secondary endpoints (optional, array)
-- Failover mode: If primary fails, try secondary
-- Parallel mode: Send to all simultaneously
-- Conditional: Send to endpoint B only if endpoint A returns X
-
-**Configuration**:
-
-```
-Form Settings:
-├── Endpoint 1: CRM API (primary)
-├── Endpoint 2: Email Marketing API
-├── Endpoint 3: Slack Notification
-└── Mode: Parallel / Sequential / Failover
-```
-
----
-
-### 9. Field Transformations
-
-**Problem**: Form data often needs transformation before API submission.
-
-**Solution**: Built-in field transformation functions.
-
-**Available Transformations**:
-
-- Text: uppercase, lowercase, trim, truncate
-- Date: format conversion (d/m/Y → Y-m-d)
-- Phone: normalization (+1-555-123-4567 → 15551234567)
-- Email: lowercase, validate
-- Custom: PHP callback (advanced users)
-- Computed: Concatenate fields, math operations
 
 **UI**:
 
-```
-Field: [your-phone]
-├── API Field: phone_number
-├── Transform: Phone Normalize
-└── Format: E.164 (no spaces, with country code)
-```
+Settings page → "Backup & Restore" section:
+- **Export**: Download button → `cf7-api-settings-2026-01-25.json`
+- **Import**: File upload with validation feedback
 
----
+**Security Considerations**:
 
-### 10. Import/Export Configuration
-
-**Problem**: Difficult to migrate settings between environments.
-
-**Solution**: Full configuration import/export.
-
-**Exportable Data**:
-
-- Global plugin settings
-- Per-form API configurations
-
-**Format**: JSON or encrypted JSON (for sensitive data like API keys).
+- Sensitive data (like API keys) are per-form, not in global settings
+- No encryption needed for export file
+- Validate JSON structure before import
 
 **Use Cases**:
 
-- Staging → Production migration
-- Backup before updates
-- Share configurations between sites
+- Backup settings before plugin updates
+- Replicate configuration across multiple sites
+- Agency workflow: configure once, deploy to clients
 
----
-
-### 11. Advanced Statistics & Reporting
-
-**Problem**: Current statistics are basic.
-
-**Solution**: Comprehensive analytics dashboard.
-
-**Features**:
-
-- Response time trends (graphs)
-- Error rate by endpoint
-- Peak submission hours/days
-- API availability monitoring
-- Custom date range reports
-- Export reports as PDF
-
-**Metrics**:
-
-- Average response time
-- 95th percentile response time
-- Success rate by form
-- Most common error codes
-- Submissions per hour/day/week
+**Effort**: ~100 lines (settings serialization + admin UI)
 
 ---
 
