@@ -1,250 +1,28 @@
 # Future Features Roadmap
 
-**Document Version**: 1.1.0  
+**Document Version**: 2.0.0  
 **Last Updated**: January 25, 2026  
 **Status**: Planning / Ideas
 
-This document outlines potential features for future versions of Contact Form 7 to API, based on competitive analysis (Flamingo) and user needs.
+This document outlines potential features for future versions of Contact Form 7 to API, focused on its core purpose: **sending form data to APIs reliably**.
+
+> **Design Philosophy**: Keep the plugin focused. Features that don't directly support the core mission of "Send Forms to API" are out of scope.
 
 ---
 
 ## Table of Contents
 
-1. [High Priority](#high-priority) (2 features)
-2. [Medium Priority](#medium-priority) (4 features)
-3. [Low Priority](#low-priority) (1 feature)
-4. [Competitive Analysis](#competitive-analysis)
+1. [Planned Features](#planned-features) (5 features)
+2. [Competitive Analysis](#competitive-analysis)
+3. [Out of Scope](#out-of-scope)
 
 ---
 
-## High Priority
+## Planned Features
 
-### 1. GDPR Personal Data Eraser
+### 1. Form Filter Dropdown (UX)
 
-**Problem**: WordPress provides privacy tools for GDPR compliance, but our plugin doesn't integrate with them.
-
-**Solution**: Implement WordPress Privacy Tools integration.
-
-**How WordPress Privacy Eraser Works**:
-
-1. Admin enters user's email in Tools → Erase Personal Data
-2. WordPress sends confirmation email to user
-3. User confirms → WordPress calls all registered erasers with `callback($email_address, $page)`
-4. Each eraser must find and delete data associated with that email
-
-**Technical Challenge: Encryption Compatibility**
-
-When encryption is enabled, the email is stored encrypted inside `request_data` JSON:
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│ request_data (encrypted) = "eyJub25jZSI6IjEyM..."              │
-│                                                                 │
-│ After decrypt:                                                  │
-│ {"your-name": "Miguel", "your-email": "miguel@example.com"}    │
-└─────────────────────────────────────────────────────────────────┘
-
-WordPress calls: eraser_callback("miguel@example.com", 1)
-Problem: Cannot do SQL LIKE '%miguel@example.com%' on encrypted data!
-```
-
-**Recommended Solution**: Add `email_hash` column to logs table.
-
-**Database Migration**:
-
-```sql
-ALTER TABLE {prefix}cf7_api_logs 
-ADD COLUMN email_hash varchar(64) DEFAULT NULL,
-ADD INDEX email_hash (email_hash);
-```
-
-**Implementation**:
-
-```php
-// 1. On form submission (LogWriter::start_request)
-$email = $this->extract_email_from_data($request_data);
-$email_hash = $email ? hash('sha256', strtolower(trim($email))) : null;
-$insert_data['email_hash'] = $email_hash;
-
-// 2. Privacy eraser callback
-function cf7_api_privacy_eraser($email_address, $page = 1) {
-    global $wpdb;
-    $table = $wpdb->prefix . 'cf7_api_logs';
-    
-    // Hash the email we're looking for
-    $email_hash = hash('sha256', strtolower(trim($email_address)));
-    
-    // Fast indexed lookup and delete
-    $deleted = $wpdb->query($wpdb->prepare(
-        "DELETE FROM %i WHERE email_hash = %s LIMIT 500",
-        $table,
-        $email_hash
-    ));
-    
-    // Check if more remain
-    $remaining = $wpdb->get_var($wpdb->prepare(
-        "SELECT COUNT(*) FROM %i WHERE email_hash = %s",
-        $table,
-        $email_hash
-    ));
-    
-    return [
-        'items_removed'  => $deleted > 0,
-        'items_retained' => false,
-        'messages'       => [],
-        'done'           => $remaining == 0,
-    ];
-}
-
-// 3. Register the eraser
-add_filter('wp_privacy_personal_data_erasers', function($erasers) {
-    $erasers['cf7-api-logs'] = [
-        'eraser_friendly_name' => __('CF7 to API Logs', 'contact-form-to-api'),
-        'callback'             => 'cf7_api_privacy_eraser',
-    ];
-    return $erasers;
-});
-```
-
-**Email Field Detection**:
-
-CF7 forms can have different email field names. Add setting to configure:
-
-```php
-// Settings option
-'email_fields' => ['your-email', 'email', 'correo', 'user-email'],
-
-// Extract email from form data
-function extract_email_from_data($data) {
-    $email_fields = Settings::instance()->get('email_fields', ['your-email', 'email']);
-    foreach ($email_fields as $field) {
-        if (!empty($data[$field]) && is_email($data[$field])) {
-            return $data[$field];
-        }
-    }
-    return null;
-}
-```
-
-**Migration for Existing Logs**:
-
-Existing logs need their `email_hash` populated:
-
-```php
-// Background migration (run via cron or admin action)
-function migrate_email_hashes_batch($batch_size = 100) {
-    global $wpdb;
-    $encryption = EncryptionService::instance();
-    
-    $logs = $wpdb->get_results($wpdb->prepare(
-        "SELECT id, request_data FROM %i 
-         WHERE email_hash IS NULL LIMIT %d",
-        $wpdb->prefix . 'cf7_api_logs',
-        $batch_size
-    ));
-    
-    foreach ($logs as $log) {
-        $decrypted = $encryption->decrypt($log->request_data);
-        $data = json_decode($decrypted, true);
-        $email = extract_email_from_data($data);
-        
-        $hash = $email ? hash('sha256', strtolower(trim($email))) : '';
-        $wpdb->update($table, ['email_hash' => $hash], ['id' => $log->id]);
-    }
-    
-    return count($logs); // Return processed count
-}
-```
-
-**Synergy with Contact Book Feature**:
-
-This `email_hash` column benefits both features:
-
-- **GDPR Eraser**: Fast lookup to delete user's logs
-- **Contact Book**: Index for unique contacts table
-
-**Benefits**:
-
-- GDPR compliance out of the box
-- Works with encrypted data (O(1) lookup via hash index)
-- Users can request their data deletion
-- Reduces legal liability for site owners
-- Scales to millions of logs
-
-**Reference**: Flamingo implements this in `admin/includes/privacy.php` (but without encryption support)
-
----
-
-### 2. Contact Book / Address Book
-
-**Problem**: No way to see unique contacts across all form submissions.
-
-**Solution**: Extract unique emails from logs and create a contact directory.
-
-**Features**:
-
-- List of unique email addresses from all submissions
-- Per-contact submission history
-- Metrics: "This email has submitted 15 forms"
-- Last contact date
-- Export contacts to CSV
-
-**Technical Challenge: Encryption Compatibility**
-
-When encryption is enabled, email/name fields are stored encrypted inside `request_data` JSON. This prevents direct SQL queries like `SELECT DISTINCT email`.
-
-**Recommended Solution**: Use SHA-256 hashes for indexing while keeping real data encrypted.
-
-**Database Schema**:
-
-```sql
-CREATE TABLE {prefix}cf7_api_contacts (
-    id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-    email_hash varchar(64) NOT NULL,           -- SHA-256 hash for lookups
-    first_seen datetime NOT NULL,
-    last_seen datetime NOT NULL,
-    last_log_id bigint(20) UNSIGNED NOT NULL,  -- Reference to decrypt real data
-    submission_count int(11) NOT NULL DEFAULT 1,
-    PRIMARY KEY (id),
-    UNIQUE KEY email_hash (email_hash),        -- Enables efficient lookups
-    KEY last_seen (last_seen),
-    KEY last_log_id (last_log_id)
-);
-```
-
-**How It Works**:
-
-```php
-// On form submission:
-$email_hash = hash('sha256', strtolower(trim($email)));
-
-// To display contact:
-// 1. Find contact by email_hash
-// 2. Get last_log_id
-// 3. Decrypt request_data from that log
-// 4. Extract and display real name/email
-```
-
-**Encryption Compatibility Matrix**:
-
-| Operation | With Encryption | Without Encryption |
-|-----------|-----------------|-------------------|
-| Search by email | ✅ Via hash | ✅ Direct |
-| Count submissions | ✅ Counter field | ✅ Counter field |
-| Display email | ✅ Decrypt from log | ✅ Direct |
-| Search by name | ⚠️ Requires name_hash | ✅ Direct |
-
-**Admin UI**:
-
-- New submenu: "Contacts" under main plugin menu
-- List table with search/filter (searches by hash)
-- Click contact to see all related logs (decrypts on display)
-
----
-
-## Medium Priority
-
-### 3. Form Filter Dropdown
+**Priority**: High | **Effort**: ~50 lines
 
 **Problem**: Filtering by form works but isn't discoverable - users must click on a form name in the table or manually add `?form_id=X` to the URL.
 
@@ -308,7 +86,9 @@ $forms_with_logs = $wpdb->get_results(
 
 ---
 
-### 4. Granular Alert Preferences
+### 2. Granular Alert Preferences (Monitoring)
+
+**Priority**: Medium | **Effort**: ~100 lines
 
 **Problem**: Current `EmailAlertService` only alerts when error thresholds are exceeded. A single important lead could fail without triggering an alert if the threshold isn't met.
 
@@ -397,7 +177,9 @@ public function maybe_send_individual_alert(int $log_id, int $form_id): void {
 
 ---
 
-### 5. Enhanced Bulk Actions
+### 3. Enhanced Bulk Actions (UX)
+
+**Priority**: Low | **Effort**: ~150 lines
 
 **Problem**: Limited batch operations on logs.
 
@@ -429,7 +211,9 @@ if ($matching_count > 100) {
 
 ---
 
-### 6. Response Action Hook (Developer Extensibility)
+### 4. Response Action Hook (Extensibility)
+
+**Priority**: High | **Effort**: ~20 lines
 
 **Problem**: Developers may need to act on API responses (store lead IDs, trigger notifications, log to external services) but there's no extension point.
 
@@ -540,9 +324,9 @@ In `SubmissionProcessor.php` after receiving response (~20 lines).
 
 ---
 
-## Low Priority
+### 5. Import/Export Configuration (DevOps)
 
-### 7. Import/Export Configuration
+**Priority**: Low | **Effort**: ~100 lines
 
 **Problem**: Difficult to migrate plugin settings between environments (staging → production).
 
@@ -586,9 +370,23 @@ Settings page → "Backup & Restore" section:
 - Replicate configuration across multiple sites
 - Agency workflow: configure once, deploy to clients
 
-**Effort**: ~100 lines (settings serialization + admin UI)
-
 ---
+
+## Out of Scope
+
+The following features were considered but intentionally excluded to keep the plugin focused on its core purpose: **sending form data to APIs**.
+
+| Feature | Reason | Alternative |
+|---------|--------|-------------|
+| **GDPR Personal Data Eraser** | Compliance feature, not API-related | Use log retention policy (auto-delete after X days) |
+| **Contact Book / Address Book** | Data visualization, not API-related | Contacts should live in your CRM (where we send data) |
+| **REST API Endpoints** | Exposes logs, not part of sending to APIs | Use `cf7_api_after_response` hook for integrations |
+| **Multi-Endpoint per Form** | Complex UI, edge case | Use `cf7_api_after_response` hook to send to secondary endpoints |
+| **Field Transformations UI** | Complex UI for niche use cases | Use `cf7_api_set_record_value` filter hook |
+| **Advanced Statistics** | Analytics beyond monitoring | Export CSV and use Excel/Google Sheets |
+| **Spam Detection** | CF7's responsibility | Use CF7 + Akismet or reCAPTCHA |
+
+> **Philosophy**: If a feature doesn't directly help "send form data to APIs reliably", it's out of scope. For extensibility, we provide hooks instead of bloated features.
 
 ---
 
@@ -603,11 +401,11 @@ Settings page → "Backup & Restore" section:
 | **Retry Failed** | ✅ Automatic | ❌ N/A |
 | **Encryption** | ✅ libsodium | ❌ Plaintext |
 | **Response Logging** | ✅ Full request/response | ❌ N/A |
-| **Contact Book** | ❌ Not yet | ✅ Address Book |
-| **GDPR Eraser** | ❌ Not yet | ✅ Integrated |
+| **Contact Book** | ❌ Out of scope | ✅ Address Book |
+| **GDPR Eraser** | ❌ Out of scope | ✅ Integrated |
 | **Spam Detection** | N/A (CF7 handles) | ✅ Akismet |
 | **Auto Cleanup** | ✅ Cron + retention | ✅ Cron jobs |
-| **Form Filter UI** | ❌ Not yet (URL only) | ✅ Dropdown |
+| **Form Filter UI** | 🔜 Planned | ✅ Dropdown |
 | **CSV Export** | ✅ Yes | ✅ Yes |
 | **Modern Architecture** | ✅ PSR-4, PHP 8.2 | ❌ Procedural |
 | **Test Suite** | ✅ PHPUnit | ❌ None |
@@ -615,10 +413,10 @@ Settings page → "Backup & Restore" section:
 
 ### Key Takeaways
 
-1. **Flamingo excels at**: Contact management, GDPR compliance, message storage
+1. **Different purposes**: Flamingo stores messages locally; we send them to external APIs
 2. **CF7 to API excels at**: API integration, retry logic, security, code quality
-3. **Spam handling**: Delegated to CF7 (Akismet, reCAPTCHA) - not our responsibility
-4. **Opportunity**: Combine best of both worlds while maintaining our technical superiority
+3. **Intentionally out of scope**: Contact Book, GDPR Eraser (use retention policy instead)
+4. **Philosophy**: Stay focused on core purpose, extend via hooks not features
 
 ---
 
