@@ -308,71 +308,92 @@ $forms_with_logs = $wpdb->get_results(
 
 ---
 
-### 4. Admin Failure Alerts
+### 4. Granular Alert Preferences
 
-**Problem**: When API calls fail permanently (after all retries exhausted), there's no notification to the site administrator.
+**Problem**: Current `EmailAlertService` only alerts when error thresholds are exceeded. A single important lead could fail without triggering an alert if the threshold isn't met.
 
-**Solution**: Send email alerts to admin when submissions fail permanently.
+**Solution**: Extend the existing alert system with granular notification preferences.
 
-**Why This Matters**:
+**Current State** (already implemented):
 
-- Failed submissions might mean lost leads/contacts
-- Admin may not check the logs dashboard frequently
-- Quick notification enables faster response (fix API endpoint, contact user manually, etc.)
+- ✅ `EmailAlertService` monitors hourly error rates
+- ✅ Alerts when `error_threshold` OR `rate_threshold` exceeded
+- ✅ Configurable recipients via `alert_recipients`
+- ✅ Cooldown period to prevent spam
+
+**What's Missing**:
+
+- ❌ Per-submission failure alerts (when a log exhausts all retries)
+- ❌ User choice of which alert types to receive
 
 **Implementation**:
 
+Extend `EmailAlertService` with new alert type:
+
 ```php
-// In RetryService after max retries exhausted:
-if ($retry_count >= $max_retries) {
-    $this->mark_as_failed($log_id);
-    $this->maybe_send_failure_alert($log_id, $form_id);
+// New setting: alert_types (array)
+'alert_types' => [
+    'threshold' => true,      // Existing: high error rate alerts
+    'individual' => false,    // New: per-submission failure alerts
+],
+
+// In RetryService, after max retries exhausted:
+public function mark_permanently_failed(int $log_id, int $form_id): void {
+    $this->update_log_status($log_id, 'failed');
+    
+    // Trigger individual failure alert if enabled
+    EmailAlertService::instance()->maybe_send_individual_alert($log_id, $form_id);
 }
 
-function maybe_send_failure_alert($log_id, $form_id) {
-    if (!Settings::instance()->get('failure_alerts_enabled', false)) {
+// New method in EmailAlertService:
+public function maybe_send_individual_alert(int $log_id, int $form_id): void {
+    $settings = Settings::instance();
+    
+    if (!$settings->is_alerts_enabled()) {
         return;
     }
     
-    $to = Settings::instance()->get('failure_alert_email', get_option('admin_email'));
-    $subject = sprintf(__('[%s] API submission failed', 'contact-form-to-api'), get_bloginfo('name'));
+    $alert_types = $settings->get('alert_types', []);
+    if (empty($alert_types['individual'])) {
+        return;
+    }
     
-    $message = sprintf(
-        __("A form submission failed after all retry attempts.\n\nForm: %s\nLog ID: %d\nView details: %s", 'contact-form-to-api'),
-        get_the_title($form_id),
-        $log_id,
-        admin_url("admin.php?page=cf7-api-logs&log_id={$log_id}")
-    );
-    
-    wp_mail($to, $subject, $message);
+    // No cooldown for individual alerts - they're event-driven
+    $this->send_individual_failure_alert($log_id, $form_id);
 }
 ```
 
-**Settings UI**:
+**Settings UI Extension**:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│ Failure Alerts                                                  │
+│ Email Alerts                                                    │
 │ ┌─────────────────────────────────────────────────────────────┐│
-│ │ ☑ Enable failure alerts                                     ││
+│ │ ☑ Enable email alerts                                       ││
 │ │                                                             ││
-│ │ Alert email: [admin@example.com________________]            ││
-│ │              (defaults to site admin email)                 ││
+│ │ Alert recipients: [admin@example.com________________]       ││
 │ │                                                             ││
-│ │ ☐ Include form data in email (privacy consideration)       ││
+│ │ Alert Types:                                                ││
+│ │ ☑ High error rate (threshold-based)                        ││
+│ │   └─ Trigger when: [5] errors OR [20]% error rate/hour     ││
+│ │   └─ Cooldown: [4] hours between alerts                    ││
+│ │                                                             ││
+│ │ ☐ Individual submission failures                           ││
+│ │   └─ Alert when a submission fails after all retries       ││
+│ │   └─ ☐ Include form data in email (privacy consideration) ││
 │ └─────────────────────────────────────────────────────────────┘│
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 **Benefits**:
 
-- Simple implementation (~50 lines)
-- Uses existing WordPress mail system
-- No external dependencies (Slack/Discord APIs)
-- Privacy-friendly (optional data inclusion)
-- Immediate awareness of issues
+- Extends existing service (no new classes needed)
+- User controls granularity based on their needs
+- Low-traffic sites can enable individual alerts
+- High-traffic sites can stick to threshold-only
+- Backward compatible (default: only threshold alerts)
 
-**Note**: For advanced integrations (Slack, Discord, etc.), users can configure those platforms as additional endpoints using Feature #9 (Multi-Endpoint per Form).
+**Effort**: ~100 lines to extend `EmailAlertService` + settings UI changes
 
 ---
 
