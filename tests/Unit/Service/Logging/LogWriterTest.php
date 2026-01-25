@@ -31,8 +31,8 @@ class LogWriterTest extends TestCase {
 	/**
 	 * Set up before class - create tables once before any tests.
 	 */
-	public static function set_up_before_class(): void {
-		parent::set_up_before_class();
+	public static function setUpBeforeClass(): void {
+		parent::setUpBeforeClass();
 		Activator::create_tables();
 	}
 
