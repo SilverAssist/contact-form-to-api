@@ -308,35 +308,71 @@ $forms_with_logs = $wpdb->get_results(
 
 ---
 
-### 4. Webhook Notifications
+### 4. Admin Failure Alerts
 
-**Problem**: Currently only sends to one API endpoint per form.
+**Problem**: When API calls fail permanently (after all retries exhausted), there's no notification to the site administrator.
 
-**Solution**: Support multiple notification channels.
+**Solution**: Send email alerts to admin when submissions fail permanently.
 
-**Supported Channels**:
+**Why This Matters**:
 
-- Slack webhooks
-- Discord webhooks
-- Microsoft Teams
-- Custom webhooks
-- Enhanced email notifications
+- Failed submissions might mean lost leads/contacts
+- Admin may not check the logs dashboard frequently
+- Quick notification enables faster response (fix API endpoint, contact user manually, etc.)
 
-**Configuration**:
+**Implementation**:
+
+```php
+// In RetryService after max retries exhausted:
+if ($retry_count >= $max_retries) {
+    $this->mark_as_failed($log_id);
+    $this->maybe_send_failure_alert($log_id, $form_id);
+}
+
+function maybe_send_failure_alert($log_id, $form_id) {
+    if (!Settings::instance()->get('failure_alerts_enabled', false)) {
+        return;
+    }
+    
+    $to = Settings::instance()->get('failure_alert_email', get_option('admin_email'));
+    $subject = sprintf(__('[%s] API submission failed', 'contact-form-to-api'), get_bloginfo('name'));
+    
+    $message = sprintf(
+        __("A form submission failed after all retry attempts.\n\nForm: %s\nLog ID: %d\nView details: %s", 'contact-form-to-api'),
+        get_the_title($form_id),
+        $log_id,
+        admin_url("admin.php?page=cf7-api-logs&log_id={$log_id}")
+    );
+    
+    wp_mail($to, $subject, $message);
+}
+```
+
+**Settings UI**:
 
 ```
-Per-form settings:
-├── Primary API endpoint (existing)
-├── Slack webhook URL (optional)
-├── Discord webhook URL (optional)
-└── Custom webhooks (array)
+┌─────────────────────────────────────────────────────────────────┐
+│ Failure Alerts                                                  │
+│ ┌─────────────────────────────────────────────────────────────┐│
+│ │ ☑ Enable failure alerts                                     ││
+│ │                                                             ││
+│ │ Alert email: [admin@example.com________________]            ││
+│ │              (defaults to site admin email)                 ││
+│ │                                                             ││
+│ │ ☐ Include form data in email (privacy consideration)       ││
+│ └─────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-**Notification Triggers**:
+**Benefits**:
 
-- On successful submission
-- On failed submission (after all retries)
-- On specific response codes
+- Simple implementation (~50 lines)
+- Uses existing WordPress mail system
+- No external dependencies (Slack/Discord APIs)
+- Privacy-friendly (optional data inclusion)
+- Immediate awareness of issues
+
+**Note**: For advanced integrations (Slack, Discord, etc.), users can configure those platforms as additional endpoints using Feature #9 (Multi-Endpoint per Form).
 
 ---
 
