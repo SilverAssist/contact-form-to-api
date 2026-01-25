@@ -232,22 +232,62 @@ $email_hash = hash('sha256', strtolower(trim($email)));
 
 ## Medium Priority
 
-### 3. Channels / Categories for Logs
+### 3. Form Filter Dropdown
 
-**Problem**: Hard to organize and filter logs when managing multiple forms.
+**Problem**: Currently, filtering by form requires clicking on a form name in the table, which isn't discoverable.
 
-**Solution**: Add taxonomy-like organization for logs.
+**Solution**: Add a dropdown selector in the filters section to filter logs by form.
 
-**Features**:
-- Auto-assign channel based on form ID
-- Custom tags for logs
-- Filter by channel/tag in admin
-- Separate statistics per channel
+**Current State**:
+- ✅ Filter by form works via `?form_id=X` URL parameter
+- ✅ Stats update when filtering by form
+- ❌ No UI element to select form (must click form name in table)
 
-**Use Cases**:
-- "Contact Form" vs "Support Request" vs "Newsletter Signup"
-- Group by endpoint URL
-- Custom business categories
+**Implementation**:
+
+Add a `<select>` dropdown in `DateFilterPartial.php`:
+
+```php
+// Get forms that have logs
+$forms_with_logs = $wpdb->get_results(
+    "SELECT DISTINCT l.form_id, p.post_title 
+     FROM {$wpdb->prefix}cf7_api_logs l
+     LEFT JOIN {$wpdb->posts} p ON l.form_id = p.ID
+     ORDER BY p.post_title ASC"
+);
+
+// Render dropdown
+<select name="form_id" id="form-filter">
+    <option value=""><?php _e('All Forms', 'contact-form-to-api'); ?></option>
+    <?php foreach ($forms_with_logs as $form): ?>
+        <option value="<?php echo $form->form_id; ?>" <?php selected($current_form_id, $form->form_id); ?>>
+            <?php echo esc_html($form->post_title ?: "Form #{$form->form_id}"); ?>
+        </option>
+    <?php endforeach; ?>
+</select>
+```
+
+**UI Location**:
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ cf7-api-filters section:                                        │
+│ ┌───────────────┐  ┌───────────────┐  ┌─────────────────────┐  │
+│ │ Date Filter ▼ │  │ Form Filter ▼ │  │ 🔍 Search...        │  │
+│ └───────────────┘  └───────────────┘  └─────────────────────┘  │
+│                           │                                     │
+│                           ├── All Forms                         │
+│                           ├── Contact Form                      │
+│                           ├── Support Request                   │
+│                           └── Newsletter Signup                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Benefits**:
+- Discoverable UI for form filtering
+- Consistent with existing date filter UX
+- No database changes required
+- ~50 lines of code
+- Stats grid automatically updates with filter
 
 ---
 
@@ -323,7 +363,6 @@ Per-form settings:
 - Export selection (CSV/JSON) - Currently exports filtered results, not checkbox selection
 - Re-send to different endpoint
 - Mark as read/unread
-- Add/remove tags (requires Channels feature #3)
 
 **UI Improvements**:
 - Select all matching filter (not just current page)
@@ -496,7 +535,7 @@ Field: [your-phone]
 | **GDPR Eraser** | ❌ Not yet | ✅ Integrated |
 | **Spam Detection** | N/A (CF7 handles) | ✅ Akismet |
 | **Auto Cleanup** | ✅ Cron + retention | ✅ Cron jobs |
-| **Channels/Tags** | ❌ Not yet | ✅ Taxonomies |
+| **Form Filter UI** | ❌ Not yet (URL only) | ✅ Dropdown |
 | **CSV Export** | ✅ Yes | ✅ Yes |
 | **Modern Architecture** | ✅ PSR-4, PHP 8.2 | ❌ Procedural |
 | **Test Suite** | ✅ PHPUnit | ❌ None |
