@@ -97,7 +97,7 @@ class ApiClient implements LoadableInterface {
 			return;
 		}
 
-		// Note: Legacy hooks are now centralized in ContactForm\Integration::register_legacy_hooks()
+		// Note: Legacy hooks are centralized in Controller\ContactForm\SubmissionController::register_legacy_hooks()
 		// to avoid duplication and improve maintainability.
 
 		$this->initialized = true;

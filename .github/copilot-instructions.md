@@ -61,32 +61,80 @@ contact-form-to-api/
 │   │       ├── RequestLogView.php    # Request log HTML rendering
 │   │       ├── SettingsView.php      # Main settings page (renders ALL settings)
 │   │       └── DashboardWidgetView.php # Dashboard widget HTML
-│   ├── ContactForm/              # Priority 30 - CF7 Integration
-│   │   ├── Integration.php       # CF7 hooks and panel logic
-│   │   └── Views/
-│   │       └── IntegrationView.php   # CF7 panel HTML rendering
-│   ├── Core/                     # Priority 10 - Core components
+│   ├── Config/                   # Configuration management
+│   │   └── Settings.php          # Global settings singleton
+│   ├── Controller/               # HTTP/Admin request handlers
+│   │   ├── Admin/
+│   │   │   ├── LogsController.php    # Request logs controller
+│   │   │   └── SettingsController.php # Settings controller
+│   │   └── ContactForm/
+│   │       └── SubmissionController.php # CF7 hooks and submission routing
+│   ├── Core/                     # Priority 10 - Bootstrap & lifecycle
 │   │   ├── Interfaces/
 │   │   │   └── LoadableInterface.php # Component contract
 │   │   ├── Activator.php         # Lifecycle management
-│   │   ├── EncryptionService.php # libsodium encryption for logs
-│   │   ├── RequestLogger.php     # API request/response DB logger
-│   │   ├── Settings.php          # Global settings singleton (stores all plugin settings)
-│   │   ├── SensitiveDataPatterns.php # Sensitive data detection patterns
+│   │   ├── RequestLogger.php     # FACADE: Delegates to Service\Logging\*
 │   │   └── Plugin.php            # Main plugin controller
-│   ├── Exceptions/               # Custom exception classes
-│   │   └── DecryptionException.php # Thrown when decryption fails
-│   ├── Services/                 # Priority 20 - Business logic services
-│   │   ├── Loader.php            # Services component loader
-│   │   ├── ApiClient.php         # HTTP client with retry logic
-│   │   ├── CheckboxHandler.php   # Checkbox value processing
-│   │   ├── EmailAlertService.php # Email alerts for high error rates
-│   │   ├── ExportService.php     # Log export (CSV/JSON)
-│   │   └── MigrationService.php  # Legacy log encryption migration
-│   └── Utils/                    # Priority 40 - Utility classes
-│       ├── DateFilterTrait.php   # Reusable date filtering for SQL queries
-│       ├── DebugLogger.php       # PSR-3 file logger for debugging
-│       └── StringHelper.php      # String manipulation utilities
+│   ├── Exception/                # Custom exception classes
+│   │   ├── ApiException.php      # API-related exceptions
+│   │   ├── DecryptionException.php # Thrown when decryption fails
+│   │   └── ValidationException.php # Validation errors
+│   ├── Infrastructure/           # WordPress integrations
+│   │   ├── Handler/
+│   │   │   └── CheckboxHandler.php   # Checkbox value processing
+│   │   ├── ListTable/
+│   │   │   └── RequestLogTable.php   # WP_List_Table for logs
+│   │   └── Widget/
+│   │       └── DashboardWidget.php   # Dashboard widget
+│   ├── Model/                    # Domain models
+│   │   ├── ApiResponse.php       # API response data
+│   │   ├── FormSettings.php      # Form configuration
+│   │   ├── LogEntry.php          # Log entry data
+│   │   └── Statistics.php        # Statistics data
+│   ├── Repository/               # Data access interfaces
+│   │   ├── LogRepositoryInterface.php
+│   │   └── SettingsRepositoryInterface.php
+│   ├── Service/                  # Priority 20 - Business logic
+│   │   ├── Api/
+│   │   │   └── ApiClient.php     # HTTP client with retry logic
+│   │   ├── ContactForm/
+│   │   │   └── SubmissionProcessor.php # Form submission processing
+│   │   ├── Export/
+│   │   │   └── ExportService.php # Log export (CSV/JSON)
+│   │   ├── Logging/
+│   │   │   ├── LogReader.php     # Read/query logs
+│   │   │   ├── LogStatistics.php # Statistics calculations
+│   │   │   ├── LogWriter.php     # Create/update logs
+│   │   │   └── RetryManager.php  # Retry logic and tracking
+│   │   ├── Migration/
+│   │   │   └── MigrationService.php # Legacy log encryption migration
+│   │   ├── Notification/
+│   │   │   └── EmailAlertService.php # Email alerts for errors
+│   │   └── Security/
+│   │       ├── EncryptionService.php # libsodium encryption
+│   │       └── SensitiveDataPatterns.php # Sensitive data detection
+│   ├── Utils/                    # Priority 40 - Utility classes
+│   │   ├── DateFilterTrait.php   # Reusable date filtering for SQL queries
+│   │   ├── DebugLogger.php       # PSR-3 file logger for debugging
+│   │   └── StringHelper.php      # String manipulation utilities
+│   └── View/                     # Presentation layer
+│       ├── Admin/
+│       │   ├── Dashboard/
+│       │   │   └── DashboardWidgetView.php
+│       │   ├── Logs/
+│       │   │   ├── RequestLogView.php
+│       │   │   └── Partials/
+│       │   │       ├── DateFilterPartial.php
+│       │   │       ├── ExportButtonsPartial.php
+│       │   │       └── StatisticsPartial.php
+│       │   ├── Migration/
+│       │   │   └── MigrationView.php
+│       │   └── Settings/
+│       │       ├── SettingsView.php
+│       │       └── Partials/
+│       │           └── GlobalSettingsPartial.php
+│       └── ContactForm/
+│           └── IntegrationView.php   # CF7 panel HTML rendering
 ├── languages/                     # Translation files
 │   ├── contact-form-to-api.pot
 │   └── README.md
@@ -297,8 +345,8 @@ Activator::create_tables();
 - `get_priority(): int` - Return 10 (Core priority)
 - `should_load(): bool` - Check WordPress version and dependencies
 
-### includes/ContactForm/Integration.php - CF7 Integration
-**Purpose**: Complete Contact Form 7 to API integration functionality
+### includes/Controller/ContactForm/SubmissionController.php - CF7 Integration
+**Purpose**: Contact Form 7 submission controller and hook registration
 **Pattern**: Singleton implementing LoadableInterface with View delegation
 **Integration**: Direct CF7 hooks via `wpcf7_editor_panels` and `wpcf7_before_send_mail`
 
@@ -311,6 +359,7 @@ Activator::create_tables();
   * `wpcf7_before_send_mail` - Process form submissions
   * Admin enqueue scripts/styles
 - `render_integration_panel()` - Delegates to IntegrationView
+- `register_legacy_hooks()` - Backward compatibility hooks
 - `get_priority(): int` - Return 30 (Admin priority)
 - `should_load(): bool` - Return `is_admin()` (admin-only functionality)
 
@@ -323,7 +372,7 @@ Activator::create_tables();
 - **Error Handling**: Comprehensive logging and retry mechanisms
 - **Debug Mode**: Detailed logging for troubleshooting
 
-### includes/ContactForm/Views/IntegrationView.php - CF7 Panel HTML
+### includes/View/ContactForm/IntegrationView.php - CF7 Panel HTML
 **Purpose**: HTML rendering for CF7 API Integration panel
 **Pattern**: Static View class with render methods
 
