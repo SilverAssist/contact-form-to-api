@@ -10,8 +10,6 @@
  * @author  Silver Assist
  */
 
-// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Test file uses safe table names
-
 namespace SilverAssist\ContactFormToAPI\Tests\Unit\Core;
 
 use SilverAssist\ContactFormToAPI\Core\Activator;
@@ -62,7 +60,7 @@ class RequestLoggerStatisticsTest extends WP_UnitTestCase {
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
 		// Clean up test logs
-		$wpdb->query( "DELETE FROM {$table_name}" );
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', $table_name ) );
 
 		parent::tear_down();
 	}

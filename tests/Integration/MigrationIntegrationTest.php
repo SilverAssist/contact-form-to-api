@@ -66,8 +66,8 @@ class MigrationIntegrationTest extends WP_UnitTestCase {
 
 		// Clean up test logs.
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$wpdb->query( "TRUNCATE TABLE {$table_name}" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( $wpdb->prepare( 'TRUNCATE TABLE %i', $table_name ) );
 
 		// Clean up settings.
 		\delete_option( 'cf7_api_global_settings' );
@@ -125,8 +125,8 @@ class MigrationIntegrationTest extends WP_UnitTestCase {
 		$this->assertFalse( $service->is_migration_running() );
 
 		// Verify all logs encrypted.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$unencrypted_count = $wpdb->get_var( "SELECT COUNT(*) FROM {$table_name} WHERE encryption_version = 0" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$unencrypted_count = $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE encryption_version = 0', $table_name ) );
 		$this->assertSame( 0, (int) $unencrypted_count );
 	}
 
@@ -163,8 +163,8 @@ class MigrationIntegrationTest extends WP_UnitTestCase {
 		$service->migrate_batch( 10, false );
 
 		// Get log and decrypt.
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$log = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$log = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 
 		// Verify encryption version updated.
 		$this->assertSame( 1, (int) $log['encryption_version'] );

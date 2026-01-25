@@ -11,8 +11,6 @@
  * @author  Silver Assist
  */
 
-// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Test file uses safe table names
-
 namespace SilverAssist\ContactFormToAPI\Tests\Unit\Core;
 
 use SilverAssist\ContactFormToAPI\Core\Activator;
@@ -63,7 +61,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
 		// Clean up test logs
-		$wpdb->query( "DELETE FROM {$table_name}" );
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', $table_name ) );
 
 		parent::tear_down();
 	}
@@ -100,7 +98,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 		// Verify log was created in database
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
-		$log        = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		$log        = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 
 		$this->assertNotNull( $log );
 		$this->assertEquals( $form_id, $log['form_id'] );
@@ -136,7 +134,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 		// Verify log was updated
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
-		$log        = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		$log        = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 
 		$this->assertEquals( 'success', $log['status'] );
 		$this->assertEquals( 200, $log['response_code'] );
@@ -162,7 +160,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 		// Verify log was updated
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
-		$log        = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		$log        = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 
 		$this->assertEquals( 'error', $log['status'] );
 		$this->assertEquals( 'Connection timeout', $log['error_message'] );
@@ -187,7 +185,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 		// Verify retry count was updated
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
-		$log        = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		$log        = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 
 		$this->assertEquals( 2, $log['retry_count'] );
 	}
@@ -211,7 +209,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 		// Verify data is stored WITHOUT anonymization (new behavior for retry functionality)
 		global $wpdb;
 		$table_name   = $wpdb->prefix . 'cf7_api_logs';
-		$log          = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		$log          = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 		$log          = $this->logger->decrypt_log_fields( $log );
 		$request_data = json_decode( $log['request_data'], true );
 
@@ -321,7 +319,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 		$this->assertGreaterThan( 0, $deleted );
 
 		// Verify log was deleted
-		$log = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		$log = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 		$this->assertNull( $log );
 	}
 
@@ -344,7 +342,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
-		$log        = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		$log        = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 		$this->assertEquals( 'success', $log['status'] );
 
 		// Test client error (4xx)
@@ -356,7 +354,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 				'body'     => '',
 			)
 		);
-		$log = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		$log = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 		$this->assertEquals( 'client_error', $log['status'] );
 
 		// Test server error (5xx)
@@ -368,7 +366,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 				'body'     => '',
 			)
 		);
-		$log = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		$log = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 		$this->assertEquals( 'server_error', $log['status'] );
 	}
 
@@ -390,7 +388,7 @@ class RequestLoggerTest extends WP_UnitTestCase {
 		// Verify sensitive headers were anonymized
 		global $wpdb;
 		$table_name      = $wpdb->prefix . 'cf7_api_logs';
-		$log             = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ), ARRAY_A );
+		$log             = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ), ARRAY_A );
 		$log             = $this->logger->decrypt_log_fields( $log );
 		$request_headers = json_decode( $log['request_headers'], true );
 

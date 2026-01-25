@@ -11,8 +11,6 @@
  * @author  Silver Assist
  */
 
-// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Test file uses safe table names.
-
 namespace SilverAssist\ContactFormToAPI\Tests\Integration;
 
 use SilverAssist\ContactFormToAPI\Core\Activator;
@@ -79,7 +77,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
 		// Clean up test logs.
-		$wpdb->query( "DELETE FROM {$table_name}" );
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', $table_name ) );
 
 		// Clean up settings.
 		\delete_option( 'cf7_api_global_settings' );
@@ -111,7 +109,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 		$raw_log    = $wpdb->get_row(
-			$wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ),
+			$wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ),
 			ARRAY_A
 		);
 
@@ -226,7 +224,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 		$raw_log    = $wpdb->get_row(
-			$wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ),
+			$wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ),
 			ARRAY_A
 		);
 
@@ -269,7 +267,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 		$logs       = $wpdb->get_results(
-			$wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ),
+			$wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ),
 			ARRAY_A
 		);
 
@@ -354,7 +352,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		// Get all logs.
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
-		$logs       = $wpdb->get_results( "SELECT * FROM {$table_name} LIMIT 25", ARRAY_A );
+		$logs       = $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM %i LIMIT 25', $table_name ), ARRAY_A );
 
 		$this->assertCount( 25, $logs );
 

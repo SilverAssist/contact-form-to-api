@@ -168,8 +168,8 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
 		// Delete logs from test forms (form_id starting with 999)
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$wpdb->query( "DELETE FROM {$table_name} WHERE form_id >= 99900" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE form_id >= 99900', $table_name ) );
 	}
 
 	/**
@@ -182,10 +182,11 @@ class FormSubmissionLoggingTest extends CF7TestCase {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$table_name} WHERE form_id = %d ORDER BY id DESC",
+				'SELECT * FROM %i WHERE form_id = %d ORDER BY id DESC',
+				$table_name,
 				$form_id
 			),
 			ARRAY_A
