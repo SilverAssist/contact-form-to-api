@@ -7,6 +7,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Tests\Unit\Service\Logging;
 
+use SilverAssist\ContactFormToAPI\Core\Activator;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 
@@ -28,11 +29,27 @@ class LogWriterTest extends TestCase {
 	private LogWriter $log_writer;
 
 	/**
+	 * Set up before class - create tables once before any tests.
+	 */
+	public static function set_up_before_class(): void {
+		parent::set_up_before_class();
+		Activator::create_tables();
+	}
+
+	/**
 	 * Set up test environment
 	 */
 	public function setUp(): void {
 		parent::setUp();
 		$this->log_writer = new LogWriter();
+
+		// Enable logging via the correct global settings option.
+		$global_settings = \get_option( 'cf7_api_global_settings', array() );
+		if ( ! \is_array( $global_settings ) ) {
+			$global_settings = array();
+		}
+		$global_settings['logging_enabled'] = true;
+		\update_option( 'cf7_api_global_settings', $global_settings );
 	}
 
 	/**
@@ -46,9 +63,6 @@ class LogWriterTest extends TestCase {
 	 * Test start_request with valid data
 	 */
 	public function testStartRequestWithValidData(): void {
-		// Enable logging for this test.
-		\update_option( 'wpcf7_api_enable_logging', true );
-
 		$log_id = $this->log_writer->start_request(
 			form_id: 123,
 			endpoint: 'https://api.example.com/webhook',

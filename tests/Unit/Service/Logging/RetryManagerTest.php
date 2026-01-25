@@ -7,6 +7,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Tests\Unit\Service\Logging;
 
+use SilverAssist\ContactFormToAPI\Core\Activator;
 use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
@@ -36,6 +37,14 @@ class RetryManagerTest extends TestCase {
 	private LogWriter $log_writer;
 
 	/**
+	 * Set up before class - create tables once before any tests.
+	 */
+	public static function set_up_before_class(): void {
+		parent::set_up_before_class();
+		Activator::create_tables();
+	}
+
+	/**
 	 * Set up test environment
 	 */
 	public function setUp(): void {
@@ -43,8 +52,13 @@ class RetryManagerTest extends TestCase {
 		$this->retry_manager = new RetryManager();
 		$this->log_writer    = new LogWriter();
 
-		// Enable logging for tests.
-		\update_option( 'wpcf7_api_enable_logging', true );
+		// Enable logging via the correct global settings option.
+		$global_settings = \get_option( 'cf7_api_global_settings', array() );
+		if ( ! \is_array( $global_settings ) ) {
+			$global_settings = array();
+		}
+		$global_settings['logging_enabled'] = true;
+		\update_option( 'cf7_api_global_settings', $global_settings );
 	}
 
 	/**
@@ -439,8 +453,8 @@ class RetryManagerTest extends TestCase {
 		);
 		$this->log_writer->complete_request( $first_retry_id, $error );
 
-		// Small delay.
-		\usleep( 1000 );
+		// Delay to ensure different timestamps (created_at has second precision).
+		\sleep( 1 );
 
 		// Create second retry.
 		$second_retry_id = $this->log_writer->start_request(

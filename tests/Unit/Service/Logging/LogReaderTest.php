@@ -7,6 +7,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Tests\Unit\Service\Logging;
 
+use SilverAssist\ContactFormToAPI\Core\Activator;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
@@ -36,6 +37,14 @@ class LogReaderTest extends TestCase {
 	private LogWriter $log_writer;
 
 	/**
+	 * Set up before class - create tables once before any tests.
+	 */
+	public static function set_up_before_class(): void {
+		parent::set_up_before_class();
+		Activator::create_tables();
+	}
+
+	/**
 	 * Set up test environment
 	 */
 	public function setUp(): void {
@@ -43,8 +52,13 @@ class LogReaderTest extends TestCase {
 		$this->log_reader = new LogReader();
 		$this->log_writer = new LogWriter();
 
-		// Enable logging for tests.
-		\update_option( 'wpcf7_api_enable_logging', true );
+		// Enable logging via the correct global settings option.
+		$global_settings = \get_option( 'cf7_api_global_settings', array() );
+		if ( ! \is_array( $global_settings ) ) {
+			$global_settings = array();
+		}
+		$global_settings['logging_enabled'] = true;
+		\update_option( 'cf7_api_global_settings', $global_settings );
 	}
 
 	/**
@@ -273,6 +287,7 @@ class LogReaderTest extends TestCase {
 
 		// All error statuses should be retryable.
 		$this->assertNotNull( $request );
+		$this->assertSame( $expected_status, $request['status'] );
 	}
 
 	/**
@@ -282,10 +297,10 @@ class LogReaderTest extends TestCase {
 	 */
 	public static function errorStatusProvider(): array {
 		return array(
-			'400 Bad Request'  => array( 400, 'client_error' ),
-			'404 Not Found'    => array( 404, 'client_error' ),
-			'500 Server Error' => array( 500, 'server_error' ),
-			'503 Unavailable'  => array( 503, 'server_error' ),
+			'400 Bad Request'  => array( 400, 'error' ),
+			'404 Not Found'    => array( 404, 'error' ),
+			'500 Server Error' => array( 500, 'error' ),
+			'503 Unavailable'  => array( 503, 'error' ),
 		);
 	}
 
