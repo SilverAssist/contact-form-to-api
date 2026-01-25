@@ -6,13 +6,13 @@
  * Displays statistics cards, recent errors, and action links.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Admin\Views
+ * @subpackage View\Admin\Dashboard
  * @since 1.2.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Admin\Views;
+namespace SilverAssist\ContactFormToAPI\View\Admin\Dashboard;
 
 use SilverAssist\ContactFormToAPI\Core\RequestLogger;
 

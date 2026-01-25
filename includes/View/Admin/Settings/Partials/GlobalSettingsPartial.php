@@ -13,9 +13,9 @@
 
 namespace SilverAssist\ContactFormToAPI\View\Admin\Settings\Partials;
 
-use SilverAssist\ContactFormToAPI\Admin\GlobalSettingsController;
-use SilverAssist\ContactFormToAPI\Admin\Views\SettingsView;
 use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\Controller\Admin\SettingsController;
+use SilverAssist\ContactFormToAPI\View\Admin\Settings\SettingsView;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -48,7 +48,7 @@ class GlobalSettingsPartial {
 
 			<form method="post" action="<?php echo \esc_url( \admin_url( 'admin-post.php' ) ); ?>">
 				<input type="hidden" name="action" value="cf7_api_save_global_settings">
-				<?php \wp_nonce_field( GlobalSettingsController::get_nonce_action(), GlobalSettingsController::get_nonce_name() ); ?>
+				<?php \wp_nonce_field( SettingsController::get_nonce_action(), SettingsController::get_nonce_name() ); ?>
 
 				<?php
 				// Call methods from SettingsView for backward compatibility.

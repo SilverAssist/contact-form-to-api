@@ -6,17 +6,17 @@
  * Provides at-a-glance visibility into API health and recent errors.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Admin
+ * @subpackage Infrastructure\Widget
  * @since 1.2.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Admin;
+namespace SilverAssist\ContactFormToAPI\Infrastructure\Widget;
 
-use SilverAssist\ContactFormToAPI\Admin\Views\DashboardWidgetView;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
+use SilverAssist\ContactFormToAPI\View\Admin\Dashboard\DashboardWidgetView;
 
 \defined( 'ABSPATH' ) || exit;
 

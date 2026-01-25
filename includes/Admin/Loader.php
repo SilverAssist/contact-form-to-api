@@ -13,7 +13,10 @@
 
 namespace SilverAssist\ContactFormToAPI\Admin;
 
+use SilverAssist\ContactFormToAPI\Controller\Admin\LogsController;
+use SilverAssist\ContactFormToAPI\Controller\Admin\SettingsController;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Infrastructure\Widget\DashboardWidget;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -99,16 +102,16 @@ class Loader implements LoadableInterface {
 			$settings_page->init();
 		}
 
-		// Initialize Global Settings Controller (Settings Hub submenu).
-		$global_settings = GlobalSettingsController::instance();
-		if ( $global_settings->should_load() ) {
-			$global_settings->init();
+		// Initialize Settings Controller (Settings Hub submenu).
+		$settings_controller = SettingsController::instance();
+		if ( $settings_controller->should_load() ) {
+			$settings_controller->init();
 		}
 
-		// Initialize Request Log Controller (under Contact Form 7 menu).
-		$request_log_controller = RequestLogController::instance();
-		if ( $request_log_controller->should_load() ) {
-			$request_log_controller->init();
+		// Initialize Logs Controller (under Contact Form 7 menu).
+		$logs_controller = LogsController::instance();
+		if ( $logs_controller->should_load() ) {
+			$logs_controller->init();
 		}
 
 		// Initialize Dashboard Widget.

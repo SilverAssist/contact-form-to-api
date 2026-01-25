@@ -6,23 +6,24 @@
  * Uses RequestLogView for HTML rendering and RequestLogTable for list display.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Admin
+ * @subpackage Controller\Admin
  * @since 1.1.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Admin;
+namespace SilverAssist\ContactFormToAPI\Controller\Admin;
 
-use SilverAssist\ContactFormToAPI\Admin\Views\RequestLogView;
+use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\RequestLogger;
-use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\Infrastructure\ListTable\RequestLogTable;
+use SilverAssist\ContactFormToAPI\Service\Api\ApiClient;
+use SilverAssist\ContactFormToAPI\Service\Export\ExportService;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
-use SilverAssist\ContactFormToAPI\Services\ApiClient;
-use SilverAssist\ContactFormToAPI\Services\ExportService;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
+use SilverAssist\ContactFormToAPI\View\Admin\Logs\RequestLogView;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -34,16 +35,16 @@ use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
  *
  * @since 1.1.0
  */
-class RequestLogController implements LoadableInterface {
+class LogsController implements LoadableInterface {
 
 	use DateFilterTrait;
 
 	/**
 	 * Singleton instance
 	 *
-	 * @var RequestLogController|null
+	 * @var LogsController|null
 	 */
-	private static ?RequestLogController $instance = null;
+	private static ?LogsController $instance = null;
 
 	/**
 	 * List table instance
@@ -62,9 +63,9 @@ class RequestLogController implements LoadableInterface {
 	/**
 	 * Get singleton instance
 	 *
-	 * @return RequestLogController
+	 * @return LogsController
 	 */
-	public static function instance(): RequestLogController {
+	public static function instance(): LogsController {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}
@@ -474,7 +475,7 @@ class RequestLogController implements LoadableInterface {
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
 		$log = $wpdb->get_row(
-			$wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ),
+			$wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ),
 			ARRAY_A
 		);
 

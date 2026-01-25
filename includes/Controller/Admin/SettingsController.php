@@ -6,19 +6,19 @@
  * Does NOT register any admin pages - that's handled by SettingsPage.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Admin
+ * @subpackage Controller\Admin
  * @since 1.2.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Admin;
+namespace SilverAssist\ContactFormToAPI\Controller\Admin;
 
+use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\Plugin;
-use SilverAssist\ContactFormToAPI\Config\Settings;
-use SilverAssist\ContactFormToAPI\Services\EmailAlertService;
-use SilverAssist\ContactFormToAPI\Services\MigrationService;
+use SilverAssist\ContactFormToAPI\Service\Migration\MigrationService;
+use SilverAssist\ContactFormToAPI\Service\Notification\EmailAlertService;
 
 \defined( 'ABSPATH' ) || exit;
 
@@ -29,7 +29,7 @@ use SilverAssist\ContactFormToAPI\Services\MigrationService;
  *
  * @since 1.2.0
  */
-class GlobalSettingsController implements LoadableInterface {
+class SettingsController implements LoadableInterface {
 
 	/**
 	 * Nonce action for settings form
@@ -48,9 +48,9 @@ class GlobalSettingsController implements LoadableInterface {
 	/**
 	 * Singleton instance
 	 *
-	 * @var GlobalSettingsController|null
+	 * @var SettingsController|null
 	 */
-	private static ?GlobalSettingsController $instance = null;
+	private static ?SettingsController $instance = null;
 
 	/**
 	 * Initialization flag
@@ -62,9 +62,9 @@ class GlobalSettingsController implements LoadableInterface {
 	/**
 	 * Get singleton instance
 	 *
-	 * @return GlobalSettingsController
+	 * @return SettingsController
 	 */
-	public static function instance(): GlobalSettingsController {
+	public static function instance(): SettingsController {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
 		}

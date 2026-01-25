@@ -6,13 +6,13 @@
  * timeout handling, and logging integration.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Services
+ * @subpackage Service\Api
  * @since 1.1.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Services;
+namespace SilverAssist\ContactFormToAPI\Service\Api;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
@@ -97,7 +97,7 @@ class ApiClient implements LoadableInterface {
 			return;
 		}
 
-		// Note: Legacy hooks are now centralized in ContactForm\Integration::register_legacy_hooks()
+		// Note: Legacy hooks are centralized in Controller\ContactForm\SubmissionController::register_legacy_hooks()
 		// to avoid duplication and improve maintainability.
 
 		$this->initialized = true;

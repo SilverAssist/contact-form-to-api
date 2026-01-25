@@ -12,9 +12,9 @@
 
 namespace SilverAssist\ContactFormToAPI\Tests\Integration;
 
-use SilverAssist\ContactFormToAPI\Admin\GlobalSettingsController;
+use SilverAssist\ContactFormToAPI\Controller\Admin\SettingsController;
 use SilverAssist\ContactFormToAPI\Core\Activator;
-use SilverAssist\ContactFormToAPI\Services\MigrationService;
+use SilverAssist\ContactFormToAPI\Service\Migration\MigrationService;
 use WP_UnitTestCase;
 
 /**
@@ -187,7 +187,7 @@ class MigrationIntegrationTest extends WP_UnitTestCase {
 		\wp_set_current_user( $this->admin_user_id );
 
 		// Initialize controller.
-		$controller = GlobalSettingsController::instance();
+		$controller = SettingsController::instance();
 		$controller->init();
 
 		// Simulate AJAX request without nonce.
@@ -222,7 +222,7 @@ class MigrationIntegrationTest extends WP_UnitTestCase {
 		\wp_set_current_user( $subscriber_id );
 
 		// Initialize controller.
-		$controller = GlobalSettingsController::instance();
+		$controller = SettingsController::instance();
 		$controller->init();
 
 		// Simulate AJAX request.

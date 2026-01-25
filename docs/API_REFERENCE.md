@@ -1111,9 +1111,11 @@ Convert checkbox value to API-friendly format.
 - `false_value` - Value for unchecked state (default: "0")
 - `format` - Output format: "boolean", "string", "integer"
 
-### ContactForm\Integration
+### Controller\ContactForm\SubmissionController
 
-Contact Form 7 integration handler implementing LoadableInterface.
+Contact Form 7 submission controller implementing LoadableInterface.
+Handles WordPress hook registration and routing for CF7 integration.
+Extracted from the legacy Integration.php as part of Phase 3 refactoring.
 
 **Implements**: `LoadableInterface`
 **Singleton**: `instance()` method, private constructor

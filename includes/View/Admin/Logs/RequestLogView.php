@@ -6,15 +6,15 @@
  * Separates view logic from controller logic.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Admin\Views
+ * @subpackage View\Admin\Logs
  * @since 1.1.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Admin\Views;
+namespace SilverAssist\ContactFormToAPI\View\Admin\Logs;
 
-use SilverAssist\ContactFormToAPI\Admin\RequestLogTable;
+use SilverAssist\ContactFormToAPI\Infrastructure\ListTable\RequestLogTable;
 use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
 use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;

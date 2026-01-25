@@ -17,7 +17,7 @@ namespace SilverAssist\ContactFormToAPI\Tests\Integration;
 use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Core\Activator;
 use SilverAssist\ContactFormToAPI\Core\RequestLogger;
-use SilverAssist\ContactFormToAPI\Services\ApiClient;
+use SilverAssist\ContactFormToAPI\Service\Api\ApiClient;
 use SilverAssist\ContactFormToAPI\Tests\Helpers\CF7TestCase;
 
 /**

@@ -6,13 +6,13 @@
  * Provides safe, incremental migration with progress tracking and rollback capability.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Services
+ * @subpackage Service\Migration
  * @since 1.3.4
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Services;
+namespace SilverAssist\ContactFormToAPI\Service\Migration;
 
 use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;

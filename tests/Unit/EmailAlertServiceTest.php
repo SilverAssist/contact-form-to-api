@@ -14,7 +14,7 @@
 namespace SilverAssist\ContactFormToAPI\Tests\Unit;
 
 use SilverAssist\ContactFormToAPI\Config\Settings;
-use SilverAssist\ContactFormToAPI\Services\EmailAlertService;
+use SilverAssist\ContactFormToAPI\Service\Notification\EmailAlertService;
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 
 /**

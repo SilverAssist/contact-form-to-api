@@ -14,8 +14,8 @@
 namespace SilverAssist\ContactFormToAPI\Tests\Unit;
 
 use SilverAssist\ContactFormToAPI\Core\Activator;
+use SilverAssist\ContactFormToAPI\Service\Migration\MigrationService;
 use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
-use SilverAssist\ContactFormToAPI\Services\MigrationService;
 use WP_UnitTestCase;
 
 /**

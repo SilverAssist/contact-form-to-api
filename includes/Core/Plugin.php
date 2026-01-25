@@ -15,15 +15,18 @@
 namespace SilverAssist\ContactFormToAPI\Core;
 
 use SilverAssist\ContactFormToAPI\Admin\Loader as AdminLoader;
+use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Controller\ContactForm\SubmissionController;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\ContactFormToAPI\Infrastructure\Handler\CheckboxHandler;
+use SilverAssist\ContactFormToAPI\Service\Api\ApiClient;
 use SilverAssist\ContactFormToAPI\Service\ContactForm\SubmissionProcessor;
+use SilverAssist\ContactFormToAPI\Service\Export\ExportService;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
-use SilverAssist\ContactFormToAPI\Services\EmailAlertService;
-use SilverAssist\ContactFormToAPI\Services\Loader as ServicesLoader;
-use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
-use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\Service\Migration\MigrationService;
+use SilverAssist\ContactFormToAPI\Service\Notification\EmailAlertService;
 use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
+use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 use SilverAssist\WpGithubUpdater\Updater;
 use SilverAssist\WpGithubUpdater\UpdaterConfig;
 
@@ -205,15 +208,29 @@ class Plugin implements LoadableInterface {
 			\error_log( 'Contact Form to API: Failed to load Logger - ' . $e->getMessage() );
 		}
 
-		// Load Services Loader (priority 20 - Services).
-		try {
-			$services_loader = ServicesLoader::instance();
-			if ( $services_loader->should_load() ) {
-				$services_loader->init();
-				$this->components[] = $services_loader;
+		// Load Service components (priority 20 - Services).
+		$service_classes = array(
+			ApiClient::class,
+			CheckboxHandler::class,
+			EmailAlertService::class,
+			ExportService::class,
+			MigrationService::class,
+		);
+
+		foreach ( $service_classes as $service_class ) {
+			if ( ! \class_exists( $service_class ) ) {
+				continue;
 			}
-		} catch ( \Exception $e ) {
-			$this->log_error( 'Services\\Loader', $e->getMessage() );
+
+			try {
+				$service = $service_class::instance();
+				if ( $service->should_load() ) {
+					$service->init();
+					$this->components[] = $service;
+				}
+			} catch ( \Exception $e ) {
+				$this->log_error( $service_class, $e->getMessage() );
+			}
 		}
 
 		// Load ContactForm submission processor (priority 20 - Service).

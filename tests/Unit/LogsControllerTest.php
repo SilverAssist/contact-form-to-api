@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit Tests for RequestLogController Class
+ * Unit Tests for LogsController Class
  *
  * Tests the admin controller for API request logs,
  * including bulk actions handling and view actions.
@@ -15,20 +15,20 @@
 namespace SilverAssist\ContactFormToAPI\Tests\Unit;
 
 use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
-use SilverAssist\ContactFormToAPI\Admin\RequestLogController;
+use SilverAssist\ContactFormToAPI\Controller\Admin\LogsController;
 use ReflectionClass;
 
 /**
- * Test cases for the RequestLogController class
+ * Test cases for the LogsController class
  */
-class RequestLogControllerTest extends TestCase {
+class LogsControllerTest extends TestCase {
 
 	/**
-	 * RequestLogController instance
+	 * LogsController instance
 	 *
-	 * @var RequestLogController
+	 * @var LogsController
 	 */
-	private RequestLogController $controller;
+	private LogsController $controller;
 
 	/**
 	 * Setup method called before each test
@@ -39,47 +39,47 @@ class RequestLogControllerTest extends TestCase {
 		parent::setUp();
 
 		// Get singleton instance
-		$this->controller = RequestLogController::instance();
+		$this->controller = LogsController::instance();
 	}
 
 	/**
-	 * Test that RequestLogController class exists
+	 * Test that LogsController class exists
 	 *
 	 * @return void
 	 */
-	public function testRequestLogControllerClassExists(): void {
+	public function testLogsControllerClassExists(): void {
 		$this->assertTrue(
-			class_exists( 'SilverAssist\\ContactFormToAPI\\Admin\\RequestLogController' ),
-			'RequestLogController class should exist in the Admin namespace'
+			class_exists( 'SilverAssist\\ContactFormToAPI\\Controller\\Admin\\LogsController' ),
+			'LogsController class should exist in the Controller\\Admin namespace'
 		);
 	}
 
 	/**
-	 * Test that RequestLogController implements singleton pattern
+	 * Test that LogsController implements singleton pattern
 	 *
 	 * @return void
 	 */
-	public function testRequestLogControllerSingletonPattern(): void {
-		$instance1 = RequestLogController::instance();
-		$instance2 = RequestLogController::instance();
+	public function testLogsControllerSingletonPattern(): void {
+		$instance1 = LogsController::instance();
+		$instance2 = LogsController::instance();
 
 		$this->assertSame(
 			$instance1,
 			$instance2,
-			'RequestLogController::instance() should return the same instance'
+			'LogsController::instance() should return the same instance'
 		);
 	}
 
 	/**
-	 * Test that RequestLogController implements LoadableInterface
+	 * Test that LogsController implements LoadableInterface
 	 *
 	 * @return void
 	 */
-	public function testRequestLogControllerImplementsLoadableInterface(): void {
+	public function testLogsControllerImplementsLoadableInterface(): void {
 		$this->assertInstanceOf(
 			'SilverAssist\\ContactFormToAPI\\Core\\Interfaces\\LoadableInterface',
 			$this->controller,
-			'RequestLogController should implement LoadableInterface'
+			'LogsController should implement LoadableInterface'
 		);
 	}
 
@@ -91,7 +91,7 @@ class RequestLogControllerTest extends TestCase {
 	public function testProcessBulkActionsMethodExists(): void {
 		$this->assertTrue(
 			method_exists( $this->controller, 'process_bulk_actions' ),
-			'RequestLogController should have process_bulk_actions method'
+			'LogsController should have process_bulk_actions method'
 		);
 	}
 
@@ -106,7 +106,7 @@ class RequestLogControllerTest extends TestCase {
 	 */
 	public function testViewActionIsNotProcessedAsBulkAction(): void {
 		// Read the source code of process_bulk_actions to verify the fix
-		$reflection = new ReflectionClass( RequestLogController::class );
+		$reflection = new ReflectionClass( LogsController::class );
 		$method     = $reflection->getMethod( 'process_bulk_actions' );
 		// Verify that the method checks for valid bulk actions before processing
 
@@ -230,12 +230,12 @@ class RequestLogControllerTest extends TestCase {
 	 */
 	public function testProcessBulkActionsReturnsEarlyWithoutListTable(): void {
 		// Use reflection to check the list_table property
-		$reflection = new ReflectionClass( RequestLogController::class );
+		$reflection = new ReflectionClass( LogsController::class );
 		$property   = $reflection->getProperty( 'list_table' );
 		$property->setAccessible( true );
 
 		// Get a fresh instance (but singleton, so same instance)
-		$controller = RequestLogController::instance();
+		$controller = LogsController::instance();
 
 		// Get the current value of list_table
 		$list_table_val = $property->getValue( $controller );
@@ -262,11 +262,11 @@ class RequestLogControllerTest extends TestCase {
 	 * @return void
 	 */
 	public function testIsLoggingEnabledMethodExists(): void {
-		$reflection = new ReflectionClass( RequestLogController::class );
+		$reflection = new ReflectionClass( LogsController::class );
 
 		$this->assertTrue(
 			$reflection->hasMethod( 'is_logging_enabled' ),
-			'RequestLogController should have is_logging_enabled method'
+			'LogsController should have is_logging_enabled method'
 		);
 
 		$method = $reflection->getMethod( 'is_logging_enabled' );
@@ -282,7 +282,7 @@ class RequestLogControllerTest extends TestCase {
 	 * @return void
 	 */
 	public function testRegisterMenuChecksLoggingStatus(): void {
-		$reflection    = new ReflectionClass( RequestLogController::class );
+		$reflection    = new ReflectionClass( LogsController::class );
 		$method        = $reflection->getMethod( 'register_menu' );
 		$filename      = $method->getFileName();
 		$start_line    = $method->getStartLine();
@@ -303,7 +303,7 @@ class RequestLogControllerTest extends TestCase {
 	 * @return void
 	 */
 	public function testHandlePageRequestBlocksAccessWhenLoggingDisabled(): void {
-		$reflection    = new ReflectionClass( RequestLogController::class );
+		$reflection    = new ReflectionClass( LogsController::class );
 		$method        = $reflection->getMethod( 'handle_page_request' );
 		$filename      = $method->getFileName();
 		$start_line    = $method->getStartLine();
@@ -330,7 +330,7 @@ class RequestLogControllerTest extends TestCase {
 	 * @return void
 	 */
 	public function testMaybeHandleExportChecksLoggingStatus(): void {
-		$reflection    = new ReflectionClass( RequestLogController::class );
+		$reflection    = new ReflectionClass( LogsController::class );
 		$method        = $reflection->getMethod( 'maybe_handle_export' );
 		$filename      = $method->getFileName();
 		$start_line    = $method->getStartLine();

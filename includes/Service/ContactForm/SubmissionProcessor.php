@@ -16,8 +16,8 @@
 namespace SilverAssist\ContactFormToAPI\Service\ContactForm;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
-use SilverAssist\ContactFormToAPI\Services\ApiClient;
-use SilverAssist\ContactFormToAPI\Services\CheckboxHandler;
+use SilverAssist\ContactFormToAPI\Infrastructure\Handler\CheckboxHandler;
+use SilverAssist\ContactFormToAPI\Service\Api\ApiClient;
 use WPCF7_ContactForm;
 use WPCF7_Submission;
 use WP_Error;

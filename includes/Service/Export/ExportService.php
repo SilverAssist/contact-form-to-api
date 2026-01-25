@@ -6,13 +6,13 @@
  * Provides data sanitization and streaming support for large exports.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Services
+ * @subpackage Service\Export
  * @since 1.2.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Services;
+namespace SilverAssist\ContactFormToAPI\Service\Export;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;

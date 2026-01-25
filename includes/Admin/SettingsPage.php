@@ -14,9 +14,9 @@
 
 namespace SilverAssist\ContactFormToAPI\Admin;
 
-use SilverAssist\ContactFormToAPI\Admin\Views\SettingsView;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\Plugin;
+use SilverAssist\ContactFormToAPI\View\Admin\Settings\SettingsView;
 use SilverAssist\SettingsHub\SettingsHub;
 
 \defined( 'ABSPATH' ) || exit;

@@ -6,13 +6,13 @@
  * Monitors API request statistics and sends alerts when thresholds are exceeded.
  *
  * @package SilverAssist\ContactFormToAPI
- * @subpackage Services
+ * @subpackage Service\Notification
  * @since 1.2.0
  * @version 1.3.13
  * @author Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Services;
+namespace SilverAssist\ContactFormToAPI\Service\Notification;
 
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Config\Settings;
