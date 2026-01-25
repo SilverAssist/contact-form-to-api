@@ -11,7 +11,7 @@
  * @author  Silver Assist
  */
 
-namespace SilverAssist\ContactFormToAPI\Tests\Unit;
+namespace SilverAssist\ContactFormToAPI\Tests\Unit\Service\Security;
 
 use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 use SilverAssist\ContactFormToAPI\Exception\DecryptionException;

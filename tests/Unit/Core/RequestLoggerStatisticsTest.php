@@ -12,7 +12,7 @@
 
 // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Test file uses safe table names
 
-namespace SilverAssist\ContactFormToAPI\Tests\Unit;
+namespace SilverAssist\ContactFormToAPI\Tests\Unit\Core;
 
 use SilverAssist\ContactFormToAPI\Core\Activator;
 use SilverAssist\ContactFormToAPI\Core\RequestLogger;

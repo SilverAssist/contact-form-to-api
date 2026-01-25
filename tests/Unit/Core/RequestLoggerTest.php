@@ -1,8 +1,8 @@
 <?php
 /**
- * Logger Tests
+ * RequestLogger Tests
  *
- * Tests for the Logger class functionality including request logging,
+ * Tests for the RequestLogger class functionality including request logging,
  * response logging, retry tracking, and data anonymization.
  *
  * @package SilverAssist\ContactFormToAPI\Tests
@@ -13,7 +13,7 @@
 
 // phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Test file uses safe table names
 
-namespace SilverAssist\ContactFormToAPI\Tests\Unit;
+namespace SilverAssist\ContactFormToAPI\Tests\Unit\Core;
 
 use SilverAssist\ContactFormToAPI\Core\Activator;
 use SilverAssist\ContactFormToAPI\Core\RequestLogger;
@@ -22,7 +22,7 @@ use WP_UnitTestCase;
 /**
  * Test cases for RequestLogger class
  */
-class LoggerTest extends WP_UnitTestCase {
+class RequestLoggerTest extends WP_UnitTestCase {
 
 	/**
 	 * Logger instance
