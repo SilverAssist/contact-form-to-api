@@ -7,8 +7,8 @@ applyTo: "tests/**/*.php"
 # PHPUnit Testing Standards for Contact Form to API Plugin
 
 **Applies to**: `tests/**/*.php`  
-**Last Updated**: January 24, 2026  
-**Project**: Contact Form to API WordPress Plugin
+**Last Updated**: January 25, 2026  
+**Project**: Contact Form to API WordPress Plugin v2.0.0
 
 ---
 
@@ -27,14 +27,20 @@ tests/
 │   │   └── Admin/
 │   │       └── LogsControllerTest.php
 │   ├── Core/
-│   │   ├── DataAnonymizationTest.php
-│   │   ├── PluginTest.php
-│   │   ├── RequestLoggerStatisticsTest.php
-│   │   └── RequestLoggerTest.php
+│   │   ├── ActivatorTest.php
+│   │   └── PluginTest.php
 │   ├── Infrastructure/
 │   │   └── ListTable/
 │   │       └── RequestLogTableTest.php
+│   ├── Model/
+│   │   ├── LogEntryTest.php
+│   │   ├── FormSettingsTest.php
+│   │   └── StatisticsTest.php
 │   └── Service/
+│       ├── Api/
+│       │   └── ApiClientTest.php
+│       ├── ContactForm/
+│       │   └── SubmissionProcessorTest.php
 │       ├── Export/
 │       │   └── ExportServiceTest.php
 │       ├── Logging/

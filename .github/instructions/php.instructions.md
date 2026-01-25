@@ -14,7 +14,7 @@ applyTo: "**/*.php"
 
 ## Project Context
 
-**WordPress Plugin**: Contact Form to API v1.3.x (PSR-4, PHP 8.2+, WordPress 6.5+)  
+**WordPress Plugin**: Contact Form to API v2.0.0 (PSR-4, PHP 8.2+, WordPress 6.5+)  
 **Namespace**: `SilverAssist\ContactFormToAPI`  
 **Repository Root**: `/` (plugin files at repository root)  
 **Language Policy**: ALL code and comments MUST be in English

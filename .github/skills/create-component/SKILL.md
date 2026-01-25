@@ -24,19 +24,34 @@ description: Create new plugin components following LoadableInterface pattern. U
 
 ```
 includes/
-├── Admin/           # Priority 30 - Admin UI components
 ├── Config/          # Configuration management
-├── Controller/      # HTTP/Admin request handlers
-│   ├── Admin/
-│   └── ContactForm/
+├── Controller/      # Priority 30 - HTTP/Admin request handlers
+│   ├── Admin/       # DashboardController, LogsController, SettingsController
+│   └── ContactForm/ # SubmissionController
 ├── Core/            # Priority 10 - Bootstrap & lifecycle
+│   ├── Plugin.php
+│   ├── Activator.php
+│   └── Interfaces/
 ├── Exception/       # Custom exceptions
-├── Infrastructure/  # WordPress integrations
+├── Infrastructure/  # WordPress integrations (ListTable, Widget, Handler)
 ├── Model/           # Domain models (no LoadableInterface)
+│   ├── LogEntry.php
+│   ├── FormSettings.php
+│   ├── ApiResponse.php
+│   └── Statistics.php
 ├── Repository/      # Data access interfaces
 ├── Service/         # Priority 20 - Business logic
+│   ├── Api/         # ApiClient
+│   ├── ContactForm/ # SubmissionProcessor
+│   ├── Export/      # ExportService
+│   ├── Logging/     # LogWriter, LogReader, LogStatistics, RetryManager
+│   ├── Migration/   # MigrationService
+│   ├── Notification/# EmailAlertService
+│   └── Security/    # EncryptionService, SensitiveDataPatterns
 ├── Utils/           # Priority 40 - Utilities
 └── View/            # HTML rendering (static classes)
+    ├── Admin/       # Dashboard/, Logs/, Settings/
+    └── ContactForm/ # IntegrationView
 ```
 
 ## Component Templates

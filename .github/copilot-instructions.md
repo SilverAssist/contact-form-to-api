@@ -16,8 +16,8 @@ WordPress plugin integrating Contact Form 7 with external APIs. Follows **Silver
 ### LoadableInterface Priority System
 All components implement `LoadableInterface` with `init()`, `get_priority()`, `should_load()`:
 - **10**: Core (Plugin, Activator, EncryptionService)
-- **20**: Services (ApiClient, MigrationService)
-- **30**: Admin & Controllers (SettingsPage, RequestLogController)
+- **20**: Services (ApiClient, LogWriter, LogReader, LogStatistics, RetryManager, MigrationService)
+- **30**: Admin & Controllers (SettingsPage, LogsController, SubmissionController)
 - **40**: Utils (DebugLogger, StringHelper)
 
 ### Key Directories
@@ -28,7 +28,11 @@ All components implement `LoadableInterface` with `init()`, `get_priority()`, `s
 - `tests/` - WordPress Test Suite
 
 ### Dual Logger System
-- **`Core\RequestLogger`**: Database logs for API tracking (admin UI)
+- **`Service\Logging\*`**: Database logs for API tracking (admin UI)
+  - `LogWriter` - Create/update logs
+  - `LogReader` - Query logs
+  - `LogStatistics` - Statistics calculations
+  - `RetryManager` - Retry logic
 - **`Utils\DebugLogger`**: File logs for debugging (`wp-content/uploads/`)
 
 ### Data Encryption (libsodium)
@@ -36,7 +40,7 @@ Sensitive API data is encrypted at rest using `Service\Security\EncryptionServic
 - **Algorithm**: XSalsa20 + Poly1305 (authenticated encryption)
 - **Key**: Derived from WordPress `AUTH_KEY` via HKDF
 - **Encrypted fields**: `request_data`, `request_headers`, `response_data`, `response_headers`
-- **Always decrypt for display**: Use `RequestLogger::decrypt_log_fields()`
+- **Always decrypt for display**: Use `LogReader::decrypt_log_fields()`
 
 ## Critical Rules
 
