@@ -34,8 +34,8 @@ class EncryptionServiceTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 
 		// Enable encryption for tests.
 		\update_option( 'cf7_api_global_settings', array( 'encryption_enabled' => true ) );
@@ -49,11 +49,11 @@ class EncryptionServiceTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function tearDown(): void {
+	public function tear_down(): void {
 		// Clean up settings.
 		\delete_option( 'cf7_api_global_settings' );
 
-		parent::tearDown();
+		parent::tear_down();
 	}
 
 	/**

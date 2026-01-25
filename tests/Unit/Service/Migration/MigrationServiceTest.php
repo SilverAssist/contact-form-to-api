@@ -55,8 +55,8 @@ class MigrationServiceTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 
 		// Enable encryption for tests.
 		\update_option( 'cf7_api_global_settings', array( 'encryption_enabled' => true ) );
@@ -73,7 +73,7 @@ class MigrationServiceTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function tearDown(): void {
+	public function tear_down(): void {
 		global $wpdb;
 
 		// Clean up test logs.
@@ -87,7 +87,7 @@ class MigrationServiceTest extends WP_UnitTestCase {
 		// Clean up transients.
 		\delete_transient( 'cf7_api_migration_progress' );
 
-		parent::tearDown();
+		parent::tear_down();
 	}
 
 	/**

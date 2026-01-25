@@ -39,16 +39,16 @@ class LogReaderTest extends TestCase {
 	/**
 	 * Set up before class - create tables once before any tests.
 	 */
-	public static function setUpBeforeClass(): void {
-		parent::setUpBeforeClass();
+	public static function set_up_before_class(): void {
+		parent::set_up_before_class();
 		Activator::create_tables();
 	}
 
 	/**
 	 * Set up test environment
 	 */
-	public function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 		$this->log_reader = new LogReader();
 		$this->log_writer = new LogWriter();
 

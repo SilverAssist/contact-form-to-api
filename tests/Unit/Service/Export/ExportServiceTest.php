@@ -34,8 +34,8 @@ class ExportServiceTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	protected function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 
 		// Get singleton instance.
 		$this->export_service = ExportService::instance();

@@ -41,8 +41,8 @@ class EmailAlertServiceTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	protected function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 
 		// Get fresh instances.
 		$this->service  = EmailAlertService::instance();

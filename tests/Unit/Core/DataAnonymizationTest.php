@@ -50,8 +50,8 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 		$this->logger = new RequestLogger();
 	}
 
@@ -60,14 +60,14 @@ class DataAnonymizationTest extends WP_UnitTestCase {
 	 *
 	 * @return void
 	 */
-	public function tearDown(): void {
+	public function tear_down(): void {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
 		// Clean up test logs
 		$wpdb->query( "DELETE FROM {$table_name}" );
 
-		parent::tearDown();
+		parent::tear_down();
 	}
 
 	/**

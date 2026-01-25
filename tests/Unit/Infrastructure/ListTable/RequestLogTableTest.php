@@ -35,8 +35,8 @@ class RequestLogTableTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	protected function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 		$this->table = new RequestLogTable();
 	}
 
@@ -47,8 +47,8 @@ class RequestLogTableTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	protected function tearDown(): void {
-		parent::tearDown();
+	public function tear_down(): void {
+		parent::tear_down();
 	}
 
 	/**

@@ -4,22 +4,26 @@
  * Base Test Case for Contact Form 7 to API Plugin
  *
  * Provides common functionality and utilities for all test cases in the plugin.
- * Extends PHPUnit TestCase with WordPress and plugin-specific helpers.
+ * Extends WP_UnitTestCase with plugin-specific helpers.
  *
  * @package SilverAssist\ContactFormToAPI\Tests
  * @since   1.0.0
- * @version 1.0.0
+ * @version 2.0.0
  * @author  Silver Assist
  */
 
 namespace SilverAssist\ContactFormToAPI\Tests\Helpers;
 
-use PHPUnit\Framework\TestCase as PHPUnitTestCase;
-
 /**
  * Base test case class for Contact Form 7 to API plugin tests
+ *
+ * Extends WP_UnitTestCase to leverage WordPress testing infrastructure:
+ * - Database transactions with automatic rollback after each test
+ * - Factory methods for creating test data (posts, users, terms, etc.)
+ * - WordPress-specific assertions and helpers
+ * - Proper WordPress environment initialization
  */
-abstract class TestCase extends PHPUnitTestCase {
+abstract class TestCase extends \WP_UnitTestCase {
 
 	/**
 	 * Plugin instance for testing
@@ -36,31 +40,42 @@ abstract class TestCase extends PHPUnitTestCase {
 	protected $test_data_dir;
 
 	/**
+	 * Temporary files created during tests
+	 *
+	 * @var array<string>
+	 */
+	protected array $temp_files = array();
+
+	/**
 	 * Setup method called before each test
+	 *
+	 * Uses WordPress snake_case convention (set_up instead of setUp).
 	 *
 	 * @return void
 	 */
-	protected function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 
 		$this->test_data_dir = dirname( __DIR__ ) . '/data';
+		$this->temp_files    = array();
 
-		// Initialize plugin for testing if WordPress is available
-		if ( function_exists( '\\get_option' ) ) {
-			$this->initializePlugin();
-		}
+		// Initialize plugin for testing
+		$this->initializePlugin();
 	}
 
 	/**
 	 * Teardown method called after each test
 	 *
+	 * Uses WordPress snake_case convention (tear_down instead of tearDown).
+	 *
 	 * @return void
 	 */
-	protected function tearDown(): void {
+	public function tear_down(): void {
 		// Clean up any test data
 		$this->cleanupTestData();
+		$this->cleanupTempFiles();
 
-		parent::tearDown();
+		parent::tear_down();
 	}
 
 	/**
@@ -162,8 +177,8 @@ abstract class TestCase extends PHPUnitTestCase {
 	 * @return void
 	 */
 	protected function assertJsonString( string $json_string, string $message = '' ): void {
-		$decoded = json_decode( $json_string );
-		$this->assertNotNull( $decoded, $message ?: 'String is not valid JSON: ' . $json_string );
+		$decoded = \json_decode( $json_string );
+		$this->assertNotNull( $decoded, '' !== $message ? $message : 'String is not valid JSON: ' . $json_string );
 	}
 
 	/**
@@ -179,7 +194,7 @@ abstract class TestCase extends PHPUnitTestCase {
 			$this->assertArrayHasKey(
 				$key,
 				$actual_array,
-				$message ?: 'Array is missing expected key: ' . $key
+				'' !== $message ? $message : 'Array is missing expected key: ' . $key
 			);
 		}
 	}
@@ -211,27 +226,14 @@ abstract class TestCase extends PHPUnitTestCase {
 	 * @return void
 	 */
 	protected function cleanupTempFiles(): void {
-		if ( isset( $this->temp_files ) && is_array( $this->temp_files ) ) {
+		if ( \is_array( $this->temp_files ) ) {
 			foreach ( $this->temp_files as $file ) {
-				if ( file_exists( $file ) ) {
+				if ( \file_exists( $file ) ) {
 					// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Test helper, not production code
-					unlink( $file );
+					\unlink( $file );
 				}
 			}
 			$this->temp_files = array();
-		}
-	}
-
-	/**
-	 * Mock WordPress function if not available
-	 *
-	 * @param string $function_name Function name to mock
-	 * @param mixed  $return_value  Return value for the mock
-	 * @return void
-	 */
-	protected function mockWordPressFunction( string $function_name, $return_value = true ): void {
-		if ( ! function_exists( $function_name ) ) {
-			eval( "function {$function_name}() { return " . var_export( $return_value, true ) . '; }' );
 		}
 	}
 }

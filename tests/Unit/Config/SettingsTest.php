@@ -33,8 +33,8 @@ class SettingsTest extends TestCase {
 	 *
 	 * @return void
 	 */
-	protected function setUp(): void {
-		parent::setUp();
+	public function set_up(): void {
+		parent::set_up();
 
 		// Delete any existing settings.
 		\delete_option( 'cf7_api_global_settings' );
