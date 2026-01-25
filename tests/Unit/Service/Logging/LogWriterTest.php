@@ -79,6 +79,7 @@ class LogWriterTest extends TestCase {
 
 		// Verify the log entry was created.
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$log = $wpdb->get_row(
 			$wpdb->prepare(
 				'SELECT * FROM %i WHERE id = %d',
@@ -144,6 +145,7 @@ class LogWriterTest extends TestCase {
 
 		// Verify retry_of was set.
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$log = $wpdb->get_row(
 			$wpdb->prepare(
 				'SELECT retry_of FROM %i WHERE id = %d',
@@ -192,6 +194,7 @@ class LogWriterTest extends TestCase {
 
 		// Verify log was updated.
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$log = $wpdb->get_row(
 			$wpdb->prepare(
 				'SELECT status, response_code FROM %i WHERE id = %d',
@@ -230,6 +233,7 @@ class LogWriterTest extends TestCase {
 
 		// Verify log was updated with error.
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$log = $wpdb->get_row(
 			$wpdb->prepare(
 				'SELECT status, error_message FROM %i WHERE id = %d',
@@ -273,6 +277,7 @@ class LogWriterTest extends TestCase {
 		$this->assertTrue( $result );
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$log = $wpdb->get_row(
 			$wpdb->prepare(
 				'SELECT status, response_code FROM %i WHERE id = %d',
@@ -316,6 +321,7 @@ class LogWriterTest extends TestCase {
 		$this->assertTrue( $result );
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$log = $wpdb->get_row(
 			$wpdb->prepare(
 				'SELECT status, response_code FROM %i WHERE id = %d',
@@ -352,6 +358,7 @@ class LogWriterTest extends TestCase {
 		$this->assertGreaterThan( 0, $log_id );
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$log = $wpdb->get_row(
 			$wpdb->prepare(
 				'SELECT request_headers FROM %i WHERE id = %d',
@@ -387,6 +394,7 @@ class LogWriterTest extends TestCase {
 		$this->assertIsInt( $log_id );
 
 		global $wpdb;
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$log = $wpdb->get_row(
 			$wpdb->prepare(
 				'SELECT method FROM %i WHERE id = %d',

@@ -86,6 +86,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
 		// Clean up test logs.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', $table_name ) );
 
 		// Clean up settings.
@@ -117,6 +118,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		// Read raw data directly from database.
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$raw_log    = $wpdb->get_row(
 			$wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ),
 			ARRAY_A
@@ -232,6 +234,7 @@ class EncryptedLoggingTest extends WP_UnitTestCase {
 		// Read raw data from database.
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$raw_log    = $wpdb->get_row(
 			$wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ),
 			ARRAY_A
