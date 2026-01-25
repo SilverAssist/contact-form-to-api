@@ -8,7 +8,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage View\Admin\Dashboard
  * @since 1.2.0
- * @version 1.3.13
+ * @version 2.0.0
  * @author Silver Assist
  */
 
