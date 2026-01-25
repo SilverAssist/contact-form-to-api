@@ -429,33 +429,141 @@ if ($matching_count > 100) {
 
 ---
 
-### 6. Response Parsing & Conditional Actions
+### 6. Response Action Hook (Developer Extensibility)
 
-**Problem**: No way to act on API response content.
+**Problem**: Developers may need to act on API responses (store lead IDs, trigger notifications, log to external services) but there's no extension point.
 
-**Solution**: Parse responses and trigger conditional actions.
+**Solution**: Provide a well-documented filter hook that fires after each API response.
 
-**Features**:
+**Philosophy**: Keep the plugin focused on its core purpose (sending form data to APIs) while allowing developers to extend functionality without modifying plugin code.
 
+**The Hook**:
+
+```php
+/**
+ * Fires after an API response is received, allowing custom actions.
+ *
+ * @since 2.1.0
+ *
+ * @param array $response {
+ *     API response data.
+ *
+ *     @type int    $status_code HTTP status code (200, 400, 500, etc.)
+ *     @type array  $headers     Response headers as key-value pairs.
+ *     @type string $body        Raw response body.
+ *     @type array  $body_parsed Parsed response (if JSON), null otherwise.
+ *     @type float  $duration    Request duration in seconds.
+ * }
+ * @param array $context {
+ *     Submission context.
+ *
+ *     @type int    $log_id      The log entry ID.
+ *     @type int    $form_id     The CF7 form ID.
+ *     @type string $form_title  The CF7 form title.
+ *     @type array  $form_data   Original form submission data.
+ *     @type string $endpoint    The API endpoint URL.
+ *     @type bool   $is_retry    Whether this was a retry attempt.
+ *     @type int    $attempt     Attempt number (1 = first try).
+ * }
+ * @return array Modified response array (or original if no changes).
+ */
+$response = apply_filters('cf7_api_after_response', $response, $context);
 ```
-IF response.status == "duplicate" THEN:
-  - Skip confirmation email
-  - Add tag "duplicate"
 
-IF response.lead_id EXISTS THEN:
-  - Store lead_id in post meta
-  - Log as "synced"
+**Example Use Cases**:
 
-IF response.error CONTAINS "rate_limit" THEN:
-  - Delay retry by 1 hour
-  - Send admin notification
+```php
+// Example 1: Store CRM lead ID in a custom table
+add_filter('cf7_api_after_response', function($response, $context) {
+    if ($response['status_code'] !== 200) {
+        return $response;
+    }
+    
+    $body = $response['body_parsed'];
+    if (!empty($body['lead_id'])) {
+        global $wpdb;
+        $wpdb->insert($wpdb->prefix . 'my_leads', [
+            'log_id'  => $context['log_id'],
+            'lead_id' => $body['lead_id'],
+            'email'   => $context['form_data']['your-email'] ?? '',
+        ]);
+    }
+    
+    return $response;
+}, 10, 2);
+
+// Example 2: Send Slack notification on specific response
+add_filter('cf7_api_after_response', function($response, $context) {
+    $body = $response['body_parsed'];
+    
+    if (!empty($body['priority']) && $body['priority'] === 'high') {
+        wp_remote_post('https://hooks.slack.com/...', [
+            'body' => json_encode([
+                'text' => "🚨 High priority lead from {$context['form_title']}!"
+            ])
+        ]);
+    }
+    
+    return $response;
+}, 10, 2);
+
+// Example 3: Log errors to external service
+add_filter('cf7_api_after_response', function($response, $context) {
+    if ($response['status_code'] >= 400) {
+        error_log(sprintf(
+            '[CF7-API] Error %d on form %s: %s',
+            $response['status_code'],
+            $context['form_title'],
+            $response['body']
+        ));
+    }
+    
+    return $response;
+}, 10, 2);
 ```
 
-**Configuration UI**:
+**Implementation Location**:
 
-- Response field path (JSONPath-like)
-- Condition (equals, contains, exists, regex)
-- Action to perform
+In `ApiSender.php` after receiving response:
+
+```php
+$response_data = [
+    'status_code'  => wp_remote_retrieve_response_code($response),
+    'headers'      => wp_remote_retrieve_headers($response)->getAll(),
+    'body'         => wp_remote_retrieve_body($response),
+    'body_parsed'  => json_decode(wp_remote_retrieve_body($response), true),
+    'duration'     => $duration,
+];
+
+$context = [
+    'log_id'     => $this->log_id,
+    'form_id'    => $this->form_id,
+    'form_title' => get_the_title($this->form_id),
+    'form_data'  => $this->form_data,
+    'endpoint'   => $this->endpoint,
+    'is_retry'   => $this->is_retry,
+    'attempt'    => $this->attempt_number,
+];
+
+$response_data = apply_filters('cf7_api_after_response', $response_data, $context);
+```
+
+**Documentation Requirements**:
+
+- Add to plugin's README under "Developer Hooks" section
+- Include in inline PHPDoc with full `@param` documentation
+- Create example snippet in `docs/examples/response-hooks.php`
+- Add to GitHub wiki if created
+
+**Benefits**:
+
+- Zero UI complexity
+- Plugin stays focused on core purpose
+- Unlimited extensibility for developers
+- No maintenance burden for edge-case features
+- Follows WordPress hook conventions
+
+**Effort**: ~20 lines of code + documentation
 
 ---
 
