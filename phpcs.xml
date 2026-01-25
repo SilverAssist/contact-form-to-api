@@ -54,15 +54,9 @@
         <exclude-pattern>includes/ContactForm/Integration.php</exclude-pattern>
     </rule>
 
-    <!-- Allow json_encode in specific contexts where wp_json_encode is not suitable -->
+    <!-- Allow json_encode in Integration.php for CF7 compatibility -->
     <rule ref="WordPress.WP.AlternativeFunctions.json_encode_json_encode">
         <exclude-pattern>includes/ContactForm/Integration.php</exclude-pattern>
-        <exclude-pattern>tests/*</exclude-pattern>
-    </rule>
-
-    <!-- Allow interpolated table names in test queries (table names are not user input) -->
-    <rule ref="WordPress.DB.PreparedSQL.InterpolatedNotPrepared">
-        <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 
     <!-- Allow non-strict in_array for backward compatibility -->
