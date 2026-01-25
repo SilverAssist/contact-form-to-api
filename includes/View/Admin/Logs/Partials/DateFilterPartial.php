@@ -200,10 +200,10 @@ class DateFilterPartial {
 					);
 
 					$date_label = $date_labels[ $current_date_filter ] ?? $current_date_filter;
-					
+
 					if ( 'custom' === $current_date_filter && ! empty( $date_start ) ) {
-						/* translators: %1$s: start date, %2$s: end date */
 						$date_label = \sprintf(
+							/* translators: %1$s: start date, %2$s: end date */
 							\__( '%1$s to %2$s', 'contact-form-to-api' ),
 							$date_start,
 							! empty( $date_end ) ? $date_end : \__( 'now', 'contact-form-to-api' )

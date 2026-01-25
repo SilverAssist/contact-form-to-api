@@ -499,7 +499,7 @@ class RequestLogTable extends \WP_List_Table {
 
 		// Try to get form title.
 		$form = \get_post( $form_id );
-		/* translators: %d: Form ID number */
+		/* translators: %d: form ID */
 		$form_title = ( $form instanceof \WP_Post ) ? $form->post_title : \sprintf( \__( 'Form #%d', 'contact-form-to-api' ), $form_id );
 
 		// Add filter link.
