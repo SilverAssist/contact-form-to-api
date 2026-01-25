@@ -475,7 +475,7 @@ class LogsController implements LoadableInterface {
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
 		$log = $wpdb->get_row(
-			$wpdb->prepare( "SELECT * FROM {$table_name} WHERE id = %d", $log_id ),
+			$wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table_name, $log_id ),
 			ARRAY_A
 		);
 
