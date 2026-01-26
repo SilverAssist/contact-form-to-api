@@ -220,6 +220,78 @@ gh pr merge 55 --squash --delete-branch | cat
 gh pr close 55 --comment "Not needed anymore" | cat
 ```
 
+### ⚠️ PR Reviews vs Comments (CRITICAL DISTINCTION)
+
+**Reviews** and **Comments** are DIFFERENT things in GitHub:
+
+| Type | Location | Purpose | How to Reply |
+|------|----------|---------|--------------|
+| **Reviews** | "Files changed" tab, inline on code | Request changes to specific lines | `gh api graphql` mutation |
+| **Comments** | "Conversation" tab | General discussion | `gh pr comment` or MCP |
+
+#### Reviews (Inline Code Feedback)
+- Made directly on modified files in "Files changed" tab
+- Reference specific lines of code
+- Request changes to specific code sections
+- Have thread IDs starting with `PRRT_`
+- **MCP can READ but CANNOT REPLY** - Must use `gh api graphql`
+
+#### Comments (General Discussion)
+- Appear in "Conversation" tab
+- General discussion about the PR
+- Can be replied to via MCP or `gh pr comment`
+
+### Responding to PR Reviews
+
+**See full skill documentation:** `.github/skills/pr-review-response/SKILL.md`
+
+#### Quick Reference
+
+```bash
+# 1. Get review threads
+gh api graphql -f query='
+query {
+  repository(owner: "SilverAssist", name: "contact-form-to-api") {
+    pullRequest(number: PR_NUMBER) {
+      reviewThreads(first: 50) {
+        nodes {
+          id
+          path
+          line
+          isResolved
+          comments(first: 5) {
+            nodes { body author { login } }
+          }
+        }
+      }
+    }
+  }
+}' | cat
+
+# 2. Reply to each thread (SEPARATE mutation per thread)
+gh api graphql -f query='
+mutation {
+  addPullRequestReviewThreadReply(input: {
+    pullRequestReviewThreadId: "PRRT_kwDONqY9Pc6XXXXX",
+    body: "Applied in commit [abc1234](https://github.com/SilverAssist/contact-form-to-api/commit/abc1234). **Description.**"
+  }) {
+    comment { id }
+  }
+}' | cat
+```
+
+#### Response Format
+
+```markdown
+Applied in commit [SHA](commit-url). **Short description.**
+
+**Changes:**
+- Change 1
+- Change 2
+
+Explanation of what was done.
+```
+
 ---
 
 ## 📋 Post-PR Merge Checklist (MANDATORY)
