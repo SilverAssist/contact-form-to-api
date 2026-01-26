@@ -17,6 +17,7 @@ namespace SilverAssist\ContactFormToAPI\Service\Notification;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 
 \defined( 'ABSPATH' ) || exit;
@@ -43,6 +44,13 @@ class EmailAlertService implements LoadableInterface {
 	 * @var bool
 	 */
 	private bool $initialized = false;
+
+	/**
+	 * Log reader instance
+	 *
+	 * @var LogReader|null
+	 */
+	private ?LogReader $log_reader = null;
 
 	/**
 	 * Get singleton instance
@@ -109,6 +117,11 @@ class EmailAlertService implements LoadableInterface {
 
 		// Check if alerts are enabled.
 		if ( ! $settings->is_alerts_enabled() ) {
+			return;
+		}
+
+		// Check if threshold alerts are enabled.
+		if ( ! $settings->is_threshold_alerts_enabled() ) {
 			return;
 		}
 
@@ -359,5 +372,208 @@ class EmailAlertService implements LoadableInterface {
 
 		// Send email.
 		return \wp_mail( $recipient, $subject, $message, $headers );
+	}
+
+	/**
+	 * Maybe send individual failure alert
+	 *
+	 * Called when a submission permanently fails after exhausting all retries.
+	 * Checks settings and sends alert if individual alerts are enabled.
+	 *
+	 * @since 2.0.0
+	 * @param int $log_id  Log entry ID.
+	 * @param int $form_id Contact Form 7 form ID.
+	 * @return void
+	 */
+	public function maybe_send_individual_alert( int $log_id, int $form_id ): void {
+		$settings = Settings::instance();
+
+		// Check if alerts are enabled globally.
+		if ( ! $settings->is_alerts_enabled() ) {
+			return;
+		}
+
+		// Check if individual alerts are enabled.
+		if ( ! $settings->is_individual_alerts_enabled() ) {
+			return;
+		}
+
+		// Send the individual failure alert (no cooldown for event-driven alerts).
+		$this->send_individual_failure_alert( $log_id, $form_id );
+	}
+
+	/**
+	 * Send individual failure alert email
+	 *
+	 * Sends an email notification for a single submission that failed permanently.
+	 *
+	 * @since 2.0.0
+	 * @param int $log_id  Log entry ID.
+	 * @param int $form_id Contact Form 7 form ID.
+	 * @return void
+	 */
+	private function send_individual_failure_alert( int $log_id, int $form_id ): void {
+		// Initialize log reader if needed.
+		if ( null === $this->log_reader ) {
+			$this->log_reader = new LogReader();
+		}
+
+		// Get log entry.
+		$log = $this->log_reader->get_log( $log_id );
+
+		if ( null === $log ) {
+			return;
+		}
+
+		// Get form title.
+		$form_title = \get_the_title( $form_id );
+		if ( empty( $form_title ) ) {
+			$form_title = \sprintf(
+				/* translators: %d: form ID */
+				\__( 'Form #%d', 'contact-form-to-api' ),
+				$form_id
+			);
+		}
+
+		// Build email subject.
+		$subject = \sprintf(
+			/* translators: %1$s: site name, %2$s: form title */
+			\__( '[%1$s] API Submission Failed: %2$s', 'contact-form-to-api' ),
+			\get_bloginfo( 'name' ),
+			$form_title
+		);
+
+		// Build email body.
+		$message = $this->build_individual_alert_body( $log, $form_title );
+
+		// Set content type to HTML.
+		$headers = array( 'Content-Type: text/html; charset=UTF-8' );
+
+		// Get recipients.
+		$settings          = Settings::instance();
+		$recipients_string = $settings->get_alert_recipients();
+		$recipients        = \array_map( 'trim', \explode( ',', $recipients_string ) );
+
+		// Send email to each recipient.
+		foreach ( $recipients as $email ) {
+			if ( \is_email( $email ) ) {
+				\wp_mail( $email, $subject, $message, $headers );
+			}
+		}
+
+		// Log alert sent.
+		try {
+			DebugLogger::instance()->info(
+				'Individual failure alert sent',
+				array(
+					'log_id'     => $log_id,
+					'form_id'    => $form_id,
+					'form_title' => $form_title,
+					'recipients' => $recipients_string,
+				)
+			);
+		} catch ( \Exception $e ) {
+			// Silently fail if logger not available.
+			unset( $e );
+		}
+	}
+
+	/**
+	 * Build individual failure alert email body HTML
+	 *
+	 * @since 2.0.0
+	 * @param array<string, mixed> $log        Log entry data.
+	 * @param string               $form_title Form title.
+	 * @return string HTML email body.
+	 */
+	private function build_individual_alert_body( array $log, string $form_title ): string {
+		$settings          = Settings::instance();
+		$include_form_data = $settings->is_alert_include_form_data();
+		$logs_url          = \admin_url( 'admin.php?page=cf7-api-logs' );
+		$log_detail_url    = \add_query_arg(
+			array(
+				'page'   => 'cf7-api-logs',
+				'action' => 'view',
+				'log_id' => $log['id'],
+			),
+			\admin_url( 'admin.php' )
+		);
+		$site_name         = \get_bloginfo( 'name' );
+		$timestamp         = ! empty( $log['created_at'] ) ? $log['created_at'] : \current_time( 'mysql' );
+		$endpoint          = ! empty( $log['endpoint'] ) ? $log['endpoint'] : \__( 'N/A', 'contact-form-to-api' );
+		$error_message     = ! empty( $log['error_message'] ) ? $log['error_message'] : \__( 'Unknown error', 'contact-form-to-api' );
+		$response_code     = ! empty( $log['response_code'] ) ? $log['response_code'] : \__( 'N/A', 'contact-form-to-api' );
+
+		// Start building HTML.
+		$html  = '<html><head><style>';
+		$html .= 'body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }';
+		$html .= 'h2 { color: #d63638; border-bottom: 2px solid #d63638; padding-bottom: 10px; }';
+		$html .= 'h3 { color: #135e96; margin-top: 20px; }';
+		$html .= 'table { border-collapse: collapse; width: 100%; margin: 20px 0; }';
+		$html .= 'td { padding: 8px; border: 1px solid #ddd; }';
+		$html .= 'td:first-child { font-weight: bold; background-color: #f5f5f5; width: 30%; }';
+		$html .= '.error-box { background: #fff3cd; border-left: 4px solid #d63638; padding: 15px; margin: 20px 0; }';
+		$html .= '.privacy-notice { background: #e7f5fe; border-left: 4px solid #135e96; padding: 15px; margin: 20px 0; font-size: 0.9em; }';
+		$html .= 'a { color: #135e96; text-decoration: none; }';
+		$html .= 'a:hover { text-decoration: underline; }';
+		$html .= 'code { background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; }';
+		$html .= '</style></head><body>';
+
+		$html .= '<h2>' . \esc_html__( 'API Submission Failed', 'contact-form-to-api' ) . '</h2>';
+		$html .= '<p>' . \esc_html__( 'A form submission has permanently failed after exhausting all retry attempts.', 'contact-form-to-api' ) . '</p>';
+
+		$html .= '<table>';
+		$html .= '<tr><td>' . \esc_html__( 'Site', 'contact-form-to-api' ) . '</td><td>' . \esc_html( $site_name ) . '</td></tr>';
+		$html .= '<tr><td>' . \esc_html__( 'Form', 'contact-form-to-api' ) . '</td><td>' . \esc_html( $form_title ) . '</td></tr>';
+		$html .= '<tr><td>' . \esc_html__( 'Endpoint', 'contact-form-to-api' ) . '</td><td><code>' . \esc_html( $endpoint ) . '</code></td></tr>';
+		$html .= '<tr><td>' . \esc_html__( 'Time', 'contact-form-to-api' ) . '</td><td>' . \esc_html( $timestamp ) . '</td></tr>';
+		$html .= '<tr><td>' . \esc_html__( 'Response Code', 'contact-form-to-api' ) . '</td><td>' . \esc_html( (string) $response_code ) . '</td></tr>';
+		$html .= '</table>';
+
+		$html .= '<div class="error-box">';
+		$html .= '<strong>' . \esc_html__( 'Error Message:', 'contact-form-to-api' ) . '</strong><br>';
+		$html .= \esc_html( $error_message );
+		$html .= '</div>';
+
+		// Include form data if setting is enabled.
+		if ( $include_form_data && ! empty( $log['request_data'] ) ) {
+			$request_data = $log['request_data'];
+
+			// Decrypt if needed using decrypt_log_fields.
+			if ( isset( $log['encryption_version'] ) && $log['encryption_version'] > 0 && null !== $this->log_reader ) {
+				$decrypted_log = $this->log_reader->decrypt_log_fields( $log );
+				$request_data  = $decrypted_log['request_data'];
+			}
+
+			// Decode JSON.
+			$form_data = \json_decode( $request_data, true );
+
+			if ( \is_array( $form_data ) && ! empty( $form_data ) ) {
+				$html .= '<h3>' . \esc_html__( 'Form Data', 'contact-form-to-api' ) . '</h3>';
+				$html .= '<div class="privacy-notice">';
+				$html .= '<strong>' . \esc_html__( 'Privacy Notice:', 'contact-form-to-api' ) . '</strong> ';
+				$html .= \esc_html__( 'This email contains form submission data. Please handle it according to your privacy policy.', 'contact-form-to-api' );
+				$html .= '</div>';
+				$html .= '<table>';
+				foreach ( $form_data as $key => $value ) {
+					$display_value = \is_array( $value ) ? \wp_json_encode( $value ) : $value;
+					$html         .= '<tr>';
+					$html         .= '<td>' . \esc_html( $key ) . '</td>';
+					$html         .= '<td>' . \esc_html( (string) $display_value ) . '</td>';
+					$html         .= '</tr>';
+				}
+				$html .= '</table>';
+			}
+		}
+
+		$html .= '<p>';
+		$html .= '<a href="' . \esc_url( $log_detail_url ) . '">' . \esc_html__( 'View Full Log Details', 'contact-form-to-api' ) . '</a>';
+		$html .= ' | ';
+		$html .= '<a href="' . \esc_url( $logs_url ) . '">' . \esc_html__( 'View All Logs', 'contact-form-to-api' ) . '</a>';
+		$html .= '</p>';
+
+		$html .= '</body></html>';
+
+		return $html;
 	}
 }

@@ -114,21 +114,26 @@ class Settings implements LoadableInterface {
 	 */
 	public static function get_defaults(): array {
 		return array(
-			'max_manual_retries'    => 3,
-			'max_retries_per_hour'  => 10,
-			'sensitive_patterns'    => array( 'password', 'token', 'secret', 'api_key', 'apikey', 'api-key' ),
-			'logging_enabled'       => true,
-			'log_retention_days'    => 30,
+			'max_manual_retries'      => 3,
+			'max_retries_per_hour'    => 10,
+			'sensitive_patterns'      => array( 'password', 'token', 'secret', 'api_key', 'apikey', 'api-key' ),
+			'logging_enabled'         => true,
+			'log_retention_days'      => 30,
 			// Email alert settings.
-			'alerts_enabled'        => false,
-			'alert_recipients'      => \get_option( 'admin_email' ),
-			'alert_error_threshold' => 10,
-			'alert_rate_threshold'  => 20,
-			'alert_check_interval'  => 'hourly',
-			'alert_cooldown_hours'  => 4,
-			'alert_last_sent'       => 0,
+			'alerts_enabled'          => false,
+			'alert_recipients'        => \get_option( 'admin_email' ),
+			'alert_error_threshold'   => 10,
+			'alert_rate_threshold'    => 20,
+			'alert_check_interval'    => 'hourly',
+			'alert_cooldown_hours'    => 4,
+			'alert_last_sent'         => 0,
+			'alert_types'             => array(
+				'threshold'  => true,  // Existing: high error rate alerts.
+				'individual' => false, // New: per-submission failure alerts.
+			),
+			'alert_include_form_data' => false,
 			// Encryption settings.
-			'encryption_enabled'    => true,
+			'encryption_enabled'      => true,
 		);
 	}
 
@@ -347,5 +352,62 @@ class Settings implements LoadableInterface {
 	 */
 	public function is_encryption_enabled(): bool {
 		return (bool) $this->get( 'encryption_enabled', true );
+	}
+
+	/**
+	 * Get alert types configuration
+	 *
+	 * @since 2.0.0
+	 * @return array{threshold: bool, individual: bool} Alert types configuration.
+	 */
+	public function get_alert_types(): array {
+		$alert_types = $this->get( 'alert_types', array() );
+
+		// Ensure both keys exist with default values.
+		$result = \wp_parse_args(
+			$alert_types,
+			array(
+				'threshold'  => true,
+				'individual' => false,
+			)
+		);
+
+		// Ensure boolean values for type safety.
+		return array(
+			'threshold'  => (bool) $result['threshold'],
+			'individual' => (bool) $result['individual'],
+		);
+	}
+
+	/**
+	 * Check if threshold alerts are enabled
+	 *
+	 * @since 2.0.0
+	 * @return bool
+	 */
+	public function is_threshold_alerts_enabled(): bool {
+		$alert_types = $this->get_alert_types();
+		return ! empty( $alert_types['threshold'] );
+	}
+
+	/**
+	 * Check if individual failure alerts are enabled
+	 *
+	 * @since 2.0.0
+	 * @return bool
+	 */
+	public function is_individual_alerts_enabled(): bool {
+		$alert_types = $this->get_alert_types();
+		return ! empty( $alert_types['individual'] );
+	}
+
+	/**
+	 * Check if form data should be included in alert emails
+	 *
+	 * @since 2.0.0
+	 * @return bool
+	 */
+	public function is_alert_include_form_data(): bool {
+		return (bool) $this->get( 'alert_include_form_data', false );
 	}
 }
