@@ -21,6 +21,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Hook only fires for HTTP responses (not WP_Error cases)
   - Minimal overhead when no callbacks are registered
   - See `docs/API_REFERENCE.md` for complete documentation and examples
+ 
+- **Form Filter Dropdown**: Visible dropdown selector to filter logs by Contact Form 7 form
+  - Dropdown appears in filter controls between Status and Date filters
+  - Lists all forms that have at least one log entry
+  - Shows "All Forms" default option to display logs from all forms
+  - Gracefully handles deleted forms (displays as "Form #123")
+  - Auto-submits on selection for immediate filtering (no button click needed)
+  - Active filter tag shows selected form with individual remove capability
+  - Filter persists across pagination and combines with status/date filters
+  - Alphabetically ordered by form title for easy navigation
+  - New `LogReader::get_forms_with_logs()` method retrieves distinct forms with logs
+  - Comprehensive unit test coverage (6 tests for all scenarios)
 
 ## [2.0.0] - 2026-01-24
 

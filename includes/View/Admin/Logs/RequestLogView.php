@@ -15,6 +15,7 @@
 namespace SilverAssist\ContactFormToAPI\View\Admin\Logs;
 
 use SilverAssist\ContactFormToAPI\Infrastructure\ListTable\RequestLogTable;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
 use SilverAssist\ContactFormToAPI\Service\Security\SensitiveDataPatterns;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
@@ -38,10 +39,11 @@ class RequestLogView {
 	/**
 	 * Render the main logs page
 	 *
-	 * @param RequestLogTable $list_table The list table instance.
+	 * @param RequestLogTable                                           $list_table      The list table instance.
+	 * @param array<int, array{form_id: string, post_title: string|null}> $forms_with_logs Forms that have log entries.
 	 * @return void
 	 */
-	public static function render_page( RequestLogTable $list_table ): void {
+	public static function render_page( RequestLogTable $list_table, array $forms_with_logs ): void {
 		?>
 		<div class="wrap">
 			<h1 class="wp-heading-inline"><?php \esc_html_e( 'API Logs', 'contact-form-to-api' ); ?></h1>
@@ -49,7 +51,7 @@ class RequestLogView {
 
 			<?php StatisticsPartial::render(); ?>
 
-			<?php DateFilterPartial::render(); ?>
+			<?php DateFilterPartial::render( $forms_with_logs ); ?>
 
 			<form method="get">
 				<input type="hidden" name="page" value="<?php echo \esc_attr( $_REQUEST['page'] ?? '' ); ?>" />
@@ -551,7 +553,10 @@ class RequestLogView {
 	 * @return void
 	 */
 	public static function render_filters(): void {
-		DateFilterPartial::render();
+		// Fetch forms for backward compatibility in deprecated method.
+		$log_reader       = new LogReader();
+		$forms_with_logs = $log_reader->get_forms_with_logs();
+		DateFilterPartial::render( $forms_with_logs );
 	}
 
 	/**
@@ -561,7 +566,10 @@ class RequestLogView {
 	 * @return void
 	 */
 	public static function render_date_filter(): void {
-		DateFilterPartial::render();
+		// Fetch forms for backward compatibility in deprecated method.
+		$log_reader       = new LogReader();
+		$forms_with_logs = $log_reader->get_forms_with_logs();
+		DateFilterPartial::render( $forms_with_logs );
 	}
 
 	/**

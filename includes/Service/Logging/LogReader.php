@@ -215,4 +215,32 @@ class LogReader {
 
 		return $log;
 	}
+
+	/**
+	 * Get forms that have log entries
+	 *
+	 * Retrieves a list of forms that have at least one log entry.
+	 * Includes form ID and title, with graceful handling for deleted forms.
+	 *
+	 * @since 2.0.0
+	 * @return array<int, array{form_id: string, post_title: string|null}> Array of forms with logs.
+	 */
+	public function get_forms_with_logs(): array {
+		global $wpdb;
+
+		$results = $wpdb->get_results(
+			$wpdb->prepare(
+				'SELECT DISTINCT l.form_id, p.post_title
+				FROM %i l
+				LEFT JOIN %i p ON l.form_id = p.ID
+				WHERE l.form_id IS NOT NULL
+				ORDER BY p.post_title ASC, l.form_id ASC',
+				$this->table_name,
+				$wpdb->posts
+			),
+			ARRAY_A
+		);
+
+		return $results ?: array();
+	}
 }
