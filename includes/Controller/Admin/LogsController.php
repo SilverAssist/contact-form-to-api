@@ -22,6 +22,7 @@ use SilverAssist\ContactFormToAPI\Service\Export\ExportService;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
 use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
+use SilverAssist\ContactFormToAPI\Service\Notification\EmailAlertService;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
 use SilverAssist\ContactFormToAPI\View\Admin\Logs\RequestLogView;
 
@@ -336,6 +337,8 @@ class LogsController implements LoadableInterface {
 			// Check per-entry retry limit.
 			$retry_count = $retry_manager->count_retries( $log_id );
 			if ( $retry_count >= $max_retries_per_entry ) {
+				// Trigger individual failure alert if retries exhausted.
+				$this->maybe_trigger_individual_alert( $log_id );
 				++$skipped_count;
 				continue;
 			}
@@ -353,6 +356,13 @@ class LogsController implements LoadableInterface {
 				++$success_count;
 			} else {
 				++$failed_count;
+
+				// Check if this was the last allowed retry.
+				$updated_retry_count = $retry_manager->count_retries( $log_id );
+				if ( $updated_retry_count >= $max_retries_per_entry ) {
+					// Trigger individual failure alert after final retry failed.
+					$this->maybe_trigger_individual_alert( $log_id );
+				}
 			}
 		}
 
@@ -843,5 +853,31 @@ class LogsController implements LoadableInterface {
 		// phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
 
 		return $logs ?: array();
+	}
+
+	/**
+	 * Maybe trigger individual failure alert
+	 *
+	 * Triggers an individual failure alert for a log entry if the feature is enabled.
+	 * Gets the form_id from the log and passes it to the EmailAlertService.
+	 *
+	 * @since 2.0.0
+	 * @param int $log_id Log entry ID.
+	 * @return void
+	 */
+	private function maybe_trigger_individual_alert( int $log_id ): void {
+		// Get log to retrieve form_id.
+		$log_reader = new LogReader();
+		$log        = $log_reader->get_log( $log_id );
+
+		if ( null === $log || empty( $log['form_id'] ) ) {
+			return;
+		}
+
+		$form_id = (int) $log['form_id'];
+
+		// Trigger individual alert.
+		$alert_service = EmailAlertService::instance();
+		$alert_service->maybe_send_individual_alert( $log_id, $form_id );
 	}
 }

@@ -3,6 +3,7 @@ parameters:
     paths:
         - includes
     bootstrapFiles:
+        - phpstan-bootstrap.php
         - vendor/php-stubs/wordpress-stubs/wordpress-stubs.php
         - vendor/miguelcolmenares/cf7-stubs/contact-form-7-stubs.php
     reportUnmatchedIgnoredErrors: false

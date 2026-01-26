@@ -670,12 +670,13 @@ value="1"
 	 * @return void
 	 */
 	public static function render_email_alerts_partial( Settings $settings ): void {
-		$alerts_enabled   = $settings->is_alerts_enabled();
-		$alert_recipients = $settings->get_alert_recipients();
-		$error_threshold  = $settings->get_alert_error_threshold();
-		$rate_threshold   = $settings->get_alert_rate_threshold();
-		$check_interval   = $settings->get_alert_check_interval();
-		$cooldown_hours   = $settings->get_alert_cooldown_hours();
+		$alerts_enabled        = $settings->is_alerts_enabled();
+		$alert_recipients      = $settings->get_alert_recipients();
+		$error_threshold       = $settings->get_alert_error_threshold();
+		$rate_threshold        = $settings->get_alert_rate_threshold();
+		$check_interval        = $settings->get_alert_check_interval();
+		$cooldown_hours        = $settings->get_alert_cooldown_hours();
+		$alert_types           = $settings->get_alert_types();
 		?>
 		<h3><?php \esc_html_e( 'Email Alerts', 'contact-form-to-api' ); ?></h3>
 		<table class="form-table" role="presentation">
@@ -714,6 +715,52 @@ value="1"
 							<?php \esc_html_e( 'Comma-separated email addresses to receive alerts.', 'contact-form-to-api' ); ?>
 						</p>
 					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<?php \esc_html_e( 'Alert types', 'contact-form-to-api' ); ?>
+					</th>
+					<td>
+						<fieldset>
+							<label style="display: block; margin-bottom: 12px;">
+								<input type="checkbox" 
+									id="alert_type_threshold" 
+									name="alert_type_threshold" 
+									value="1" 
+									<?php \checked( ! empty( $alert_types['threshold'] ) ); ?>>
+								<strong><?php \esc_html_e( 'High error rate (threshold-based)', 'contact-form-to-api' ); ?></strong>
+							</label>
+							<div style="margin-left: 24px; margin-bottom: 16px;">
+								<p class="description" style="margin-top: 0;">
+									<?php \esc_html_e( 'Alert when error count or error rate exceeds configured thresholds (see below).', 'contact-form-to-api' ); ?>
+								</p>
+							</div>
+
+							<label style="display: block; margin-bottom: 12px;">
+								<input type="checkbox" 
+									id="alert_type_individual" 
+									name="alert_type_individual" 
+									value="1" 
+									<?php \checked( ! empty( $alert_types['individual'] ) ); ?>>
+								<strong><?php \esc_html_e( 'Individual submission failures', 'contact-form-to-api' ); ?></strong>
+							</label>
+							<div style="margin-left: 24px; margin-bottom: 16px;">
+								<p class="description" style="margin-top: 0;">
+									<?php \esc_html_e( 'Alert immediately when a submission fails after all retries are exhausted.', 'contact-form-to-api' ); ?>
+								</p>
+							</div>
+						</fieldset>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" colspan="2">
+						<h4 style="margin: 20px 0 10px 0; font-weight: 600;">
+							<?php \esc_html_e( 'Threshold Alert Settings', 'contact-form-to-api' ); ?>
+						</h4>
+						<p class="description" style="font-weight: normal;">
+							<?php \esc_html_e( 'Configure thresholds for high error rate alerts (only applies when threshold alerts are enabled above).', 'contact-form-to-api' ); ?>
+						</p>
+					</th>
 				</tr>
 				<tr>
 					<th scope="row">

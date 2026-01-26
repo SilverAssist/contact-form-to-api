@@ -90,12 +90,20 @@ sprintf(
 - **File-specific instructions**: `.github/instructions/*.instructions.md`
 - **Specialized skills**: `.github/skills/*/SKILL.md`
   - `release-management` - Version bumps, tags, releases
-  - `pr-review-response` - Responding to PR review comments
+  - `pr-review-response` - **Responding to PR reviews (NOT comments)** - Use `gh api graphql` to reply
   - `quality-checks` - PHPCS, PHPStan, PHPUnit troubleshooting
   - `create-component` - New services, controllers, views
   - `database-operations` - SQL, encryption, migrations
   - `github-cli` - Workflow monitoring, PR management
   - `i18n-translations` - Generate .pot files, translation workflow
+
+### ⚠️ PR Reviews vs Comments
+
+**Reviews** (inline on code in "Files changed") ≠ **Comments** (general discussion in "Conversation")
+
+- **To READ reviews**: Use MCP `pull_request_read` or GraphQL
+- **To REPLY to reviews**: Must use `gh api graphql` (MCP cannot reply to review threads)
+- **See**: `.github/skills/pr-review-response/SKILL.md` for full workflow
 
 ## Quick References
 

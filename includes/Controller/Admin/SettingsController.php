@@ -223,20 +223,21 @@ class SettingsController implements LoadableInterface {
 
 		// Sanitize and validate input.
 		$new_settings = array(
-			'max_manual_retries'    => isset( $_POST['max_manual_retries'] ) ? \absint( $_POST['max_manual_retries'] ) : 3,
-			'max_retries_per_hour'  => isset( $_POST['max_retries_per_hour'] ) ? \absint( $_POST['max_retries_per_hour'] ) : 10,
-			'sensitive_patterns'    => $this->sanitize_patterns( isset( $_POST['sensitive_patterns'] ) ? \wp_unslash( $_POST['sensitive_patterns'] ) : '' ),
-			'logging_enabled'       => isset( $_POST['logging_enabled'] ) && '1' === $_POST['logging_enabled'],
-			'log_retention_days'    => isset( $_POST['log_retention_days'] ) ? \absint( $_POST['log_retention_days'] ) : 30,
+			'max_manual_retries'      => isset( $_POST['max_manual_retries'] ) ? \absint( $_POST['max_manual_retries'] ) : 3,
+			'max_retries_per_hour'    => isset( $_POST['max_retries_per_hour'] ) ? \absint( $_POST['max_retries_per_hour'] ) : 10,
+			'sensitive_patterns'      => $this->sanitize_patterns( isset( $_POST['sensitive_patterns'] ) ? \wp_unslash( $_POST['sensitive_patterns'] ) : '' ),
+			'logging_enabled'         => isset( $_POST['logging_enabled'] ) && '1' === $_POST['logging_enabled'],
+			'log_retention_days'      => isset( $_POST['log_retention_days'] ) ? \absint( $_POST['log_retention_days'] ) : 30,
 			// Encryption settings.
-			'encryption_enabled'    => isset( $_POST['encryption_enabled'] ) && '1' === $_POST['encryption_enabled'],
+			'encryption_enabled'      => isset( $_POST['encryption_enabled'] ) && '1' === $_POST['encryption_enabled'],
 			// Email alert settings.
-			'alerts_enabled'        => isset( $_POST['alerts_enabled'] ) && '1' === $_POST['alerts_enabled'],
-			'alert_recipients'      => $this->sanitize_email_recipients( isset( $_POST['alert_recipients'] ) ? \wp_unslash( $_POST['alert_recipients'] ) : \get_option( 'admin_email' ) ),
-			'alert_error_threshold' => isset( $_POST['alert_error_threshold'] ) ? \absint( $_POST['alert_error_threshold'] ) : 10,
-			'alert_rate_threshold'  => isset( $_POST['alert_rate_threshold'] ) ? \absint( $_POST['alert_rate_threshold'] ) : 20,
-			'alert_check_interval'  => isset( $_POST['alert_check_interval'] ) ? \sanitize_text_field( \wp_unslash( $_POST['alert_check_interval'] ) ) : 'hourly',
-			'alert_cooldown_hours'  => isset( $_POST['alert_cooldown_hours'] ) ? \absint( $_POST['alert_cooldown_hours'] ) : 4,
+			'alerts_enabled'          => isset( $_POST['alerts_enabled'] ) && '1' === $_POST['alerts_enabled'],
+			'alert_recipients'        => $this->sanitize_email_recipients( isset( $_POST['alert_recipients'] ) ? \wp_unslash( $_POST['alert_recipients'] ) : \get_option( 'admin_email' ) ),
+			'alert_error_threshold'   => isset( $_POST['alert_error_threshold'] ) ? \absint( $_POST['alert_error_threshold'] ) : 10,
+			'alert_rate_threshold'    => isset( $_POST['alert_rate_threshold'] ) ? \absint( $_POST['alert_rate_threshold'] ) : 20,
+			'alert_check_interval'    => isset( $_POST['alert_check_interval'] ) ? \sanitize_text_field( \wp_unslash( $_POST['alert_check_interval'] ) ) : 'hourly',
+			'alert_cooldown_hours'    => isset( $_POST['alert_cooldown_hours'] ) ? \absint( $_POST['alert_cooldown_hours'] ) : 4,
+			'alert_types'             => $this->sanitize_alert_types( $_POST ),
 		);
 
 		// Preserve alert_last_sent timestamp (don't reset it).
@@ -317,6 +318,20 @@ class SettingsController implements LoadableInterface {
 		}
 
 		return \implode( ', ', $valid_emails );
+	}
+
+	/**
+	 * Sanitize alert types array
+	 *
+	 * @since 2.0.0
+	 * @param array<string, mixed> $post_data POST data array.
+	 * @return array{threshold: bool, individual: bool} Sanitized alert types.
+	 */
+	private function sanitize_alert_types( array $post_data ): array {
+		return array(
+			'threshold'  => isset( $post_data['alert_type_threshold'] ) && '1' === $post_data['alert_type_threshold'],
+			'individual' => isset( $post_data['alert_type_individual'] ) && '1' === $post_data['alert_type_individual'],
+		);
 	}
 
 	/**
