@@ -335,4 +335,168 @@ class EmailAlertServiceTest extends TestCase {
 		$this->assertSame( $multiple_emails, $recipients, 'Multiple recipients should be stored correctly' );
 		$this->assertStringContainsString( ',', $recipients, 'Recipients string should contain comma separator' );
 	}
+
+	/**
+	 * Test new alert types setting defaults
+	 *
+	 * @return void
+	 */
+	public function test_alert_types_defaults(): void {
+		$alert_types = $this->settings->get_alert_types();
+
+		$this->assertIsArray( $alert_types, 'Alert types should be an array' );
+		$this->assertArrayHasKey( 'threshold', $alert_types, 'Should have threshold key' );
+		$this->assertArrayHasKey( 'individual', $alert_types, 'Should have individual key' );
+		$this->assertTrue( $alert_types['threshold'], 'Threshold alerts should be enabled by default' );
+		$this->assertFalse( $alert_types['individual'], 'Individual alerts should be disabled by default' );
+	}
+
+	/**
+	 * Test threshold alerts enabled check
+	 *
+	 * @return void
+	 */
+	public function test_threshold_alerts_enabled_check(): void {
+		// Default should be enabled.
+		$this->assertTrue( $this->settings->is_threshold_alerts_enabled(), 'Threshold alerts should be enabled by default' );
+
+		// Disable threshold alerts.
+		$this->settings->set(
+			'alert_types',
+			array(
+				'threshold'  => false,
+				'individual' => false,
+			)
+		);
+
+		$this->assertFalse( $this->settings->is_threshold_alerts_enabled(), 'Threshold alerts should be disabled when set to false' );
+	}
+
+	/**
+	 * Test individual alerts enabled check
+	 *
+	 * @return void
+	 */
+	public function test_individual_alerts_enabled_check(): void {
+		// Default should be disabled.
+		$this->assertFalse( $this->settings->is_individual_alerts_enabled(), 'Individual alerts should be disabled by default' );
+
+		// Enable individual alerts.
+		$this->settings->set(
+			'alert_types',
+			array(
+				'threshold'  => true,
+				'individual' => true,
+			)
+		);
+
+		$this->assertTrue( $this->settings->is_individual_alerts_enabled(), 'Individual alerts should be enabled when set to true' );
+	}
+
+	/**
+	 * Test alert include form data setting
+	 *
+	 * @return void
+	 */
+	public function test_alert_include_form_data_setting(): void {
+		// Default should be false.
+		$this->assertFalse( $this->settings->is_alert_include_form_data(), 'Form data should not be included by default' );
+
+		// Enable form data inclusion.
+		$this->settings->set( 'alert_include_form_data', true );
+
+		$this->assertTrue( $this->settings->is_alert_include_form_data(), 'Form data should be included when set to true' );
+	}
+
+	/**
+	 * Test maybe_send_individual_alert does not run when alerts disabled
+	 *
+	 * @return void
+	 */
+	public function test_maybe_send_individual_alert_does_not_run_when_alerts_disabled(): void {
+		// Disable alerts.
+		$this->settings->set( 'alerts_enabled', false );
+
+		// Mock wp_mail to verify it's not called.
+		$mail_called = false;
+		\add_filter(
+			'pre_wp_mail',
+			function () use ( &$mail_called ) {
+				$mail_called = true;
+				return true;
+			}
+		);
+
+		// Try to send individual alert.
+		$this->service->maybe_send_individual_alert( 1, 1 );
+
+		// Verify wp_mail was not called.
+		$this->assertFalse( $mail_called, 'Email should not be sent when alerts are disabled globally' );
+	}
+
+	/**
+	 * Test maybe_send_individual_alert does not run when individual alerts disabled
+	 *
+	 * @return void
+	 */
+	public function test_maybe_send_individual_alert_does_not_run_when_individual_alerts_disabled(): void {
+		// Enable alerts globally but disable individual alerts.
+		$this->settings->set( 'alerts_enabled', true );
+		$this->settings->set(
+			'alert_types',
+			array(
+				'threshold'  => true,
+				'individual' => false,
+			)
+		);
+
+		// Mock wp_mail to verify it's not called.
+		$mail_called = false;
+		\add_filter(
+			'pre_wp_mail',
+			function () use ( &$mail_called ) {
+				$mail_called = true;
+				return true;
+			}
+		);
+
+		// Try to send individual alert.
+		$this->service->maybe_send_individual_alert( 1, 1 );
+
+		// Verify wp_mail was not called.
+		$this->assertFalse( $mail_called, 'Email should not be sent when individual alerts are disabled' );
+	}
+
+	/**
+	 * Test check_and_alert respects threshold alerts setting
+	 *
+	 * @return void
+	 */
+	public function test_check_and_alert_respects_threshold_alerts_setting(): void {
+		// Enable alerts but disable threshold alerts.
+		$this->settings->set( 'alerts_enabled', true );
+		$this->settings->set(
+			'alert_types',
+			array(
+				'threshold'  => false,
+				'individual' => true,
+			)
+		);
+
+		// Mock wp_mail to verify it's not called.
+		$mail_called = false;
+		\add_filter(
+			'pre_wp_mail',
+			function () use ( &$mail_called ) {
+				$mail_called = true;
+				return true;
+			}
+		);
+
+		// Run check.
+		$this->service->check_and_alert();
+
+		// Verify wp_mail was not called.
+		$this->assertFalse( $mail_called, 'Threshold alerts should not be sent when disabled' );
+	}
 }
