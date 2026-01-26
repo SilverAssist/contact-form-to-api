@@ -67,6 +67,9 @@ class ApiClientHookTest extends TestCase {
 		$global_settings['logging_enabled'] = true;
 		\update_option( 'cf7_api_global_settings', $global_settings );
 
+		// Delete any existing test form to ensure clean state.
+		\wp_delete_post( 999, true );
+
 		// Create a test form.
 		$this->create_test_form();
 	}
@@ -94,6 +97,9 @@ class ApiClientHookTest extends TestCase {
 		$wpdb->query(
 			$wpdb->prepare( 'DELETE FROM %i WHERE form_id = %d', $wpdb->prefix . 'cf7_api_logs', 999 )
 		);
+
+		// Clean up test form post.
+		\wp_delete_post( 999, true );
 
 		parent::tear_down();
 	}

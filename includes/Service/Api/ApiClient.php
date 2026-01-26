@@ -205,7 +205,7 @@ class ApiClient implements LoadableInterface {
 			$context = array(
 				'log_id'     => $log_id !== false ? $log_id : null,
 				'form_id'    => $form_id,
-				'form_title' => $form_id > 0 ? \get_the_title( $form_id ) : '',
+				'form_title' => $form_id > 0 ? ( \get_post( $form_id )->post_title ?? '' ) : '',
 				'form_data'  => $body,
 				'endpoint'   => $url,
 				'is_retry'   => null !== $retry_of,
