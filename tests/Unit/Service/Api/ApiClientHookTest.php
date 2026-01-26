@@ -44,6 +44,13 @@ class ApiClientHookTest extends TestCase {
 	private $original_settings = false;
 
 	/**
+	 * Test form ID
+	 *
+	 * @var int
+	 */
+	private int $test_form_id = 0;
+
+	/**
 	 * Set up before class - create tables once before any tests.
 	 */
 	public static function set_up_before_class(): void {
@@ -67,11 +74,14 @@ class ApiClientHookTest extends TestCase {
 		$global_settings['logging_enabled'] = true;
 		\update_option( 'cf7_api_global_settings', $global_settings );
 
-		// Delete any existing test form to ensure clean state.
-		\wp_delete_post( 999, true );
-
-		// Create a test form.
-		$this->create_test_form();
+		// Create a test form using the factory.
+		$this->test_form_id = $this->factory->post->create(
+			array(
+				'post_type'   => 'wpcf7_contact_form',
+				'post_title'  => 'Test Form Hook',
+				'post_status' => 'publish',
+			)
+		);
 	}
 
 	/**
@@ -95,11 +105,11 @@ class ApiClientHookTest extends TestCase {
 		global $wpdb;
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$wpdb->query(
-			$wpdb->prepare( 'DELETE FROM %i WHERE form_id = %d', $wpdb->prefix . 'cf7_api_logs', 999 )
+			$wpdb->prepare( 'DELETE FROM %i WHERE form_id = %d', $wpdb->prefix . 'cf7_api_logs', $this->test_form_id )
 		);
 
-		// Clean up test form post.
-		\wp_delete_post( 999, true );
+		// Clean up test form post (factory handles this, but be explicit).
+		\wp_delete_post( $this->test_form_id, true );
 
 		parent::tear_down();
 	}
@@ -152,7 +162,7 @@ class ApiClientHookTest extends TestCase {
 				'url'     => 'https://api.example.com/test',
 				'method'  => 'POST',
 				'body'    => array( 'name' => 'John Doe' ),
-				'form_id' => 999,
+				'form_id' => $this->test_form_id,
 			)
 		);
 
@@ -190,8 +200,8 @@ class ApiClientHookTest extends TestCase {
 
 		// Assert context values.
 		$this->assertIsInt( $context['log_id'] );
-		$this->assertSame( 999, $context['form_id'] );
-		$this->assertSame( 'Test Form 999', $context['form_title'] );
+		$this->assertSame( $this->test_form_id, $context['form_id'] );
+		$this->assertSame( 'Test Form Hook', $context['form_title'] );
 		$this->assertIsArray( $context['form_data'] );
 		$this->assertSame( 'https://api.example.com/test', $context['endpoint'] );
 		$this->assertFalse( $context['is_retry'] );
@@ -239,7 +249,7 @@ class ApiClientHookTest extends TestCase {
 				'url'     => 'https://api.example.com/test',
 				'method'  => 'POST',
 				'body'    => array( 'invalid' => 'data' ),
-				'form_id' => 999,
+				'form_id' => $this->test_form_id,
 			)
 		);
 
@@ -287,7 +297,7 @@ class ApiClientHookTest extends TestCase {
 				'url'     => 'https://api.example.com/test',
 				'method'  => 'POST',
 				'body'    => array( 'name' => 'John Doe' ),
-				'form_id' => 999,
+				'form_id' => $this->test_form_id,
 			)
 		);
 
@@ -340,7 +350,7 @@ class ApiClientHookTest extends TestCase {
 			array(
 				'url'     => 'https://api.example.com/test',
 				'method'  => 'GET',
-				'form_id' => 999,
+				'form_id' => $this->test_form_id,
 			)
 		);
 
@@ -392,7 +402,7 @@ class ApiClientHookTest extends TestCase {
 				'url'      => 'https://api.example.com/test',
 				'method'   => 'POST',
 				'body'     => array( 'retry' => true ),
-				'form_id'  => 999,
+				'form_id'  => $this->test_form_id,
 				'retry_of' => 123,
 			)
 		);
@@ -458,7 +468,7 @@ class ApiClientHookTest extends TestCase {
 				'url'          => 'https://api.example.com/test',
 				'method'       => 'POST',
 				'body'         => array( 'test' => true ),
-				'form_id'      => 999,
+				'form_id'      => $this->test_form_id,
 				'retry_config' => array(
 					'max_retries' => 2,
 					'retry_delay' => 0,
@@ -472,23 +482,5 @@ class ApiClientHookTest extends TestCase {
 			$this->hook_data['context']['attempt'],
 			'attempt should be 3 after 2 retries'
 		);
-	}
-
-	/**
-	 * Create a test form post
-	 */
-	private function create_test_form(): void {
-		$form_id = \wp_insert_post(
-			array(
-				'ID'          => 999,
-				'post_type'   => 'wpcf7_contact_form',
-				'post_title'  => 'Test Form 999',
-				'post_status' => 'publish',
-			)
-		);
-
-		if ( \is_wp_error( $form_id ) ) {
-			$this->markTestSkipped( 'Could not create test form' );
-		}
 	}
 }

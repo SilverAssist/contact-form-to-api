@@ -201,11 +201,20 @@ class ApiClient implements LoadableInterface {
 				'duration'    => $execution_time,
 			);
 
+			// Get form title safely.
+			$form_title = '';
+			if ( $form_id > 0 ) {
+				$form_post = \get_post( $form_id );
+				if ( $form_post instanceof \WP_Post ) {
+					$form_title = $form_post->post_title;
+				}
+			}
+
 			// Build context array.
 			$context = array(
 				'log_id'     => $log_id !== false ? $log_id : null,
 				'form_id'    => $form_id,
-				'form_title' => $form_id > 0 ? ( \get_post( $form_id )->post_title ?? '' ) : '',
+				'form_title' => $form_title,
 				'form_data'  => $body,
 				'endpoint'   => $url,
 				'is_retry'   => null !== $retry_of,

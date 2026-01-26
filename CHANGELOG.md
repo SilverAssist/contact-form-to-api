@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Hook only fires for HTTP responses (not WP_Error cases)
   - Minimal overhead when no callbacks are registered
   - See `docs/API_REFERENCE.md` for complete documentation and examples
- 
+
 - **Form Filter Dropdown**: Visible dropdown selector to filter logs by Contact Form 7 form
   - Dropdown appears in filter controls between Status and Date filters
   - Lists all forms that have at least one log entry
