@@ -37,6 +37,13 @@ class ApiClientHookTest extends TestCase {
 	private array $hook_data = array();
 
 	/**
+	 * Original global settings before test
+	 *
+	 * @var array<string, mixed>|false
+	 */
+	private $original_settings = false;
+
+	/**
 	 * Set up before class - create tables once before any tests.
 	 */
 	public static function set_up_before_class(): void {
@@ -51,6 +58,9 @@ class ApiClientHookTest extends TestCase {
 		parent::set_up();
 		$this->api_client = ApiClient::instance();
 		$this->hook_data  = array();
+
+		// Store original settings.
+		$this->original_settings = \get_option( 'cf7_api_global_settings', false );
 
 		// Enable logging.
 		$global_settings                    = \get_option( 'cf7_api_global_settings', array() );
@@ -67,6 +77,16 @@ class ApiClientHookTest extends TestCase {
 	public function tear_down(): void {
 		// Remove all cf7_api_after_response filters.
 		\remove_all_filters( 'cf7_api_after_response' );
+
+		// Remove all pre_http_request filters to restore default HTTP behavior.
+		\remove_all_filters( 'pre_http_request' );
+
+		// Restore original global settings.
+		if ( false === $this->original_settings ) {
+			\delete_option( 'cf7_api_global_settings' );
+		} else {
+			\update_option( 'cf7_api_global_settings', $this->original_settings );
+		}
 
 		// Clean up test logs.
 		global $wpdb;
