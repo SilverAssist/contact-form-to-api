@@ -443,8 +443,12 @@ class LogsController implements LoadableInterface {
 			$this->list_table->prepare_items();
 		}
 
+		// Get forms with logs for the filter dropdown.
+		$log_reader       = new LogReader();
+		$forms_with_logs = $log_reader->get_forms_with_logs();
+
 		// Render page.
-		RequestLogView::render_page( $this->list_table );
+		RequestLogView::render_page( $this->list_table, $forms_with_logs );
 	}
 
 	/**

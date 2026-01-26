@@ -13,8 +13,6 @@
 
 namespace SilverAssist\ContactFormToAPI\View\Admin\Logs\Partials;
 
-use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
-
 \defined( 'ABSPATH' ) || exit;
 
 /**
@@ -30,10 +28,10 @@ class DateFilterPartial {
 	 * Render filter controls
 	 *
 	 * @since 2.0.0
-	 * @param array<int, array{form_id: string, post_title: string|null}>|null $forms_with_logs Optional. Forms list. If null, will be fetched internally.
+	 * @param array<int, array{form_id: string, post_title: string|null}> $forms_with_logs Forms that have log entries.
 	 * @return void
 	 */
-	public static function render( ?array $forms_with_logs = null ): void {
+	public static function render( array $forms_with_logs ): void {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only operation for filtering.
 		$current_date_filter = isset( $_GET['date_filter'] ) ? \sanitize_text_field( \wp_unslash( $_GET['date_filter'] ) ) : '';
 		$current_status      = isset( $_GET['status'] ) ? \sanitize_text_field( \wp_unslash( $_GET['status'] ) ) : '';
@@ -45,13 +43,6 @@ class DateFilterPartial {
 		// phpcs:enable
 
 		$is_custom = 'custom' === $current_date_filter;
-
-		// Get forms that have logs for the dropdown.
-		// If not provided, fetch internally for backward compatibility.
-		if ( null === $forms_with_logs ) {
-			$log_reader       = new LogReader();
-			$forms_with_logs = $log_reader->get_forms_with_logs();
-		}
 		?>
 		<div class="cf7-api-filters">
 			<form method="get" action="<?php echo \esc_url( \admin_url( 'admin.php' ) ); ?>" id="cf7-date-filter-form">
