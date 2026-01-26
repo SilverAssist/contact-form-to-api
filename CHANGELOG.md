@@ -9,6 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Response Action Hook (`cf7_api_after_response`)**: New filter hook for extending plugin functionality
+  - Fires after each API response is received (success or failure)
+  - Provides complete response data (status code, headers, body, parsed JSON, duration)
+  - Includes submission context (log ID, form ID, form title, form data, endpoint, retry info)
+  - Enables developers to:
+    - Store CRM lead IDs returned by APIs
+    - Trigger notifications based on response content
+    - Log to external monitoring services (Sentry, Bugsnag, etc.)
+    - Send data to secondary endpoints (multi-endpoint support)
+  - Hook only fires for HTTP responses (not WP_Error cases)
+  - Minimal overhead when no callbacks are registered
+  - See `docs/API_REFERENCE.md` for complete documentation and examples
+
 - **Form Filter Dropdown**: Visible dropdown selector to filter logs by Contact Form 7 form
   - Dropdown appears in filter controls between Status and Date filters
   - Lists all forms that have at least one log entry

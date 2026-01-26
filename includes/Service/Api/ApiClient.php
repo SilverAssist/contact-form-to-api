@@ -177,7 +177,107 @@ class ApiClient implements LoadableInterface {
 			$log_writer->complete_request( $log_id, $response, $retry_count, $start_time );
 		}
 
+		// Calculate execution time.
+		$execution_time = \microtime( true ) - $start_time;
+
+		// Fire after_response hook if not WP_Error.
+		if ( ! \is_wp_error( $response ) ) {
+			$response_code    = \wp_remote_retrieve_response_code( $response );
+			$response_body    = \wp_remote_retrieve_body( $response );
+			$response_headers = \wp_remote_retrieve_headers( $response );
+
+			// Convert headers to array format.
+			$headers_array = array();
+			foreach ( $response_headers as $key => $value ) {
+				$headers_array[ $key ] = $value;
+			}
+
+			// Build response data array.
+			$response_data = array(
+				'status_code' => $response_code,
+				'headers'     => $headers_array,
+				'body'        => $response_body,
+				'body_parsed' => $this->parse_response_body( $response_body ),
+				'duration'    => $execution_time,
+			);
+
+			// Get form title safely.
+			$form_title = '';
+			if ( $form_id > 0 ) {
+				$form_post = \get_post( $form_id );
+				if ( $form_post instanceof \WP_Post ) {
+					$form_title = $form_post->post_title;
+				}
+			}
+
+			// Build context array.
+			$context = array(
+				'log_id'     => $log_id !== false ? $log_id : null,
+				'form_id'    => $form_id,
+				'form_title' => $form_title,
+				'form_data'  => $body,
+				'endpoint'   => $url,
+				'is_retry'   => null !== $retry_of,
+				'attempt'    => $retry_count + 1,
+			);
+
+			/**
+			 * Filter the API response after it's received.
+			 *
+			 * Allows developers to act on API responses without modifying core code.
+			 * Examples: store CRM lead IDs, trigger notifications, log to external services.
+			 *
+			 * @since 2.1.0
+			 *
+			 * @param array $response_data {
+			 *     API response data.
+			 *
+			 *     @type int         $status_code  HTTP status code (200, 400, 500, etc.).
+			 *     @type array       $headers      Response headers as key-value pairs.
+			 *     @type string      $body         Raw response body.
+			 *     @type array|null  $body_parsed  Parsed response (if JSON), null otherwise.
+			 *     @type float       $duration     Request duration in seconds.
+			 * }
+			 * @param array $context {
+			 *     Submission context.
+			 *
+			 *     @type int|null $log_id      The log entry ID (null if logging disabled).
+			 *     @type int      $form_id     The CF7 form ID.
+			 *     @type string   $form_title  The CF7 form title.
+			 *     @type mixed    $form_data   Original form submission data.
+			 *     @type string   $endpoint    The API endpoint URL.
+			 *     @type bool     $is_retry    Whether this was a retry attempt.
+			 *     @type int      $attempt     Attempt number (1 = first try).
+			 * }
+			 * @return array Modified response array (or original if no changes).
+			 */
+			$response_data = \apply_filters( 'cf7_api_after_response', $response_data, $context );
+		}
+
 		return $response;
+	}
+
+	/**
+	 * Parse response body as JSON
+	 *
+	 * Attempts to parse response body as JSON. Returns parsed array or null.
+	 *
+	 * @since 2.1.0
+	 * @param string $body Response body.
+	 * @return array<string, mixed>|null Parsed JSON or null if not valid JSON.
+	 */
+	private function parse_response_body( string $body ): ?array {
+		if ( empty( $body ) ) {
+			return null;
+		}
+
+		$parsed = \json_decode( $body, true );
+
+		if ( \json_last_error() === JSON_ERROR_NONE && \is_array( $parsed ) ) {
+			return $parsed;
+		}
+
+		return null;
 	}
 
 	/**

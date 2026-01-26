@@ -409,6 +409,142 @@ Filter the API URL before sending request.
 }, 10, 1);
 ```
 
+#### `cf7_api_after_response`
+
+**Since**: 2.1.0
+
+Filter the API response after it's received, enabling developers to extend plugin functionality without modifying core code.
+
+This hook fires after every API request completes (excluding WP_Error cases), allowing you to:
+- Store lead IDs returned by CRM systems
+- Trigger notifications based on response content
+- Log to external monitoring services
+- Send data to secondary endpoints
+- Implement custom error handling
+
+**Parameters**:
+
+- `array $response_data` - API response data with the following keys:
+  - `int $status_code` - HTTP status code (200, 400, 500, etc.)
+  - `array $headers` - Response headers as key-value pairs
+  - `string $body` - Raw response body
+  - `array|null $body_parsed` - Parsed response (if JSON), null otherwise
+  - `float $duration` - Request duration in seconds
+- `array $context` - Submission context with the following keys:
+  - `int|null $log_id` - The log entry ID (null if logging disabled)
+  - `int $form_id` - The CF7 form ID
+  - `string $form_title` - The CF7 form title
+  - `mixed $form_data` - Original form submission data
+  - `string $endpoint` - The API endpoint URL
+  - `bool $is_retry` - Whether this was a retry attempt
+  - `int $attempt` - Attempt number (1 = first try)
+
+**Return**: `array` Modified response data (or original if no changes)
+
+**Example 1: Store CRM Lead ID**
+
+```php
+\add_filter('cf7_api_after_response', function($response, $context) {
+    // Only process successful responses.
+    if ($response['status_code'] !== 200) {
+        return $response;
+    }
+    
+    // Extract lead ID from JSON response.
+    $body = $response['body_parsed'];
+    if (!empty($body['lead_id'])) {
+        global $wpdb;
+        $wpdb->insert($wpdb->prefix . 'my_leads', [
+            'log_id'  => $context['log_id'],
+            'lead_id' => $body['lead_id'],
+            'email'   => $context['form_data']['your-email'] ?? '',
+            'created' => current_time('mysql'),
+        ]);
+    }
+    
+    return $response;
+}, 10, 2);
+```
+
+**Example 2: Slack Notification on High-Priority Leads**
+
+```php
+\add_filter('cf7_api_after_response', function($response, $context) {
+    $body = $response['body_parsed'];
+    
+    // Check if this is a high priority lead.
+    if (!empty($body['priority']) && $body['priority'] === 'high') {
+        \wp_remote_post('https://hooks.slack.com/services/YOUR/WEBHOOK/URL', [
+            'body' => \wp_json_encode([
+                'text' => sprintf(
+                    '🚨 High priority lead from %s! Lead ID: %s',
+                    $context['form_title'],
+                    $body['lead_id'] ?? 'unknown'
+                ),
+            ]),
+            'headers' => ['Content-Type' => 'application/json'],
+        ]);
+    }
+    
+    return $response;
+}, 10, 2);
+```
+
+**Example 3: Send to Secondary Endpoint**
+
+```php
+\add_filter('cf7_api_after_response', function($response, $context) {
+    // Only send to Mailchimp if primary CRM succeeded.
+    if ($response['status_code'] === 200 && !empty($context['form_data']['your-email'])) {
+        \wp_remote_post('https://api.mailchimp.com/3.0/lists/YOUR_LIST_ID/members', [
+            'body'    => \wp_json_encode([
+                'email_address' => $context['form_data']['your-email'],
+                'status'        => 'subscribed',
+                'merge_fields'  => [
+                    'FNAME' => $context['form_data']['your-name'] ?? '',
+                ],
+            ]),
+            'headers' => [
+                'Content-Type'  => 'application/json',
+                'Authorization' => 'Basic ' . base64_encode('user:YOUR_API_KEY'),
+            ],
+        ]);
+    }
+    
+    return $response;
+}, 10, 2);
+```
+
+**Example 4: Log Errors to External Service**
+
+```php
+\add_filter('cf7_api_after_response', function($response, $context) {
+    // Log non-2xx responses.
+    if ($response['status_code'] >= 400) {
+        \error_log(sprintf(
+            '[CF7-API] Error %d on form "%s" (%d): %s',
+            $response['status_code'],
+            $context['form_title'],
+            $context['form_id'],
+            $response['body']
+        ));
+        
+        // Send to external monitoring (e.g., Sentry, Bugsnag).
+        // \Sentry\captureMessage(...);
+    }
+    
+    return $response;
+}, 10, 2);
+```
+
+**Important Notes**:
+
+- Hook fires only for HTTP responses (not WP_Error)
+- Hook fires after all retry attempts complete
+- `body_parsed` is `null` for non-JSON responses
+- Long-running callbacks may delay form submission response
+- Do not echo/output content in callbacks
+
 ---
 
 ## Legacy Hook Compatibility
