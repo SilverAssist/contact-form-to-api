@@ -20,6 +20,7 @@ use SilverAssist\ContactFormToAPI\Infrastructure\ListTable\RequestLogTable;
 use SilverAssist\ContactFormToAPI\Service\Api\ApiClient;
 use SilverAssist\ContactFormToAPI\Service\Export\ExportService;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
+use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
 use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
 use SilverAssist\ContactFormToAPI\View\Admin\Logs\RequestLogView;
@@ -444,11 +445,16 @@ class LogsController implements LoadableInterface {
 		}
 
 		// Get forms with logs for the filter dropdown.
-		$log_reader       = new LogReader();
+		$log_reader      = new LogReader();
 		$forms_with_logs = $log_reader->get_forms_with_logs();
 
+		// Get statistics for display.
+		$stats_data   = $this->get_statistics_data();
+		$stats        = $stats_data['stats'];
+		$date_context = $stats_data['date_context'];
+
 		// Render page.
-		RequestLogView::render_page( $this->list_table, $forms_with_logs );
+		RequestLogView::render_page( $this->list_table, $forms_with_logs, $stats, $date_context );
 	}
 
 	/**
@@ -464,7 +470,8 @@ class LogsController implements LoadableInterface {
 			\wp_die( \esc_html__( 'Log entry not found.', 'contact-form-to-api' ) );
 		}
 
-		RequestLogView::render_detail( $log );
+		$retry_manager = new RetryManager();
+		RequestLogView::render_detail( $log, $retry_manager );
 	}
 
 	/**
@@ -491,6 +498,151 @@ class LogsController implements LoadableInterface {
 		$log        = $log_reader->decrypt_log_fields( $log );
 
 		return $log;
+	}
+
+	/**
+	 * Get statistics data for the logs page
+	 *
+	 * Fetches statistics from LogStatistics service based on current filters.
+	 *
+	 * @return array{stats: array<string, mixed>, date_context: string} Statistics and date context.
+	 */
+	private function get_statistics_data(): array {
+		$stats_service = new LogStatistics();
+
+		// Get form_id from query if filtering by form.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only operation for filtering.
+		$form_id = isset( $_GET['form_id'] ) ? \absint( $_GET['form_id'] ) : 0;
+
+		// Get date filter parameters.
+		$date_params = $this->get_date_range_from_filter();
+		$date_filter = $date_params['filter'];
+		$date_start  = $date_params['start'];
+		$date_end    = $date_params['end'];
+
+		$stats = $stats_service->get_statistics( $form_id, $date_start, $date_end );
+
+		// Determine date context label.
+		$date_context = $this->get_date_context_label( $date_filter, $date_start, $date_end );
+
+		return array(
+			'stats'        => $stats,
+			'date_context' => $date_context,
+		);
+	}
+
+	/**
+	 * Get date context label for statistics
+	 *
+	 * @param string      $date_filter Date filter type.
+	 * @param string|null $date_start  Start date.
+	 * @param string|null $date_end    End date.
+	 * @return string Date context label (e.g., "(Today)", "(All Time)").
+	 */
+	private function get_date_context_label( string $date_filter, ?string $date_start, ?string $date_end ): string {
+		if ( empty( $date_filter ) ) {
+			return '(' . \__( 'All Time', 'contact-form-to-api' ) . ')';
+		}
+
+		$labels = array(
+			'today'     => '(' . \__( 'Today', 'contact-form-to-api' ) . ')',
+			'yesterday' => '(' . \__( 'Yesterday', 'contact-form-to-api' ) . ')',
+			'7days'     => '(' . \__( 'Last 7 Days', 'contact-form-to-api' ) . ')',
+			'30days'    => '(' . \__( 'Last 30 Days', 'contact-form-to-api' ) . ')',
+			'month'     => '(' . \__( 'This Month', 'contact-form-to-api' ) . ')',
+		);
+
+		if ( isset( $labels[ $date_filter ] ) ) {
+			return $labels[ $date_filter ];
+		}
+
+		if ( 'custom' === $date_filter && $date_start ) {
+			return '(' . \esc_html( $date_start ) . ' - ' . \esc_html( $date_end ?: \__( 'now', 'contact-form-to-api' ) ) . ')';
+		}
+
+		return '(' . \__( 'All Time', 'contact-form-to-api' ) . ')';
+	}
+
+	/**
+	 * Get date range from filter parameter
+	 *
+	 * Converts date filter type to start/end date strings.
+	 *
+	 * @return array{filter: string, start: string|null, end: string|null} Date range parameters.
+	 */
+	private function get_date_range_from_filter(): array {
+		$params      = $this->get_date_filter_params();
+		$date_filter = $params['filter'];
+
+		if ( empty( $date_filter ) ) {
+			return array(
+				'filter' => '',
+				'start'  => null,
+				'end'    => null,
+			);
+		}
+
+		$current_date = \current_time( 'Y-m-d' );
+
+		return match ( $date_filter ) {
+			'today' => array(
+				'filter' => 'today',
+				'start'  => $current_date,
+				'end'    => $current_date,
+			),
+			'yesterday' => array(
+				'filter' => 'yesterday',
+				'start'  => \gmdate( 'Y-m-d', \strtotime( '-1 day', \strtotime( $current_date ) ) ),
+				'end'    => \gmdate( 'Y-m-d', \strtotime( '-1 day', \strtotime( $current_date ) ) ),
+			),
+			'7days' => array(
+				'filter' => '7days',
+				'start'  => \gmdate( 'Y-m-d', \strtotime( '-7 days', \strtotime( $current_date ) ) ),
+				'end'    => $current_date,
+			),
+			'30days' => array(
+				'filter' => '30days',
+				'start'  => \gmdate( 'Y-m-d', \strtotime( '-30 days', \strtotime( $current_date ) ) ),
+				'end'    => $current_date,
+			),
+			'month' => array(
+				'filter' => 'month',
+				'start'  => \gmdate( 'Y-m-01', \strtotime( $current_date ) ),
+				'end'    => $current_date,
+			),
+			'custom' => $this->get_custom_date_range( $params['start'], $params['end'] ),
+			default => array(
+				'filter' => '',
+				'start'  => null,
+				'end'    => null,
+			),
+		};
+	}
+
+	/**
+	 * Get custom date range from request parameters
+	 *
+	 * @param string $date_start Start date.
+	 * @param string $date_end   End date.
+	 * @return array{filter: string, start: string|null, end: string|null} Custom date range.
+	 */
+	private function get_custom_date_range( string $date_start, string $date_end ): array {
+		$valid_start = ! empty( $date_start ) && $this->is_valid_date_format( $date_start );
+		$valid_end   = empty( $date_end ) || $this->is_valid_date_format( $date_end );
+
+		if ( ! $valid_start ) {
+			return array(
+				'filter' => 'custom',
+				'start'  => null,
+				'end'    => null,
+			);
+		}
+
+		return array(
+			'filter' => 'custom',
+			'start'  => $date_start,
+			'end'    => $valid_end ? ( $date_end ?: null ) : null,
+		);
 	}
 
 	/**

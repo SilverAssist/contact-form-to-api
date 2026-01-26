@@ -39,17 +39,19 @@ class RequestLogView {
 	/**
 	 * Render the main logs page
 	 *
-	 * @param RequestLogTable                                           $list_table      The list table instance.
+	 * @param RequestLogTable                                             $list_table      The list table instance.
 	 * @param array<int, array{form_id: string, post_title: string|null}> $forms_with_logs Forms that have log entries.
+	 * @param array<string, mixed>                                        $stats           Statistics data from LogStatistics service.
+	 * @param string                                                      $date_context    Date context label for statistics.
 	 * @return void
 	 */
-	public static function render_page( RequestLogTable $list_table, array $forms_with_logs ): void {
+	public static function render_page( RequestLogTable $list_table, array $forms_with_logs, array $stats, string $date_context ): void {
 		?>
 		<div class="wrap">
 			<h1 class="wp-heading-inline"><?php \esc_html_e( 'API Logs', 'contact-form-to-api' ); ?></h1>
 			<?php ExportButtonsPartial::render( $list_table->get_total_items() ); ?>
 
-			<?php StatisticsPartial::render(); ?>
+			<?php StatisticsPartial::render( $stats, $date_context ); ?>
 
 			<?php DateFilterPartial::render( $forms_with_logs ); ?>
 
@@ -67,11 +69,21 @@ class RequestLogView {
 	/**
 	 * Render statistics summary
 	 *
-	 * @deprecated 2.0.0 Use StatisticsPartial::render() instead.
+	 * @deprecated 2.0.0 Use StatisticsPartial::render() with stats data from controller instead.
 	 * @return void
 	 */
 	public static function render_statistics(): void {
-		StatisticsPartial::render();
+		// Backward compatibility: fetch stats directly for deprecated method.
+		$stats_service = new \SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics();
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only operation for filtering.
+		$form_id = isset( $_GET['form_id'] ) ? \absint( $_GET['form_id'] ) : 0;
+
+		$date_params = self::get_date_range_from_filter();
+		$stats       = $stats_service->get_statistics( $form_id, $date_params['start'], $date_params['end'] );
+		$context     = self::get_date_context_label( $date_params['filter'], $date_params['start'], $date_params['end'] );
+
+		StatisticsPartial::render( $stats, $context );
 	}
 
 	/**
@@ -203,11 +215,11 @@ class RequestLogView {
 	/**
 	 * Render log detail view
 	 *
-	 * @param array<string, mixed> $log Log entry data.
+	 * @param array<string, mixed> $log           Log entry data.
+	 * @param RetryManager         $retry_manager Retry manager instance for retry operations.
 	 * @return void
 	 */
-	public static function render_detail( array $log ): void {
-		$retry_manager = new RetryManager();
+	public static function render_detail( array $log, RetryManager $retry_manager ): void {
 		?>
 		<div class="wrap">
 			<h1><?php \esc_html_e( 'API Log Detail', 'contact-form-to-api' ); ?></h1>
