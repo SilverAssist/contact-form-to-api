@@ -78,6 +78,7 @@
 		 */
 		initDateFilter: function () {
 			const $statusFilter = $("#status_filter");
+			const $formFilter = $("#form_filter");
 			const $dateFilter = $("#date_filter");
 			const $customDateRange = $("#custom-date-range");
 			const $dateStart = $("#date_start");
@@ -85,6 +86,11 @@
 
 			// Auto-submit for status filter
 			$statusFilter.on("change", function () {
+				$("#cf7-date-filter-form").submit();
+			});
+
+			// Auto-submit for form filter
+			$formFilter.on("change", function () {
 				$("#cf7-date-filter-form").submit();
 			});
 

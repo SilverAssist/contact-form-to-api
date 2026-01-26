@@ -333,4 +333,191 @@ class LogReaderTest extends TestCase {
 		$this->assertCount( 1, $logs );
 		$this->assertSame( (string) $form_id_1, $logs[0]['form_id'] );
 	}
+
+	/**
+	 * Test get_forms_with_logs returns empty array when no logs exist
+	 */
+	public function testGetFormsWithLogsReturnsEmptyWhenNoLogs(): void {
+		// Clean up any existing logs first.
+		global $wpdb;
+		$table_name = $wpdb->prefix . 'cf7_api_logs';
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i', $table_name ) );
+
+		$forms = $this->log_reader->get_forms_with_logs();
+
+		$this->assertIsArray( $forms );
+		$this->assertEmpty( $forms );
+	}
+
+	/**
+	 * Test get_forms_with_logs returns correct form list with titles
+	 */
+	public function testGetFormsWithLogsReturnsFormListWithTitles(): void {
+		// Create test forms (posts).
+		$form_id_1 = $this->factory->post->create(
+			array(
+				'post_type'  => 'wpcf7_contact_form',
+				'post_title' => 'Contact Form 1',
+			)
+		);
+		$form_id_2 = $this->factory->post->create(
+			array(
+				'post_type'  => 'wpcf7_contact_form',
+				'post_title' => 'Contact Form 2',
+			)
+		);
+
+		// Create logs for these forms.
+		$this->log_writer->start_request(
+			form_id: $form_id_1,
+			endpoint: 'https://api.example.com/test1',
+			method: 'POST',
+			request_data: array()
+		);
+
+		$this->log_writer->start_request(
+			form_id: $form_id_2,
+			endpoint: 'https://api.example.com/test2',
+			method: 'POST',
+			request_data: array()
+		);
+
+		$forms = $this->log_reader->get_forms_with_logs();
+
+		$this->assertIsArray( $forms );
+		$this->assertCount( 2, $forms );
+
+		// Check that both forms are present.
+		$form_ids = \array_column( $forms, 'form_id' );
+		$this->assertContains( (string) $form_id_1, $form_ids );
+		$this->assertContains( (string) $form_id_2, $form_ids );
+
+		// Check that titles are present.
+		$form_titles = \array_column( $forms, 'post_title' );
+		$this->assertContains( 'Contact Form 1', $form_titles );
+		$this->assertContains( 'Contact Form 2', $form_titles );
+	}
+
+	/**
+	 * Test get_forms_with_logs handles deleted forms gracefully
+	 */
+	public function testGetFormsWithLogsHandlesDeletedForms(): void {
+		// Create a form.
+		$form_id = $this->factory->post->create(
+			array(
+				'post_type'  => 'wpcf7_contact_form',
+				'post_title' => 'Temporary Form',
+			)
+		);
+
+		// Create log for this form.
+		$this->log_writer->start_request(
+			form_id: $form_id,
+			endpoint: 'https://api.example.com/temp',
+			method: 'POST',
+			request_data: array()
+		);
+
+		// Delete the form.
+		\wp_delete_post( $form_id, true );
+
+		$forms = $this->log_reader->get_forms_with_logs();
+
+		$this->assertIsArray( $forms );
+		$this->assertNotEmpty( $forms );
+
+		// Find the deleted form in results.
+		$deleted_form = null;
+		foreach ( $forms as $form ) {
+			if ( (int) $form['form_id'] === $form_id ) {
+				$deleted_form = $form;
+				break;
+			}
+		}
+
+		$this->assertNotNull( $deleted_form, 'Deleted form should still appear in results' );
+		$this->assertNull( $deleted_form['post_title'], 'Deleted form should have null post_title' );
+	}
+
+	/**
+	 * Test get_forms_with_logs returns distinct forms only
+	 */
+	public function testGetFormsWithLogsReturnsDistinctForms(): void {
+		$form_id = $this->factory->post->create(
+			array(
+				'post_type'  => 'wpcf7_contact_form',
+				'post_title' => 'Multiple Logs Form',
+			)
+		);
+
+		// Create multiple logs for same form.
+		$this->log_writer->start_request(
+			form_id: $form_id,
+			endpoint: 'https://api.example.com/log1',
+			method: 'POST',
+			request_data: array()
+		);
+
+		$this->log_writer->start_request(
+			form_id: $form_id,
+			endpoint: 'https://api.example.com/log2',
+			method: 'POST',
+			request_data: array()
+		);
+
+		$this->log_writer->start_request(
+			form_id: $form_id,
+			endpoint: 'https://api.example.com/log3',
+			method: 'POST',
+			request_data: array()
+		);
+
+		$forms = $this->log_reader->get_forms_with_logs();
+
+		// Should only return the form once, not multiple times.
+		$form_ids = \array_column( $forms, 'form_id' );
+		$count    = \count( \array_filter( $form_ids, fn( $id ) => (int) $id === $form_id ) );
+		$this->assertSame( 1, $count, 'Form should appear only once despite multiple logs' );
+	}
+
+	/**
+	 * Test get_forms_with_logs orders by post_title
+	 */
+	public function testGetFormsWithLogsOrdersByPostTitle(): void {
+		// Create forms with specific titles for ordering.
+		$form_z = $this->factory->post->create(
+			array(
+				'post_type'  => 'wpcf7_contact_form',
+				'post_title' => 'Zebra Form',
+			)
+		);
+
+		$form_a = $this->factory->post->create(
+			array(
+				'post_type'  => 'wpcf7_contact_form',
+				'post_title' => 'Alpha Form',
+			)
+		);
+
+		$form_m = $this->factory->post->create(
+			array(
+				'post_type'  => 'wpcf7_contact_form',
+				'post_title' => 'Middle Form',
+			)
+		);
+
+		// Create logs for each form.
+		$this->log_writer->start_request( form_id: $form_z, endpoint: 'https://api.example.com/z', method: 'POST', request_data: array() );
+		$this->log_writer->start_request( form_id: $form_a, endpoint: 'https://api.example.com/a', method: 'POST', request_data: array() );
+		$this->log_writer->start_request( form_id: $form_m, endpoint: 'https://api.example.com/m', method: 'POST', request_data: array() );
+
+		$forms = $this->log_reader->get_forms_with_logs();
+
+		$this->assertCount( 3, $forms );
+
+		// Check ordering by title.
+		$this->assertSame( 'Alpha Form', $forms[0]['post_title'] );
+		$this->assertSame( 'Middle Form', $forms[1]['post_title'] );
+		$this->assertSame( 'Zebra Form', $forms[2]['post_title'] );
+	}
 }
