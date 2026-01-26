@@ -223,7 +223,7 @@ class LogReader {
 	 * Includes form ID and title, with graceful handling for deleted forms.
 	 *
 	 * @since 2.0.0
-	 * @return array<int, array{form_id: int, post_title: string|null}> Array of forms with logs.
+	 * @return array<int, array{form_id: string, post_title: string|null}> Array of forms with logs.
 	 */
 	public function get_forms_with_logs(): array {
 		global $wpdb;
