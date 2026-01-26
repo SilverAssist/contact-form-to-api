@@ -131,7 +131,6 @@ class Settings implements LoadableInterface {
 				'threshold'  => true,  // Existing: high error rate alerts.
 				'individual' => false, // New: per-submission failure alerts.
 			),
-			'alert_include_form_data' => false,
 			// Encryption settings.
 			'encryption_enabled'      => true,
 		);
@@ -399,15 +398,5 @@ class Settings implements LoadableInterface {
 	public function is_individual_alerts_enabled(): bool {
 		$alert_types = $this->get_alert_types();
 		return ! empty( $alert_types['individual'] );
-	}
-
-	/**
-	 * Check if form data should be included in alert emails
-	 *
-	 * @since 2.0.0
-	 * @return bool
-	 */
-	public function is_alert_include_form_data(): bool {
-		return (bool) $this->get( 'alert_include_form_data', false );
 	}
 }

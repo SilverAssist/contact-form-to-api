@@ -394,21 +394,6 @@ class EmailAlertServiceTest extends TestCase {
 	}
 
 	/**
-	 * Test alert include form data setting
-	 *
-	 * @return void
-	 */
-	public function test_alert_include_form_data_setting(): void {
-		// Default should be false.
-		$this->assertFalse( $this->settings->is_alert_include_form_data(), 'Form data should not be included by default' );
-
-		// Enable form data inclusion.
-		$this->settings->set( 'alert_include_form_data', true );
-
-		$this->assertTrue( $this->settings->is_alert_include_form_data(), 'Form data should be included when set to true' );
-	}
-
-	/**
 	 * Test maybe_send_individual_alert does not run when alerts disabled
 	 *
 	 * @return void

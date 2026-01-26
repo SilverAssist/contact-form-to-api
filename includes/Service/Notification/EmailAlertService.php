@@ -398,8 +398,17 @@ class EmailAlertService implements LoadableInterface {
 			return;
 		}
 
+		// Check if alert was already sent for this log entry (prevent spam).
+		$alert_sent_key = 'cf7api_individual_alert_sent_' . $log_id;
+		if ( \get_transient( $alert_sent_key ) ) {
+			return;
+		}
+
 		// Send the individual failure alert (no cooldown for event-driven alerts).
 		$this->send_individual_failure_alert( $log_id, $form_id );
+
+		// Mark alert as sent (expires after 30 days).
+		\set_transient( $alert_sent_key, true, 30 * DAY_IN_SECONDS );
 	}
 
 	/**
@@ -487,10 +496,8 @@ class EmailAlertService implements LoadableInterface {
 	 * @return string HTML email body.
 	 */
 	private function build_individual_alert_body( array $log, string $form_title ): string {
-		$settings          = Settings::instance();
-		$include_form_data = $settings->is_alert_include_form_data();
-		$logs_url          = \admin_url( 'admin.php?page=cf7-api-logs' );
-		$log_detail_url    = \add_query_arg(
+		$logs_url       = \admin_url( 'admin.php?page=cf7-api-logs' );
+		$log_detail_url = \add_query_arg(
 			array(
 				'page'   => 'cf7-api-logs',
 				'action' => 'view',
@@ -534,37 +541,6 @@ class EmailAlertService implements LoadableInterface {
 		$html .= '<strong>' . \esc_html__( 'Error Message:', 'contact-form-to-api' ) . '</strong><br>';
 		$html .= \esc_html( $error_message );
 		$html .= '</div>';
-
-		// Include form data if setting is enabled.
-		if ( $include_form_data && ! empty( $log['request_data'] ) ) {
-			$request_data = $log['request_data'];
-
-			// Decrypt if needed using decrypt_log_fields.
-			if ( isset( $log['encryption_version'] ) && $log['encryption_version'] > 0 && null !== $this->log_reader ) {
-				$decrypted_log = $this->log_reader->decrypt_log_fields( $log );
-				$request_data  = $decrypted_log['request_data'];
-			}
-
-			// Decode JSON.
-			$form_data = \json_decode( $request_data, true );
-
-			if ( \is_array( $form_data ) && ! empty( $form_data ) ) {
-				$html .= '<h3>' . \esc_html__( 'Form Data', 'contact-form-to-api' ) . '</h3>';
-				$html .= '<div class="privacy-notice">';
-				$html .= '<strong>' . \esc_html__( 'Privacy Notice:', 'contact-form-to-api' ) . '</strong> ';
-				$html .= \esc_html__( 'This email contains form submission data. Please handle it according to your privacy policy.', 'contact-form-to-api' );
-				$html .= '</div>';
-				$html .= '<table>';
-				foreach ( $form_data as $key => $value ) {
-					$display_value = \is_array( $value ) ? \wp_json_encode( $value ) : $value;
-					$html         .= '<tr>';
-					$html         .= '<td>' . \esc_html( $key ) . '</td>';
-					$html         .= '<td>' . \esc_html( (string) $display_value ) . '</td>';
-					$html         .= '</tr>';
-				}
-				$html .= '</table>';
-			}
-		}
 
 		$html .= '<p>';
 		$html .= '<a href="' . \esc_url( $log_detail_url ) . '">' . \esc_html__( 'View Full Log Details', 'contact-form-to-api' ) . '</a>';

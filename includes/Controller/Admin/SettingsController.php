@@ -238,7 +238,6 @@ class SettingsController implements LoadableInterface {
 			'alert_check_interval'    => isset( $_POST['alert_check_interval'] ) ? \sanitize_text_field( \wp_unslash( $_POST['alert_check_interval'] ) ) : 'hourly',
 			'alert_cooldown_hours'    => isset( $_POST['alert_cooldown_hours'] ) ? \absint( $_POST['alert_cooldown_hours'] ) : 4,
 			'alert_types'             => $this->sanitize_alert_types( $_POST ),
-			'alert_include_form_data' => isset( $_POST['alert_include_form_data'] ) && '1' === $_POST['alert_include_form_data'],
 		);
 
 		// Preserve alert_last_sent timestamp (don't reset it).

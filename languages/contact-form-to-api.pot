@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-25T17:16:08+00:00\n"
+"POT-Creation-Date: 2026-01-26T15:42:25+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: contact-form-to-api\n"
@@ -86,73 +86,122 @@ msgstr ""
 msgid "Failed to save settings. Please try again."
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:163
-#: includes/Controller/Admin/LogsController.php:164
-#: includes/View/Admin/Logs/RequestLogView.php:47
-#: includes/View/Admin/Settings/SettingsView.php:850
+#: includes/Controller/Admin/LogsController.php:165
+#: includes/Controller/Admin/LogsController.php:166
+#: includes/View/Admin/Logs/RequestLogView.php:51
+#: includes/View/Admin/Settings/SettingsView.php:897
 msgid "API Logs"
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:198
+#: includes/Controller/Admin/LogsController.php:200
 msgid "Logs per page"
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:248
-#: includes/Controller/Admin/LogsController.php:544
-#: includes/Controller/Admin/SettingsController.php:397
-#: includes/Controller/Admin/SettingsController.php:442
-#: includes/Controller/Admin/SettingsController.php:484
-#: includes/Controller/Admin/SettingsController.php:533
-#: includes/Controller/Admin/SettingsController.php:559
+#: includes/Controller/Admin/LogsController.php:250
+#: includes/Controller/Admin/LogsController.php:710
+#: includes/Controller/Admin/SettingsController.php:412
+#: includes/Controller/Admin/SettingsController.php:457
+#: includes/Controller/Admin/SettingsController.php:499
+#: includes/Controller/Admin/SettingsController.php:548
+#: includes/Controller/Admin/SettingsController.php:574
 msgid "Security check failed"
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:412
+#: includes/Controller/Admin/LogsController.php:423
 msgid "API logging is disabled. Enable it in the plugin settings to view logs."
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:413
+#: includes/Controller/Admin/LogsController.php:424
 msgid "Logging Disabled"
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:460
+#: includes/Controller/Admin/LogsController.php:480
 msgid "Log entry not found."
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:523
+#: includes/Controller/Admin/LogsController.php:554
+#: includes/Controller/Admin/LogsController.php:573
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:105
+#: includes/View/Admin/Logs/RequestLogView.php:100
+#: includes/View/Admin/Logs/RequestLogView.php:119
+msgid "All Time"
+msgstr ""
+
+#: includes/Controller/Admin/LogsController.php:558
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:108
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:247
+#: includes/View/Admin/Logs/RequestLogView.php:104
+msgid "Today"
+msgstr ""
+
+#: includes/Controller/Admin/LogsController.php:559
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:111
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:248
+#: includes/View/Admin/Logs/RequestLogView.php:105
+msgid "Yesterday"
+msgstr ""
+
+#: includes/Controller/Admin/LogsController.php:560
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:114
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:249
+#: includes/View/Admin/Logs/RequestLogView.php:106
+msgid "Last 7 Days"
+msgstr ""
+
+#: includes/Controller/Admin/LogsController.php:561
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:117
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:250
+#: includes/View/Admin/Logs/RequestLogView.php:107
+msgid "Last 30 Days"
+msgstr ""
+
+#: includes/Controller/Admin/LogsController.php:562
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:120
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:251
+#: includes/View/Admin/Logs/RequestLogView.php:108
+msgid "This Month"
+msgstr ""
+
+#: includes/Controller/Admin/LogsController.php:570
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:262
+#: includes/View/Admin/Logs/RequestLogView.php:116
+msgid "now"
+msgstr ""
+
+#: includes/Controller/Admin/LogsController.php:689
 msgid "Are you sure you want to delete this log entry?"
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:524
+#: includes/Controller/Admin/LogsController.php:690
 msgid "Please select at least one item."
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:525
+#: includes/Controller/Admin/LogsController.php:691
 msgid "Are you sure you want to delete the selected log entries?"
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:526
-#: includes/View/Admin/Logs/RequestLogView.php:631
+#: includes/Controller/Admin/LogsController.php:692
+#: includes/View/Admin/Logs/RequestLogView.php:651
 msgid "Are you sure you want to retry this request?"
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:527
+#: includes/Controller/Admin/LogsController.php:693
 msgid "Are you sure you want to retry the selected requests?"
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:528
+#: includes/Controller/Admin/LogsController.php:694
 msgid "Start date must be before or equal to end date."
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:529
+#: includes/Controller/Admin/LogsController.php:695
 msgid "End date must be after or equal to start date."
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:549
+#: includes/Controller/Admin/LogsController.php:715
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
-#: includes/Controller/Admin/LogsController.php:564
+#: includes/Controller/Admin/LogsController.php:730
 msgid "Invalid export action."
 msgstr ""
 
@@ -165,7 +214,7 @@ msgid "Sending..."
 msgstr ""
 
 #: includes/Controller/Admin/SettingsController.php:166
-#: includes/View/Admin/Settings/SettingsView.php:815
+#: includes/View/Admin/Settings/SettingsView.php:862
 msgid "Send Test Email"
 msgstr ""
 
@@ -222,35 +271,35 @@ msgstr ""
 msgid "Security check failed. Please try again."
 msgstr ""
 
-#: includes/Controller/Admin/SettingsController.php:392
-#: includes/Controller/Admin/SettingsController.php:437
-#: includes/Controller/Admin/SettingsController.php:479
-#: includes/Controller/Admin/SettingsController.php:528
-#: includes/Controller/Admin/SettingsController.php:554
+#: includes/Controller/Admin/SettingsController.php:407
+#: includes/Controller/Admin/SettingsController.php:452
+#: includes/Controller/Admin/SettingsController.php:494
+#: includes/Controller/Admin/SettingsController.php:543
+#: includes/Controller/Admin/SettingsController.php:569
 msgid "Permission denied"
 msgstr ""
 
-#: includes/Controller/Admin/SettingsController.php:403
+#: includes/Controller/Admin/SettingsController.php:418
 msgid "Invalid email address"
 msgstr ""
 
-#: includes/Controller/Admin/SettingsController.php:411
+#: includes/Controller/Admin/SettingsController.php:426
 msgid "Test email sent successfully"
 msgstr ""
 
-#: includes/Controller/Admin/SettingsController.php:413
+#: includes/Controller/Admin/SettingsController.php:428
 msgid "Failed to send test email"
 msgstr ""
 
-#: includes/Controller/Admin/SettingsController.php:461
+#: includes/Controller/Admin/SettingsController.php:476
 msgid "Dry run started"
 msgstr ""
 
-#: includes/Controller/Admin/SettingsController.php:461
+#: includes/Controller/Admin/SettingsController.php:476
 msgid "Migration started"
 msgstr ""
 
-#: includes/Controller/Admin/SettingsController.php:571
+#: includes/Controller/Admin/SettingsController.php:586
 msgid "Migration cancelled"
 msgstr ""
 
@@ -287,7 +336,7 @@ msgid "<strong>Warning:</strong> Both the legacy \"%1$s\" plugin (by Query Solut
 msgstr ""
 
 #: includes/Infrastructure/ListTable/RequestLogTable.php:97
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:135
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:130
 msgid "From"
 msgstr ""
 
@@ -297,14 +346,15 @@ msgstr ""
 
 #: includes/Infrastructure/ListTable/RequestLogTable.php:99
 #: includes/Service/Export/ExportService.php:288
-#: includes/View/Admin/Logs/RequestLogView.php:250
+#: includes/Service/Notification/EmailAlertService.php:535
+#: includes/View/Admin/Logs/RequestLogView.php:264
 #: includes/View/ContactForm/IntegrationView.php:520
 msgid "Endpoint"
 msgstr ""
 
 #: includes/Infrastructure/ListTable/RequestLogTable.php:100
 #: includes/Service/Export/ExportService.php:289
-#: includes/View/Admin/Logs/RequestLogView.php:254
+#: includes/View/Admin/Logs/RequestLogView.php:268
 #: includes/View/ContactForm/IntegrationView.php:165
 #: includes/View/ContactForm/IntegrationView.php:521
 msgid "Method"
@@ -312,8 +362,8 @@ msgstr ""
 
 #: includes/Infrastructure/ListTable/RequestLogTable.php:101
 #: includes/Service/Export/ExportService.php:290
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:63
-#: includes/View/Admin/Logs/RequestLogView.php:258
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:58
+#: includes/View/Admin/Logs/RequestLogView.php:272
 #: includes/View/ContactForm/IntegrationView.php:522
 msgid "Status"
 msgstr ""
@@ -333,8 +383,8 @@ msgid "Retries"
 msgstr ""
 
 #: includes/Infrastructure/ListTable/RequestLogTable.php:105
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:105
-#: includes/View/Admin/Logs/RequestLogView.php:262
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:100
+#: includes/View/Admin/Logs/RequestLogView.php:276
 #: includes/View/ContactForm/IntegrationView.php:519
 msgid "Date"
 msgstr ""
@@ -350,13 +400,13 @@ msgid "Retry"
 msgstr ""
 
 #: includes/Infrastructure/ListTable/RequestLogTable.php:181
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:68
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:63
 msgid "All"
 msgstr ""
 
 #: includes/Infrastructure/ListTable/RequestLogTable.php:189
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:71
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:219
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:66
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:214
 msgid "Success"
 msgstr ""
 
@@ -370,9 +420,10 @@ msgstr ""
 
 #. translators: %d: form ID
 #: includes/Infrastructure/ListTable/RequestLogTable.php:503
-#: includes/Service/Notification/EmailAlertService.php:300
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:93
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:189
+#: includes/Service/Notification/EmailAlertService.php:313
+#: includes/Service/Notification/EmailAlertService.php:442
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:88
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:184
 #, php-format
 msgid "Form #%d"
 msgstr ""
@@ -401,15 +452,15 @@ msgstr ""
 msgid "CF7 API Status"
 msgstr ""
 
-#: includes/Service/Api/ApiClient.php:201
+#: includes/Service/Api/ApiClient.php:301
 msgid "Invalid or non-retryable log entry"
 msgstr ""
 
-#: includes/Service/Api/ApiClient.php:539
+#: includes/Service/Api/ApiClient.php:639
 msgid "XML functions not available"
 msgstr ""
 
-#: includes/Service/Api/ApiClient.php:556
+#: includes/Service/Api/ApiClient.php:656
 msgid "XML Structure is incorrect"
 msgstr ""
 
@@ -422,7 +473,8 @@ msgid "Form ID"
 msgstr ""
 
 #: includes/Service/Export/ExportService.php:291
-#: includes/View/Admin/Logs/RequestLogView.php:335
+#: includes/Service/Notification/EmailAlertService.php:537
+#: includes/View/Admin/Logs/RequestLogView.php:349
 #: includes/View/ContactForm/IntegrationView.php:523
 msgid "Response Code"
 msgstr ""
@@ -432,12 +484,12 @@ msgid "Execution Time (s)"
 msgstr ""
 
 #: includes/Service/Export/ExportService.php:293
-#: includes/View/Admin/Logs/RequestLogView.php:270
+#: includes/View/Admin/Logs/RequestLogView.php:284
 msgid "Retry Count"
 msgstr ""
 
 #: includes/Service/Export/ExportService.php:294
-#: includes/View/Admin/Logs/RequestLogView.php:340
+#: includes/View/Admin/Logs/RequestLogView.php:354
 msgid "Error Message"
 msgstr ""
 
@@ -466,70 +518,106 @@ msgid "Error encrypting log ID %1$d: %2$s"
 msgstr ""
 
 #. translators: %s: site name
-#: includes/Service/Notification/EmailAlertService.php:213
+#: includes/Service/Notification/EmailAlertService.php:226
 #, php-format
 msgid "[%s] CF7 API Alert: High Error Rate Detected"
 msgstr ""
 
-#: includes/Service/Notification/EmailAlertService.php:277
+#: includes/Service/Notification/EmailAlertService.php:290
 msgid "CF7 API Alert"
 msgstr ""
 
-#: includes/Service/Notification/EmailAlertService.php:278
+#: includes/Service/Notification/EmailAlertService.php:291
 msgid "High error rate detected on your WordPress site."
 msgstr ""
 
-#: includes/Service/Notification/EmailAlertService.php:281
+#: includes/Service/Notification/EmailAlertService.php:294
+#: includes/Service/Notification/EmailAlertService.php:533
 msgid "Site"
 msgstr ""
 
-#: includes/Service/Notification/EmailAlertService.php:282
+#: includes/Service/Notification/EmailAlertService.php:295
+#: includes/Service/Notification/EmailAlertService.php:536
 msgid "Time"
 msgstr ""
 
-#: includes/Service/Notification/EmailAlertService.php:283
+#: includes/Service/Notification/EmailAlertService.php:296
 msgid "Errors (last hour)"
 msgstr ""
 
-#: includes/Service/Notification/EmailAlertService.php:286
+#: includes/Service/Notification/EmailAlertService.php:299
 msgid "Error Rate"
 msgstr ""
 
-#: includes/Service/Notification/EmailAlertService.php:287
+#: includes/Service/Notification/EmailAlertService.php:300
 #: includes/View/ContactForm/IntegrationView.php:475
 msgid "Total Requests"
 msgstr ""
 
-#: includes/Service/Notification/EmailAlertService.php:291
+#: includes/Service/Notification/EmailAlertService.php:304
 msgid "Recent Errors"
 msgstr ""
 
-#: includes/Service/Notification/EmailAlertService.php:305
+#: includes/Service/Notification/EmailAlertService.php:318
+#: includes/Service/Notification/EmailAlertService.php:511
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:176
 msgid "Unknown error"
 msgstr ""
 
-#: includes/Service/Notification/EmailAlertService.php:320
+#: includes/Service/Notification/EmailAlertService.php:333
+#: includes/Service/Notification/EmailAlertService.php:548
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:53
 msgid "View All Logs"
 msgstr ""
 
 #. translators: %s: site name
-#: includes/Service/Notification/EmailAlertService.php:343
+#: includes/Service/Notification/EmailAlertService.php:356
 #, php-format
 msgid "[%s] CF7 API Alert Test Email"
 msgstr ""
 
-#: includes/Service/Notification/EmailAlertService.php:352
+#: includes/Service/Notification/EmailAlertService.php:365
 msgid "Test Email"
 msgstr ""
 
-#: includes/Service/Notification/EmailAlertService.php:353
+#: includes/Service/Notification/EmailAlertService.php:366
 msgid "This is a test email from Contact Form 7 to API plugin."
 msgstr ""
 
-#: includes/Service/Notification/EmailAlertService.php:354
+#: includes/Service/Notification/EmailAlertService.php:367
 msgid "If you received this email, your alert configuration is working correctly."
+msgstr ""
+
+#. translators: %1$s: site name, %2$s: form title
+#: includes/Service/Notification/EmailAlertService.php:450
+#, php-format
+msgid "[%1$s] API Submission Failed: %2$s"
+msgstr ""
+
+#: includes/Service/Notification/EmailAlertService.php:510
+#: includes/Service/Notification/EmailAlertService.php:512
+msgid "N/A"
+msgstr ""
+
+#: includes/Service/Notification/EmailAlertService.php:529
+msgid "API Submission Failed"
+msgstr ""
+
+#: includes/Service/Notification/EmailAlertService.php:530
+msgid "A form submission has permanently failed after exhausting all retry attempts."
+msgstr ""
+
+#: includes/Service/Notification/EmailAlertService.php:534
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:77
+msgid "Form"
+msgstr ""
+
+#: includes/Service/Notification/EmailAlertService.php:541
+msgid "Error Message:"
+msgstr ""
+
+#: includes/Service/Notification/EmailAlertService.php:546
+msgid "View Full Log Details"
 msgstr ""
 
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:40
@@ -551,7 +639,7 @@ msgid "%d ms"
 msgstr ""
 
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:120
-#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:89
+#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:72
 #: includes/View/ContactForm/IntegrationView.php:490
 msgid "Avg Response Time"
 msgstr ""
@@ -585,104 +673,51 @@ msgstr ""
 msgid "ago"
 msgstr ""
 
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:74
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:220
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:69
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:215
 msgid "Error"
 msgstr ""
 
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:82
-msgid "Form"
-msgstr ""
-
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:87
 msgid "All Forms"
 msgstr ""
 
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:110
-#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:107
-#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:126
-#: includes/View/Admin/Logs/RequestLogView.php:86
-#: includes/View/Admin/Logs/RequestLogView.php:105
-msgid "All Time"
-msgstr ""
-
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:113
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:123
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:252
-#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:111
-#: includes/View/Admin/Logs/RequestLogView.php:90
-msgid "Today"
-msgstr ""
-
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:116
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:253
-#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:112
-#: includes/View/Admin/Logs/RequestLogView.php:91
-msgid "Yesterday"
-msgstr ""
-
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:119
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:254
-#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:113
-#: includes/View/Admin/Logs/RequestLogView.php:92
-msgid "Last 7 Days"
-msgstr ""
-
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:122
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:255
-#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:114
-#: includes/View/Admin/Logs/RequestLogView.php:93
-msgid "Last 30 Days"
-msgstr ""
-
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:125
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:256
-#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:115
-#: includes/View/Admin/Logs/RequestLogView.php:94
-msgid "This Month"
-msgstr ""
-
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:128
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:257
 msgid "Custom Range"
 msgstr ""
 
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:140
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:135
 msgid "To"
 msgstr ""
 
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:146
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:141
 msgid "Apply Filters"
 msgstr ""
 
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:175
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:170
 msgid "Filtered by:"
 msgstr ""
 
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:209
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:204
 msgid "Remove form filter"
 msgstr ""
 
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:242
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:237
 msgid "Remove status filter"
 msgstr ""
 
 #. translators: %1$s: start date, %2$s: end date
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:265
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:260
 #, php-format
 msgid "%1$s to %2$s"
 msgstr ""
 
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:267
-#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:123
-#: includes/View/Admin/Logs/RequestLogView.php:102
-msgid "now"
-msgstr ""
-
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:283
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:278
 msgid "Remove date filter"
 msgstr ""
 
-#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:290
+#: includes/View/Admin/Logs/Partials/DateFilterPartial.php:285
 msgid "Clear all"
 msgstr ""
 
@@ -695,71 +730,71 @@ msgid "Export as JSON"
 msgstr ""
 
 #. translators: %s: date context (e.g., "(Today)", "(All Time)")
-#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:71
+#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:54
 #, php-format
 msgid "Total Requests %s"
 msgstr ""
 
-#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:80
+#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:63
 #: includes/View/ContactForm/IntegrationView.php:479
 msgid "Successful"
 msgstr ""
 
-#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:85
+#: includes/View/Admin/Logs/Partials/StatisticsPartial.php:68
 #: includes/View/ContactForm/IntegrationView.php:486
 msgid "Failed"
 msgstr ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:57
+#: includes/View/Admin/Logs/RequestLogView.php:61
 msgid "Search logs"
 msgstr ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:211
+#: includes/View/Admin/Logs/RequestLogView.php:225
 msgid "API Log Detail"
 msgstr ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:215
+#: includes/View/Admin/Logs/RequestLogView.php:229
 msgid "Back to Logs"
 msgstr ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:247
+#: includes/View/Admin/Logs/RequestLogView.php:261
 msgid "Request Information"
 msgstr ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:266
+#: includes/View/Admin/Logs/RequestLogView.php:280
 msgid "Execution Time"
 msgstr ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:273
+#: includes/View/Admin/Logs/RequestLogView.php:287
 msgid "(automatic retries)"
 msgstr ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:277
+#: includes/View/Admin/Logs/RequestLogView.php:291
 msgid "Manual Retry Count"
 msgstr ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:297
+#: includes/View/Admin/Logs/RequestLogView.php:311
 msgid "Request Headers"
 msgstr ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:317
+#: includes/View/Admin/Logs/RequestLogView.php:331
 msgid "Request Data"
 msgstr ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:332
+#: includes/View/Admin/Logs/RequestLogView.php:346
 msgid "Response Information"
 msgstr ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:361
+#: includes/View/Admin/Logs/RequestLogView.php:375
 msgid "Response Headers"
 msgstr ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:385
+#: includes/View/Admin/Logs/RequestLogView.php:399
 msgid "Response Data"
 msgstr ""
 
 #. translators: %d: number of deleted logs
-#: includes/View/Admin/Logs/RequestLogView.php:405
+#: includes/View/Admin/Logs/RequestLogView.php:419
 #, php-format
 msgid "%d log entry deleted."
 msgid_plural "%d log entries deleted."
@@ -767,7 +802,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of successfully retried requests
-#: includes/View/Admin/Logs/RequestLogView.php:429
+#: includes/View/Admin/Logs/RequestLogView.php:443
 #, php-format
 msgid "%d request retried successfully."
 msgid_plural "%d requests retried successfully."
@@ -775,7 +810,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of failed retry attempts
-#: includes/View/Admin/Logs/RequestLogView.php:453
+#: includes/View/Admin/Logs/RequestLogView.php:467
 #, php-format
 msgid "%d retry attempt failed."
 msgid_plural "%d retry attempts failed."
@@ -783,47 +818,47 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of skipped retry attempts
-#: includes/View/Admin/Logs/RequestLogView.php:477
+#: includes/View/Admin/Logs/RequestLogView.php:491
 #, php-format
 msgid "%d request skipped (maximum retries exceeded)."
 msgid_plural "%d requests skipped (maximum retries exceeded)."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:496
+#: includes/View/Admin/Logs/RequestLogView.php:510
 msgid "Rate limit exceeded. Please wait before retrying more requests."
 msgstr ""
 
 #. translators: %d: number of retried logs
-#: includes/View/Admin/Logs/RequestLogView.php:511
+#: includes/View/Admin/Logs/RequestLogView.php:525
 #, php-format
 msgid "%d log entry queued for retry."
 msgid_plural "%d log entries queued for retry."
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:601
+#: includes/View/Admin/Logs/RequestLogView.php:621
 msgid "Already successfully retried"
 msgstr ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:602
-#: includes/View/Admin/Logs/RequestLogView.php:612
+#: includes/View/Admin/Logs/RequestLogView.php:622
 #: includes/View/Admin/Logs/RequestLogView.php:632
+#: includes/View/Admin/Logs/RequestLogView.php:652
 msgid "Retry Request"
 msgstr ""
 
-#: includes/View/Admin/Logs/RequestLogView.php:611
+#: includes/View/Admin/Logs/RequestLogView.php:631
 msgid "Maximum retries exceeded"
 msgstr ""
 
 #. translators: %1$d: original log ID, %2$s: link to original log
-#: includes/View/Admin/Logs/RequestLogView.php:666
+#: includes/View/Admin/Logs/RequestLogView.php:686
 #, php-format
 msgid "This is a retry of log entry <a href=\"%2$s\">#%1$d</a>."
 msgstr ""
 
 #. translators: %d: number of retry attempts
-#: includes/View/Admin/Logs/RequestLogView.php:690
+#: includes/View/Admin/Logs/RequestLogView.php:710
 #, php-format
 msgid "This request has been retried %d time."
 msgid_plural "This request has been retried %d times."
@@ -831,7 +866,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %1$s: link to successful retry log, %2$d: successful retry log ID
-#: includes/View/Admin/Logs/RequestLogView.php:714
+#: includes/View/Admin/Logs/RequestLogView.php:734
 #, php-format
 msgid "→ <a href=\"%1$s\">View successful retry (#%2$d)</a>"
 msgstr ""
@@ -1148,167 +1183,195 @@ msgstr ""
 msgid "You have %d legacy unencrypted logs. Use the migration tool below to encrypt them."
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:680
+#: includes/View/Admin/Settings/SettingsView.php:681
 msgid "Email Alerts"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:685
+#: includes/View/Admin/Settings/SettingsView.php:686
 msgid "Enable alerts"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:695
+#: includes/View/Admin/Settings/SettingsView.php:696
 msgid "Send email alerts when API error rate exceeds thresholds"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:703
+#: includes/View/Admin/Settings/SettingsView.php:704
 msgid "Recipients"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:712
+#: includes/View/Admin/Settings/SettingsView.php:713
 msgid "admin@example.com"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:714
+#: includes/View/Admin/Settings/SettingsView.php:715
 msgid "Comma-separated email addresses to receive alerts."
 msgstr ""
 
 #: includes/View/Admin/Settings/SettingsView.php:721
-msgid "Error count threshold"
+msgid "Alert types"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:732
-msgid "errors per hour"
+#: includes/View/Admin/Settings/SettingsView.php:731
+msgid "High error rate (threshold-based)"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:734
-msgid "Alert when errors exceed this count per hour."
+#: includes/View/Admin/Settings/SettingsView.php:735
+msgid "Alert when error count or error rate exceeds configured thresholds (see below)."
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:741
-msgid "Error rate threshold"
+#: includes/View/Admin/Settings/SettingsView.php:745
+msgid "Individual submission failures"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:754
-msgid "Alert when error percentage exceeds this value."
+#: includes/View/Admin/Settings/SettingsView.php:749
+msgid "Alert immediately when a submission fails after all retries are exhausted."
+msgstr ""
+
+#: includes/View/Admin/Settings/SettingsView.php:758
+msgid "Threshold Alert Settings"
 msgstr ""
 
 #: includes/View/Admin/Settings/SettingsView.php:761
-msgid "Check interval"
+msgid "Configure thresholds for high error rate alerts (only applies when threshold alerts are enabled above)."
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:767
-msgid "Every hour"
+#: includes/View/Admin/Settings/SettingsView.php:768
+msgid "Error count threshold"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:770
-msgid "Every 30 minutes"
-msgstr ""
-
-#: includes/View/Admin/Settings/SettingsView.php:774
-msgid "How often to check error rates."
+#: includes/View/Admin/Settings/SettingsView.php:779
+msgid "errors per hour"
 msgstr ""
 
 #: includes/View/Admin/Settings/SettingsView.php:781
+msgid "Alert when errors exceed this count per hour."
+msgstr ""
+
+#: includes/View/Admin/Settings/SettingsView.php:788
+msgid "Error rate threshold"
+msgstr ""
+
+#: includes/View/Admin/Settings/SettingsView.php:801
+msgid "Alert when error percentage exceeds this value."
+msgstr ""
+
+#: includes/View/Admin/Settings/SettingsView.php:808
+msgid "Check interval"
+msgstr ""
+
+#: includes/View/Admin/Settings/SettingsView.php:814
+msgid "Every hour"
+msgstr ""
+
+#: includes/View/Admin/Settings/SettingsView.php:817
+msgid "Every 30 minutes"
+msgstr ""
+
+#: includes/View/Admin/Settings/SettingsView.php:821
+msgid "How often to check error rates."
+msgstr ""
+
+#: includes/View/Admin/Settings/SettingsView.php:828
 msgid "Cooldown period"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:787
+#: includes/View/Admin/Settings/SettingsView.php:834
 msgid "1 hour"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:790
+#: includes/View/Admin/Settings/SettingsView.php:837
 msgid "2 hours"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:793
+#: includes/View/Admin/Settings/SettingsView.php:840
 msgid "4 hours"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:796
+#: includes/View/Admin/Settings/SettingsView.php:843
 msgid "8 hours"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:799
+#: includes/View/Admin/Settings/SettingsView.php:846
 msgid "24 hours"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:803
+#: includes/View/Admin/Settings/SettingsView.php:850
 msgid "Minimum time between alert emails."
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:809
+#: includes/View/Admin/Settings/SettingsView.php:856
 msgid "Test email"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:819
+#: includes/View/Admin/Settings/SettingsView.php:866
 msgid "Send a test email to verify configuration."
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:838
+#: includes/View/Admin/Settings/SettingsView.php:885
 msgid "Quick Links"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:844
+#: includes/View/Admin/Settings/SettingsView.php:891
 msgid "Contact Forms"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:845
+#: includes/View/Admin/Settings/SettingsView.php:892
 msgid "Manage your CF7 forms"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:851
+#: includes/View/Admin/Settings/SettingsView.php:898
 msgid "View submission history"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:856
+#: includes/View/Admin/Settings/SettingsView.php:903
 msgid "API Reference"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:857
+#: includes/View/Admin/Settings/SettingsView.php:904
 msgid "Hooks, filters and actions"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:862
+#: includes/View/Admin/Settings/SettingsView.php:909
 msgid "User Guide"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:863
+#: includes/View/Admin/Settings/SettingsView.php:910
 msgid "Complete plugin documentation"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:868
+#: includes/View/Admin/Settings/SettingsView.php:915
 msgid "Support"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:869
+#: includes/View/Admin/Settings/SettingsView.php:916
 msgid "Report issues or get help"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:887
+#: includes/View/Admin/Settings/SettingsView.php:934
 msgid "Plugin Status"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:892
+#: includes/View/Admin/Settings/SettingsView.php:939
 msgid "Plugin Version"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:896
+#: includes/View/Admin/Settings/SettingsView.php:943
 msgid "Contact Form 7"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:901
+#: includes/View/Admin/Settings/SettingsView.php:948
 msgid "Active"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:906
+#: includes/View/Admin/Settings/SettingsView.php:953
 msgid "Not Active - Plugin requires Contact Form 7"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:912
+#: includes/View/Admin/Settings/SettingsView.php:959
 msgid "PHP Version"
 msgstr ""
 
-#: includes/View/Admin/Settings/SettingsView.php:916
+#: includes/View/Admin/Settings/SettingsView.php:963
 msgid "WordPress Version"
 msgstr ""
 

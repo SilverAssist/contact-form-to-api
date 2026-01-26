@@ -677,7 +677,6 @@ value="1"
 		$check_interval        = $settings->get_alert_check_interval();
 		$cooldown_hours        = $settings->get_alert_cooldown_hours();
 		$alert_types           = $settings->get_alert_types();
-		$include_form_data     = $settings->is_alert_include_form_data();
 		?>
 		<h3><?php \esc_html_e( 'Email Alerts', 'contact-form-to-api' ); ?></h3>
 		<table class="form-table" role="presentation">
@@ -748,18 +747,6 @@ value="1"
 							<div style="margin-left: 24px; margin-bottom: 16px;">
 								<p class="description" style="margin-top: 0;">
 									<?php \esc_html_e( 'Alert immediately when a submission fails after all retries are exhausted.', 'contact-form-to-api' ); ?>
-								</p>
-								<label style="margin-top: 8px; display: block;">
-									<input type="checkbox" 
-										id="alert_include_form_data" 
-										name="alert_include_form_data" 
-										value="1" 
-										<?php \checked( $include_form_data ); ?>>
-									<?php \esc_html_e( 'Include form data in email', 'contact-form-to-api' ); ?>
-								</label>
-								<p class="description" style="margin-top: 4px; color: #d63638;">
-									<span class="dashicons dashicons-warning" style="font-size: 16px; width: 16px; height: 16px;"></span>
-									<?php \esc_html_e( 'Privacy consideration: Form data may contain sensitive information. Only enable if your email system is secure.', 'contact-form-to-api' ); ?>
 								</p>
 							</div>
 						</fieldset>
