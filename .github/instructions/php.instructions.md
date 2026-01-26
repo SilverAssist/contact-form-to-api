@@ -312,6 +312,99 @@ sanitize_text_field( $input );
 
 ---
 
+## MVC Architecture & Separation of Concerns
+
+### Layer Responsibilities
+
+| Layer | Responsibility | Can Depend On |
+|-------|---------------|---------------|
+| **Controller** | Handle requests, prepare data, coordinate services | Services, Views |
+| **Service** | Business logic, data processing | Other Services, Repositories |
+| **View** | Render HTML, display data | Only data passed as parameters |
+| **Model** | Data structures, validation | Nothing |
+
+### CRITICAL: Views MUST NOT Instantiate Services
+
+**Views should be pure rendering functions** that receive all required data as parameters.
+
+```php
+// ✅ CORRECT - Controller prepares data, View receives it.
+class LogsController {
+    private function show_logs_list(): void {
+        $stats_service = new LogStatistics();
+        $stats = $stats_service->get_statistics( $form_id );
+        $date_context = $this->get_date_context_label();
+        
+        // Pass data to view.
+        RequestLogView::render_page( $list_table, $forms, $stats, $date_context );
+    }
+}
+
+class RequestLogView {
+    public static function render_page( $list_table, array $forms, array $stats, string $context ): void {
+        // Only render HTML with provided data.
+        StatisticsPartial::render( $stats, $context );
+    }
+}
+
+// ❌ WRONG - View instantiates Service (violates separation of concerns).
+class StatisticsPartial {
+    public static function render(): void {
+        $stats_service = new LogStatistics();  // ❌ Service in View!
+        $stats = $stats_service->get_statistics();
+        // render...
+    }
+}
+```
+
+### Data Flow Pattern
+
+```
+Request → Controller → Service(s) → Controller → View → Response
+              ↓                         ↑
+         Fetch/process data      Pass data as parameters
+```
+
+### View Parameter Guidelines
+
+1. **Pass prepared data, not services**: Views receive arrays, objects, or scalar values—never service instances to call.
+2. **Compute derived values in Controller**: Success rates, date labels, formatted strings—calculate before passing to view.
+3. **Views can receive utility objects**: Objects like `RetryManager` are acceptable if used only for data access, not business logic.
+
+```php
+// ✅ CORRECT - View receives RetryManager for data access.
+public static function render_detail( array $log, RetryManager $retry_manager ): void {
+    $retry_count = $retry_manager->count_retries( (int) $log['id'] );
+    // Use $retry_count for display.
+}
+
+// ✅ BETTER - If possible, pass computed data directly.
+public static function render_detail( array $log, int $retry_count, bool $can_retry ): void {
+    // All data pre-computed by controller.
+}
+```
+
+### Deprecated Method Backward Compatibility
+
+When refactoring Views to receive parameters, maintain backward compatibility for deprecated methods:
+
+```php
+/**
+ * @deprecated 2.0.0 Use render() with parameters instead.
+ */
+public static function render_statistics(): void {
+    // Fetch data internally for backward compatibility only.
+    $stats_service = new LogStatistics();
+    $stats = $stats_service->get_statistics();
+    $context = self::get_date_context_label();
+    
+    // Delegate to new signature.
+    self::render( $stats, $context );
+}
+```
+
+---
+
 ## Type Safety (PHPStan Level 8)
 
 ### Strict Types Required

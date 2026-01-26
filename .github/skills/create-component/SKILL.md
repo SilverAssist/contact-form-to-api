@@ -138,12 +138,15 @@ class ServiceName implements LoadableInterface {
 
 ### View Class (Static, No LoadableInterface)
 
+**CRITICAL**: Views MUST NOT instantiate Services. All data must be passed as parameters from the Controller.
+
 ```php
 <?php
 /**
  * View Name
  *
  * HTML rendering for feature.
+ * NOTE: Views receive all data as parameters - never instantiate Services here.
  *
  * @package SilverAssist\ContactFormToAPI
  * @subpackage View\Category
@@ -164,14 +167,21 @@ class ViewName {
     /**
      * Render the main view.
      *
-     * @param array $data Data to render.
+     * All data must be passed as parameters from the Controller.
+     * Views should NEVER instantiate Services directly.
+     *
+     * @param array<string, mixed> $data    Data to render (prepared by Controller).
+     * @param string               $context Additional context (computed by Controller).
      * @return void
      */
-    public static function render(array $data): void {
+    public static function render(array $data, string $context): void {
+        // ✅ CORRECT: Only use data passed as parameters.
+        // ❌ WRONG: $service = new SomeService(); $data = $service->getData();
         ?>
         <div class="wrap">
             <h1><?php \esc_html_e('Title', 'contact-form-to-api'); ?></h1>
-            <!-- HTML content -->
+            <p><?php echo \esc_html($context); ?></p>
+            <!-- HTML content using $data -->
         </div>
         <?php
     }
@@ -215,3 +225,5 @@ vendor/bin/phpstan analyse includes/ --level=8
 - [ ] Single quotes for simple strings
 - [ ] Registered in `Plugin.php` components array
 - [ ] Passes PHPCS and PHPStan
+- [ ] **Views do NOT instantiate Services** (data passed as parameters from Controller)
+- [ ] **Controllers prepare all data** before passing to Views
