@@ -356,7 +356,7 @@ class Settings implements LoadableInterface {
 	/**
 	 * Get alert types configuration
 	 *
-	 * @since 2.0.0
+	 * @since 2.1.0
 	 * @return array{threshold: bool, individual: bool} Alert types configuration.
 	 */
 	public function get_alert_types(): array {
@@ -381,7 +381,7 @@ class Settings implements LoadableInterface {
 	/**
 	 * Check if threshold alerts are enabled
 	 *
-	 * @since 2.0.0
+	 * @since 2.1.0
 	 * @return bool
 	 */
 	public function is_threshold_alerts_enabled(): bool {
@@ -392,7 +392,7 @@ class Settings implements LoadableInterface {
 	/**
 	 * Check if individual failure alerts are enabled
 	 *
-	 * @since 2.0.0
+	 * @since 2.1.0
 	 * @return bool
 	 */
 	public function is_individual_alerts_enabled(): bool {

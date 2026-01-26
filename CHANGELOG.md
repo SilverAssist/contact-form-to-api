@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Granular Alert Preferences**: Per-submission failure alerts with granular control
+  - New `alert_types` setting structure with `threshold` and `individual` options
+  - `maybe_send_individual_alert()` triggers when a submission permanently fails after all retries
+  - Individual alerts are event-driven (no cooldown) vs rate-limited threshold alerts
+  - Privacy-first design: alert emails contain only error metadata (form name, endpoint, timestamp, response code, error message) - never user-submitted form data
+  - Spam prevention: transient flag per log_id prevents duplicate alerts on retry
+  - UI: "Alert Types" section with nested checkboxes for threshold and individual alerts
+  - Threshold settings reorganized under clear subheading
+  - Backward compatible: threshold alerts enabled by default, individual disabled
+  - Integrated in `LogsController::handle_retry_action()` for retry exhaustion and max limit scenarios
+
 - **Response Action Hook (`cf7_api_after_response`)**: New filter hook for extending plugin functionality
   - Fires after each API response is received (success or failure)
   - Provides complete response data (status code, headers, body, parsed JSON, duration)

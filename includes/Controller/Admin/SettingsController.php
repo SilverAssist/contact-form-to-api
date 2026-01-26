@@ -323,7 +323,7 @@ class SettingsController implements LoadableInterface {
 	/**
 	 * Sanitize alert types array
 	 *
-	 * @since 2.0.0
+	 * @since 2.1.0
 	 * @param array<string, mixed> $post_data POST data array.
 	 * @return array{threshold: bool, individual: bool} Sanitized alert types.
 	 */

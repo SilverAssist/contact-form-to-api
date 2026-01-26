@@ -380,7 +380,7 @@ class EmailAlertService implements LoadableInterface {
 	 * Called when a submission permanently fails after exhausting all retries.
 	 * Checks settings and sends alert if individual alerts are enabled.
 	 *
-	 * @since 2.0.0
+	 * @since 2.1.0
 	 * @param int $log_id  Log entry ID.
 	 * @param int $form_id Contact Form 7 form ID.
 	 * @return void
@@ -416,7 +416,7 @@ class EmailAlertService implements LoadableInterface {
 	 *
 	 * Sends an email notification for a single submission that failed permanently.
 	 *
-	 * @since 2.0.0
+	 * @since 2.1.0
 	 * @param int $log_id  Log entry ID.
 	 * @param int $form_id Contact Form 7 form ID.
 	 * @return void
@@ -490,7 +490,7 @@ class EmailAlertService implements LoadableInterface {
 	/**
 	 * Build individual failure alert email body HTML
 	 *
-	 * @since 2.0.0
+	 * @since 2.1.0
 	 * @param array<string, mixed> $log        Log entry data.
 	 * @param string               $form_title Form title.
 	 * @return string HTML email body.

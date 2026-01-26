@@ -5,6 +5,7 @@
  * Defines WordPress constants that are not included in the stubs.
  * These constants are defined in wp-includes/default-constants.php
  *
+ * @since   2.1.0
  * @package ContactFormToAPI
  */
 

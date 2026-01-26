@@ -624,6 +624,31 @@ Handles plugin activation, deactivation, and lifecycle.
 | `uninstall()` | `void` | Plugin uninstallation handler |
 | `create_tables()` | `void` | Create database tables |
 
+### Config\Settings
+
+Plugin settings management with singleton pattern.
+
+```php
+use SilverAssist\ContactFormToAPI\Config\Settings;
+
+$settings = Settings::instance();
+$is_enabled = $settings->is_alerts_enabled();
+```
+
+#### Methods
+
+| Method | Return | Description |
+|--------|--------|-------------|
+| `instance()` | `Settings` | Get singleton instance |
+| `get(string $key, $default)` | `mixed` | Get setting value |
+| `set(string $key, $value)` | `bool` | Set setting value |
+| `is_alerts_enabled()` | `bool` | Check if alerts are enabled globally |
+| `get_alert_types()` | `array` | Get alert types configuration (since 2.1.0) |
+| `is_threshold_alerts_enabled()` | `bool` | Check if threshold alerts are enabled (since 2.1.0) |
+| `is_individual_alerts_enabled()` | `bool` | Check if individual alerts are enabled (since 2.1.0) |
+| `get_alert_recipients()` | `string` | Get comma-separated alert recipients |
+| `is_encryption_enabled()` | `bool` | Check if encryption is enabled |
+
 ### Service\Logging\LogWriter
 
 Create and update log entries.
@@ -742,6 +767,45 @@ $encryption = EncryptionService::instance();
 $encrypted = $encryption->encrypt($data);
 $decrypted = $encryption->decrypt($encrypted);
 ```
+
+### Service\Notification\EmailAlertService
+
+Email alert service for monitoring API errors.
+
+**Since**: 1.3.0 (Individual alerts added in 2.1.0)
+
+```php
+use SilverAssist\ContactFormToAPI\Service\Notification\EmailAlertService;
+
+$alerts = EmailAlertService::instance();
+$alerts->check_and_alert(); // Threshold-based alerts
+$alerts->maybe_send_individual_alert($log_id, $form_id); // Individual failure alerts
+```
+
+#### Methods
+
+| Method | Return | Description |
+|--------|--------|-------------|
+| `instance()` | `EmailAlertService` | Get singleton instance |
+| `check_and_alert()` | `void` | Check error rates and send threshold alerts |
+| `maybe_send_individual_alert(int $log_id, int $form_id)` | `void` | Send individual failure alert if enabled (since 2.1.0) |
+
+#### Individual Failure Alerts
+
+Individual failure alerts (added in 2.1.0) notify administrators immediately when a submission permanently fails after exhausting all retries.
+
+**Features**:
+- Event-driven (no cooldown like threshold alerts)
+- Privacy-first: emails contain only error metadata, never user-submitted form data
+- Spam prevention: transient flag per log_id prevents duplicate alerts
+
+**Alert email includes**:
+- Site name and form title
+- API endpoint URL
+- Timestamp
+- HTTP response code
+- Error message
+- Link to view full log details
 
 ### Controller\ContactForm\SubmissionController
 
@@ -993,6 +1057,6 @@ class LoggingServiceTest extends TestCase {
 
 ---
 
-**Document Version**: 2.0.0  
-**Last Updated**: January 25, 2026  
+**Document Version**: 2.1.0  
+**Last Updated**: January 26, 2026  
 **Maintained By**: Silver Assist Development Team

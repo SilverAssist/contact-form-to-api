@@ -222,7 +222,7 @@ class LogReader {
 	 * Retrieves a list of forms that have at least one log entry.
 	 * Includes form ID and title, with graceful handling for deleted forms.
 	 *
-	 * @since 2.0.0
+	 * @since 2.1.0
 	 * @return array<int, array{form_id: string, post_title: string|null}> Array of forms with logs.
 	 */
 	public function get_forms_with_logs(): array {

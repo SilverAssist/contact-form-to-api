@@ -515,6 +515,7 @@ class LogsController implements LoadableInterface {
 	 *
 	 * Fetches statistics from LogStatistics service based on current filters.
 	 *
+	 * @since 2.1.0
 	 * @return array{stats: array<string, mixed>, date_context: string} Statistics and date context.
 	 */
 	private function get_statistics_data(): array {
@@ -544,6 +545,7 @@ class LogsController implements LoadableInterface {
 	/**
 	 * Get date context label for statistics
 	 *
+	 * @since 2.1.0
 	 * @param string      $date_filter Date filter type.
 	 * @param string|null $date_start  Start date.
 	 * @param string|null $date_end    End date.
@@ -578,6 +580,7 @@ class LogsController implements LoadableInterface {
 	 *
 	 * Converts date filter type to start/end date strings.
 	 *
+	 * @since 2.1.0
 	 * @return array{filter: string, start: string|null, end: string|null} Date range parameters.
 	 */
 	private function get_date_range_from_filter(): array {
@@ -632,6 +635,7 @@ class LogsController implements LoadableInterface {
 	/**
 	 * Get custom date range from request parameters
 	 *
+	 * @since 2.1.0
 	 * @param string $date_start Start date.
 	 * @param string $date_end   End date.
 	 * @return array{filter: string, start: string|null, end: string|null} Custom date range.
@@ -861,7 +865,7 @@ class LogsController implements LoadableInterface {
 	 * Triggers an individual failure alert for a log entry if the feature is enabled.
 	 * Gets the form_id from the log and passes it to the EmailAlertService.
 	 *
-	 * @since 2.0.0
+	 * @since 2.1.0
 	 * @param int $log_id Log entry ID.
 	 * @return void
 	 */
