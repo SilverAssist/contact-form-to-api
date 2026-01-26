@@ -107,3 +107,6 @@ phpcs.xml.bak
 license.txt
 readme.html
 scripts/test-api-submission.sh
+
+# Test files
+test-*.html
