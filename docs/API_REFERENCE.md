@@ -530,6 +530,7 @@ $logs = $reader->get_logs(['status' => 'success']);
 | `get_log(int $id)` | `array\|null` | Get single log entry |
 | `get_request_for_retry(int $log_id)` | `?array` | Get request data for retry |
 | `decrypt_log_fields(array $log)` | `array` | Decrypt log fields |
+| `get_forms_with_logs()` | `array` | Get forms that have log entries |
 
 ### Service\Logging\LogStatistics
 
