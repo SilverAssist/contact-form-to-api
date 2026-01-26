@@ -54,6 +54,18 @@ class EmailAlertServiceTest extends TestCase {
 	}
 
 	/**
+	 * Tear down after each test
+	 *
+	 * Clean up filters to prevent leaking between tests.
+	 *
+	 * @return void
+	 */
+	public function tear_down(): void {
+		\remove_all_filters( 'pre_wp_mail' );
+		parent::tear_down();
+	}
+
+	/**
 	 * Test singleton pattern
 	 *
 	 * @return void

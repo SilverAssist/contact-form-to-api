@@ -520,7 +520,6 @@ class EmailAlertService implements LoadableInterface {
 		$html .= 'td { padding: 8px; border: 1px solid #ddd; }';
 		$html .= 'td:first-child { font-weight: bold; background-color: #f5f5f5; width: 30%; }';
 		$html .= '.error-box { background: #fff3cd; border-left: 4px solid #d63638; padding: 15px; margin: 20px 0; }';
-		$html .= '.privacy-notice { background: #e7f5fe; border-left: 4px solid #135e96; padding: 15px; margin: 20px 0; font-size: 0.9em; }';
 		$html .= 'a { color: #135e96; text-decoration: none; }';
 		$html .= 'a:hover { text-decoration: underline; }';
 		$html .= 'code { background: #f5f5f5; padding: 2px 6px; border-radius: 3px; font-family: monospace; }';
