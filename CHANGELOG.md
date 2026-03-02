@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-03-02
+
+### Changed
+
+- **Admin Dashboard UI Redesign**: Aligned settings page with card-based design system
+  - Expanded CSS with full card design system and CSS variables
+  - Added version badge, status-indicator, and feature-status styles
+  - Simplified Plugin Information section
+  - Removed obsolete update check script for cleaner admin experience
+
+### Maintenance
+
+- **GitHub Actions Dependencies**: Updated CI/CD workflow dependencies
+  - Bumped `actions/upload-artifact` from v6.0.0 to v7.0.0
+  - Bumped `actions/download-artifact` from v7.0.0 to v8.0.0
+- **Code Cleanup**: Removed redundant CSS properties from resolved status indicator
+
 ## [2.1.0] - 2026-01-26
 
 ### Added
