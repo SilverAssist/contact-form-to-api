@@ -1,74 +1,409 @@
 /**
  * Contact Form 7 to API - Settings Page Styles
  *
- * Styles for the Silver Assist Settings Hub integration page,
- * including How To documentation and status sections.
+ * Card-based design system for the Silver Assist Settings Hub integration page.
+ * Follows the Silver Assist dashboard-styles SKILL.md patterns for visual
+ * consistency across all Silver Assist plugins.
  *
  * @package ContactFormToAPI
  * @since 1.1.1
  * @author Silver Assist
- * @version 2.1.0
+ * @version 2.2.0
  * @license Polyform-Noncommercial-1.0.0
  */
 
-/* Settings Page Container */
+/* ==========================================================================
+   CSS Custom Properties
+   ========================================================================== */
+
+:root {
+	/* Colors - Primary */
+	--cf7-api-color-primary: #2271b1;
+	--cf7-api-color-primary-hover: #135e96;
+
+	/* Colors - Status: Success */
+	--cf7-api-success-bg-light: #d4edda;
+	--cf7-api-success-text: #155724;
+	--cf7-api-success-border-light: #c3e6cb;
+	--cf7-api-success-primary: #00a32a;
+
+	/* Colors - Status: Error */
+	--cf7-api-error-bg-light: #f8d7da;
+	--cf7-api-error-text: #721c24;
+	--cf7-api-error-border-light: #f5c6cb;
+	--cf7-api-error-primary: #d63638;
+
+	/* Colors - Status: Warning */
+	--cf7-api-warning-bg-light: #fff3cd;
+	--cf7-api-warning-text: #856404;
+	--cf7-api-warning-border: #ffeaa7;
+
+	/* Colors - Text */
+	--cf7-api-text-primary: #1d2327;
+	--cf7-api-text-secondary: #50575e;
+	--cf7-api-text-muted: #646970;
+
+	/* Colors - Background */
+	--cf7-api-bg-primary: #ffffff;
+	--cf7-api-bg-secondary: #f6f7f7;
+	--cf7-api-bg-tertiary: #f0f0f1;
+
+	/* Colors - Borders */
+	--cf7-api-border-primary: #c3c4c7;
+	--cf7-api-border-light: #e0e0e0;
+	--cf7-api-border-lightest: #f0f0f0;
+
+	/* Spacing */
+	--cf7-api-spacing-xs: 2px;
+	--cf7-api-spacing-sm: 4px;
+	--cf7-api-spacing-md: 8px;
+	--cf7-api-spacing-lg: 12px;
+	--cf7-api-spacing-xl: 16px;
+	--cf7-api-spacing-2xl: 20px;
+	--cf7-api-spacing-3xl: 24px;
+
+	/* Typography */
+	--cf7-api-font-size-xs: 11px;
+	--cf7-api-font-size-sm: 12px;
+	--cf7-api-font-size-base: 13px;
+	--cf7-api-font-size-lg: 14px;
+	--cf7-api-font-size-xl: 16px;
+	--cf7-api-font-size-2xl: 18px;
+	--cf7-api-font-weight-normal: 400;
+	--cf7-api-font-weight-medium: 500;
+	--cf7-api-font-weight-semibold: 600;
+	--cf7-api-font-weight-bold: 700;
+	--cf7-api-letter-spacing-tight: 0.3px;
+	--cf7-api-letter-spacing-normal: 0.5px;
+
+	/* Border Radius */
+	--cf7-api-radius-sm: 3px;
+	--cf7-api-radius-base: 4px;
+	--cf7-api-radius-lg: 8px;
+	--cf7-api-radius-pill: 20px;
+
+	/* Shadows */
+	--cf7-api-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+	--cf7-api-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
+
+	/* Transitions */
+	--cf7-api-transition-fast: 0.2s;
+
+	/* Fluid Spacing */
+	--cf7-api-fluid-spacing: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+/* ==========================================================================
+   Settings Page Container
+   ========================================================================== */
+
 .cf7-api-settings-page {
 	max-width: 1200px;
 	margin: 0;
 }
 
-/* Section Styles */
-.cf7-api-section {
-	background: #fff;
-	border: 1px solid #c3c4c7;
-	border-radius: 4px;
-	padding: 20px 24px;
-	margin-bottom: 20px;
+/* ==========================================================================
+   Version Badge
+   ========================================================================== */
+
+.wrap > h1 .version-badge {
+	display: inline-block;
+	padding: var(--cf7-api-spacing-xs) var(--cf7-api-spacing-md);
+	border-radius: var(--cf7-api-radius-pill);
+	font-size: var(--cf7-api-font-size-xs);
+	font-weight: var(--cf7-api-font-weight-semibold);
+	background: var(--cf7-api-success-bg-light);
+	color: var(--cf7-api-success-text);
+	border: 1px solid var(--cf7-api-success-border-light);
+	text-transform: uppercase;
+	letter-spacing: var(--cf7-api-letter-spacing-tight);
+	vertical-align: middle;
+	margin-left: var(--cf7-api-spacing-md);
 }
 
-.cf7-api-section h2 {
-	margin: 0 0 20px;
-	padding: 0 0 12px;
-	border-bottom: 1px solid #e0e0e0;
-	font-size: 16px;
-	font-weight: 600;
+/* ==========================================================================
+   Stats Grid (Responsive Card Layout)
+   ========================================================================== */
+
+.cf7-api-stats-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: var(--cf7-api-spacing-2xl);
+	margin-block-end: var(--cf7-api-spacing-2xl);
+	container-type: inline-size;
+}
+
+/* ==========================================================================
+   Status Cards
+   ========================================================================== */
+
+.cf7-api-section,
+.status-card {
+	background: var(--cf7-api-bg-primary);
+	border: 1px solid var(--cf7-api-border-primary);
+	border-radius: var(--cf7-api-radius-lg);
+	padding: var(--cf7-api-fluid-spacing);
+	box-shadow: var(--cf7-api-shadow-card);
+	transition: box-shadow var(--cf7-api-transition-fast);
+	margin-bottom: var(--cf7-api-spacing-2xl);
+}
+
+.cf7-api-section:hover,
+.status-card:hover {
+	box-shadow: var(--cf7-api-shadow-card-hover);
+}
+
+.cf7-api-section:last-child,
+.status-card:last-child {
+	margin-bottom: 0;
+}
+
+/* ==========================================================================
+   Card Header
+   ========================================================================== */
+
+.cf7-api-section > h2,
+.card-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: var(--cf7-api-spacing-md);
+	margin: 0 0 var(--cf7-api-spacing-lg);
+	padding: 0 0 var(--cf7-api-spacing-md);
+	border-bottom: 1px solid var(--cf7-api-border-light);
+	font-size: var(--cf7-api-font-size-xl);
+	font-weight: var(--cf7-api-font-weight-semibold);
+	line-height: 1.3;
+}
+
+.cf7-api-section > h2 .dashicons,
+.card-header .dashicons {
+	color: var(--cf7-api-color-primary);
+	font-size: 20px;
+	width: 20px;
+	height: 20px;
+}
+
+.card-header h3 {
+	margin: 0;
+	font-size: var(--cf7-api-font-size-xl);
+	font-weight: var(--cf7-api-font-weight-semibold);
+	line-height: 1.3;
+	flex: 1;
+}
+
+/* ==========================================================================
+   Card Content
+   ========================================================================== */
+
+.card-content {
+	display: flex;
+	flex-direction: column;
+	gap: var(--cf7-api-spacing-md);
+}
+
+/* ==========================================================================
+   Status Indicators
+   ========================================================================== */
+
+.status-indicator {
+	display: inline-block;
+	padding-inline: var(--cf7-api-spacing-md);
+	padding-block: var(--cf7-api-spacing-xs);
+	border-radius: var(--cf7-api-radius-pill);
+	font-size: var(--cf7-api-font-size-xs);
+	font-weight: var(--cf7-api-font-weight-semibold);
+	text-transform: uppercase;
+	letter-spacing: var(--cf7-api-letter-spacing-tight);
+	white-space: nowrap;
+}
+
+.status-indicator.active {
+	background: var(--cf7-api-success-bg-light);
+	color: var(--cf7-api-success-text);
+	border: 1px solid var(--cf7-api-success-border-light);
+}
+
+.status-indicator.inactive {
+	background: var(--cf7-api-error-bg-light);
+	color: var(--cf7-api-error-text);
+	border: 1px solid var(--cf7-api-error-border-light);
+}
+
+.status-indicator.warning {
+	background: var(--cf7-api-warning-bg-light);
+	color: var(--cf7-api-warning-text);
+	border: 1px solid var(--cf7-api-warning-border);
+}
+
+/* ==========================================================================
+   Feature Status Display
+   ========================================================================== */
+
+.feature-status {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-block-end: var(--cf7-api-spacing-md);
+	border-block-end: 1px solid var(--cf7-api-border-lightest);
+}
+
+.feature-status:last-child {
+	border-block-end: none;
+	padding-block-end: 0;
+}
+
+.feature-name {
+	font-weight: var(--cf7-api-font-weight-medium);
+	color: var(--cf7-api-text-primary);
+}
+
+.feature-value {
+	display: inline-block;
+	padding: var(--cf7-api-spacing-xs) var(--cf7-api-spacing-md);
+	border-radius: var(--cf7-api-radius-pill);
+	font-size: var(--cf7-api-font-size-xs);
+	font-weight: var(--cf7-api-font-weight-semibold);
+}
+
+.feature-value.enabled {
+	background: var(--cf7-api-success-bg-light);
+	color: var(--cf7-api-success-text);
+}
+
+.feature-value.disabled {
+	background: var(--cf7-api-error-bg-light);
+	color: var(--cf7-api-error-text);
+}
+
+/* ==========================================================================
+   Statistics Display
+   ========================================================================== */
+
+.stat {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: var(--cf7-api-spacing-sm) 0;
+}
+
+.stat-value {
+	font-size: var(--cf7-api-font-size-2xl);
+	font-weight: var(--cf7-api-font-weight-bold);
+	color: var(--cf7-api-color-primary);
+}
+
+.stat-label {
+	font-size: var(--cf7-api-font-size-xs);
+	color: var(--cf7-api-text-muted);
+	text-transform: uppercase;
+	letter-spacing: var(--cf7-api-letter-spacing-normal);
+}
+
+/* ==========================================================================
+   Form inside Cards
+   ========================================================================== */
+
+.status-card .form-table,
+.cf7-api-section .form-table {
+	margin-top: 0;
+}
+
+.status-card .form-table th,
+.cf7-api-section .form-table th {
+	vertical-align: top;
+	padding-top: var(--cf7-api-spacing-lg);
+}
+
+.status-card p.submit {
+	margin: 0;
+	padding: var(--cf7-api-spacing-lg) 0 0;
+}
+
+/* ==========================================================================
+   Accordion (How To Section)
+   ========================================================================== */
+
+.cf7-api-accordion .cf7-api-accordion-header {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	justify-content: space-between;
+	cursor: pointer;
+	padding: var(--cf7-api-spacing-lg) var(--cf7-api-spacing-xl);
+	background: var(--cf7-api-bg-secondary);
+	border: none;
+	border-bottom: 1px solid var(--cf7-api-border-light);
+	border-radius: var(--cf7-api-radius-lg) var(--cf7-api-radius-lg) 0 0;
+	margin-bottom: 0;
+	transition: background-color var(--cf7-api-transition-fast);
 }
 
-.cf7-api-section h2 .dashicons {
-	color: #2271b1;
+.cf7-api-accordion .cf7-api-accordion-header:hover {
+	background: var(--cf7-api-bg-tertiary);
 }
 
-/* How To Section - Steps */
+.cf7-api-accordion .cf7-api-accordion-header h2 {
+	margin: 0;
+	padding: 0;
+	border: none;
+	font-size: var(--cf7-api-font-size-lg);
+	line-height: 1.4;
+}
+
+.cf7-api-accordion-toggle {
+	font-size: 20px;
+	transition: transform var(--cf7-api-transition-fast) ease;
+}
+
+.cf7-api-accordion .cf7-api-accordion-content {
+	display: none;
+	padding: var(--cf7-api-spacing-2xl);
+	background: var(--cf7-api-bg-primary);
+}
+
+.cf7-api-accordion.is-open .cf7-api-accordion-content {
+	display: block;
+}
+
+.cf7-api-accordion.is-open .cf7-api-accordion-toggle {
+	transform: rotate(180deg);
+}
+
+.cf7-api-accordion.is-open .cf7-api-accordion-header {
+	border-radius: 0;
+}
+
+/* ==========================================================================
+   How To Steps
+   ========================================================================== */
+
 .cf7-api-steps {
 	display: flex;
 	flex-direction: column;
-	gap: 20px;
+	gap: var(--cf7-api-spacing-2xl);
 }
 
 .cf7-api-step {
 	display: flex;
-	gap: 16px;
-	padding: 16px;
-	background: #f6f7f7;
-	border-radius: 4px;
-	border-left: 4px solid #2271b1;
+	gap: var(--cf7-api-spacing-xl);
+	padding: var(--cf7-api-spacing-xl);
+	background: var(--cf7-api-bg-secondary);
+	border-radius: var(--cf7-api-radius-base);
+	border-left: 4px solid var(--cf7-api-color-primary);
 }
 
 .cf7-api-step .step-number {
 	flex-shrink: 0;
 	width: 32px;
 	height: 32px;
-	background: #2271b1;
+	background: var(--cf7-api-color-primary);
 	color: #fff;
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	font-weight: 600;
-	font-size: 14px;
+	font-weight: var(--cf7-api-font-weight-semibold);
+	font-size: var(--cf7-api-font-size-lg);
 }
 
 .cf7-api-step .step-content {
@@ -76,15 +411,15 @@
 }
 
 .cf7-api-step .step-content h3 {
-	margin: 0 0 8px;
-	font-size: 14px;
-	font-weight: 600;
-	color: #1d2327;
+	margin: 0 0 var(--cf7-api-spacing-md);
+	font-size: var(--cf7-api-font-size-lg);
+	font-weight: var(--cf7-api-font-weight-semibold);
+	color: var(--cf7-api-text-primary);
 }
 
 .cf7-api-step .step-content p {
 	margin: 0 0 10px;
-	color: #50575e;
+	color: var(--cf7-api-text-secondary);
 	line-height: 1.5;
 }
 
@@ -96,12 +431,12 @@
 .cf7-api-step .step-tip {
 	display: flex;
 	align-items: flex-start;
-	gap: 8px;
+	gap: var(--cf7-api-spacing-md);
 	padding: 10px 12px;
-	background: #fff8e5;
+	background: var(--cf7-api-warning-bg-light);
 	border: 1px solid #dba617;
-	border-radius: 4px;
-	font-size: 13px;
+	border-radius: var(--cf7-api-radius-base);
+	font-size: var(--cf7-api-font-size-base);
 	color: #6e4e00;
 	margin-top: 10px;
 }
@@ -113,11 +448,11 @@
 
 /* Step Examples */
 .cf7-api-step .step-example {
-	padding: 12px;
+	padding: var(--cf7-api-spacing-lg);
 	background: #2c3338;
-	border-radius: 4px;
+	border-radius: var(--cf7-api-radius-base);
 	font-family: Consolas, Monaco, monospace;
-	font-size: 13px;
+	font-size: var(--cf7-api-font-size-base);
 	color: #e0e0e0;
 	margin-top: 10px;
 	line-height: 1.8;
@@ -137,8 +472,8 @@
 }
 
 .cf7-api-config-list li {
-	margin-bottom: 8px;
-	color: #50575e;
+	margin-bottom: var(--cf7-api-spacing-md);
+	color: var(--cf7-api-text-secondary);
 	line-height: 1.5;
 }
 
@@ -147,38 +482,41 @@
 }
 
 .cf7-api-config-list li strong {
-	color: #1d2327;
+	color: var(--cf7-api-text-primary);
 }
 
-/* Quick Links Section */
+/* ==========================================================================
+   Quick Links Section
+   ========================================================================== */
+
 .cf7-api-links-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-	gap: 16px;
+	gap: var(--cf7-api-spacing-xl);
 }
 
 .cf7-api-link-card {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 20px;
-	background: #f6f7f7;
-	border: 1px solid #c3c4c7;
-	border-radius: 4px;
+	padding: var(--cf7-api-spacing-2xl);
+	background: var(--cf7-api-bg-secondary);
+	border: 1px solid var(--cf7-api-border-primary);
+	border-radius: var(--cf7-api-radius-base);
 	text-decoration: none;
-	color: #1d2327;
-	transition: all 0.2s ease;
+	color: var(--cf7-api-text-primary);
+	transition: all var(--cf7-api-transition-fast) ease;
 }
 
 .cf7-api-link-card:hover {
-	background: #fff;
-	border-color: #2271b1;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	background: var(--cf7-api-bg-primary);
+	border-color: var(--cf7-api-color-primary);
+	box-shadow: var(--cf7-api-shadow-card-hover);
 	transform: translateY(-2px);
 }
 
 .cf7-api-link-card:focus {
-	outline: 2px solid #2271b1;
+	outline: 2px solid var(--cf7-api-color-primary);
 	outline-offset: 2px;
 }
 
@@ -186,80 +524,40 @@
 	font-size: 32px;
 	width: 32px;
 	height: 32px;
-	color: #2271b1;
-	margin-bottom: 12px;
+	color: var(--cf7-api-color-primary);
+	margin-bottom: var(--cf7-api-spacing-lg);
 }
 
 .cf7-api-link-card .link-title {
-	font-weight: 600;
-	font-size: 14px;
-	margin-bottom: 4px;
+	font-weight: var(--cf7-api-font-weight-semibold);
+	font-size: var(--cf7-api-font-size-lg);
+	margin-bottom: var(--cf7-api-spacing-sm);
 }
 
 .cf7-api-link-card .link-desc {
-	font-size: 12px;
-	color: #646970;
+	font-size: var(--cf7-api-font-size-sm);
+	color: var(--cf7-api-text-muted);
 	text-align: center;
 }
 
-/* Status Section */
-.cf7-api-status-table {
-	width: 100%;
-	border-collapse: collapse;
-}
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
 
-.cf7-api-status-table th,
-.cf7-api-status-table td {
-	padding: 12px;
-	border-bottom: 1px solid #e0e0e0;
-	text-align: left;
-}
-
-.cf7-api-status-table th {
-	width: 200px;
-	font-weight: 600;
-	color: #1d2327;
-}
-
-.cf7-api-status-table td code {
-	background: #f0f0f1;
-	padding: 4px 8px;
-	border-radius: 3px;
-	font-size: 13px;
-}
-
-.cf7-api-status-table tr:last-child th,
-.cf7-api-status-table tr:last-child td {
-	border-bottom: none;
-}
-
-/* Status Indicators */
-.cf7-api-status-table .status-ok {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	color: #00a32a;
-	font-weight: 500;
-}
-
-.cf7-api-status-table .status-ok .dashicons {
-	color: #00a32a;
-}
-
-.cf7-api-status-table .status-error {
-	display: inline-flex;
-	align-items: center;
-	gap: 6px;
-	color: #d63638;
-	font-weight: 500;
-}
-
-.cf7-api-status-table .status-error .dashicons {
-	color: #d63638;
-}
-
-/* Responsive */
 @media screen and (max-width: 782px) {
+	.cf7-api-stats-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.status-card,
+	.cf7-api-section {
+		padding: var(--cf7-api-spacing-xl);
+	}
+
+	.card-header h3 {
+		font-size: var(--cf7-api-font-size-lg);
+	}
+
 	.cf7-api-step {
 		flex-direction: column;
 	}
@@ -270,9 +568,5 @@
 
 	.cf7-api-links-grid {
 		grid-template-columns: 1fr;
-	}
-
-	.cf7-api-status-table th {
-		width: auto;
 	}
 }

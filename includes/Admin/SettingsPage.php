@@ -134,6 +134,7 @@ class SettingsPage implements LoadableInterface {
 				'version'     => CF7_API_VERSION,
 				'capability'  => 'manage_options',
 				'tab_title'   => \__( 'CF7 to API', 'contact-form-to-api' ),
+				'plugin_file' => CF7_API_FILE,
 				'actions'     => $actions,
 			)
 		);
@@ -142,48 +143,22 @@ class SettingsPage implements LoadableInterface {
 	/**
 	 * Render update check script for dashboard button
 	 *
-	 * CRITICAL: This callback must:
-	 * 1. Enqueue external JavaScript file with logic
-	 * 2. Localize script with configuration data
-	 * 3. ECHO a JavaScript function call that Settings Hub injects into onclick handler
+	 * Delegates to wp-github-updater's built-in enqueueCheckUpdatesScript() which
+	 * provides centralized JS, AJAX handling, admin notices, and auto-redirect.
 	 *
+	 * @since 2.1.1 Simplified to use wp-github-updater v1.3.0 built-in script.
 	 * @param string $plugin_slug Plugin slug passed by Settings Hub.
 	 * @return void
 	 */
 	public function render_update_check_script( string $plugin_slug = '' ): void {
-		// Enqueue external JavaScript file.
-		\wp_enqueue_script(
-			'cf7-api-check-updates',
-			CF7_API_URL . 'assets/js/admin-check-updates.js',
-			array( 'jquery' ),
-			CF7_API_VERSION,
-			true
-		);
+		$updater = Plugin::instance()->get_updater();
 
-		// Localize script with configuration data.
-		\wp_localize_script(
-			'cf7-api-check-updates',
-			'cf7ApiCheckUpdatesData',
-			array(
-				'ajaxurl'   => \admin_url( 'admin-ajax.php' ),
-				'nonce'     => \wp_create_nonce( 'cf7_api_version_nonce' ),
-				'action'    => 'cf7_api_check_version',
-				'updateUrl' => \admin_url( 'update-core.php' ),
-				'strings'   => array(
-					'checking'        => \__( 'Checking...', 'contact-form-to-api' ),
-					/* translators: %s: Version number */
-					'updateAvailable' => \__( 'Update available: v%s! Redirecting...', 'contact-form-to-api' ),
-					'upToDate'        => \__( 'Plugin is up to date!', 'contact-form-to-api' ),
-					'checkError'      => \__( 'Error checking updates. Please try again.', 'contact-form-to-api' ),
-					'connectError'    => \__( 'Error connecting to update server.', 'contact-form-to-api' ),
-				),
-			)
-		);
+		if ( null === $updater ) {
+			return;
+		}
 
-		// Echo JavaScript that will be executed by Settings Hub action button.
-		// Settings Hub injects this into addEventListener('click', ...) handler.
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inline JavaScript function call
-		echo 'cf7ApiCheckUpdates(); return false;';
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Inline JavaScript function call from wp-github-updater
+		echo $updater->enqueueCheckUpdatesScript();
 	}
 
 	/**

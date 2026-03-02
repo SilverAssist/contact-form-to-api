@@ -44,10 +44,10 @@ class SettingsView {
 		<div class="cf7-api-settings-page">
 			<?php self::render_accordion_styles(); ?>
 			<?php self::render_notices( $notices ); ?>
+			<?php self::render_status_section(); ?>
 			<?php GlobalSettingsPartial::render(); ?>
 			<?php self::render_how_to_section(); ?>
 			<?php self::render_quick_links_section(); ?>
-			<?php self::render_status_section(); ?>
 		</div>
 		<?php
 	}
@@ -77,50 +77,6 @@ class SettingsView {
 	 */
 	private static function render_accordion_styles(): void {
 		?>
-		<style>
-			.cf7-api-accordion-header {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				cursor: pointer;
-				padding: 12px 15px;
-				background: #f6f7f7;
-				border: 1px solid #c3c4c7;
-				border-radius: 4px;
-				margin-bottom: 0;
-				transition: background-color 0.2s ease;
-			}
-			.cf7-api-accordion-header:hover {
-				background: #f0f0f1;
-			}
-			.cf7-api-accordion-header h2 {
-				margin: 0;
-				padding: 0;
-				font-size: 14px;
-				line-height: 1.4;
-			}
-			.cf7-api-accordion-toggle {
-				font-size: 20px;
-				transition: transform 0.2s ease;
-			}
-			.cf7-api-accordion-content {
-				display: none;
-				border: 1px solid #c3c4c7;
-				border-top: none;
-				border-radius: 0 0 4px 4px;
-				padding: 20px;
-				background: #fff;
-			}
-			.cf7-api-accordion.is-open .cf7-api-accordion-content {
-				display: block;
-			}
-			.cf7-api-accordion.is-open .cf7-api-accordion-toggle {
-				transform: rotate(180deg);
-			}
-			.cf7-api-accordion.is-open .cf7-api-accordion-header {
-				border-radius: 4px 4px 0 0;
-			}
-		</style>
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
 				var accordionHeaders = document.querySelectorAll('.cf7-api-accordion-header');
@@ -926,44 +882,50 @@ value="1"
 	 * @return void
 	 */
 	public static function render_status_section(): void {
-		$cf7_active = \class_exists( 'WPCF7_ContactForm' );
+		$cf7_active         = \class_exists( 'WPCF7_ContactForm' );
+		$settings           = Settings::instance();
+		$logging_enabled    = $settings->is_logging_enabled();
+		$encryption_enabled = $settings->is_encryption_enabled();
+		$alerts_enabled     = $settings->is_alerts_enabled();
+		$sodium_available   = EncryptionService::is_sodium_available();
 		?>
-		<div class="cf7-api-section cf7-api-status">
-			<h2>
-				<span class="dashicons dashicons-info"></span>
-				<?php \esc_html_e( 'Plugin Status', 'contact-form-to-api' ); ?>
-			</h2>
 
-			<table class="cf7-api-status-table">
-				<tr>
-					<th><?php \esc_html_e( 'Plugin Version', 'contact-form-to-api' ); ?></th>
-					<td><code><?php echo \esc_html( CF7_API_VERSION ); ?></code></td>
-				</tr>
-				<tr>
-					<th><?php \esc_html_e( 'Contact Form 7', 'contact-form-to-api' ); ?></th>
-					<td>
-						<?php if ( $cf7_active ) : ?>
-							<span class="status-ok">
-								<span class="dashicons dashicons-yes-alt"></span>
-								<?php \esc_html_e( 'Active', 'contact-form-to-api' ); ?>
-							</span>
-						<?php else : ?>
-							<span class="status-error">
-								<span class="dashicons dashicons-warning"></span>
-								<?php \esc_html_e( 'Not Active - Plugin requires Contact Form 7', 'contact-form-to-api' ); ?>
-							</span>
-						<?php endif; ?>
-					</td>
-				</tr>
-				<tr>
-					<th><?php \esc_html_e( 'PHP Version', 'contact-form-to-api' ); ?></th>
-					<td><code><?php echo \esc_html( PHP_VERSION ); ?></code></td>
-				</tr>
-				<tr>
-					<th><?php \esc_html_e( 'WordPress Version', 'contact-form-to-api' ); ?></th>
-					<td><code><?php echo \esc_html( \get_bloginfo( 'version' ) ); ?></code></td>
-				</tr>
-			</table>
+		<div class="cf7-api-stats-grid">
+
+			<!-- Features Overview Card -->
+			<div class="status-card">
+				<div class="card-header">
+					<span class="dashicons dashicons-admin-settings"></span>
+					<h3><?php \esc_html_e( 'Features', 'contact-form-to-api' ); ?></h3>
+				</div>
+				<div class="card-content">
+					<div class="feature-status">
+						<span class="feature-name"><?php \esc_html_e( 'API Logging', 'contact-form-to-api' ); ?></span>
+						<span class="feature-value <?php echo $logging_enabled ? 'enabled' : 'disabled'; ?>">
+							<?php echo $logging_enabled ? \esc_html__( 'Enabled', 'contact-form-to-api' ) : \esc_html__( 'Disabled', 'contact-form-to-api' ); ?>
+						</span>
+					</div>
+					<div class="feature-status">
+						<span class="feature-name"><?php \esc_html_e( 'Database Encryption', 'contact-form-to-api' ); ?></span>
+						<span class="feature-value <?php echo $encryption_enabled ? 'enabled' : 'disabled'; ?>">
+							<?php echo $encryption_enabled ? \esc_html__( 'Enabled', 'contact-form-to-api' ) : \esc_html__( 'Disabled', 'contact-form-to-api' ); ?>
+						</span>
+					</div>
+					<div class="feature-status">
+						<span class="feature-name"><?php \esc_html_e( 'Email Alerts', 'contact-form-to-api' ); ?></span>
+						<span class="feature-value <?php echo $alerts_enabled ? 'enabled' : 'disabled'; ?>">
+							<?php echo $alerts_enabled ? \esc_html__( 'Enabled', 'contact-form-to-api' ) : \esc_html__( 'Disabled', 'contact-form-to-api' ); ?>
+						</span>
+					</div>
+					<div class="feature-status">
+						<span class="feature-name"><?php \esc_html_e( 'Sodium Extension', 'contact-form-to-api' ); ?></span>
+						<span class="feature-value <?php echo $sodium_available ? 'enabled' : 'disabled'; ?>">
+							<?php echo $sodium_available ? \esc_html__( 'Available', 'contact-form-to-api' ) : \esc_html__( 'Not Available', 'contact-form-to-api' ); ?>
+						</span>
+					</div>
+				</div>
+			</div>
+
 		</div>
 		<?php
 	}
