@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.1] - 2026-03-02
+
+### Fixed
+
+- **Release Build**: Fixed missing assets from Composer packages in release ZIP
+  - Settings Hub CSS (`settings-hub.css`) now included in build
+  - GitHub Updater JS (`check-updates.js`) now included in build
+  - Updated build script to preserve `assets/` directories in SilverAssist packages
+
 ## [2.2.0] - 2026-03-02
 
 ### Changed

@@ -2,20 +2,21 @@
 # This file is distributed under the Polyform-Noncommercial-1.0.0.
 msgid ""
 msgstr ""
-"Project-Id-Version: CF7 to API 2.2.0\n"
+"Project-Id-Version: CF7 to API 2.2.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/contact-form-to-api\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-03-02T19:57:39+00:00\n"
+"POT-Creation-Date: 2026-03-03T03:30:28+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: contact-form-to-api\n"
 
 #. Plugin Name of the plugin
 #: contact-form-to-api.php
+#: build/ci-artifacts/release/contact-form-to-api/includes/Admin/SettingsPage.php:136
 #: includes/Admin/SettingsPage.php:136
 msgid "CF7 to API"
 msgstr ""
@@ -40,30 +41,40 @@ msgstr ""
 msgid "https://silverassist.com"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/contact-form-to-api.php:64
 #: contact-form-to-api.php:64
 msgid "Contact Form 7 to API: Missing or invalid Composer dependencies. Run \"composer install\"."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Admin/SettingsPage.php:121
 #: includes/Admin/SettingsPage.php:121
 msgid "Check Updates"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Admin/SettingsPage.php:130
 #: includes/Admin/SettingsPage.php:130
 msgid "Contact Form 7 to API"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Admin/SettingsPage.php:133
 #: includes/Admin/SettingsPage.php:133
 msgid "Send CF7 form submissions to external APIs with field mapping and logging."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Admin/SettingsPage.php:189
 #: includes/Admin/SettingsPage.php:189
 msgid "Settings saved successfully."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Admin/SettingsPage.php:194
 #: includes/Admin/SettingsPage.php:194
 msgid "Failed to save settings. Please try again."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:165
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:166
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:51
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:853
 #: includes/Controller/Admin/LogsController.php:165
 #: includes/Controller/Admin/LogsController.php:166
 #: includes/View/Admin/Logs/RequestLogView.php:51
@@ -71,10 +82,18 @@ msgstr ""
 msgid "API Logs"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:200
 #: includes/Controller/Admin/LogsController.php:200
 msgid "Logs per page"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:250
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:714
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:412
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:457
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:499
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:548
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:574
 #: includes/Controller/Admin/LogsController.php:250
 #: includes/Controller/Admin/LogsController.php:714
 #: includes/Controller/Admin/SettingsController.php:412
@@ -85,18 +104,26 @@ msgstr ""
 msgid "Security check failed"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:423
 #: includes/Controller/Admin/LogsController.php:423
 msgid "API logging is disabled. Enable it in the plugin settings to view logs."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:424
 #: includes/Controller/Admin/LogsController.php:424
 msgid "Logging Disabled"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:480
 #: includes/Controller/Admin/LogsController.php:480
 msgid "Log entry not found."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:556
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:575
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:105
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:100
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:119
 #: includes/Controller/Admin/LogsController.php:556
 #: includes/Controller/Admin/LogsController.php:575
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:105
@@ -105,6 +132,10 @@ msgstr ""
 msgid "All Time"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:560
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:108
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:247
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:104
 #: includes/Controller/Admin/LogsController.php:560
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:108
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:247
@@ -112,6 +143,10 @@ msgstr ""
 msgid "Today"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:561
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:111
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:248
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:105
 #: includes/Controller/Admin/LogsController.php:561
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:111
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:248
@@ -119,6 +154,10 @@ msgstr ""
 msgid "Yesterday"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:562
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:114
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:249
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:106
 #: includes/Controller/Admin/LogsController.php:562
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:114
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:249
@@ -126,6 +165,10 @@ msgstr ""
 msgid "Last 7 Days"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:563
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:117
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:250
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:107
 #: includes/Controller/Admin/LogsController.php:563
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:117
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:250
@@ -133,6 +176,10 @@ msgstr ""
 msgid "Last 30 Days"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:564
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:120
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:251
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:108
 #: includes/Controller/Admin/LogsController.php:564
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:120
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:251
@@ -140,115 +187,151 @@ msgstr ""
 msgid "This Month"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:572
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:262
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:116
 #: includes/Controller/Admin/LogsController.php:572
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:262
 #: includes/View/Admin/Logs/RequestLogView.php:116
 msgid "now"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:693
 #: includes/Controller/Admin/LogsController.php:693
 msgid "Are you sure you want to delete this log entry?"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:694
 #: includes/Controller/Admin/LogsController.php:694
 msgid "Please select at least one item."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:695
 #: includes/Controller/Admin/LogsController.php:695
 msgid "Are you sure you want to delete the selected log entries?"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:696
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:651
 #: includes/Controller/Admin/LogsController.php:696
 #: includes/View/Admin/Logs/RequestLogView.php:651
 msgid "Are you sure you want to retry this request?"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:697
 #: includes/Controller/Admin/LogsController.php:697
 msgid "Are you sure you want to retry the selected requests?"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:698
 #: includes/Controller/Admin/LogsController.php:698
 msgid "Start date must be before or equal to end date."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:699
 #: includes/Controller/Admin/LogsController.php:699
 msgid "End date must be after or equal to start date."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:719
 #: includes/Controller/Admin/LogsController.php:719
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/LogsController.php:734
 #: includes/Controller/Admin/LogsController.php:734
 msgid "Invalid export action."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:164
 #: includes/Controller/Admin/SettingsController.php:164
 msgid "Please enter a recipient email address."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:165
 #: includes/Controller/Admin/SettingsController.php:165
 msgid "Sending..."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:166
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:818
 #: includes/Controller/Admin/SettingsController.php:166
 #: includes/View/Admin/Settings/SettingsView.php:818
 msgid "Send Test Email"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:167
 #: includes/Controller/Admin/SettingsController.php:167
 msgid "An error occurred while sending the test email."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:190
 #: includes/Controller/Admin/SettingsController.php:190
 msgid "Are you sure you want to start the migration? This will encrypt all unencrypted logs."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:191
 #: includes/Controller/Admin/SettingsController.php:191
 msgid "Are you sure you want to cancel the migration?"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:192
 #: includes/Controller/Admin/SettingsController.php:192
 msgid "Migration started..."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:193
 #: includes/Controller/Admin/SettingsController.php:193
 msgid "Processing batch..."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:194
 #: includes/Controller/Admin/SettingsController.php:194
 msgid "Migration completed successfully!"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:195
 #: includes/Controller/Admin/SettingsController.php:195
 msgid "Migration cancelled."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:196
 #: includes/Controller/Admin/SettingsController.php:196
 msgid "Migration error:"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:197
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:129
 #: includes/Controller/Admin/SettingsController.php:197
 #: includes/View/Admin/Migration/MigrationView.php:129
 msgid "logs processed"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:198
 #: includes/Controller/Admin/SettingsController.php:198
 msgid "logs encrypted"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:199
 #: includes/Controller/Admin/SettingsController.php:199
 msgid "failed"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:213
 #: includes/Controller/Admin/SettingsController.php:213
 msgid "You do not have permission to access this page."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:218
 #: includes/Controller/Admin/SettingsController.php:218
 msgid "Security check failed. Please try again."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:407
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:452
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:494
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:543
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:569
 #: includes/Controller/Admin/SettingsController.php:407
 #: includes/Controller/Admin/SettingsController.php:452
 #: includes/Controller/Admin/SettingsController.php:494
@@ -257,71 +340,93 @@ msgstr ""
 msgid "Permission denied"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:418
 #: includes/Controller/Admin/SettingsController.php:418
 msgid "Invalid email address"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:426
 #: includes/Controller/Admin/SettingsController.php:426
 msgid "Test email sent successfully"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:428
 #: includes/Controller/Admin/SettingsController.php:428
 msgid "Failed to send test email"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:476
 #: includes/Controller/Admin/SettingsController.php:476
 msgid "Dry run started"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:476
 #: includes/Controller/Admin/SettingsController.php:476
 msgid "Migration started"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/Admin/SettingsController.php:586
 #: includes/Controller/Admin/SettingsController.php:586
 msgid "Migration cancelled"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Controller/ContactForm/SubmissionController.php:317
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:66
 #: includes/Controller/ContactForm/SubmissionController.php:317
 #: includes/View/ContactForm/IntegrationView.php:66
 msgid "API Integration"
 msgstr ""
 
 #. translators: %s: required PHP version
+#: build/ci-artifacts/release/contact-form-to-api/includes/Core/Activator.php:210
 #: includes/Core/Activator.php:210
 #, php-format
 msgid "Contact Form 7 to API requires PHP %s or higher."
 msgstr ""
 
 #. translators: %s: required WordPress version
+#: build/ci-artifacts/release/contact-form-to-api/includes/Core/Activator.php:226
 #: includes/Core/Activator.php:226
 #, php-format
 msgid "Contact Form 7 to API requires WordPress %s or higher."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Core/Activator.php:239
 #: includes/Core/Activator.php:239
 msgid "Contact Form 7 to API requires Contact Form 7 to be active."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Core/Plugin.php:450
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:56
 #: includes/Core/Plugin.php:450
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:56
 msgid "Settings"
 msgstr ""
 
 #. translators: %1$s: Legacy plugin name, %2$s: New plugin name
+#: build/ci-artifacts/release/contact-form-to-api/includes/Core/Plugin.php:587
 #: includes/Core/Plugin.php:587
 #, php-format
 msgid "<strong>Warning:</strong> Both the legacy \"%1$s\" plugin (by Query Solutions) and \"%2$s\" (by Silver Assist) are active. This may cause duplicate API submissions and unexpected behavior. Please deactivate the legacy plugin to avoid conflicts."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:97
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:130
 #: includes/Infrastructure/ListTable/RequestLogTable.php:97
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:130
 msgid "From"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:98
 #: includes/Infrastructure/ListTable/RequestLogTable.php:98
 msgid "Channel"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:99
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Export/ExportService.php:288
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:534
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:264
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:520
 #: includes/Infrastructure/ListTable/RequestLogTable.php:99
 #: includes/Service/Export/ExportService.php:288
 #: includes/Service/Notification/EmailAlertService.php:534
@@ -330,6 +435,11 @@ msgstr ""
 msgid "Endpoint"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:100
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Export/ExportService.php:289
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:268
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:165
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:521
 #: includes/Infrastructure/ListTable/RequestLogTable.php:100
 #: includes/Service/Export/ExportService.php:289
 #: includes/View/Admin/Logs/RequestLogView.php:268
@@ -338,6 +448,11 @@ msgstr ""
 msgid "Method"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:101
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Export/ExportService.php:290
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:58
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:272
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:522
 #: includes/Infrastructure/ListTable/RequestLogTable.php:101
 #: includes/Service/Export/ExportService.php:290
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:58
@@ -346,20 +461,29 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:102
 #: includes/Infrastructure/ListTable/RequestLogTable.php:102
 msgid "Response"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:103
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:524
 #: includes/Infrastructure/ListTable/RequestLogTable.php:103
 #: includes/View/ContactForm/IntegrationView.php:524
 msgid "Time (s)"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:104
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:525
 #: includes/Infrastructure/ListTable/RequestLogTable.php:104
 #: includes/View/ContactForm/IntegrationView.php:525
 msgid "Retries"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:105
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:100
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:276
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:519
 #: includes/Infrastructure/ListTable/RequestLogTable.php:105
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:100
 #: includes/View/Admin/Logs/RequestLogView.php:276
@@ -367,36 +491,52 @@ msgstr ""
 msgid "Date"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:132
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:765
 #: includes/Infrastructure/ListTable/RequestLogTable.php:132
 #: includes/Infrastructure/ListTable/RequestLogTable.php:765
 msgid "Delete"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:133
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:747
 #: includes/Infrastructure/ListTable/RequestLogTable.php:133
 #: includes/Infrastructure/ListTable/RequestLogTable.php:747
 msgid "Retry"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:181
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:63
 #: includes/Infrastructure/ListTable/RequestLogTable.php:181
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:63
 msgid "All"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:189
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:66
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:214
 #: includes/Infrastructure/ListTable/RequestLogTable.php:189
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:66
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:214
 msgid "Success"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:197
 #: includes/Infrastructure/ListTable/RequestLogTable.php:197
 msgid "All Errors"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:206
 #: includes/Infrastructure/ListTable/RequestLogTable.php:206
 msgid "Unresolved"
 msgstr ""
 
 #. translators: %d: form ID
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:503
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:313
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:442
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:88
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:184
 #: includes/Infrastructure/ListTable/RequestLogTable.php:503
 #: includes/Service/Notification/EmailAlertService.php:313
 #: includes/Service/Notification/EmailAlertService.php:442
@@ -406,50 +546,65 @@ msgstr ""
 msgid "Form #%d"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:529
 #: includes/Infrastructure/ListTable/RequestLogTable.php:529
 msgid "Unknown"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:726
 #: includes/Infrastructure/ListTable/RequestLogTable.php:726
 msgid "View Details"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:832
 #: includes/Infrastructure/ListTable/RequestLogTable.php:832
 msgid "This error was resolved via manual retry"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:833
 #: includes/Infrastructure/ListTable/RequestLogTable.php:833
 msgid "Resolved"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/ListTable/RequestLogTable.php:873
 #: includes/Infrastructure/ListTable/RequestLogTable.php:873
 msgid "No API logs found."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Infrastructure/Widget/DashboardWidget.php:109
 #: includes/Infrastructure/Widget/DashboardWidget.php:109
 msgid "CF7 API Status"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Api/ApiClient.php:301
 #: includes/Service/Api/ApiClient.php:301
 msgid "Invalid or non-retryable log entry"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Api/ApiClient.php:639
 #: includes/Service/Api/ApiClient.php:639
 msgid "XML functions not available"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Api/ApiClient.php:656
 #: includes/Service/Api/ApiClient.php:656
 msgid "XML Structure is incorrect"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Export/ExportService.php:286
 #: includes/Service/Export/ExportService.php:286
 msgid "ID"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Export/ExportService.php:287
 #: includes/Service/Export/ExportService.php:287
 msgid "Form ID"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Export/ExportService.php:291
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:536
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:349
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:523
 #: includes/Service/Export/ExportService.php:291
 #: includes/Service/Notification/EmailAlertService.php:536
 #: includes/View/Admin/Logs/RequestLogView.php:349
@@ -457,91 +612,119 @@ msgstr ""
 msgid "Response Code"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Export/ExportService.php:292
 #: includes/Service/Export/ExportService.php:292
 msgid "Execution Time (s)"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Export/ExportService.php:293
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:284
 #: includes/Service/Export/ExportService.php:293
 #: includes/View/Admin/Logs/RequestLogView.php:284
 msgid "Retry Count"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Export/ExportService.php:294
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:354
 #: includes/Service/Export/ExportService.php:294
 #: includes/View/Admin/Logs/RequestLogView.php:354
 msgid "Error Message"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Export/ExportService.php:295
 #: includes/Service/Export/ExportService.php:295
 msgid "Created At"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Migration/MigrationService.php:180
 #: includes/Service/Migration/MigrationService.php:180
 msgid "Encryption service not available"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Migration/MigrationService.php:192
 #: includes/Service/Migration/MigrationService.php:192
 msgid "Encryption is disabled in settings"
 msgstr ""
 
 #. translators: %d: log ID
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Migration/MigrationService.php:264
 #: includes/Service/Migration/MigrationService.php:264
 #, php-format
 msgid "Failed to update log ID %d"
 msgstr ""
 
 #. translators: %1$d: log ID, %2$s: error message
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Migration/MigrationService.php:272
 #: includes/Service/Migration/MigrationService.php:272
 #, php-format
 msgid "Error encrypting log ID %1$d: %2$s"
 msgstr ""
 
 #. translators: %s: site name
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:226
 #: includes/Service/Notification/EmailAlertService.php:226
 #, php-format
 msgid "[%s] CF7 API Alert: High Error Rate Detected"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:290
 #: includes/Service/Notification/EmailAlertService.php:290
 msgid "CF7 API Alert"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:291
 #: includes/Service/Notification/EmailAlertService.php:291
 msgid "High error rate detected on your WordPress site."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:294
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:532
 #: includes/Service/Notification/EmailAlertService.php:294
 #: includes/Service/Notification/EmailAlertService.php:532
 msgid "Site"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:295
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:535
 #: includes/Service/Notification/EmailAlertService.php:295
 #: includes/Service/Notification/EmailAlertService.php:535
 msgid "Time"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:296
 #: includes/Service/Notification/EmailAlertService.php:296
 msgid "Errors (last hour)"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:299
 #: includes/Service/Notification/EmailAlertService.php:299
 msgid "Error Rate"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:300
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:475
 #: includes/Service/Notification/EmailAlertService.php:300
 #: includes/View/ContactForm/IntegrationView.php:475
 msgid "Total Requests"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:304
 #: includes/Service/Notification/EmailAlertService.php:304
 msgid "Recent Errors"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:318
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:511
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:176
 #: includes/Service/Notification/EmailAlertService.php:318
 #: includes/Service/Notification/EmailAlertService.php:511
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:176
 msgid "Unknown error"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:333
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:547
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:53
 #: includes/Service/Notification/EmailAlertService.php:333
 #: includes/Service/Notification/EmailAlertService.php:547
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:53
@@ -549,73 +732,93 @@ msgid "View All Logs"
 msgstr ""
 
 #. translators: %s: site name
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:356
 #: includes/Service/Notification/EmailAlertService.php:356
 #, php-format
 msgid "[%s] CF7 API Alert Test Email"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:365
 #: includes/Service/Notification/EmailAlertService.php:365
 msgid "Test Email"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:366
 #: includes/Service/Notification/EmailAlertService.php:366
 msgid "This is a test email from Contact Form 7 to API plugin."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:367
 #: includes/Service/Notification/EmailAlertService.php:367
 msgid "If you received this email, your alert configuration is working correctly."
 msgstr ""
 
 #. translators: %1$s: site name, %2$s: form title
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:450
 #: includes/Service/Notification/EmailAlertService.php:450
 #, php-format
 msgid "[%1$s] API Submission Failed: %2$s"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:510
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:512
 #: includes/Service/Notification/EmailAlertService.php:510
 #: includes/Service/Notification/EmailAlertService.php:512
 msgid "N/A"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:528
 #: includes/Service/Notification/EmailAlertService.php:528
 msgid "API Submission Failed"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:529
 #: includes/Service/Notification/EmailAlertService.php:529
 msgid "A form submission has permanently failed after exhausting all retry attempts."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:533
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:77
 #: includes/Service/Notification/EmailAlertService.php:533
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:77
 msgid "Form"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:540
 #: includes/Service/Notification/EmailAlertService.php:540
 msgid "Error Message:"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/Service/Notification/EmailAlertService.php:545
 #: includes/Service/Notification/EmailAlertService.php:545
 msgid "View Full Log Details"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:40
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:40
 msgid "Last 24 Hours"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:44
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:44
 msgid "Requests"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:100
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:100
 msgid "Success Rate"
 msgstr ""
 
 #. translators: %d: average response time in milliseconds
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:117
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:117
 #, php-format
 msgid "%d ms"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:120
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/StatisticsPartial.php:72
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:490
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:120
 #: includes/View/Admin/Logs/Partials/StatisticsPartial.php:72
 #: includes/View/ContactForm/IntegrationView.php:490
@@ -623,155 +826,195 @@ msgid "Avg Response Time"
 msgstr ""
 
 #. translators: %d: number of errors
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:138
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:138
 #, php-format
 msgid "Recent Errors (%d)"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:144
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:144
 msgid "No errors in the last 24 hours"
 msgstr ""
 
 #. translators: %d: number of errors
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:152
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:152
 #, php-format
 msgid "%d errors require attention"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:191
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:191
 msgid "View"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:205
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:210
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:205
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:210
 msgid "Unknown Form"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Dashboard/DashboardWidgetView.php:232
 #: includes/View/Admin/Dashboard/DashboardWidgetView.php:232
 msgid "ago"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:69
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:215
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:69
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:215
 msgid "Error"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:82
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:82
 msgid "All Forms"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:123
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:252
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:123
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:252
 msgid "Custom Range"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:135
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:135
 msgid "To"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:141
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:141
 msgid "Apply Filters"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:170
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:170
 msgid "Filtered by:"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:204
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:204
 msgid "Remove form filter"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:237
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:237
 msgid "Remove status filter"
 msgstr ""
 
 #. translators: %1$s: start date, %2$s: end date
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:260
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:260
 #, php-format
 msgid "%1$s to %2$s"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:278
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:278
 msgid "Remove date filter"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/DateFilterPartial.php:285
 #: includes/View/Admin/Logs/Partials/DateFilterPartial.php:285
 msgid "Clear all"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/ExportButtonsPartial.php:88
 #: includes/View/Admin/Logs/Partials/ExportButtonsPartial.php:88
 msgid "Export as CSV"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/ExportButtonsPartial.php:92
 #: includes/View/Admin/Logs/Partials/ExportButtonsPartial.php:92
 msgid "Export as JSON"
 msgstr ""
 
 #. translators: %s: date context (e.g., "(Today)", "(All Time)")
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/StatisticsPartial.php:54
 #: includes/View/Admin/Logs/Partials/StatisticsPartial.php:54
 #, php-format
 msgid "Total Requests %s"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/StatisticsPartial.php:63
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:479
 #: includes/View/Admin/Logs/Partials/StatisticsPartial.php:63
 #: includes/View/ContactForm/IntegrationView.php:479
 msgid "Successful"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/Partials/StatisticsPartial.php:68
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:486
 #: includes/View/Admin/Logs/Partials/StatisticsPartial.php:68
 #: includes/View/ContactForm/IntegrationView.php:486
 msgid "Failed"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:61
 #: includes/View/Admin/Logs/RequestLogView.php:61
 msgid "Search logs"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:225
 #: includes/View/Admin/Logs/RequestLogView.php:225
 msgid "API Log Detail"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:229
 #: includes/View/Admin/Logs/RequestLogView.php:229
 msgid "Back to Logs"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:261
 #: includes/View/Admin/Logs/RequestLogView.php:261
 msgid "Request Information"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:280
 #: includes/View/Admin/Logs/RequestLogView.php:280
 msgid "Execution Time"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:287
 #: includes/View/Admin/Logs/RequestLogView.php:287
 msgid "(automatic retries)"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:291
 #: includes/View/Admin/Logs/RequestLogView.php:291
 msgid "Manual Retry Count"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:311
 #: includes/View/Admin/Logs/RequestLogView.php:311
 msgid "Request Headers"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:331
 #: includes/View/Admin/Logs/RequestLogView.php:331
 msgid "Request Data"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:346
 #: includes/View/Admin/Logs/RequestLogView.php:346
 msgid "Response Information"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:375
 #: includes/View/Admin/Logs/RequestLogView.php:375
 msgid "Response Headers"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:399
 #: includes/View/Admin/Logs/RequestLogView.php:399
 msgid "Response Data"
 msgstr ""
 
 #. translators: %d: number of deleted logs
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:419
 #: includes/View/Admin/Logs/RequestLogView.php:419
 #, php-format
 msgid "%d log entry deleted."
@@ -780,6 +1023,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of successfully retried requests
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:443
 #: includes/View/Admin/Logs/RequestLogView.php:443
 #, php-format
 msgid "%d request retried successfully."
@@ -788,6 +1032,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of failed retry attempts
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:467
 #: includes/View/Admin/Logs/RequestLogView.php:467
 #, php-format
 msgid "%d retry attempt failed."
@@ -796,6 +1041,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of skipped retry attempts
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:491
 #: includes/View/Admin/Logs/RequestLogView.php:491
 #, php-format
 msgid "%d request skipped (maximum retries exceeded)."
@@ -803,11 +1049,13 @@ msgid_plural "%d requests skipped (maximum retries exceeded)."
 msgstr[0] ""
 msgstr[1] ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:510
 #: includes/View/Admin/Logs/RequestLogView.php:510
 msgid "Rate limit exceeded. Please wait before retrying more requests."
 msgstr ""
 
 #. translators: %d: number of retried logs
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:525
 #: includes/View/Admin/Logs/RequestLogView.php:525
 #, php-format
 msgid "%d log entry queued for retry."
@@ -815,27 +1063,34 @@ msgid_plural "%d log entries queued for retry."
 msgstr[0] ""
 msgstr[1] ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:621
 #: includes/View/Admin/Logs/RequestLogView.php:621
 msgid "Already successfully retried"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:622
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:632
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:652
 #: includes/View/Admin/Logs/RequestLogView.php:622
 #: includes/View/Admin/Logs/RequestLogView.php:632
 #: includes/View/Admin/Logs/RequestLogView.php:652
 msgid "Retry Request"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:631
 #: includes/View/Admin/Logs/RequestLogView.php:631
 msgid "Maximum retries exceeded"
 msgstr ""
 
 #. translators: %1$d: original log ID, %2$s: link to original log
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:686
 #: includes/View/Admin/Logs/RequestLogView.php:686
 #, php-format
 msgid "This is a retry of log entry <a href=\"%2$s\">#%1$d</a>."
 msgstr ""
 
 #. translators: %d: number of retry attempts
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:710
 #: includes/View/Admin/Logs/RequestLogView.php:710
 #, php-format
 msgid "This request has been retried %d time."
@@ -844,16 +1099,19 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %1$s: link to successful retry log, %2$d: successful retry log ID
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Logs/RequestLogView.php:734
 #: includes/View/Admin/Logs/RequestLogView.php:734
 #, php-format
 msgid "→ <a href=\"%1$s\">View successful retry (#%2$d)</a>"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:52
 #: includes/View/Admin/Migration/MigrationView.php:52
 msgid "Legacy Data Migration"
 msgstr ""
 
 #. translators: %d: number of unencrypted logs
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:63
 #: includes/View/Admin/Migration/MigrationView.php:63
 #, php-format
 msgid "%d unencrypted log found"
@@ -861,55 +1119,68 @@ msgid_plural "%d unencrypted logs found"
 msgstr[0] ""
 msgstr[1] ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:75
 #: includes/View/Admin/Migration/MigrationView.php:75
 msgid "These logs were created before encryption was enabled and contain unencrypted sensitive data."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:82
 #: includes/View/Admin/Migration/MigrationView.php:82
 msgid "The migration tool will encrypt existing logs in batches to avoid timeouts."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:85
 #: includes/View/Admin/Migration/MigrationView.php:85
 msgid "Recommendation:"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:86
 #: includes/View/Admin/Migration/MigrationView.php:86
 msgid "Create a database backup before proceeding."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:96
 #: includes/View/Admin/Migration/MigrationView.php:96
 msgid "Start Migration"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:104
 #: includes/View/Admin/Migration/MigrationView.php:104
 msgid "Dry Run (Preview)"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:112
 #: includes/View/Admin/Migration/MigrationView.php:112
 msgid "Cancel"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:124
 #: includes/View/Admin/Migration/MigrationView.php:124
 msgid "Preparing migration..."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:139
 #: includes/View/Admin/Migration/MigrationView.php:139
 msgid "All logs are encrypted"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:141
 #: includes/View/Admin/Migration/MigrationView.php:141
 msgid "No legacy unencrypted logs found. All logs are using encrypted storage."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:161
 #: includes/View/Admin/Migration/MigrationView.php:161
 msgid "Dry Run Results"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:163
 #: includes/View/Admin/Migration/MigrationView.php:163
 msgid "Preview completed:"
 msgstr ""
 
 #. translators: %d: number of logs that would be encrypted
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:168
 #: includes/View/Admin/Migration/MigrationView.php:168
 #, php-format
 msgid "%d log would be encrypted"
@@ -917,179 +1188,228 @@ msgid_plural "%d logs would be encrypted"
 msgstr[0] ""
 msgstr[1] ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Migration/MigrationView.php:180
 #: includes/View/Admin/Migration/MigrationView.php:180
 msgid "No changes were made during this preview. Click \"Start Migration\" to encrypt the logs."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/Partials/GlobalSettingsPartial.php:43
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:443
 #: includes/View/Admin/Settings/Partials/GlobalSettingsPartial.php:43
 #: includes/View/ContactForm/IntegrationView.php:443
 msgid "Global Settings"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/Partials/GlobalSettingsPartial.php:46
 #: includes/View/Admin/Settings/Partials/GlobalSettingsPartial.php:46
 msgid "Configure plugin-wide settings for retry limits, sensitive data patterns, logging control, and log retention."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/Partials/GlobalSettingsPartial.php:64
 #: includes/View/Admin/Settings/Partials/GlobalSettingsPartial.php:64
 msgid "Save Settings"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:105
 #: includes/View/Admin/Settings/SettingsView.php:105
 msgid "How to Configure API Integration"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:135
 #: includes/View/Admin/Settings/SettingsView.php:135
 msgid "Open your Contact Form 7 form"
 msgstr ""
 
 #. translators: %s: Link to Contact Forms page
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:140
 #: includes/View/Admin/Settings/SettingsView.php:140
 #, php-format
 msgid "Go to %s and select the form you want to integrate with an API."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:160
 #: includes/View/Admin/Settings/SettingsView.php:160
 msgid "Navigate to the API Integration tab"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:161
 #: includes/View/Admin/Settings/SettingsView.php:161
 msgid "In the form editor, click on the \"API Integration\" tab to access the API settings."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:164
 #: includes/View/Admin/Settings/SettingsView.php:164
 msgid "Each form can have its own API endpoint and configuration."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:181
 #: includes/View/Admin/Settings/SettingsView.php:181
 msgid "Enable API Integration"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:182
 #: includes/View/Admin/Settings/SettingsView.php:182
 msgid "Check the \"Send to API\" checkbox to enable the integration for this form."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:198
 #: includes/View/Admin/Settings/SettingsView.php:198
 msgid "Configure your API endpoint"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:199
 #: includes/View/Admin/Settings/SettingsView.php:199
 msgid "Enter the following settings:"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:202
 #: includes/View/Admin/Settings/SettingsView.php:202
 msgid "API URL:"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:203
 #: includes/View/Admin/Settings/SettingsView.php:203
 msgid "The full URL of your API endpoint (e.g., https://api.example.com/leads)"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:206
 #: includes/View/Admin/Settings/SettingsView.php:206
 msgid "HTTP Method:"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:207
 #: includes/View/Admin/Settings/SettingsView.php:207
 msgid "Usually POST for form submissions"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:210
 #: includes/View/Admin/Settings/SettingsView.php:210
 msgid "Input Type:"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:211
 #: includes/View/Admin/Settings/SettingsView.php:211
 msgid "JSON or Form Data, depending on your API requirements"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:229
 #: includes/View/Admin/Settings/SettingsView.php:229
 msgid "Map your form fields"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:230
 #: includes/View/Admin/Settings/SettingsView.php:230
 msgid "Use the field mapping section to match your CF7 form fields with the API parameters."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:237
 #: includes/View/Admin/Settings/SettingsView.php:237
 msgid "Click on the mail tags to insert them into your field mapping."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:254
 #: includes/View/Admin/Settings/SettingsView.php:254
 msgid "Add authentication (if required)"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:255
 #: includes/View/Admin/Settings/SettingsView.php:255
 msgid "If your API requires authentication, add the necessary headers:"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:275
 #: includes/View/Admin/Settings/SettingsView.php:275
 msgid "Save and test"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:276
 #: includes/View/Admin/Settings/SettingsView.php:276
 msgid "Save your form and submit a test entry. Check the API Logs to verify the submission was successful."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:308
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:184
 #: includes/View/Admin/Settings/SettingsView.php:308
 #: includes/View/ContactForm/IntegrationView.php:184
 msgid "Retry Configuration"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:314
 #: includes/View/Admin/Settings/SettingsView.php:314
 msgid "Maximum retries per entry"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:326
 #: includes/View/Admin/Settings/SettingsView.php:326
 msgid "Maximum number of times a single failed request can be manually retried."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:333
 #: includes/View/Admin/Settings/SettingsView.php:333
 msgid "Maximum retries per hour"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:345
 #: includes/View/Admin/Settings/SettingsView.php:345
 msgid "Global rate limit for all retry attempts across all requests."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:364
 #: includes/View/Admin/Settings/SettingsView.php:364
 msgid "Sensitive Data Patterns"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:370
 #: includes/View/Admin/Settings/SettingsView.php:370
 msgid "Field patterns to anonymize"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:381
 #: includes/View/Admin/Settings/SettingsView.php:381
 msgid "Enter one pattern per line. Fields containing these patterns will be redacted (e.g., password, token, secret, api_key)."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:399
 #: includes/View/Admin/Settings/SettingsView.php:399
 msgid "Logging"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:404
 #: includes/View/Admin/Settings/SettingsView.php:404
 msgid "Enable logging"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:414
 #: includes/View/Admin/Settings/SettingsView.php:414
 msgid "Enable API request logging"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:417
 #: includes/View/Admin/Settings/SettingsView.php:417
 msgid "When disabled, API requests will not be logged. Useful for GDPR compliance or performance optimization."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:436
 #: includes/View/Admin/Settings/SettingsView.php:436
 msgid "Log Retention"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:442
 #: includes/View/Admin/Settings/SettingsView.php:442
 msgid "Delete logs older than"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:448
 #: includes/View/Admin/Settings/SettingsView.php:448
 msgid "Never (keep all logs)"
 msgstr ""
 
 #. translators: %d: number of days
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:453
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:459
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:465
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:471
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:477
 #: includes/View/Admin/Settings/SettingsView.php:453
 #: includes/View/Admin/Settings/SettingsView.php:459
 #: includes/View/Admin/Settings/SettingsView.php:465
@@ -1099,442 +1419,557 @@ msgstr ""
 msgid "%d days"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:482
 #: includes/View/Admin/Settings/SettingsView.php:482
 msgid "Logs older than this period will be automatically deleted daily via WP-Cron."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:507
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:909
 #: includes/View/Admin/Settings/SettingsView.php:507
 #: includes/View/Admin/Settings/SettingsView.php:909
 msgid "Database Encryption"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:513
 #: includes/View/Admin/Settings/SettingsView.php:513
 msgid "Encryption status"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:518
 #: includes/View/Admin/Settings/SettingsView.php:518
 msgid "Sodium extension available"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:520
 #: includes/View/Admin/Settings/SettingsView.php:520
 msgid "Your server supports libsodium for secure authenticated encryption."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:524
 #: includes/View/Admin/Settings/SettingsView.php:524
 msgid "Sodium extension not available"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:526
 #: includes/View/Admin/Settings/SettingsView.php:526
 msgid "Database encryption requires the Sodium extension (PHP 7.2+). Data will be stored unencrypted."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:533
 #: includes/View/Admin/Settings/SettingsView.php:533
 msgid "Enable encryption"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:544
 #: includes/View/Admin/Settings/SettingsView.php:544
 msgid "Encrypt sensitive request/response data in database"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:547
 #: includes/View/Admin/Settings/SettingsView.php:547
 msgid "Uses libsodium authenticated encryption for request_data, request_headers, response_data, and response_headers fields."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:554
 #: includes/View/Admin/Settings/SettingsView.php:554
 msgid "Encryption statistics"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:559
 #: includes/View/Admin/Settings/SettingsView.php:559
 msgid "Total logs:"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:563
 #: includes/View/Admin/Settings/SettingsView.php:563
 msgid "Encrypted logs:"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:571
 #: includes/View/Admin/Settings/SettingsView.php:571
 msgid "Unencrypted logs:"
 msgstr ""
 
 #. translators: %d: number of unencrypted logs
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:580
 #: includes/View/Admin/Settings/SettingsView.php:580
 #, php-format
 msgid "You have %d legacy unencrypted logs. Use the migration tool below to encrypt them."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:637
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:915
 #: includes/View/Admin/Settings/SettingsView.php:637
 #: includes/View/Admin/Settings/SettingsView.php:915
 msgid "Email Alerts"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:642
 #: includes/View/Admin/Settings/SettingsView.php:642
 msgid "Enable alerts"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:652
 #: includes/View/Admin/Settings/SettingsView.php:652
 msgid "Send email alerts when API error rate exceeds thresholds"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:660
 #: includes/View/Admin/Settings/SettingsView.php:660
 msgid "Recipients"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:669
 #: includes/View/Admin/Settings/SettingsView.php:669
 msgid "admin@example.com"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:671
 #: includes/View/Admin/Settings/SettingsView.php:671
 msgid "Comma-separated email addresses to receive alerts."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:677
 #: includes/View/Admin/Settings/SettingsView.php:677
 msgid "Alert types"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:687
 #: includes/View/Admin/Settings/SettingsView.php:687
 msgid "High error rate (threshold-based)"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:691
 #: includes/View/Admin/Settings/SettingsView.php:691
 msgid "Alert when error count or error rate exceeds configured thresholds (see below)."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:701
 #: includes/View/Admin/Settings/SettingsView.php:701
 msgid "Individual submission failures"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:705
 #: includes/View/Admin/Settings/SettingsView.php:705
 msgid "Alert immediately when a submission fails after all retries are exhausted."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:714
 #: includes/View/Admin/Settings/SettingsView.php:714
 msgid "Threshold Alert Settings"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:717
 #: includes/View/Admin/Settings/SettingsView.php:717
 msgid "Configure thresholds for high error rate alerts (only applies when threshold alerts are enabled above)."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:724
 #: includes/View/Admin/Settings/SettingsView.php:724
 msgid "Error count threshold"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:735
 #: includes/View/Admin/Settings/SettingsView.php:735
 msgid "errors per hour"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:737
 #: includes/View/Admin/Settings/SettingsView.php:737
 msgid "Alert when errors exceed this count per hour."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:744
 #: includes/View/Admin/Settings/SettingsView.php:744
 msgid "Error rate threshold"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:757
 #: includes/View/Admin/Settings/SettingsView.php:757
 msgid "Alert when error percentage exceeds this value."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:764
 #: includes/View/Admin/Settings/SettingsView.php:764
 msgid "Check interval"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:770
 #: includes/View/Admin/Settings/SettingsView.php:770
 msgid "Every hour"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:773
 #: includes/View/Admin/Settings/SettingsView.php:773
 msgid "Every 30 minutes"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:777
 #: includes/View/Admin/Settings/SettingsView.php:777
 msgid "How often to check error rates."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:784
 #: includes/View/Admin/Settings/SettingsView.php:784
 msgid "Cooldown period"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:790
 #: includes/View/Admin/Settings/SettingsView.php:790
 msgid "1 hour"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:793
 #: includes/View/Admin/Settings/SettingsView.php:793
 msgid "2 hours"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:796
 #: includes/View/Admin/Settings/SettingsView.php:796
 msgid "4 hours"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:799
 #: includes/View/Admin/Settings/SettingsView.php:799
 msgid "8 hours"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:802
 #: includes/View/Admin/Settings/SettingsView.php:802
 msgid "24 hours"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:806
 #: includes/View/Admin/Settings/SettingsView.php:806
 msgid "Minimum time between alert emails."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:812
 #: includes/View/Admin/Settings/SettingsView.php:812
 msgid "Test email"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:822
 #: includes/View/Admin/Settings/SettingsView.php:822
 msgid "Send a test email to verify configuration."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:841
 #: includes/View/Admin/Settings/SettingsView.php:841
 msgid "Quick Links"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:847
 #: includes/View/Admin/Settings/SettingsView.php:847
 msgid "Contact Forms"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:848
 #: includes/View/Admin/Settings/SettingsView.php:848
 msgid "Manage your CF7 forms"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:854
 #: includes/View/Admin/Settings/SettingsView.php:854
 msgid "View submission history"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:859
 #: includes/View/Admin/Settings/SettingsView.php:859
 msgid "API Reference"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:860
 #: includes/View/Admin/Settings/SettingsView.php:860
 msgid "Hooks, filters and actions"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:865
 #: includes/View/Admin/Settings/SettingsView.php:865
 msgid "User Guide"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:866
 #: includes/View/Admin/Settings/SettingsView.php:866
 msgid "Complete plugin documentation"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:871
 #: includes/View/Admin/Settings/SettingsView.php:871
 msgid "Support"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:872
 #: includes/View/Admin/Settings/SettingsView.php:872
 msgid "Report issues or get help"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:899
 #: includes/View/Admin/Settings/SettingsView.php:899
 msgid "Features"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:903
 #: includes/View/Admin/Settings/SettingsView.php:903
 msgid "API Logging"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:905
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:911
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:917
 #: includes/View/Admin/Settings/SettingsView.php:905
 #: includes/View/Admin/Settings/SettingsView.php:911
 #: includes/View/Admin/Settings/SettingsView.php:917
 msgid "Enabled"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:905
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:911
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:917
 #: includes/View/Admin/Settings/SettingsView.php:905
 #: includes/View/Admin/Settings/SettingsView.php:911
 #: includes/View/Admin/Settings/SettingsView.php:917
 msgid "Disabled"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:921
 #: includes/View/Admin/Settings/SettingsView.php:921
 msgid "Sodium Extension"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:923
 #: includes/View/Admin/Settings/SettingsView.php:923
 msgid "Available"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/Admin/Settings/SettingsView.php:923
 #: includes/View/Admin/Settings/SettingsView.php:923
 msgid "Not Available"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:112
 #: includes/View/ContactForm/IntegrationView.php:112
 msgid "Send to API?"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:118
 #: includes/View/ContactForm/IntegrationView.php:118
 msgid "Base URL"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:137
 #: includes/View/ContactForm/IntegrationView.php:137
 msgid "Input type"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:140
 #: includes/View/ContactForm/IntegrationView.php:140
 msgid "Parameters - GET/POST"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:143
 #: includes/View/ContactForm/IntegrationView.php:143
 msgid "XML"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:146
 #: includes/View/ContactForm/IntegrationView.php:146
 msgid "JSON"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:185
 #: includes/View/ContactForm/IntegrationView.php:185
 msgid "Configure automatic retry behavior for failed API requests."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:189
 #: includes/View/ContactForm/IntegrationView.php:189
 msgid "Maximum Retries"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:193
 #: includes/View/ContactForm/IntegrationView.php:193
 msgid "Number of times to retry a failed request (0-10). Default: 3"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:198
 #: includes/View/ContactForm/IntegrationView.php:198
 msgid "Retry Delay (seconds)"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:202
 #: includes/View/ContactForm/IntegrationView.php:202
 msgid "Initial delay between retries in seconds (uses exponential backoff). Default: 2"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:208
 #: includes/View/ContactForm/IntegrationView.php:208
 msgid "Retry on timeout errors"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:210
 #: includes/View/ContactForm/IntegrationView.php:210
 msgid "Automatically retry when API request times out."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:234
 #: includes/View/ContactForm/IntegrationView.php:234
 msgid "Authentication & Custom Headers"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:236
 #: includes/View/ContactForm/IntegrationView.php:236
 msgid "Add custom HTTP headers for authentication or other purposes. Common examples:"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:245
 #: includes/View/ContactForm/IntegrationView.php:245
 msgid "Header Name"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:246
 #: includes/View/ContactForm/IntegrationView.php:246
 msgid "Header Value"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:247
 #: includes/View/ContactForm/IntegrationView.php:247
 msgid "Actions"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:258
 #: includes/View/ContactForm/IntegrationView.php:258
 msgid "e.g., Authorization"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:265
 #: includes/View/ContactForm/IntegrationView.php:265
 msgid "e.g., Bearer your-api-token"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:268
 #: includes/View/ContactForm/IntegrationView.php:268
 msgid "Remove header"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:280
 #: includes/View/ContactForm/IntegrationView.php:280
 msgid "Add Header"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:286
 #: includes/View/ContactForm/IntegrationView.php:286
 msgid "Quick Add Authentication"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:287
 #: includes/View/ContactForm/IntegrationView.php:287
 msgid "Click a preset to add common authentication headers:"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:290
 #: includes/View/ContactForm/IntegrationView.php:290
 msgid "Bearer Token"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:293
 #: includes/View/ContactForm/IntegrationView.php:293
 msgid "Basic Auth"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:296
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:324
 #: includes/View/ContactForm/IntegrationView.php:296
 #: includes/View/ContactForm/IntegrationView.php:324
 msgid "API Key"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:299
 #: includes/View/ContactForm/IntegrationView.php:299
 msgid "Content-Type JSON"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:319
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:323
 #: includes/View/ContactForm/IntegrationView.php:319
 #: includes/View/ContactForm/IntegrationView.php:323
 msgid "Form fields"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:369
 #: includes/View/ContactForm/IntegrationView.php:369
 msgid "XML Template"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:397
 #: includes/View/ContactForm/IntegrationView.php:397
 msgid "JSON Template"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:434
 #: includes/View/ContactForm/IntegrationView.php:434
 msgid "API Call Logs & Statistics"
 msgstr ""
 
 #. translators: %s: URL to settings page
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:442
 #: includes/View/ContactForm/IntegrationView.php:442
 #, php-format
 msgid "Logging is currently disabled. Enable it in %s to track API calls."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:472
 #: includes/View/ContactForm/IntegrationView.php:472
 msgid "Overall Statistics"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:491
 #: includes/View/ContactForm/IntegrationView.php:491
 msgid "seconds"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:494
 #: includes/View/ContactForm/IntegrationView.php:494
 msgid "Max Retries Used"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:512
 #: includes/View/ContactForm/IntegrationView.php:512
 msgid "Recent API Calls (Last 5)"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:549
 #: includes/View/ContactForm/IntegrationView.php:549
 msgid "No API calls logged yet. Submit a form to see logs here."
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:565
 #: includes/View/ContactForm/IntegrationView.php:565
 msgid "Legacy Debug Info (Last Transmission)"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:569
 #: includes/View/ContactForm/IntegrationView.php:569
 msgid "Called URL"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:572
 #: includes/View/ContactForm/IntegrationView.php:572
 msgid "Params"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:575
 #: includes/View/ContactForm/IntegrationView.php:575
 msgid "Remote server result"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:578
 #: includes/View/ContactForm/IntegrationView.php:578
 msgid "Error logs"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:592
 #: includes/View/ContactForm/IntegrationView.php:592
 msgid ""
 "*** THIS IS AN EXAMPLE ** USE YOUR XML ACCORDING TO YOUR API DOCUMENTATION **\n"
@@ -1551,6 +1986,7 @@ msgid ""
 "</update>"
 msgstr ""
 
+#: build/ci-artifacts/release/contact-form-to-api/includes/View/ContactForm/IntegrationView.php:616
 #: includes/View/ContactForm/IntegrationView.php:616
 msgid ""
 "*** THIS IS AN EXAMPLE ** USE YOUR JSON ACCORDING TO YOUR API DOCUMENTATION **\n"
