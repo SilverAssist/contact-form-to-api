@@ -302,11 +302,42 @@ if [ -d "${PACKAGE_DIR}/vendor" ]; then
         rm -rf "$UPDATER_DIR/tests" 2>/dev/null || true
         rm -rf "$UPDATER_DIR/docs" 2>/dev/null || true
         
-        # Keep only src/ directory and composer.json
+        # Keep src/, assets/, and composer.json
         if [ -d "$UPDATER_DIR/src" ] && [ -f "$UPDATER_DIR/composer.json" ]; then
-            print_success "    ✓ GitHub updater cleaned (kept only src/ and composer.json)"
+            print_success "    ✓ GitHub updater cleaned (kept src/, assets/, and composer.json)"
         else
             print_warning "    ⚠ GitHub updater structure unexpected"
+        fi
+    fi
+    
+    # Clean up Settings Hub package - keep src/, assets/, and composer.json
+    SETTINGS_HUB_DIR="${PACKAGE_DIR}/vendor/silverassist/wp-settings-hub"
+    if [ -d "$SETTINGS_HUB_DIR" ]; then
+        print_status "  • Cleaning Settings Hub package..."
+        
+        # Remove git directory
+        rm -rf "$SETTINGS_HUB_DIR/.git"
+        rm -rf "$SETTINGS_HUB_DIR/.github"
+        
+        # Remove development files
+        rm -f "$SETTINGS_HUB_DIR"/*.md 2>/dev/null || true
+        rm -f "$SETTINGS_HUB_DIR"/*.txt 2>/dev/null || true
+        rm -f "$SETTINGS_HUB_DIR"/*.xml 2>/dev/null || true
+        rm -f "$SETTINGS_HUB_DIR"/*.neon 2>/dev/null || true
+        rm -f "$SETTINGS_HUB_DIR"/*.lock 2>/dev/null || true
+        rm -f "$SETTINGS_HUB_DIR"/*.php 2>/dev/null || true  # Remove root PHP files (integration-guide.php)
+        rm -f "$SETTINGS_HUB_DIR"/.* 2>/dev/null || true
+        
+        # Remove non-essential directories
+        rm -rf "$SETTINGS_HUB_DIR/tests" 2>/dev/null || true
+        rm -rf "$SETTINGS_HUB_DIR/docs" 2>/dev/null || true
+        rm -rf "$SETTINGS_HUB_DIR/scripts" 2>/dev/null || true
+        
+        # Keep src/, assets/, and composer.json
+        if [ -d "$SETTINGS_HUB_DIR/src" ] && [ -f "$SETTINGS_HUB_DIR/composer.json" ]; then
+            print_success "    ✓ Settings Hub cleaned (kept src/, assets/, and composer.json)"
+        else
+            print_warning "    ⚠ Settings Hub structure unexpected"
         fi
     fi
 fi
@@ -345,7 +376,7 @@ else
 fi
 
 # Check if required directories exist
-required_dirs=("src" "assets" "languages")
+required_dirs=("includes" "assets" "languages")
 for dir in "${required_dirs[@]}"; do
     if [ ! -d "${PACKAGE_DIR}/${dir}" ]; then
         print_warning "Directory missing from package: ${dir}"
