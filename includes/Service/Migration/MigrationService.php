@@ -8,7 +8,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Service\Migration
  * @since 1.3.4
- * @version 2.2.1
+ * @version 2.3.0
  * @author Silver Assist
  */
 
