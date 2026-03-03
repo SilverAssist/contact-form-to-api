@@ -375,6 +375,28 @@ else
     print_success "  ✓ GitHub updater package included"
 fi
 
+# Check if Settings Hub package is included
+if [ ! -d "${PACKAGE_DIR}/vendor/silverassist/wp-settings-hub" ]; then
+    print_warning "Settings Hub package not found in vendor directory"
+    print_warning "Centralized settings menu may not work properly"
+else
+    print_success "  ✓ Settings Hub package included"
+fi
+
+# Check if vendor package assets exist (CSS/JS required at runtime)
+if [ ! -f "${PACKAGE_DIR}/vendor/silverassist/wp-settings-hub/assets/css/settings-hub.css" ]; then
+    print_warning "Settings Hub CSS asset missing: vendor/silverassist/wp-settings-hub/assets/css/settings-hub.css"
+    print_warning "Admin settings page styles will not load properly"
+else
+    print_success "  ✓ Settings Hub CSS asset included"
+fi
+if [ ! -f "${PACKAGE_DIR}/vendor/silverassist/wp-github-updater/assets/js/check-updates.js" ]; then
+    print_warning "GitHub updater JS asset missing: vendor/silverassist/wp-github-updater/assets/js/check-updates.js"
+    print_warning "Update check UI will not work properly"
+else
+    print_success "  ✓ GitHub updater JS asset included"
+fi
+
 # Check if required directories exist
 required_dirs=("includes" "assets" "languages")
 for dir in "${required_dirs[@]}"; do

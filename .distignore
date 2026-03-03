@@ -10,9 +10,8 @@ phpcs.xml
 .phpstan-cache/
 .phpunit.result.cache
 
-# Development Dependencies
-/vendor/
-composer.json
+# Production Dependencies (vendor/ IS included in release via build-release.sh)
+# Only development tooling is excluded
 composer.lock
 composer.phar
 
