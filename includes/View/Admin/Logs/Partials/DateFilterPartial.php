@@ -7,7 +7,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage View\Admin\Logs\Partials
  * @since 2.0.0
- * @version 2.3.0
+ * @version 2.3.1
  * @author Silver Assist
  */
 
