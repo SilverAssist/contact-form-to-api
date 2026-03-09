@@ -10,14 +10,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.3.1] - 2026-03-09
 
 ### Changed
+
 - **Release Pipeline**: Add Node.js setup and asset build steps to release workflow for minified assets
+- **Release Pipeline**: Make Node.js steps conditional on `package.json` existence to prevent CI failures
 
 ## [2.3.0] - 2026-03-03
 
 ### Fixed
+
 - **Vendor Assets**: Ensure vendor package assets (CSS/JS) are included in release builds
 
 ### Changed
+
 - **Release Pipeline**: Unify release workflow and build script across all plugins
   - Selective copy strategy replaces copy-all-then-clean approach
   - Remove `composer.json` from ZIP (not needed at runtime)
@@ -26,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Generate MD5 + SHA256 checksums
 
 ### Security
+
 - **GitHub Actions**: Pin all dependencies to SHA hashes for supply chain protection
   - `actions/checkout@v4.3.1`
   - `shivammathur/setup-php@v2.36.0`
