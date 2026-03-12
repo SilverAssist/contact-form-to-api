@@ -89,6 +89,10 @@
         this.removeHeaderRow($(e.currentTarget));
       });
 
+      $(document).on("click", ".cf7-api-toggle-header-visibility", (e) => {
+        this.toggleHeaderVisibility($(e.currentTarget));
+      });
+
       $(document).on("click", ".cf7-api-preset-header", (e) => {
         this.addPresetHeader($(e.currentTarget));
       });
@@ -465,6 +469,9 @@
                    placeholder="e.g., Bearer your-api-token">
           </td>
           <td>
+            <button type="button" class="button cf7-api-toggle-header-visibility" title="Show/hide value">
+              <span class="dashicons dashicons-hidden"></span>
+            </button>
             <button type="button" class="button cf7-api-remove-header" title="Remove header">
               <span class="dashicons dashicons-trash"></span>
             </button>
@@ -549,6 +556,27 @@
       setTimeout(() => {
         $targetRow.css("background-color", "");
       }, 1000);
+    }
+
+    /**
+     * Toggle header value visibility between masked and visible
+     *
+     * @since 1.5.0
+     * @param {jQuery} $button The clicked toggle button
+     * @return {void}
+     */
+    toggleHeaderVisibility($button) {
+      const $row = $button.closest("tr");
+      const $input = $row.find(".cf7-header-value");
+      const $icon = $button.find(".dashicons");
+
+      if ($input.attr("type") === "password") {
+        $input.attr("type", "text");
+        $icon.removeClass("dashicons-visibility").addClass("dashicons-hidden");
+      } else {
+        $input.attr("type", "password");
+        $icon.removeClass("dashicons-hidden").addClass("dashicons-visibility");
+      }
     }
 
     /**

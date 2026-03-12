@@ -1099,17 +1099,15 @@ body.cf7-input-type-json .cf7_row[data-cf7index="params"] {
   outline: none;
 }
 
-.cf7-api-headers-table .cf7-api-remove-header {
+.cf7-api-headers-table .cf7-api-remove-header,
+.cf7-api-headers-table .cf7-api-toggle-header-visibility {
   padding: 4px 8px;
   min-height: 28px;
 }
 
-.cf7-api-headers-table .cf7-api-remove-header .dashicons {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-  line-height: 1;
-  vertical-align: middle;
+.cf7-api-headers-table .cf7-api-remove-header .dashicons,
+.cf7-api-headers-table .cf7-api-toggle-header-visibility .dashicons {
+  display: flex;
 }
 
 /* Header action buttons */

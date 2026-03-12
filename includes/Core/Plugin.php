@@ -443,10 +443,9 @@ class Plugin implements LoadableInterface {
 	 * @return array<string> Modified action links.
 	 */
 	public function add_action_links( array $links ): array {
-		// Settings link would point to CF7 form editor.
 		$settings_link = \sprintf(
 			'<a href="%s">%s</a>',
-			\admin_url( 'admin.php?page=wpcf7' ),
+			\admin_url( 'admin.php?page=contact-form-to-api' ),
 			\esc_html__( 'Settings', 'contact-form-to-api' )
 		);
 

@@ -258,13 +258,16 @@ class IntegrationView {
 										placeholder="<?php \esc_attr_e( 'e.g., Authorization', 'contact-form-to-api' ); ?>" />
 								</td>
 								<td>
-									<input type="text"
+									<input type="<?php echo ! empty( $header['value'] ) ? 'password' : 'text'; ?>"
 										name="custom_headers[<?php echo \esc_attr( $index ); ?>][value]"
 										class="cf7-header-value large-text"
 										value="<?php echo \esc_attr( $header['value'] ?? '' ); ?>"
 										placeholder="<?php \esc_attr_e( 'e.g., Bearer your-api-token', 'contact-form-to-api' ); ?>" />
 								</td>
 								<td>
+									<button type="button" class="button cf7-api-toggle-header-visibility" title="<?php \esc_attr_e( 'Show/hide value', 'contact-form-to-api' ); ?>">
+										<span class="dashicons <?php echo ! empty( $header['value'] ) ? 'dashicons-visibility' : 'dashicons-hidden'; ?>"></span>
+									</button>
 									<button type="button" class="button cf7-api-remove-header" title="<?php \esc_attr_e( 'Remove header', 'contact-form-to-api' ); ?>">
 										<span class="dashicons dashicons-trash"></span>
 									</button>
