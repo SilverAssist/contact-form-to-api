@@ -8,7 +8,7 @@
  * @package SilverAssist\ContactFormToAPI
  * @subpackage Infrastructure\ListTable
  * @since 1.1.0
- * @version 2.3.1
+ * @version 2.4.0
  * @author Silver Assist
  */
 

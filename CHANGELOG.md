@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [2.4.0] - 2026-03-12
 
 - **Asset Minification Pipeline**: Automatic `.min.css` / `.min.js` loading via `SCRIPT_DEBUG` detection
   - New `AssetHelper` class centralizes asset URL resolution with minification support
