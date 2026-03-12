@@ -14,6 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Admin;
 
+use SilverAssist\ContactFormToAPI\Core\AssetHelper;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\Plugin;
 use SilverAssist\ContactFormToAPI\View\Admin\Settings\SettingsView;
@@ -219,8 +220,8 @@ class SettingsPage implements LoadableInterface {
 
 		\wp_enqueue_style(
 			Plugin::SLUG . '-settings',
-			CF7_API_URL . 'assets/css/settings-page.css',
-			array(),
+			AssetHelper::get_url( 'assets/css/settings-page.css' ),
+			array( 'cf7-api-variables' ),
 			CF7_API_VERSION
 		);
 	}

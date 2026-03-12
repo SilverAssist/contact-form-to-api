@@ -15,6 +15,7 @@
 namespace SilverAssist\ContactFormToAPI\Controller\Admin;
 
 use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\Core\AssetHelper;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Infrastructure\ListTable\RequestLogTable;
 use SilverAssist\ContactFormToAPI\Service\Api\ApiClient;
@@ -672,14 +673,14 @@ class LogsController implements LoadableInterface {
 
 		\wp_enqueue_style(
 			'cf7-request-log-admin',
-			CF7_API_URL . 'assets/css/request-log.css',
-			array(),
+			AssetHelper::get_url( 'assets/css/request-log.css' ),
+			array( 'cf7-api-variables' ),
 			CF7_API_VERSION
 		);
 
 		\wp_enqueue_script(
 			'cf7-api-log-admin',
-			CF7_API_URL . 'assets/js/api-log-admin.js',
+			AssetHelper::get_url( 'assets/js/api-log-admin.js' ),
 			array( 'jquery' ),
 			CF7_API_VERSION,
 			true

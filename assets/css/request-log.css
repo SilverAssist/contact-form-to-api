@@ -408,32 +408,38 @@
 	margin-top: 20px;
 }
 
-/* Filters - Following WordPress wp-filter pattern */
+/* Filters - Following status-card pattern (SKILL.md) */
 .cf7-api-filters {
-	background: #fff;
-	border: 1px solid #c3c4c7;
-	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
-	margin: 20px 0;
+	background: var(--cf7-api-bg-primary);
+	border: 1px solid var(--cf7-api-border-primary);
+	border-radius: var(--cf7-api-radius-lg);
+	box-shadow: var(--cf7-api-shadow-card);
+	transition: box-shadow var(--cf7-api-transition-fast);
+	margin: var(--cf7-api-spacing-2xl) 0;
 	padding: 0;
+}
+
+.cf7-api-filters:hover {
+	box-shadow: var(--cf7-api-shadow-card-hover);
 }
 
 .cf7-api-filters .filter-controls {
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
-	gap: 15px;
-	padding: 15px 20px;
+	gap: var(--cf7-api-spacing-xl);
+	padding: var(--cf7-api-spacing-xl) var(--cf7-api-spacing-2xl);
 }
 
 .cf7-api-filters .filter-group {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--cf7-api-spacing-md);
 }
 
 .cf7-api-filters .filter-label {
-	font-weight: 600;
-	color: #1d2327;
+	font-weight: var(--cf7-api-font-weight-semibold);
+	color: var(--cf7-api-text-primary);
 	margin: 0;
 	white-space: nowrap;
 }
@@ -446,22 +452,22 @@
 .cf7-api-filters .custom-date-range {
 	display: flex;
 	align-items: center;
-	gap: 8px;
-	padding-left: 15px;
-	border-left: 2px solid #dcdcde;
+	gap: var(--cf7-api-spacing-md);
+	padding-left: var(--cf7-api-spacing-xl);
+	border-left: 2px solid var(--cf7-api-border-light);
 }
 
 .cf7-api-filters .custom-date-range label {
 	margin: 0;
-	font-weight: 500;
-	color: #646970;
+	font-weight: var(--cf7-api-font-weight-medium);
+	color: var(--cf7-api-text-muted);
 }
 
 .cf7-api-filters .date-input {
-	padding: 4px 8px;
-	border: 1px solid #8c8f94;
-	border-radius: 3px;
-	font-size: 14px;
+	padding: var(--cf7-api-spacing-sm) var(--cf7-api-spacing-md);
+	border: 1px solid var(--cf7-api-border-input);
+	border-radius: var(--cf7-api-radius-sm);
+	font-size: var(--cf7-api-font-size-lg);
 	margin: 0;
 }
 
@@ -469,54 +475,54 @@
 	margin: 0;
 }
 
-/* Filtered By - WordPress pattern for active filters */
+/* Filtered By - Active filters bar */
 .cf7-api-filters .filtered-by {
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
-	gap: 10px;
-	padding: 12px 20px;
-	background: #f6f7f7;
-	border-top: 1px solid #c3c4c7;
+	gap: var(--cf7-api-spacing-md);
+	padding: var(--cf7-api-spacing-lg) var(--cf7-api-spacing-2xl);
+	background: var(--cf7-api-bg-secondary);
+	border-top: 1px solid var(--cf7-api-border-primary);
 }
 
 .cf7-api-filters .filtered-by > span {
-	font-weight: 600;
-	color: #1d2327;
+	font-weight: var(--cf7-api-font-weight-semibold);
+	color: var(--cf7-api-text-primary);
 }
 
 .cf7-api-filters .filtered-by .tags {
 	display: flex;
 	align-items: center;
 	flex-wrap: wrap;
-	gap: 8px;
+	gap: var(--cf7-api-spacing-md);
 }
 
 .cf7-api-filters .filtered-by .tag {
 	display: inline-flex;
 	align-items: center;
-	gap: 4px;
-	padding: 4px 8px;
-	border: 1px solid #dcdcde;
-	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
-	background: #fff;
-	font-size: 12px;
-	color: #1d2327;
-	border-radius: 2px;
+	gap: var(--cf7-api-spacing-sm);
+	padding: var(--cf7-api-spacing-sm) var(--cf7-api-spacing-md);
+	border: 1px solid var(--cf7-api-border-light);
+	box-shadow: var(--cf7-api-shadow-card);
+	background: var(--cf7-api-bg-primary);
+	font-size: var(--cf7-api-font-size-sm);
+	color: var(--cf7-api-text-primary);
+	border-radius: var(--cf7-api-radius-sm);
 }
 
 .cf7-api-filters .filtered-by .tag .remove-tag {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	margin-left: 2px;
-	color: #646970;
+	margin-left: var(--cf7-api-spacing-xs);
+	color: var(--cf7-api-text-muted);
 	text-decoration: none;
 	line-height: 1;
 }
 
 .cf7-api-filters .filtered-by .tag .remove-tag:hover {
-	color: #d63638;
+	color: var(--cf7-api-error-primary);
 }
 
 .cf7-api-filters .filtered-by .tag .remove-tag .dashicons {
@@ -526,13 +532,13 @@
 }
 
 .cf7-api-filters .filtered-by .clear-filters {
-	color: #2271b1;
+	color: var(--cf7-api-color-primary);
 	text-decoration: none;
-	font-size: 13px;
+	font-size: var(--cf7-api-font-size-base);
 }
 
 .cf7-api-filters .filtered-by .clear-filters:hover {
-	color: #135e96;
+	color: var(--cf7-api-color-primary-hover);
 	text-decoration: underline;
 }
 
@@ -557,8 +563,8 @@
 		align-items: stretch;
 		padding-left: 0;
 		border-left: none;
-		padding-top: 10px;
-		border-top: 1px solid #dcdcde;
+		padding-top: var(--cf7-api-spacing-md);
+		border-top: 1px solid var(--cf7-api-border-light);
 		width: 100%;
 	}
 

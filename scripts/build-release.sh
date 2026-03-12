@@ -62,6 +62,20 @@ ZIP_FILE="${PLUGIN_SLUG}-v${VERSION}.zip"
 rm -rf "$BUILD_DIR"
 mkdir -p "$PLUGIN_DIR"
 
+# ─── Minify assets ─────────────────────────────────────────────────────────────
+
+if [ -f "${PROJECT_ROOT}/package.json" ]; then
+    echo -e "${YELLOW}🔧 Building minified assets...${NC}"
+    cd "$PROJECT_ROOT"
+
+    if [ ! -d "node_modules" ]; then
+        npm install --no-audit --no-fund
+    fi
+
+    npm run build
+    echo -e "${GREEN}  ✅ Assets minified${NC}"
+fi
+
 # ─── Copy plugin files ───────────────────────────────────────────────────────
 
 echo -e "${YELLOW}📋 Copying plugin files...${NC}"
@@ -166,6 +180,17 @@ if [ ! -f "$PLUGIN_DIR/vendor/silverassist/wp-github-updater/assets/js/check-upd
     ERRORS=$((ERRORS + 1))
 else
     echo "  ✅ GitHub Updater JS"
+fi
+
+# Validate minified assets exist.
+for min_file in assets/css/admin.min.css assets/css/variables.min.css assets/js/admin.min.js; do
+    if [ ! -f "$PLUGIN_DIR/$min_file" ]; then
+        echo -e "${RED}  ❌ Missing minified file: ${min_file}${NC}"
+        ERRORS=$((ERRORS + 1))
+    fi
+done
+if [ $ERRORS -eq 0 ]; then
+    echo "  ✅ Minified assets"
 fi
 
 if [ $ERRORS -gt 0 ]; then

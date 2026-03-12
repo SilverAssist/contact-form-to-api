@@ -13,6 +13,11 @@ pids
 
 # Dependency directories
 node_modules/
+
+# Minified assets (generated at build time)
+assets/css/*.min.css
+assets/js/*.min.js
+package-lock.json
 vendor/
 !vendor/autoload.php
 !vendor/composer/

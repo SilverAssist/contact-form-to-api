@@ -115,7 +115,7 @@ class IntegrationView {
 
 		<div class="cf7_row">
 			<label for="wpcf7-sf-base-url">
-				<?php \esc_html_e( 'Base URL', 'contact-form-to-api' ); ?>
+				<span class="cf7-label-in"><?php \esc_html_e( 'Base URL', 'contact-form-to-api' ); ?></span>
 				<input type="text" id="wpcf7-sf-base-url" name="wpcf7-sf[base_url]" class="large-text"
 					value="<?php echo \esc_attr( $wpcf7_api_data['base_url'] ); ?>" />
 			</label>
@@ -186,7 +186,7 @@ class IntegrationView {
 
 		<div class="cf7_row">
 			<label for="wpcf7-retry-max-retries">
-				<?php \esc_html_e( 'Maximum Retries', 'contact-form-to-api' ); ?>
+				<span class="cf7-label-in"><?php \esc_html_e( 'Maximum Retries', 'contact-form-to-api' ); ?></span>
 				<input type="number" id="wpcf7-retry-max-retries" name="retry_config[max_retries]"
 					min="0" max="10" value="<?php echo \esc_attr( $retry_config['max_retries'] ); ?>" />
 			</label>
@@ -195,7 +195,7 @@ class IntegrationView {
 
 		<div class="cf7_row">
 			<label for="wpcf7-retry-delay">
-				<?php \esc_html_e( 'Retry Delay (seconds)', 'contact-form-to-api' ); ?>
+				<span class="cf7-label-in"><?php \esc_html_e( 'Retry Delay (seconds)', 'contact-form-to-api' ); ?></span>
 				<input type="number" id="wpcf7-retry-delay" name="retry_config[retry_delay]"
 					min="1" max="60" value="<?php echo \esc_attr( $retry_config['retry_delay'] ); ?>" />
 			</label>
@@ -204,8 +204,8 @@ class IntegrationView {
 
 		<div class="cf7_row">
 			<label for="wpcf7-retry-on-timeout">
+				<span class="cf7-label-in"><?php \esc_html_e( 'Retry on timeout errors', 'contact-form-to-api' ); ?></span>
 				<input type="checkbox" id="wpcf7-retry-on-timeout" name="retry_config[retry_on_timeout]" <?php \checked( $retry_config['retry_on_timeout'], true ); ?> />
-				<?php \esc_html_e( 'Retry on timeout errors', 'contact-form-to-api' ); ?>
 			</label>
 			<p class="description"><?php \esc_html_e( 'Automatically retry when API request times out.', 'contact-form-to-api' ); ?></p>
 		</div>

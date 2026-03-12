@@ -14,6 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Infrastructure\Widget;
 
+use SilverAssist\ContactFormToAPI\Core\AssetHelper;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
 use SilverAssist\ContactFormToAPI\View\Admin\Dashboard\DashboardWidgetView;
@@ -157,8 +158,8 @@ class DashboardWidget implements LoadableInterface {
 
 		\wp_enqueue_style(
 			'cf7-dashboard-widget',
-			CF7_API_URL . 'assets/css/dashboard-widget.css',
-			array(),
+			AssetHelper::get_url( 'assets/css/dashboard-widget.css' ),
+			array( 'cf7-api-variables' ),
 			CF7_API_VERSION
 		);
 	}

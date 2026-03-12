@@ -1,0 +1,91 @@
+/**
+ * Contact Form 7 to API - CSS Custom Properties
+ *
+ * Shared design tokens for all plugin admin stylesheets.
+ * Follows the Silver Assist dashboard-styles SKILL.md patterns for visual
+ * consistency across all Silver Assist plugins.
+ *
+ * @package ContactFormToAPI
+ * @since 2.4.0
+ * @author Silver Assist
+ * @license Polyform-Noncommercial-1.0.0
+ */
+
+:root {
+	/* Colors - Primary */
+	--cf7-api-color-primary: #2271b1;
+	--cf7-api-color-primary-hover: #135e96;
+
+	/* Colors - Status: Success */
+	--cf7-api-success-bg-light: #d4edda;
+	--cf7-api-success-text: #155724;
+	--cf7-api-success-border-light: #c3e6cb;
+	--cf7-api-success-primary: #00a32a;
+
+	/* Colors - Status: Error */
+	--cf7-api-error-bg-light: #f8d7da;
+	--cf7-api-error-text: #721c24;
+	--cf7-api-error-border-light: #f5c6cb;
+	--cf7-api-error-primary: #d63638;
+
+	/* Colors - Status: Warning */
+	--cf7-api-warning-bg-light: #fff3cd;
+	--cf7-api-warning-text: #856404;
+	--cf7-api-warning-border: #ffeaa7;
+	--cf7-api-warning-primary: #dba617;
+
+	/* Colors - Text */
+	--cf7-api-text-primary: #1d2327;
+	--cf7-api-text-secondary: #50575e;
+	--cf7-api-text-muted: #646970;
+
+	/* Colors - Background */
+	--cf7-api-bg-primary: #ffffff;
+	--cf7-api-bg-secondary: #f6f7f7;
+	--cf7-api-bg-tertiary: #f0f0f1;
+
+	/* Colors - Borders */
+	--cf7-api-border-primary: #c3c4c7;
+	--cf7-api-border-input: #8c8f94;
+	--cf7-api-border-light: #dcdcde;
+	--cf7-api-border-lightest: #f0f0f0;
+
+	/* Spacing */
+	--cf7-api-spacing-xs: 2px;
+	--cf7-api-spacing-sm: 4px;
+	--cf7-api-spacing-md: 8px;
+	--cf7-api-spacing-lg: 12px;
+	--cf7-api-spacing-xl: 16px;
+	--cf7-api-spacing-2xl: 20px;
+	--cf7-api-spacing-3xl: 24px;
+
+	/* Typography */
+	--cf7-api-font-size-xs: 11px;
+	--cf7-api-font-size-sm: 12px;
+	--cf7-api-font-size-base: 13px;
+	--cf7-api-font-size-lg: 14px;
+	--cf7-api-font-size-xl: 16px;
+	--cf7-api-font-size-2xl: 18px;
+	--cf7-api-font-weight-normal: 400;
+	--cf7-api-font-weight-medium: 500;
+	--cf7-api-font-weight-semibold: 600;
+	--cf7-api-font-weight-bold: 700;
+	--cf7-api-letter-spacing-tight: 0.3px;
+	--cf7-api-letter-spacing-normal: 0.5px;
+
+	/* Border Radius */
+	--cf7-api-radius-sm: 3px;
+	--cf7-api-radius-base: 4px;
+	--cf7-api-radius-lg: 8px;
+	--cf7-api-radius-pill: 20px;
+
+	/* Shadows */
+	--cf7-api-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+	--cf7-api-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.12);
+
+	/* Transitions */
+	--cf7-api-transition-fast: 0.2s;
+
+	/* Fluid Spacing */
+	--cf7-api-fluid-spacing: clamp(1rem, 2.5vw, 1.5rem);
+}

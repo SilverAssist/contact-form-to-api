@@ -322,28 +322,38 @@ body.cf7-input-type-json .cf7_row[data-cf7index="params"] {
   }
 }
 
-/* Additional form styling */
+/* Additional form styling - follows status-card pattern (SKILL.md) */
 #cf7-api-integration fieldset {
-  margin-bottom: 25px;
-  padding: 20px;
-  border: 1px solid #e1e1e1;
-  border-radius: 4px;
-  background: #fff;
+  background: var(--cf7-api-bg-primary);
+  border: 1px solid var(--cf7-api-border-primary);
+  border-radius: var(--cf7-api-radius-lg);
+  padding: var(--cf7-api-fluid-spacing);
+  box-shadow: var(--cf7-api-shadow-card);
+  transition: box-shadow var(--cf7-api-transition-fast);
+  margin-bottom: var(--cf7-api-spacing-2xl);
+}
+
+#cf7-api-integration fieldset:hover {
+  box-shadow: var(--cf7-api-shadow-card-hover);
 }
 
 #cf7-api-integration fieldset legend {
-  padding: 0 10px;
-  font-weight: 600;
-  color: #555;
+  padding: 0 var(--cf7-api-spacing-md);
+  font-weight: var(--cf7-api-font-weight-semibold);
+  color: var(--cf7-api-text-secondary);
 }
 
 #cf7-api-integration h2 {
-  margin: 0 0 15px 0;
-  padding: 0;
-  font-size: 18px;
-  color: #333;
-  border-bottom: 1px solid #e1e1e1;
-  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: var(--cf7-api-spacing-md);
+  margin: 0 0 var(--cf7-api-spacing-lg);
+  padding: 0 0 var(--cf7-api-spacing-md);
+  border-bottom: 1px solid var(--cf7-api-border-light);
+  font-size: var(--cf7-api-font-size-xl);
+  font-weight: var(--cf7-api-font-weight-semibold);
+  color: var(--cf7-api-text-primary);
+  line-height: 1.3;
 }
 
 /* Improved accessibility */

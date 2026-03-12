@@ -14,6 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Controller\ContactForm;
 
+use SilverAssist\ContactFormToAPI\Core\AssetHelper;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Service\ContactForm\SubmissionProcessor;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
@@ -530,18 +531,16 @@ class SubmissionController implements LoadableInterface {
 			return;
 		}
 
-		$plugin_url = CF7_API_URL;
-
 		\wp_enqueue_style(
 			'cf7-api-admin',
-			"{$plugin_url}assets/css/admin.css",
-			array(),
+			AssetHelper::get_url( 'assets/css/admin.css' ),
+			array( 'cf7-api-variables' ),
 			CF7_API_VERSION
 		);
 
 		\wp_enqueue_script(
 			'cf7-api-admin',
-			"{$plugin_url}assets/js/admin.js",
+			AssetHelper::get_url( 'assets/js/admin.js' ),
 			array( 'jquery' ),
 			CF7_API_VERSION,
 			true

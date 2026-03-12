@@ -68,6 +68,7 @@ if [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
     echo "  • PHP files @version tags"
     echo "  • CSS and JavaScript files"
     echo "  • Documentation files"
+    echo "  • package.json"
     echo "  • Script files"
     echo ""
     exit 0
@@ -358,6 +359,18 @@ else
     print_warning "README.md not found"
 fi
 
+# 7. Update package.json version
+print_status "Updating package.json..."
+
+if [ -f "${PROJECT_ROOT}/package.json" ]; then
+    update_file "${PROJECT_ROOT}/package.json" \
+        "s/\"version\": \"[0-9]+\\.[0-9]+\\.[0-9]+\"/\"version\": \"${NEW_VERSION}\"/g" \
+        "package.json version"
+    print_success "package.json processed"
+else
+    print_status "package.json not found"
+fi
+
 echo ""
 print_success "✨ Version update completed successfully!"
 
@@ -389,6 +402,7 @@ echo "  • PHP files: includes/**/*.php"
 echo "  • CSS files: assets/css/*.css"
 echo "  • JavaScript files: assets/js/*.js"
 echo "  • Documentation: README.md (if applicable)"
+echo "  • Package: package.json"
 echo "  • Version scripts: scripts/*.sh"
 echo ""
 print_status "Next steps:"

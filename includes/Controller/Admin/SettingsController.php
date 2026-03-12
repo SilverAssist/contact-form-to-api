@@ -15,6 +15,7 @@
 namespace SilverAssist\ContactFormToAPI\Controller\Admin;
 
 use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\Core\AssetHelper;
 use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Core\Plugin;
 use SilverAssist\ContactFormToAPI\Service\Migration\MigrationService;
@@ -146,7 +147,7 @@ class SettingsController implements LoadableInterface {
 		// Enqueue JavaScript for test email button.
 		\wp_enqueue_script(
 			'cf7-api-settings',
-			CF7_API_URL . 'assets/js/settings-page.js',
+			AssetHelper::get_url( 'assets/js/settings-page.js' ),
 			array( 'jquery' ),
 			CF7_API_VERSION,
 			true
@@ -172,7 +173,7 @@ class SettingsController implements LoadableInterface {
 		// Enqueue migration JavaScript.
 		\wp_enqueue_script(
 			'cf7-api-migration',
-			CF7_API_URL . 'assets/js/migration.js',
+			AssetHelper::get_url( 'assets/js/migration.js' ),
 			array( 'jquery' ),
 			CF7_API_VERSION,
 			true

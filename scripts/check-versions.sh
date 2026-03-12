@@ -234,6 +234,29 @@ else
 fi
 
 echo ""
+
+# 7. Check package.json version
+print_status "Checking package.json..."
+
+if [ -f "${PROJECT_ROOT}/package.json" ]; then
+    PACKAGE_VERSION=$(grep '"version"' "${PROJECT_ROOT}/package.json" | grep -o "${VERSION_REGEX}" | head -1)
+    if [ -n "$PACKAGE_VERSION" ]; then
+        TOTAL_FILES=$((TOTAL_FILES + 1))
+        if [ "$PACKAGE_VERSION" = "$MAIN_VERSION" ]; then
+            print_success "✓ package.json version: $PACKAGE_VERSION"
+            CONSISTENT_FILES=$((CONSISTENT_FILES + 1))
+        else
+            print_error "✗ package.json version: $PACKAGE_VERSION - Expected: $MAIN_VERSION"
+            INCONSISTENT_FILES=$((INCONSISTENT_FILES + 1))
+        fi
+    else
+        print_warning "⚠ No version field found in package.json"
+    fi
+else
+    print_status "package.json not found"
+fi
+
+echo ""
 echo "=================================================="
 echo "VERSION CONSISTENCY REPORT"
 echo "=================================================="
