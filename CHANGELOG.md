@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Asset Minification Pipeline**: Automatic `.min.css` / `.min.js` loading via `SCRIPT_DEBUG` detection
+  - New `AssetHelper` class centralizes asset URL resolution with minification support
+  - PostCSS + cssnano for CSS minification, Grunt + uglify for JS minification
+  - Standalone `minify-assets-npm.sh` script for local builds
+  - Release build script now generates and validates minified assets
+- **CSS Design Tokens**: Shared `variables.css` with CSS custom properties for consistent theming
+  - Registered globally as dependency for all plugin stylesheets
+  - Covers colors, spacing, typography, borders, shadows, and transitions
+
+### Changed
+
+- **Asset Loading**: All enqueue calls (6 PHP files) now use `AssetHelper::get_url()`
+- **CSS Refactoring**: Fieldset and filters sections updated to use CSS variables
+- **Version Scripts**: `check-versions.sh` and `update-version-simple.sh` now verify and update `package.json` version
+
+### Fixed
+
+- **Settings Link**: Plugin list Settings link now points to the correct admin page
+- **Security**: Custom header values masked by default with password input and eye toggle to reveal
+
 ## [2.3.1] - 2026-03-09
 
 ### Changed
