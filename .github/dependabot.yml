@@ -61,3 +61,25 @@ updates:
         update-types:
           - "minor"
           - "patch"
+
+  # npm dependency updates
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "11:00"
+      timezone: "America/Mexico_City"
+    labels:
+      - "dependencies"
+      - "npm"
+      - "automated"
+    open-pull-requests-limit: 5
+
+    # Group all npm dev dependencies together
+    groups:
+      npm-dev-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"

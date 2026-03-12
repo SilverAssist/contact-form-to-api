@@ -1,6 +1,6 @@
 {
   "name": "contact-form-to-api",
-  "version": "2.4.1",
+  "version": "2.4.0",
   "description": "Extend Contact Form 7 functionality by connecting forms to external APIs",
   "main": "contact-form-to-api.php",
   "scripts": {
