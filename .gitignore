@@ -17,7 +17,7 @@ node_modules/
 # Minified assets (generated at build time)
 assets/css/*.min.css
 assets/js/*.min.js
-package-lock.json
+# package-lock.json tracked for CI/CD dependency caching
 vendor/
 !vendor/autoload.php
 !vendor/composer/
