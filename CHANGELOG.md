@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.1] - 2026-03-12
+
+### Fixed
+
+- **CI/CD**: Track `package-lock.json` for npm caching in GitHub Actions release workflow
+
 ## [2.4.0] - 2026-03-12
 
 - **Asset Minification Pipeline**: Automatic `.min.css` / `.min.js` loading via `SCRIPT_DEBUG` detection
