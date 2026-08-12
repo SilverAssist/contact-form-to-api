@@ -15,9 +15,9 @@
 namespace SilverAssist\ContactFormToAPI\Service\Security;
 
 use SilverAssist\ContactFormToAPI\Config\Settings;
-use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Exception\DecryptionException;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
+use SilverAssist\PluginKernel\Interfaces\LoadableInterface;
 
 \defined( 'ABSPATH' ) || exit;
 

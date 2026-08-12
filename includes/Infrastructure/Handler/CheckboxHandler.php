@@ -14,8 +14,8 @@
 
 namespace SilverAssist\ContactFormToAPI\Infrastructure\Handler;
 
-use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Utils\StringHelper;
+use SilverAssist\PluginKernel\Interfaces\LoadableInterface;
 
 defined( 'ABSPATH' ) || exit;
 

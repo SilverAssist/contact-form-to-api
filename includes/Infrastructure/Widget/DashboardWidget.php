@@ -15,9 +15,9 @@
 namespace SilverAssist\ContactFormToAPI\Infrastructure\Widget;
 
 use SilverAssist\ContactFormToAPI\Core\AssetHelper;
-use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogStatistics;
 use SilverAssist\ContactFormToAPI\View\Admin\Dashboard\DashboardWidgetView;
+use SilverAssist\PluginKernel\Interfaces\LoadableInterface;
 
 \defined( 'ABSPATH' ) || exit;
 
