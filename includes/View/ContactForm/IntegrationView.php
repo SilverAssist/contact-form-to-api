@@ -573,13 +573,13 @@ class IntegrationView {
 				<textarea rows="1"><?php echo \esc_textarea( \trim( $debug_info['url'] ?? '' ) ); ?></textarea>
 
 				<h4><?php \esc_html_e( 'Params', 'contact-form-to-api' ); ?>:</h4>
-				<textarea rows="10"><?php echo \esc_textarea( \print_r( $debug_info['params'] ?? '', true ) ); ?></textarea>
+				<textarea rows="10"><?php echo \esc_textarea( \print_r( $debug_info['params'] ?? '', true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- intentional admin-facing debug panel (this method's whole purpose), not leftover dev code; output is esc_textarea()'d. ?></textarea>
 
 				<h4><?php \esc_html_e( 'Remote server result', 'contact-form-to-api' ); ?>:</h4>
-				<textarea rows="10"><?php echo \esc_textarea( \print_r( $debug_info['result'] ?? '', true ) ); ?></textarea>
+				<textarea rows="10"><?php echo \esc_textarea( \print_r( $debug_info['result'] ?? '', true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r ?></textarea>
 
 				<h4><?php \esc_html_e( 'Error logs', 'contact-form-to-api' ); ?>:</h4>
-				<textarea rows="10"><?php echo \esc_textarea( \print_r( $debug_info['errors'] ?? '', true ) ); ?></textarea>
+				<textarea rows="10"><?php echo \esc_textarea( \print_r( $debug_info['errors'] ?? '', true ) ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r ?></textarea>
 			</div>
 		</div>
 		<?php

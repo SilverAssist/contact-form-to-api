@@ -25,10 +25,16 @@
         <exclude name="Universal.Operators.DisallowShortTernary"/>
         <!-- Allow non-Yoda conditions (modern PHP) -->
         <exclude name="WordPress.PHP.YodaConditions"/>
-        <!-- Allow development functions in test helpers -->
-        <exclude name="WordPress.PHP.DevelopmentFunctions"/>
-        <!-- Allow eval in test helpers (for dynamic assertions) -->
-        <exclude name="Squiz.PHP.Eval"/>
+    </rule>
+
+    <!-- Development functions and eval() are only allowed in tests/ (dynamic
+         assertions, test doubles). Stays enforced in includes/, unlike the
+         repo-wide exceptions above. -->
+    <rule ref="WordPress.PHP.DevelopmentFunctions">
+        <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+    <rule ref="Squiz.PHP.Eval">
+        <exclude-pattern>tests/*</exclude-pattern>
     </rule>
 
     <!-- Minimum WordPress version -->

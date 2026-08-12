@@ -61,12 +61,8 @@
 		}
 	},
 	"scripts": {
-		"lint": [
-			"phpcs --standard=WordPress --extensions=php --ignore=vendor/,node_modules/,tests/ ."
-		],
-		"lint:fix": [
-			"phpcbf --standard=WordPress --extensions=php --ignore=vendor/,node_modules/,tests/ ."
-		],
+		"lint": "@phpcs",
+		"lint:fix": "@phpcbf",
 		"phpcs": "phpcs",
 		"phpcbf": "phpcbf",
 		"phpstan": "phpstan analyse includes/ --level=8",
@@ -92,8 +88,8 @@
 		]
 	},
 	"scripts-descriptions": {
-		"lint": "Run PHP CodeSniffer with WordPress coding standards",
-		"lint:fix": "Fix PHP CodeSniffer issues automatically",
+		"lint": "Alias for phpcs (uses phpcs.xml's SilverAssistWP ruleset)",
+		"lint:fix": "Alias for phpcbf",
 		"phpcs": "Run PHP CodeSniffer",
 		"phpcbf": "Fix PHP CodeSniffer issues automatically",
 		"phpstan": "Run PHPStan static analysis",

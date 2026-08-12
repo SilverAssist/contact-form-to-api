@@ -161,16 +161,16 @@ class Settings implements LoadableInterface {
 	/**
 	 * Get specific setting value
 	 *
-	 * @param string $key           Setting key.
-	 * @param mixed  $default_value Default value if setting doesn't exist.
+	 * @param string $key     Setting key.
+	 * @param mixed  $default Default value if setting doesn't exist.
 	 * @return mixed Setting value.
 	 */
-	public function get( string $key, $default_value = null ) {
+	public function get( string $key, $default = null ) { // phpcs:ignore Universal.NamingConventions.NoReservedKeywordParameterNames.defaultFound -- $default is public API; renaming it breaks PHP 8 named-argument callers (get(key: ..., default: ...)).
 		if ( ! $this->initialized ) {
 			$this->init();
 		}
 
-		return $this->settings[ $key ] ?? $default_value;
+		return $this->settings[ $key ] ?? $default;
 	}
 
 	/**
