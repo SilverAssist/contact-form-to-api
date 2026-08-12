@@ -551,12 +551,16 @@ class SubmissionController implements LoadableInterface {
 	 * Collect mail tags from form
 	 *
 	 * @since 2.0.0
-	 * @param WPCF7_ContactForm      $form The contact form object to scan for tags.
-	 * @param array<string, mixed>  $args Optional arguments to filter tags by type.
+	 * @param WPCF7_ContactForm    $form The contact form object to scan for tags.
+	 * @param array<string, mixed> $args Optional arguments to filter tags by type.
 	 * @return array<int, array<string, string>> Array of WPCF7_FormTag objects for use in templates.
 	 */
 	private function get_mail_tags( WPCF7_ContactForm $form, array $args ): array {
-		/** @var array<array{type: string, name: string}> $tags */
+		/**
+		 * Raw scanned form tags, narrowed after the filter runs.
+		 *
+		 * @var array<array{type: string, name: string}> $tags
+		 */
 		$tags = \apply_filters( 'cf7_api_collect_mail_tags', $form->scan_form_tags() );
 
 		$mailtags = array();

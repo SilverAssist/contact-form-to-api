@@ -347,6 +347,7 @@ class LogStatisticsTest extends TestCase {
 	 * Test different error status types are counted as failed
 	 *
 	 * @dataProvider errorStatusProvider
+	 * @param int $http_code HTTP status code under test.
 	 */
 	public function testDifferentErrorStatusesCountedAsFailed( int $http_code ): void {
 		$form_id = \wp_rand( 100000, 999999 );

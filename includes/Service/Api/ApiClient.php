@@ -287,7 +287,7 @@ class ApiClient implements LoadableInterface {
 	 * Creates a new log entry linked to the original via retry_of.
 	 *
 	 * @since 1.2.0
-	 * @param int $log_id Original log entry ID to retry
+	 * @param int $log_id Original log entry ID to retry.
 	 * @return array<string, mixed> Result with success status and details
 	 */
 	public function retry_from_log( int $log_id ): array {
@@ -302,7 +302,7 @@ class ApiClient implements LoadableInterface {
 			);
 		}
 
-		// Build request configuration with retry_of set
+		// Build request configuration with retry_of set.
 		$config = array(
 			'url'      => $request_data['url'],
 			'method'   => $request_data['method'],
@@ -313,7 +313,7 @@ class ApiClient implements LoadableInterface {
 		);
 
 		// Determine content type based on Content-Type header
-		// Determine content type based on Content-Type header (case-insensitive lookup per RFC 7230)
+		// Determine content type based on Content-Type header (case-insensitive lookup per RFC 7230).
 		$content_type        = 'params';
 		$content_type_header = null;
 
@@ -337,10 +337,10 @@ class ApiClient implements LoadableInterface {
 
 		$config['content_type'] = $content_type;
 
-		// Send the retry request
+		// Send the retry request.
 		$response = $this->send( $config );
 
-		// Determine success based on response
+		// Determine success based on response.
 		if ( \is_wp_error( $response ) ) {
 			return array(
 				'success' => false,
@@ -494,12 +494,12 @@ class ApiClient implements LoadableInterface {
 	/**
 	 * Execute request with retry logic
 	 *
-	 * @param string                      $url          Request URL.
-	 * @param string                      $method       HTTP method.
-	 * @param array<string, mixed>        $args         Request arguments.
-	 * @param array<string, mixed>        $retry_config Retry configuration.
-	 * @param LogWriter|null              $log_writer   Log writer instance.
-	 * @param int|false                   $log_id       Log entry ID.
+	 * @param string               $url          Request URL.
+	 * @param string               $method       HTTP method.
+	 * @param array<string, mixed> $args         Request arguments.
+	 * @param array<string, mixed> $retry_config Retry configuration.
+	 * @param LogWriter|null       $log_writer   Log writer instance.
+	 * @param int|false            $log_id       Log entry ID.
 	 * @return array<string, mixed> Response with retry count.
 	 */
 	private function execute_with_retries( string $url, string $method, array $args, array $retry_config, ?LogWriter $log_writer, $log_id ): array {

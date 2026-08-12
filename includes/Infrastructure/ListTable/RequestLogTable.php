@@ -143,6 +143,11 @@ class RequestLogTable extends \WP_List_Table {
 		global $wpdb;
 		$table_name = $wpdb->prefix . 'cf7_api_logs';
 
+		// Read-only GET filter for display, not a state-changing action -- no
+		// nonce needed (same as WP core's own list tables). The one actual
+		// mutation this table triggers, bulk actions, is nonce-verified in
+		// LogsController::process_bulk_actions() before this class ever renders.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$current = isset( $_GET['status'] ) ? \sanitize_text_field( \wp_unslash( $_GET['status'] ) ) : 'all';
 
 		// Get counts for each status.
@@ -250,6 +255,10 @@ class RequestLogTable extends \WP_List_Table {
 	 * When search is active, filtering by name/lastname is done in PHP to respect
 	 * anonymization rules (fields marked as sensitive are not searched).
 	 *
+	 * All $_GET reads below are read-only display filters, not state-changing
+	 * actions -- see the nonce-exemption note on get_views() above for why
+	 * they don't need nonce verification.
+	 *
 	 * @param int $per_page Items per page.
 	 * @param int $paged    Current page.
 	 * @return array{items: array<int, array<string, mixed>>, total: int}
@@ -262,6 +271,12 @@ class RequestLogTable extends \WP_List_Table {
 		$conditions        = array( '1=1' );
 		$values            = array( $table_name ); // First value is table name for %i.
 		$filter_unresolved = false;
+
+		// All $_GET reads below (status/form_id/s filters) are read-only
+		// display filters, not state-changing actions -- see the
+		// nonce-exemption note on get_views() above for why they don't
+		// need nonce verification.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 
 		// Filter by status.
 		if ( isset( $_GET['status'] ) && ! empty( $_GET['status'] ) && 'all' !== $_GET['status'] ) {
@@ -292,6 +307,8 @@ class RequestLogTable extends \WP_List_Table {
 			$search_term = \sanitize_text_field( \wp_unslash( $_GET['s'] ) );
 		}
 
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
 		// Apply date filter.
 		$date_filter = $this->get_date_filter_clause();
 		if ( ! empty( $date_filter['clause'] ) ) {
@@ -304,7 +321,9 @@ class RequestLogTable extends \WP_List_Table {
 		}
 
 		// Get sorting parameters with whitelist validation.
-		$orderby       = isset( $_GET['orderby'] ) ? \sanitize_text_field( \wp_unslash( $_GET['orderby'] ) ) : 'created_at';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$orderby = isset( $_GET['orderby'] ) ? \sanitize_text_field( \wp_unslash( $_GET['orderby'] ) ) : 'created_at';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$order         = isset( $_GET['order'] ) ? \sanitize_text_field( \wp_unslash( $_GET['order'] ) ) : 'DESC';
 		$valid_orderby = array( 'form_id', 'status', 'response_code', 'execution_time', 'retry_count', 'created_at' );
 		$orderby       = \in_array( $orderby, $valid_orderby, true ) ? $orderby : 'created_at';
@@ -355,14 +374,14 @@ class RequestLogTable extends \WP_List_Table {
 	 * marked as sensitive via SensitiveDataPatterns are not searched.
 	 *
 	 * @since 1.3.13
-	 * @param string              $table_name   Table name.
-	 * @param string              $where_clause WHERE clause with placeholders.
-	 * @param array<int, mixed>   $values       Values for placeholders.
-	 * @param string              $orderby      Order by column (whitelist-validated).
-	 * @param string              $order        Sort order (ASC/DESC, whitelist-validated).
-	 * @param string              $search_term  Search term.
-	 * @param int                 $per_page     Items per page.
-	 * @param int                 $paged        Current page.
+	 * @param string            $table_name   Table name.
+	 * @param string            $where_clause WHERE clause with placeholders.
+	 * @param array<int, mixed> $values       Values for placeholders.
+	 * @param string            $orderby      Order by column (whitelist-validated).
+	 * @param string            $order        Sort order (ASC/DESC, whitelist-validated).
+	 * @param string            $search_term  Search term.
+	 * @param int               $per_page     Items per page.
+	 * @param int               $paged        Current page.
 	 * @return array{items: array<int, array<string, mixed>>, total: int}
 	 */
 	private function get_logs_data_with_search(
@@ -685,9 +704,9 @@ class RequestLogTable extends \WP_List_Table {
 			return $email;
 		}
 
-		$parts  = \explode( '@', $email );
-		$local  = $parts[0];
-		$domain = $parts[1] ?? '';
+		// str_contains() above guarantees at least one '@', so explode()
+		// always returns 2 elements here.
+		[ $local, $domain ] = \explode( '@', $email, 2 );
 
 		$local_length = \strlen( $local );
 
@@ -727,9 +746,9 @@ class RequestLogTable extends \WP_List_Table {
 			),
 		);
 
-		// Only show retry action for failed requests that haven't been successfully retried
+		// Only show retry action for failed requests that haven't been successfully retried.
 		if ( 'error' === $item['status'] || 'client_error' === $item['status'] || 'server_error' === $item['status'] ) {
-			// Check if already successfully retried using cached logger instance
+			// Check if already successfully retried using cached logger instance.
 			if ( ! $this->retry_manager->has_successful_retry( (int) $item['id'] ) ) {
 				$actions['retry'] = \sprintf(
 					'<a href="%s">%s</a>',

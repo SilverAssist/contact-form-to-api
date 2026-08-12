@@ -505,11 +505,11 @@ class EmailAlertService implements LoadableInterface {
 			),
 			\admin_url( 'admin.php' )
 		);
-		$site_name         = \get_bloginfo( 'name' );
-		$timestamp         = ! empty( $log['created_at'] ) ? $log['created_at'] : \current_time( 'mysql' );
-		$endpoint          = ! empty( $log['endpoint'] ) ? $log['endpoint'] : \__( 'N/A', 'contact-form-to-api' );
-		$error_message     = ! empty( $log['error_message'] ) ? $log['error_message'] : \__( 'Unknown error', 'contact-form-to-api' );
-		$response_code     = ! empty( $log['response_code'] ) ? $log['response_code'] : \__( 'N/A', 'contact-form-to-api' );
+		$site_name      = \get_bloginfo( 'name' );
+		$timestamp      = ! empty( $log['created_at'] ) ? $log['created_at'] : \current_time( 'mysql' );
+		$endpoint       = ! empty( $log['endpoint'] ) ? $log['endpoint'] : \__( 'N/A', 'contact-form-to-api' );
+		$error_message  = ! empty( $log['error_message'] ) ? $log['error_message'] : \__( 'Unknown error', 'contact-form-to-api' );
+		$response_code  = ! empty( $log['response_code'] ) ? $log['response_code'] : \__( 'N/A', 'contact-form-to-api' );
 
 		// Start building HTML.
 		$html  = '<html><head><style>';

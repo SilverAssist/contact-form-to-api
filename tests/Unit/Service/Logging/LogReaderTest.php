@@ -267,6 +267,7 @@ class LogReaderTest extends TestCase {
 	 * Test get_request_for_retry with different error statuses
 	 *
 	 * @dataProvider errorStatusProvider
+	 * @param int $http_code HTTP status code under test.
 	 */
 	public function testGetRequestForRetryWithErrorStatuses( int $http_code ): void {
 		$log_id = $this->log_writer->start_request(

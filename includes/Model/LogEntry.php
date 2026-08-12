@@ -136,12 +136,12 @@ class LogEntry {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param int                   $form_id         Form ID.
-	 * @param string                $endpoint        API endpoint URL.
-	 * @param string                $method          HTTP method.
-	 * @param string                $status          Request status.
-	 * @param array<string, mixed>  $request_data    Request data.
-	 * @param array<string, mixed>  $request_headers Request headers.
+	 * @param int                  $form_id         Form ID.
+	 * @param string               $endpoint        API endpoint URL.
+	 * @param string               $method          HTTP method.
+	 * @param string               $status          Request status.
+	 * @param array<string, mixed> $request_data    Request data.
+	 * @param array<string, mixed> $request_headers Request headers.
 	 */
 	public function __construct(
 		int $form_id,

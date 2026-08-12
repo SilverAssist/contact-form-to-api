@@ -169,7 +169,9 @@ class EncryptionService implements LoadableInterface {
 			// Note: sodium_crypto_secretbox always returns string, throws SodiumException on failure.
 			$ciphertext = \sodium_crypto_secretbox( $working_plaintext, $nonce, $this->get_key() );
 
-			// Prepend nonce to ciphertext and encode.
+			// Prepend nonce to ciphertext and encode -- this is transport
+			// encoding for encrypted binary data, not code obfuscation.
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode
 			$encrypted = \base64_encode( $nonce . $ciphertext );
 
 			// Clear sensitive data from memory (only the working copy, not caller's variable).
@@ -221,7 +223,9 @@ class EncryptionService implements LoadableInterface {
 		}
 
 		try {
-			// Decode from base64.
+			// Decode from base64 -- reversing the transport encoding
+			// applied in encrypt(), not deobfuscating code.
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 			$decoded = \base64_decode( $data, true );
 			if ( false === $decoded ) {
 				throw new DecryptionException( 'Invalid base64 encoding' );
@@ -276,7 +280,8 @@ class EncryptionService implements LoadableInterface {
 			return false;
 		}
 
-		// Try to decode.
+		// Try to decode -- format probing, not deobfuscating code.
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
 		$decoded = \base64_decode( $data, true );
 		if ( false === $decoded ) {
 			return false;

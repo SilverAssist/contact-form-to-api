@@ -69,13 +69,13 @@ class LogWriter {
 	 * Only redacts authorization headers for security.
 	 *
 	 * @since 2.0.0
-	 * @param int                    $form_id         Contact Form 7 form ID.
-	 * @param string                 $endpoint        API endpoint URL.
-	 * @param string                 $method          HTTP method (GET, POST, etc.).
-	 * @param mixed                  $request_data    Request body data.
-	 * @param array<string, string>  $request_headers Request headers.
-	 * @param int|null               $retry_of        Original log ID if this is a retry.
-	 * @param float|null             $start_time      Request start time (microtime). If not provided, current time is used.
+	 * @param int                   $form_id         Contact Form 7 form ID.
+	 * @param string                $endpoint        API endpoint URL.
+	 * @param string                $method          HTTP method (GET, POST, etc.).
+	 * @param mixed                 $request_data    Request body data.
+	 * @param array<string, string> $request_headers Request headers.
+	 * @param int|null              $retry_of        Original log ID if this is a retry.
+	 * @param float|null            $start_time      Request start time (microtime). If not provided, current time is used.
 	 * @return int|false Log entry ID or false on failure.
 	 */
 	public function start_request( int $form_id, string $endpoint, string $method, $request_data, array $request_headers = array(), ?int $retry_of = null, ?float $start_time = null ) {
@@ -151,10 +151,10 @@ class LogWriter {
 	 * Updates log entry with response information and execution time.
 	 *
 	 * @since 2.0.0
-	 * @param int                               $log_id      Log entry ID.
+	 * @param int                            $log_id      Log entry ID.
 	 * @param array<string, mixed>|\WP_Error $response    API response or error.
-	 * @param int|null                          $retry_count Number of retry attempts.
-	 * @param float|null                        $start_time  Request start time for calculating execution time. If not provided, execution time will be 0.
+	 * @param int|null                       $retry_count Number of retry attempts.
+	 * @param float|null                     $start_time  Request start time for calculating execution time. If not provided, execution time will be 0.
 	 * @return bool True on success, false on failure.
 	 */
 	public function complete_request( int $log_id, $response, ?int $retry_count = 0, ?float $start_time = null ): bool {

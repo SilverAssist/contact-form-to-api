@@ -257,6 +257,8 @@ class ApiResponseTest extends TestCase {
 	 * Test common HTTP status codes
 	 *
 	 * @dataProvider httpStatusCodeProvider
+	 * @param int  $status_code      HTTP status code under test.
+	 * @param bool $expected_success Expected is_success() result for that code.
 	 */
 	public function testHttpStatusCodes( int $status_code, bool $expected_success ): void {
 		$response = new ApiResponse(

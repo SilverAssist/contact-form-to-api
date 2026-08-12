@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Unit Tests for RequestLogTable Class
  *
@@ -42,11 +41,15 @@ class RequestLogTableTest extends TestCase {
 	/**
 	 * Cleanup method called after each test
 	 *
-	 * Ensures $_GET superglobal is cleaned up even if test fails.
+	 * Ensures $_GET superglobal is cleaned up even if test fails. Several
+	 * tests below set date_filter/date_start/date_end (and RequestLogTable
+	 * itself reads status/form_id/s/orderby/order) -- without an explicit
+	 * reset here those values leak into whichever test runs next.
 	 *
 	 * @return void
 	 */
 	public function tear_down(): void {
+		$_GET = array();
 		parent::tear_down();
 	}
 
@@ -584,7 +587,7 @@ class RequestLogTableTest extends TestCase {
 			'encryption_version' => 0,
 		);
 
-		// Call twice with same ID - should use cache on second call
+		// Call twice with same ID - should use cache on second call.
 		$result1 = $method->invoke( $this->table, $item );
 		$result2 = $method->invoke( $this->table, $item );
 
@@ -605,14 +608,14 @@ class RequestLogTableTest extends TestCase {
 		$method     = $reflection->getMethod( 'extract_sender_info' );
 
 		// Test with default sensitive patterns (password, token, etc.)
-		// These should never match name/email fields by default
+		// These should never match name/email fields by default.
 		$item = array(
 			'id'                 => 9,
 			'request_data'       => \wp_json_encode(
 				array(
 					'name'     => 'TestUser',
 					'email'    => 'test@example.com',
-					'password' => 'secret123', // This should never be extracted
+					'password' => 'secret123', // This should never be extracted.
 				)
 			),
 			'encryption_version' => 0,
@@ -620,7 +623,7 @@ class RequestLogTableTest extends TestCase {
 
 		$result = $method->invoke( $this->table, $item );
 
-		// Name and email should be extracted (not in default sensitive patterns)
+		// Name and email should be extracted (not in default sensitive patterns).
 		$this->assertEquals( 'TestUser', $result['display_name'], 'Name should be extracted when not sensitive' );
 		$this->assertEquals( 'test@example.com', $result['email'], 'Email should be extracted when not sensitive' );
 	}
@@ -741,7 +744,7 @@ class RequestLogTableTest extends TestCase {
 			'Should match case insensitively'
 		);
 
-		// Note: method expects lowercase search term (caller lowercases before calling)
+		// Note: method expects lowercase search term (caller lowercases before calling).
 		$this->assertTrue(
 			$method->invoke( $this->table, $item, 'john' ),
 			'Should match lowercase search against mixed case name'

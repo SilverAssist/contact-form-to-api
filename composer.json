@@ -35,6 +35,8 @@
 		"silverassist/wp-settings-hub": "^1.2"
 	},
 	"require-dev": {
+		"silverassist/coding-standards": "^1.0",
+		"silverassist/wp-coding-standards": "^1.0",
 		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
 		"miguelcolmenares/cf7-stubs": "^6.1",
 		"php-stubs/wordpress-stubs": "^6.6",
@@ -59,12 +61,8 @@
 		}
 	},
 	"scripts": {
-		"lint": [
-			"phpcs --standard=WordPress --extensions=php --ignore=vendor/,node_modules/,tests/ ."
-		],
-		"lint:fix": [
-			"phpcbf --standard=WordPress --extensions=php --ignore=vendor/,node_modules/,tests/ ."
-		],
+		"lint": "@phpcs",
+		"lint:fix": "@phpcbf",
 		"phpcs": "phpcs",
 		"phpcbf": "phpcbf",
 		"phpstan": "phpstan analyse includes/ --level=8",
@@ -90,8 +88,8 @@
 		]
 	},
 	"scripts-descriptions": {
-		"lint": "Run PHP CodeSniffer with WordPress coding standards",
-		"lint:fix": "Fix PHP CodeSniffer issues automatically",
+		"lint": "Alias for phpcs (uses phpcs.xml's SilverAssistWP ruleset)",
+		"lint:fix": "Alias for phpcbf",
 		"phpcs": "Run PHP CodeSniffer",
 		"phpcbf": "Fix PHP CodeSniffer issues automatically",
 		"phpstan": "Run PHPStan static analysis",
