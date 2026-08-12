@@ -77,7 +77,7 @@ class LogsControllerTest extends TestCase {
 	 */
 	public function testLogsControllerImplementsLoadableInterface(): void {
 		$this->assertInstanceOf(
-			'SilverAssist\\ContactFormToAPI\\Core\\Interfaces\\LoadableInterface',
+			'SilverAssist\\PluginKernel\\Interfaces\\LoadableInterface',
 			$this->controller,
 			'LogsController should implement LoadableInterface'
 		);
