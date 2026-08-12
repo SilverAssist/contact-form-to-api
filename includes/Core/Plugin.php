@@ -116,19 +116,24 @@ class Plugin extends AbstractPlugin {
 	 * @return void
 	 */
 	protected function on_component_error( string $class_name, \Throwable $e ): void {
-		try {
-			DebugLogger::instance()->error(
-				"Failed to load {$class_name} - {$e->getMessage()}",
-				array( 'component' => $class_name )
-			);
-			return;
-		} catch ( \Throwable $inner ) {
-			// Logger unavailable, fall through to error_log.
-			unset( $inner );
+		$message = "Failed to load {$class_name} - {$e->getMessage()}";
+
+		// Never route DebugLogger's own failure back through DebugLogger:
+		// error()/log() swallow file-write failures internally and return
+		// void rather than throwing, so this would "succeed" without ever
+		// actually recording anything, silently losing the diagnostic.
+		if ( DebugLogger::class !== $class_name ) {
+			try {
+				DebugLogger::instance()->error( $message, array( 'component' => $class_name ) );
+				return;
+			} catch ( \Throwable $inner ) {
+				// Logger unavailable, fall through to error_log.
+				unset( $inner );
+			}
 		}
 
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Fallback only used when DebugLogger itself is unavailable.
-		\error_log( 'Contact Form to API: Failed to load ' . $class_name . ' - ' . $e->getMessage() );
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Fallback when DebugLogger itself is unavailable or failed to load.
+		\error_log( 'Contact Form to API: ' . $message );
 	}
 
 	/**
