@@ -17,7 +17,6 @@ namespace SilverAssist\ContactFormToAPI\Core;
 use SilverAssist\ContactFormToAPI\Admin\Loader as AdminLoader;
 use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Controller\ContactForm\SubmissionController;
-use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Infrastructure\Handler\CheckboxHandler;
 use SilverAssist\ContactFormToAPI\Service\Api\ApiClient;
 use SilverAssist\ContactFormToAPI\Service\ContactForm\SubmissionProcessor;
@@ -27,6 +26,7 @@ use SilverAssist\ContactFormToAPI\Service\Migration\MigrationService;
 use SilverAssist\ContactFormToAPI\Service\Notification\EmailAlertService;
 use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
+use SilverAssist\PluginKernel\AbstractPlugin;
 use SilverAssist\WpGithubUpdater\Updater;
 use SilverAssist\WpGithubUpdater\UpdaterConfig;
 
@@ -35,10 +35,13 @@ use SilverAssist\WpGithubUpdater\UpdaterConfig;
 /**
  * Class Plugin
  *
- * Main plugin controller implementing singleton pattern and LoadableInterface
- * for consistent initialization and component management.
+ * Main plugin controller. Singleton access (instance()) and the
+ * priority-ordered component loading loop are inherited from
+ * AbstractPlugin (silverassist/wp-plugin-kernel) — this class only
+ * declares which components to load (get_components()) and the
+ * plugin-specific setup that runs alongside them (init_hooks()).
  */
-class Plugin implements LoadableInterface {
+class Plugin extends AbstractPlugin {
 	/**
 	 * Plugin slug for admin pages and settings
 	 *
@@ -47,97 +50,11 @@ class Plugin implements LoadableInterface {
 	public const SLUG = 'contact-form-to-api';
 
 	/**
-	 * Plugin instance
-	 *
-	 * @var Plugin|null
-	 */
-	private static ?Plugin $instance = null;
-
-	/**
-	 * Loaded components
-	 *
-	 * @var LoadableInterface[]
-	 */
-	private array $components = array();
-
-	/**
-	 * Plugin settings
-	 *
-	 * @var array<string, mixed>
-	 */
-	private array $settings = array();
-
-	/**
 	 * GitHub updater instance
 	 *
 	 * @var Updater|null
 	 */
 	private ?Updater $updater = null;
-
-	/**
-	 * Initialization flag
-	 *
-	 * @var bool
-	 */
-	private bool $initialized = false;
-
-	/**
-	 * Get singleton instance
-	 *
-	 * @return Plugin
-	 */
-	public static function instance(): Plugin {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
-
-	/**
-	 * Private constructor to prevent direct instantiation
-	 */
-	private function __construct() {
-		// Empty - initialization happens in init().
-	}
-
-	/**
-	 * Initialize the plugin
-	 *
-	 * @return void
-	 */
-	public function init(): void {
-		// Prevent multiple initialization.
-		if ( $this->initialized ) {
-			return;
-		}
-
-		// Load plugin settings.
-		$this->load_settings();
-
-		// Initialize GitHub Updater.
-		$this->init_updater();
-
-		// Load plugin components.
-		$this->load_components();
-
-		// Initialize WordPress hooks.
-		$this->init_hooks();
-
-		// Load plugin textdomain.
-		$this->load_textdomain();
-
-		// Mark as initialized.
-		$this->initialized = true;
-	}
-
-	/**
-	 * Get loading priority
-	 *
-	 * @return int
-	 */
-	public function get_priority(): int {
-		return 10; // High priority for core plugin.
-	}
 
 	/**
 	 * Determine if plugin should load
@@ -165,140 +82,70 @@ class Plugin implements LoadableInterface {
 	}
 
 	/**
-	 * Load plugin components
+	 * List the component classes this plugin loads
 	 *
-	 * Loads components using the Loader pattern for better organization.
-	 * Each layer (ContactForm, Admin, Utils) has its own Loader that manages its components.
+	 * Loading order is determined by each component's get_priority(), not
+	 * by the order they're listed here (see AbstractPlugin::load_components()).
 	 *
-	 * @return void
+	 * @return array<class-string>
 	 */
-	private function load_components(): void {
-		// Load Settings first (priority 10 - Core).
-		try {
-			$settings = Settings::instance();
-			if ( $settings->should_load() ) {
-				$settings->init();
-				$this->components[] = $settings;
-			}
-		} catch ( \Exception $e ) {
-			DebugLogger::instance()->error( 'Failed to load Settings - ' . $e->getMessage() );
-		}
-
-		// Load EncryptionService (priority 10 - Core).
-		try {
-			$encryption = EncryptionService::instance();
-			if ( $encryption->should_load() ) {
-				$encryption->init();
-				$this->components[] = $encryption;
-			}
-		} catch ( \Exception $e ) {
-			DebugLogger::instance()->error( 'Failed to load EncryptionService - ' . $e->getMessage() );
-		}
-
-		// Load Utils Logger (priority 40 - but initialized early for error logging).
-		try {
-			$logger = DebugLogger::instance();
-			if ( $logger->should_load() ) {
-				$logger->init();
-				$this->components[] = $logger;
-			}
-		} catch ( \Exception $e ) {
-			// Fallback to error_log if Logger fails.
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-			\error_log( 'Contact Form to API: Failed to load Logger - ' . $e->getMessage() );
-		}
-
-		// Load Service components (priority 20 - Services).
-		$service_classes = array(
+	protected function get_components(): array {
+		return array(
+			Settings::class,
+			EncryptionService::class,
+			DebugLogger::class,
 			ApiClient::class,
 			CheckboxHandler::class,
 			EmailAlertService::class,
 			ExportService::class,
 			MigrationService::class,
+			SubmissionProcessor::class,
+			SubmissionController::class,
+			AdminLoader::class,
 		);
+	}
 
-		foreach ( $service_classes as $service_class ) {
-			if ( ! \class_exists( $service_class ) ) {
-				continue;
-			}
+	/**
+	 * Report a component that failed to load
+	 *
+	 * Routes through DebugLogger, falling back to error_log() if the
+	 * logger itself is unavailable.
+	 *
+	 * @param string     $class_name Component class that failed.
+	 * @param \Throwable $e          The exception/error it threw.
+	 * @return void
+	 */
+	protected function on_component_error( string $class_name, \Throwable $e ): void {
+		$message = "Failed to load {$class_name} - {$e->getMessage()}";
 
+		// Never route DebugLogger's own failure back through DebugLogger:
+		// error()/log() swallow file-write failures internally and return
+		// void rather than throwing, so this would "succeed" without ever
+		// actually recording anything, silently losing the diagnostic.
+		if ( DebugLogger::class !== $class_name ) {
 			try {
-				$service = $service_class::instance();
-				if ( $service->should_load() ) {
-					$service->init();
-					$this->components[] = $service;
-				}
-			} catch ( \Exception $e ) {
-				$this->log_error( $service_class, $e->getMessage() );
+				DebugLogger::instance()->error( $message, array( 'component' => $class_name ) );
+				return;
+			} catch ( \Throwable $inner ) {
+				// Logger unavailable, fall through to error_log.
+				unset( $inner );
 			}
 		}
 
-		// Load ContactForm submission processor (priority 20 - Service).
-		try {
-			$processor = SubmissionProcessor::instance();
-			if ( $processor->should_load() ) {
-				$processor->init();
-				$this->components[] = $processor;
-			}
-		} catch ( \Exception $e ) {
-			$this->log_error( 'Service\\ContactForm\\SubmissionProcessor', $e->getMessage() );
-		}
-
-		// Load ContactForm submission controller (priority 30 - Controller).
-		try {
-			$controller = SubmissionController::instance();
-			if ( $controller->should_load() ) {
-				$controller->init();
-				$this->components[] = $controller;
-			}
-		} catch ( \Exception $e ) {
-			$this->log_error( 'Controller\\ContactForm\\SubmissionController', $e->getMessage() );
-		}
-
-		// Load Admin Loader (priority 30 - Admin components).
-		// The Admin\Loader manages SettingsPage and RequestLogController internally.
-		try {
-			$admin_loader = AdminLoader::instance();
-			if ( $admin_loader->should_load() ) {
-				$admin_loader->init();
-				$this->components[] = $admin_loader;
-			}
-		} catch ( \Exception $e ) {
-			$this->log_error( 'Admin\\Loader', $e->getMessage() );
-		}
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Fallback when DebugLogger itself is unavailable or failed to load.
+		\error_log( 'Contact Form to API: ' . $message );
 	}
 
 	/**
-	 * Log component loading error
+	 * Plugin-level setup that isn't itself a LoadableInterface component
 	 *
-	 * Uses the Utils\Logger if available, falls back to error_log.
-	 *
-	 * @param string $component Component name.
-	 * @param string $message   Error message.
-	 * @return void
-	 */
-	private function log_error( string $component, string $message ): void {
-		$full_message = "Failed to load {$component} - {$message}";
-
-		// Try to use the Logger.
-		try {
-			DebugLogger::instance()->error( $full_message, array( 'component' => $component ) );
-			return;
-		} catch ( \Exception $e ) {
-			// Logger unavailable, fall through to error_log.
-			unset( $e );
-		}
-
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-		\error_log( 'Contact Form to API: ' . $full_message );
-	}
-
-	/**
-	 * Initialize WordPress hooks
+	 * Runs after all components have loaded (see AbstractPlugin::init()).
 	 *
 	 * @return void
 	 */
-	private function init_hooks(): void {
+	protected function init_hooks(): void {
+		$this->init_updater();
+
 		\add_action( 'init', array( $this, 'handle_init' ) );
 		\add_action( 'admin_init', array( $this, 'handle_admin_init' ) );
 		\add_filter( 'plugin_action_links_' . CF7_API_BASENAME, array( $this, 'add_action_links' ) );
@@ -309,15 +156,8 @@ class Plugin implements LoadableInterface {
 
 		// Check for legacy plugin conflict.
 		\add_action( 'admin_notices', array( $this, 'check_legacy_plugin_conflict' ) );
-	}
 
-	/**
-	 * Load plugin settings
-	 *
-	 * @return void
-	 */
-	private function load_settings(): void {
-		$this->settings = \get_option( 'cf7_api_settings', array() );
+		$this->load_textdomain();
 	}
 
 	/**
@@ -455,15 +295,6 @@ class Plugin implements LoadableInterface {
 	}
 
 	/**
-	 * Get loaded components
-	 *
-	 * @return LoadableInterface[]
-	 */
-	public function get_components(): array {
-		return $this->components;
-	}
-
-	/**
 	 * Get GitHub Updater instance
 	 *
 	 * @return Updater|null
@@ -479,26 +310,6 @@ class Plugin implements LoadableInterface {
 	 */
 	public function get_logger(): DebugLogger {
 		return DebugLogger::instance();
-	}
-
-	/**
-	 * Get plugin settings
-	 *
-	 * @return array<string, mixed>
-	 */
-	public function get_settings(): array {
-		return $this->settings;
-	}
-
-	/**
-	 * Get specific setting value
-	 *
-	 * @param string $key Setting key.
-	 * @param mixed  $default_value Default value if setting doesn't exist.
-	 * @return mixed Setting value.
-	 */
-	public function get_setting( string $key, $default_value = null ) {
-		return $this->settings[ $key ] ?? $default_value;
 	}
 
 	/**

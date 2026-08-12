@@ -14,10 +14,10 @@
 
 namespace SilverAssist\ContactFormToAPI\Service\Api;
 
-use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogReader;
 use SilverAssist\ContactFormToAPI\Service\Logging\LogWriter;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
+use SilverAssist\PluginKernel\Interfaces\LoadableInterface;
 use WP_Error;
 
 defined( 'ABSPATH' ) || exit;

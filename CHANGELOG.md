@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Plugin bootstrap**: `Core\Plugin` now extends `silverassist/wp-plugin-kernel`'s
+  `AbstractPlugin` instead of hand-rolling its own singleton and
+  priority-ordered component loader. `Core\Interfaces\LoadableInterface`
+  is gone — all components now implement
+  `SilverAssist\PluginKernel\Interfaces\LoadableInterface`. No behavior
+  change intended; component load order is now driven purely by each
+  component's `get_priority()` rather than the loader's hardcoded call
+  order.
+- **Component error handling**: per-component load failures now go through
+  `AbstractPlugin`'s isolation + `on_component_error()` hook (still routed
+  through `DebugLogger`, same as before) instead of a hand-rolled
+  try/catch per component.
+
+### Removed
+
+- `Plugin::$settings` / `load_settings()` / `get_setting()` /
+  `get_settings()` — dead code; nothing outside `Plugin.php` read them.
+  Settings are and were actually served by the separate `Config\Settings`
+  component.
+
 ## [2.4.0] - 2026-03-12
 
 ### Added

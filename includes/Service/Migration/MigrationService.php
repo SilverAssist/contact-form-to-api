@@ -14,10 +14,10 @@
 
 namespace SilverAssist\ContactFormToAPI\Service\Migration;
 
-use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
-use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Config\Settings;
+use SilverAssist\ContactFormToAPI\Service\Security\EncryptionService;
 use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
+use SilverAssist\PluginKernel\Interfaces\LoadableInterface;
 
 \defined( 'ABSPATH' ) || exit;
 

@@ -17,7 +17,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Utils;
 
-use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\PluginKernel\Interfaces\LoadableInterface;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -113,7 +113,12 @@ class DebugLogger implements LoadableInterface {
 	 * @return int
 	 */
 	public function get_priority(): int {
-		return 40; // Utils load last.
+		// Core priority, same as Settings/EncryptionService: other components'
+		// on_component_error() handlers call DebugLogger::instance() to report
+		// their own load failures, so it must be available at least as early
+		// as anything that can fail. It's grouped with priority 10 rather than
+		// declared last despite living in Utils/.
+		return 10;
 	}
 
 	/**

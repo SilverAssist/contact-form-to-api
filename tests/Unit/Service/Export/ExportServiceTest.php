@@ -75,7 +75,7 @@ class ExportServiceTest extends TestCase {
 	 */
 	public function testExportServiceImplementsLoadableInterface(): void {
 		$this->assertInstanceOf(
-			'SilverAssist\\ContactFormToAPI\\Core\\Interfaces\\LoadableInterface',
+			'SilverAssist\\PluginKernel\\Interfaces\\LoadableInterface',
 			$this->export_service,
 			'ExportService should implement LoadableInterface'
 		);

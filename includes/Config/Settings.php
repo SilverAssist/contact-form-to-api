@@ -14,7 +14,7 @@
 
 namespace SilverAssist\ContactFormToAPI\Config;
 
-use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
+use SilverAssist\PluginKernel\Interfaces\LoadableInterface;
 
 \defined( 'ABSPATH' ) || exit;
 

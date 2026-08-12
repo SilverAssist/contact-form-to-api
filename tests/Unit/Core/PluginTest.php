@@ -13,8 +13,10 @@
 
 namespace SilverAssist\ContactFormToAPI\Tests\Unit\Core;
 
-use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
 use SilverAssist\ContactFormToAPI\Core\Plugin;
+use SilverAssist\ContactFormToAPI\Service\Api\ApiClient;
+use SilverAssist\ContactFormToAPI\Tests\Helpers\TestCase;
+use SilverAssist\ContactFormToAPI\Utils\DebugLogger;
 
 /**
  * Test cases for the Core Plugin class
@@ -230,5 +232,71 @@ class PluginTest extends TestCase {
 		} else {
 			$this->markTestSkipped( 'CF7_API_DIR constant not defined' );
 		}
+	}
+
+	/**
+	 * Test DebugLogger loads at Core priority, not after Services/Controllers
+	 *
+	 * Regression test: DebugLogger used to be manually placed 3rd in the
+	 * bootstrap's hardcoded call order specifically so it would be
+	 * available for other components' error logging, even though its
+	 * declared get_priority() said 40 ("Utils load last") — a mismatch
+	 * that only worked because the old loader ignored get_priority()
+	 * entirely. AbstractPlugin's real priority-sort would otherwise load
+	 * it dead last, after every Service/Controller. See CHANGELOG.md.
+	 *
+	 * @return void
+	 */
+	public function testDebugLoggerLoadsAtCorePriorityNotAfterServices(): void {
+		$this->assertSame(
+			10,
+			DebugLogger::instance()->get_priority(),
+			'DebugLogger must declare Core priority (10) so it is available before any component that can fail'
+		);
+		$this->assertLessThan(
+			ApiClient::instance()->get_priority(),
+			DebugLogger::instance()->get_priority(),
+			'DebugLogger must load before Service-priority components'
+		);
+	}
+
+	/**
+	 * Test on_component_error() does not silently swallow DebugLogger's own failure
+	 *
+	 * Regression test: on_component_error() always tried
+	 * DebugLogger::instance()->error() first, including when DebugLogger
+	 * itself was the failing component. DebugLogger's error()/log()
+	 * suppress file-write failures internally and return void rather
+	 * than throwing, so routing DebugLogger's own failure back through
+	 * DebugLogger would silently succeed without ever recording
+	 * anything, losing the diagnostic with no error_log() fallback.
+	 *
+	 * @return void
+	 */
+	public function testOnComponentErrorFallsBackToErrorLogForDebugLoggerFailures(): void {
+		$log_file           = tempnam( sys_get_temp_dir(), 'cf7-api-test-log' );
+		$previous_error_log = ini_get( 'error_log' );
+		// phpcs:ignore WordPress.PHP.IniSet.Risky -- Test-only redirect of error_log() output to a temp file so the assertion below can inspect it; restored in the finally block.
+		ini_set( 'error_log', $log_file );
+
+		try {
+			$method = new \ReflectionMethod( Plugin::class, 'on_component_error' );
+			$method->setAccessible( true );
+			$method->invoke( Plugin::instance(), DebugLogger::class, new \RuntimeException( 'debug logger boom' ) );
+		} finally {
+			// phpcs:ignore WordPress.PHP.IniSet.Risky -- Restoring the original error_log ini value, not changing behavior.
+			ini_set( 'error_log', $previous_error_log );
+		}
+
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- Test helper, not production code.
+		$contents = (string) file_get_contents( $log_file );
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Test helper, not production code.
+		unlink( $log_file );
+
+		$this->assertStringContainsString(
+			'Failed to load ' . DebugLogger::class,
+			$contents,
+			"DebugLogger's own load failure must fall through to error_log(), not be silently swallowed by routing back through DebugLogger itself"
+		);
 	}
 }

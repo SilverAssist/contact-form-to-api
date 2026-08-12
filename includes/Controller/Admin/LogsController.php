@@ -16,7 +16,6 @@ namespace SilverAssist\ContactFormToAPI\Controller\Admin;
 
 use SilverAssist\ContactFormToAPI\Config\Settings;
 use SilverAssist\ContactFormToAPI\Core\AssetHelper;
-use SilverAssist\ContactFormToAPI\Core\Interfaces\LoadableInterface;
 use SilverAssist\ContactFormToAPI\Infrastructure\ListTable\RequestLogTable;
 use SilverAssist\ContactFormToAPI\Service\Api\ApiClient;
 use SilverAssist\ContactFormToAPI\Service\Export\ExportService;
@@ -26,6 +25,7 @@ use SilverAssist\ContactFormToAPI\Service\Logging\RetryManager;
 use SilverAssist\ContactFormToAPI\Service\Notification\EmailAlertService;
 use SilverAssist\ContactFormToAPI\Utils\DateFilterTrait;
 use SilverAssist\ContactFormToAPI\View\Admin\Logs\RequestLogView;
+use SilverAssist\PluginKernel\Interfaces\LoadableInterface;
 
 \defined( 'ABSPATH' ) || exit;
 
