@@ -156,7 +156,7 @@ class StringHelper {
 	 * @return string The extracted field name.
 	 */
 	public static function extract_field_from_placeholder( string $placeholder ): string {
-		// Match {{field}} or {field} patterns.
+		// Match double- or single-brace field placeholders.
 		if ( preg_match( '/\{\{?\s*([^}\s]+)\s*\}?\}/', $placeholder, $matches ) ) {
 			return trim( $matches[1] );
 		}

@@ -304,8 +304,7 @@ class DebugLogger implements LoadableInterface {
 		}
 
 		// Write to file.
-		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Error handling managed.
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Direct file operation required.
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Error handling managed, direct file operation required.
 		@file_put_contents( $this->log_file, $log_entry, FILE_APPEND | LOCK_EX );
 	}
 
@@ -323,14 +322,12 @@ class DebugLogger implements LoadableInterface {
 
 		// Remove old backup if exists.
 		if ( file_exists( $backup_file ) ) {
-			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Error handling managed.
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Direct file operation required.
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.unlink_unlink -- Error handling managed, direct file operation required.
 			@unlink( $backup_file );
 		}
 
 		// Move current log to backup.
-		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Error handling managed.
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Direct file operation required.
+		// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.rename_rename -- Error handling managed, direct file operation required.
 		@rename( $this->log_file, $backup_file );
 	}
 
@@ -350,8 +347,7 @@ class DebugLogger implements LoadableInterface {
 	 */
 	public function clear_log(): bool {
 		if ( file_exists( $this->log_file ) ) {
-			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- Error handling managed.
-			// phpcs:ignore WordPress.WP.AlternativeFunctions.unlink_unlink -- Direct file operation required.
+			// phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged, WordPress.WP.AlternativeFunctions.unlink_unlink -- Error handling managed, direct file operation required.
 			return @unlink( $this->log_file );
 		}
 		return true;

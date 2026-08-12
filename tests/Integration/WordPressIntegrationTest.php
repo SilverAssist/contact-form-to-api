@@ -103,7 +103,7 @@ class WordPressIntegrationTest extends TestCase {
 		$this->assertTrue( function_exists( 'esc_html__' ), 'esc_html__ should be available' );
 		$this->assertTrue( function_exists( '_e' ), '_e should be available' );
 
-		// Test translation returns string
+		// Test translation returns string.
 		$translated = __( 'Test String', 'contact-form-to-api' );
 		$this->assertIsString( $translated );
 	}
@@ -117,19 +117,19 @@ class WordPressIntegrationTest extends TestCase {
 		$option_name = 'cf7_api_test_option';
 		$test_value  = array( 'api_url' => 'https://example.com/api' );
 
-		// Save option
+		// Save option.
 		$save_result = update_option( $option_name, $test_value );
 		$this->assertTrue( $save_result, 'Should be able to save option' );
 
-		// Retrieve option
+		// Retrieve option.
 		$retrieved = get_option( $option_name );
 		$this->assertSame( $test_value, $retrieved, 'Retrieved value should match saved value' );
 
-		// Delete option
+		// Delete option.
 		$delete_result = delete_option( $option_name );
 		$this->assertTrue( $delete_result, 'Should be able to delete option' );
 
-		// Verify deleted
+		// Verify deleted.
 		$after_delete = get_option( $option_name, 'default' );
 		$this->assertSame( 'default', $after_delete, 'Option should be deleted' );
 	}
@@ -142,17 +142,17 @@ class WordPressIntegrationTest extends TestCase {
 	public function test_wordpress_nonce_security(): void {
 		$action = 'cf7_api_test_action';
 
-		// Create nonce
+		// Create nonce.
 		$nonce = wp_create_nonce( $action );
 		$this->assertIsString( $nonce, 'Nonce should be a string' );
 		$this->assertNotEmpty( $nonce, 'Nonce should not be empty' );
 
-		// Verify nonce - returns 1 or 2 on success, false on failure
+		// Verify nonce - returns 1 or 2 on success, false on failure.
 		$is_valid = wp_verify_nonce( $nonce, $action );
 		$this->assertNotFalse( $is_valid, 'Nonce should be valid' );
 		$this->assertContains( $is_valid, array( 1, 2 ), 'Valid nonce returns 1 or 2' );
 
-		// Invalid nonce
+		// Invalid nonce.
 		$invalid = wp_verify_nonce( 'invalid_nonce', $action );
 		$this->assertFalse( $invalid, 'Invalid nonce should fail verification' );
 	}
@@ -163,12 +163,12 @@ class WordPressIntegrationTest extends TestCase {
 	 * @return void
 	 */
 	public function test_wordpress_error_handling(): void {
-		// Normal data is not an error
+		// Normal data is not an error.
 		$this->assertFalse( is_wp_error( array( 'success' => true ) ) );
 		$this->assertFalse( is_wp_error( 'string' ) );
 		$this->assertFalse( is_wp_error( 123 ) );
 
-		// WP_Error is an error
+		// WP_Error is an error.
 		$error = new WP_Error( 'test_error', 'Test error message' );
 		$this->assertTrue( is_wp_error( $error ) );
 		$this->assertSame( 'test_error', $error->get_error_code() );
@@ -181,17 +181,17 @@ class WordPressIntegrationTest extends TestCase {
 	 * @return void
 	 */
 	public function test_wordpress_sanitization(): void {
-		// sanitize_text_field removes HTML and extra whitespace
+		// sanitize_text_field removes HTML and extra whitespace.
 		$dirty     = "  Test <script>alert('xss')</script>  ";
 		$sanitized = sanitize_text_field( $dirty );
 		$this->assertStringNotContainsString( '<script>', $sanitized );
 		$this->assertStringNotContainsString( '</script>', $sanitized );
 
-		// sanitize_email
+		// sanitize_email.
 		$this->assertSame( 'test@example.com', sanitize_email( 'test@example.com' ) );
 		$this->assertSame( '', sanitize_email( 'not-an-email' ) );
 
-		// sanitize_url
+		// sanitize_url.
 		$this->assertSame( 'https://example.com/', sanitize_url( 'https://example.com/' ) );
 	}
 
@@ -201,17 +201,17 @@ class WordPressIntegrationTest extends TestCase {
 	 * @return void
 	 */
 	public function test_wordpress_escaping(): void {
-		// esc_html escapes HTML entities
+		// esc_html escapes HTML entities.
 		$html    = "<script>alert('xss')</script>";
 		$escaped = esc_html( $html );
 		$this->assertStringNotContainsString( '<script>', $escaped );
 		$this->assertStringContainsString( '&lt;script&gt;', $escaped );
 
-		// esc_attr for attribute values
+		// esc_attr for attribute values.
 		$attr = 'value" onclick="alert(1)';
 		$this->assertStringNotContainsString( '"', esc_attr( $attr ) );
 
-		// esc_url for URLs
+		// esc_url for URLs.
 		$this->assertSame( 'https://example.com/', esc_url( 'https://example.com/' ) );
 	}
 
@@ -223,24 +223,24 @@ class WordPressIntegrationTest extends TestCase {
 	public function test_wordpress_cron_functions(): void {
 		$hook = 'cf7_api_test_cron';
 
-		// Clear any existing scheduled events
+		// Clear any existing scheduled events.
 		wp_clear_scheduled_hook( $hook );
 
-		// Verify not scheduled
+		// Verify not scheduled.
 		$this->assertFalse( wp_next_scheduled( $hook ) );
 
-		// Schedule event
+		// Schedule event.
 		$timestamp = time() + 3600;
 		$result    = wp_schedule_event( $timestamp, 'hourly', $hook );
 
-		// wp_schedule_event returns true on success in WP 5.7+
+		// wp_schedule_event returns true on success in WP 5.7+.
 		if ( false !== $result ) {
 			$this->assertTrue( $result );
 			$next = wp_next_scheduled( $hook );
 			$this->assertIsInt( $next );
 		}
 
-		// Cleanup
+		// Cleanup.
 		wp_clear_scheduled_hook( $hook );
 	}
 
@@ -276,14 +276,14 @@ class WordPressIntegrationTest extends TestCase {
 	 * @return void
 	 */
 	public function test_wordpress_user_capabilities(): void {
-		// Create admin user for testing
+		// Create admin user for testing.
 		$admin_id = static::factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
 
 		$this->assertTrue( current_user_can( 'manage_options' ) );
 		$this->assertTrue( current_user_can( 'edit_posts' ) );
 
-		// Create subscriber
+		// Create subscriber.
 		$subscriber_id = static::factory()->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $subscriber_id );
 
@@ -302,7 +302,7 @@ class WordPressIntegrationTest extends TestCase {
 		$this->assertInstanceOf( 'wpdb', $wpdb );
 		$this->assertNotEmpty( $wpdb->prefix );
 
-		// Test simple query
+		// Test simple query.
 		$result = $wpdb->get_var( 'SELECT 1' );
 		$this->assertEquals( '1', $result );
 	}

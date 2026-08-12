@@ -217,10 +217,10 @@ class SubmissionProcessor implements LoadableInterface {
 	 * Handles params, JSON, and XML record types.
 	 *
 	 * @since 2.0.0
-	 * @param WPCF7_Submission       $submission Form submission (CF7 Submission object).
-	 * @param array<string, mixed>  $data_map   Field mapping.
-	 * @param string                $type       Record type (params, xml, json).
-	 * @param string                $template   Template for xml/json.
+	 * @param WPCF7_Submission     $submission Form submission (CF7 Submission object).
+	 * @param array<string, mixed> $data_map   Field mapping.
+	 * @param string               $type       Record type (params, xml, json).
+	 * @param string               $template   Template for xml/json.
 	 * @return array<string, mixed> API record data.
 	 */
 	public function build_api_record( WPCF7_Submission $submission, array $data_map, string $type = 'params', string $template = '' ): array {
@@ -306,12 +306,12 @@ class SubmissionProcessor implements LoadableInterface {
 	 * Handles retries, debug logging, and error handling.
 	 *
 	 * @since 2.0.0
-	 * @param array<string, mixed>                $record         Record data.
-	 * @param bool                                $debug          Enable debug logging.
-	 * @param string                              $method         HTTP method.
-	 * @param string                              $record_type    Record type (params, json, xml).
-	 * @param array<string, mixed>                $retry_config   Retry configuration.
-	 * @param array<int, array<string, string>>   $custom_headers Custom HTTP headers.
+	 * @param array<string, mixed>              $record         Record data.
+	 * @param bool                              $debug          Enable debug logging.
+	 * @param string                            $method         HTTP method.
+	 * @param string                            $record_type    Record type (params, json, xml).
+	 * @param array<string, mixed>              $retry_config   Retry configuration.
+	 * @param array<int, array<string, string>> $custom_headers Custom HTTP headers.
 	 * @return array<string, mixed>|WP_Error Response data or error.
 	 */
 	public function send_api_request( array $record, bool $debug = false, string $method = 'GET', string $record_type = 'params', array $retry_config = array(), array $custom_headers = array() ) {
@@ -368,7 +368,7 @@ class SubmissionProcessor implements LoadableInterface {
 	 *
 	 * @since 2.0.0
 	 * @param WP_Error $wp_error WordPress error.
-	 * @param integer   $form_id  Form ID.
+	 * @param integer  $form_id  Form ID.
 	 * @return void
 	 */
 	public function log_api_error( WP_Error $wp_error, int $form_id ): void {

@@ -114,25 +114,25 @@ class Settings implements LoadableInterface {
 	 */
 	public static function get_defaults(): array {
 		return array(
-			'max_manual_retries'      => 3,
-			'max_retries_per_hour'    => 10,
-			'sensitive_patterns'      => array( 'password', 'token', 'secret', 'api_key', 'apikey', 'api-key' ),
-			'logging_enabled'         => true,
-			'log_retention_days'      => 30,
+			'max_manual_retries'    => 3,
+			'max_retries_per_hour'  => 10,
+			'sensitive_patterns'    => array( 'password', 'token', 'secret', 'api_key', 'apikey', 'api-key' ),
+			'logging_enabled'       => true,
+			'log_retention_days'    => 30,
 			// Email alert settings.
-			'alerts_enabled'          => false,
-			'alert_recipients'        => \get_option( 'admin_email' ),
-			'alert_error_threshold'   => 10,
-			'alert_rate_threshold'    => 20,
-			'alert_check_interval'    => 'hourly',
-			'alert_cooldown_hours'    => 4,
-			'alert_last_sent'         => 0,
-			'alert_types'             => array(
+			'alerts_enabled'        => false,
+			'alert_recipients'      => \get_option( 'admin_email' ),
+			'alert_error_threshold' => 10,
+			'alert_rate_threshold'  => 20,
+			'alert_check_interval'  => 'hourly',
+			'alert_cooldown_hours'  => 4,
+			'alert_last_sent'       => 0,
+			'alert_types'           => array(
 				'threshold'  => true,  // Existing: high error rate alerts.
 				'individual' => false, // New: per-submission failure alerts.
 			),
 			// Encryption settings.
-			'encryption_enabled'      => true,
+			'encryption_enabled'    => true,
 		);
 	}
 
@@ -161,16 +161,16 @@ class Settings implements LoadableInterface {
 	/**
 	 * Get specific setting value
 	 *
-	 * @param string $key          Setting key.
-	 * @param mixed  $default      Default value if setting doesn't exist.
+	 * @param string $key           Setting key.
+	 * @param mixed  $default_value Default value if setting doesn't exist.
 	 * @return mixed Setting value.
 	 */
-	public function get( string $key, $default = null ) {
+	public function get( string $key, $default_value = null ) {
 		if ( ! $this->initialized ) {
 			$this->init();
 		}
 
-		return $this->settings[ $key ] ?? $default;
+		return $this->settings[ $key ] ?? $default_value;
 	}
 
 	/**

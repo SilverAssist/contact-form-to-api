@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Integration Tests for Contact Form 7
  *
@@ -87,7 +86,7 @@ class IntegrationTest extends CF7TestCase {
 		$config          = $this->createTestApiConfig();
 		$submission_data = $this->createMockSubmissionData();
 
-		// Simulate field mapping transformation
+		// Simulate field mapping transformation.
 		$mapped_data = array();
 		foreach ( $config['field_mapping'] as $cf7_field => $api_field ) {
 			if ( isset( $submission_data[ $cf7_field ] ) ) {
@@ -125,7 +124,7 @@ class IntegrationTest extends CF7TestCase {
 	public function testXmlFormatProcessing(): void {
 		$submission_data = $this->createMockSubmissionData();
 
-		// Simulate XML conversion
+		// Simulate XML conversion.
 		$xml = "<contact>\n";
 		foreach ( $submission_data as $key => $value ) {
 			$safe_key   = str_replace( '-', '_', $key );
@@ -209,13 +208,13 @@ class IntegrationTest extends CF7TestCase {
 		$template  = 'Hello [your-name], your email [your-email] was received.';
 		$form_data = $this->createMockSubmissionData();
 
-		// Simulate mail tag replacement
+		// Simulate mail tag replacement.
 		$processed = $template;
 		foreach ( $form_data as $field => $value ) {
 			$processed = str_replace( "[{$field}]", $value, $processed );
 		}
 
-		// Only pass the form data fields that are actually used in the template
+		// Only pass the form data fields that are actually used in the template.
 		$template_fields = array(
 			'your-name'  => $form_data['your-name'],
 			'your-email' => $form_data['your-email'],
@@ -262,7 +261,7 @@ class IntegrationTest extends CF7TestCase {
 
 		$this->assertTrue( $config['debug_mode'], 'Debug mode should be enabled' );
 
-		// Test debug logging would be captured
+		// Test debug logging would be captured.
 		if ( $config['debug_mode'] ) {
 			$debug_data = array(
 				'timestamp'      => gmdate( 'Y-m-d H:i:s' ),

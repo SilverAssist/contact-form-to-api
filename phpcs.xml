@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="Contact Form 7 to API">
-    <description>PHP CodeSniffer configuration for Contact Form 7 to API - SilverAssist Standards</description>
+    <description>Uses the shared SilverAssistWP ruleset from silverassist/wp-coding-standards, with this repo's own modern-PHP style exceptions layered on top (short ternaries, non-Yoda conditions, eval/dev-functions in test helpers) -- these are candidates for the shared ruleset itself, not yet folded in since that's a style decision affecting every consumer, not just this repo.</description>
 
     <!-- Args -->
     <arg name="basepath" value="."/>
@@ -16,8 +16,7 @@
     <file>tests</file>
     <file>contact-form-to-api.php</file>
 
-    <!-- Base WordPress-Extra standard -->
-    <rule ref="WordPress-Extra">
+    <rule ref="SilverAssistWP">
         <!-- Allow PSR-4 file naming -->
         <exclude name="WordPress.Files.FileName"/>
         <!-- SilverAssist namespace (not plugin prefix) -->
@@ -37,8 +36,6 @@
 
     <!-- Prefix for global functions/variables -->
     <config name="prefixes" value="cf7_api"/>
-    <!-- Prefix for global functions/variables -->
-    <config name="prefixes" value="cf7_api"/>
 
     <!-- Text domain validation -->
     <rule ref="WordPress.WP.I18n">
@@ -56,4 +53,3 @@
     <exclude-pattern>languages/*</exclude-pattern>
     <exclude-pattern>.phpcs-cache/*</exclude-pattern>
 </ruleset>
-

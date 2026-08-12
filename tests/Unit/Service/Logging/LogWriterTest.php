@@ -380,6 +380,7 @@ class LogWriterTest extends TestCase {
 	 * Test different HTTP methods
 	 *
 	 * @dataProvider httpMethodProvider
+	 * @param string $method HTTP method under test.
 	 */
 	public function testDifferentHttpMethods( string $method ): void {
 		\update_option( 'wpcf7_api_enable_logging', true );

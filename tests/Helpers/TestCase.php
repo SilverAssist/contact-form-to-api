@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Base Test Case for Contact Form 7 to API Plugin
  *
@@ -59,7 +58,7 @@ abstract class TestCase extends \WP_UnitTestCase {
 		$this->test_data_dir = dirname( __DIR__ ) . '/data';
 		$this->temp_files    = array();
 
-		// Initialize plugin for testing
+		// Initialize plugin for testing.
 		$this->initializePlugin();
 	}
 
@@ -71,7 +70,7 @@ abstract class TestCase extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	public function tear_down(): void {
-		// Clean up any test data
+		// Clean up any test data.
 		$this->cleanupTestData();
 		$this->cleanupTempFiles();
 
@@ -84,17 +83,17 @@ abstract class TestCase extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	protected function initializePlugin(): void {
-		// Only initialize plugin if the class exists and has instance method
+		// Only initialize plugin if the class exists and has instance method.
 		if ( class_exists( '\\SilverAssist\\ContactFormToAPI\\Core\\Plugin' ) ) {
 			$plugin_class = '\\SilverAssist\\ContactFormToAPI\\Core\\Plugin';
 			if ( method_exists( $plugin_class, 'instance' ) ) {
 				$this->plugin = $plugin_class::instance();
 			} else {
-				// Try to instantiate normally if no singleton
+				// Try to instantiate normally if no singleton.
 				try {
 					$this->plugin = new $plugin_class();
 				} catch ( \Exception $e ) {
-					// Plugin initialization failed, continue without plugin instance
+					// Plugin initialization failed, continue without plugin instance.
 					$this->plugin = null;
 				}
 			}
@@ -107,13 +106,13 @@ abstract class TestCase extends \WP_UnitTestCase {
 	 * @return void
 	 */
 	protected function cleanupTestData(): void {
-		// Override in child classes if needed
+		// Override in child classes if needed.
 	}
 
 	/**
 	 * Load test data from JSON file
 	 *
-	 * @param string $filename The filename without .json extension
+	 * @param string $filename The filename without .json extension.
 	 * @return array|null The decoded JSON data or null on failure
 	 */
 	protected function loadTestData( string $filename ): ?array {
@@ -133,8 +132,8 @@ abstract class TestCase extends \WP_UnitTestCase {
 	/**
 	 * Create a mock HTTP response
 	 *
-	 * @param array $response_data The response data
-	 * @param int   $status_code   HTTP status code
+	 * @param array $response_data The response data.
+	 * @param int   $status_code   HTTP status code.
 	 * @return array Mock response array
 	 */
 	protected function createMockHttpResponse( array $response_data = array(), int $status_code = 200 ): array {
@@ -153,7 +152,7 @@ abstract class TestCase extends \WP_UnitTestCase {
 	/**
 	 * Get HTTP status message for status code
 	 *
-	 * @param int $status_code HTTP status code
+	 * @param int $status_code HTTP status code.
 	 * @return string Status message
 	 */
 	private function getHttpStatusMessage( int $status_code ): string {
@@ -172,8 +171,8 @@ abstract class TestCase extends \WP_UnitTestCase {
 	/**
 	 * Assert that a string contains valid JSON
 	 *
-	 * @param string $json_string The string to test
-	 * @param string $message     Optional failure message
+	 * @param string $json_string The string to test.
+	 * @param string $message     Optional failure message.
 	 * @return void
 	 */
 	protected function assertJsonString( string $json_string, string $message = '' ): void {
@@ -184,9 +183,9 @@ abstract class TestCase extends \WP_UnitTestCase {
 	/**
 	 * Assert that an array has the expected structure
 	 *
-	 * @param array $expected_keys Expected array keys
-	 * @param array $actual_array  Actual array to test
-	 * @param string $message      Optional failure message
+	 * @param array  $expected_keys Expected array keys.
+	 * @param array  $actual_array  Actual array to test.
+	 * @param string $message      Optional failure message.
 	 * @return void
 	 */
 	protected function assertArrayStructure( array $expected_keys, array $actual_array, string $message = '' ): void {
@@ -202,8 +201,8 @@ abstract class TestCase extends \WP_UnitTestCase {
 	/**
 	 * Create a temporary file for testing
 	 *
-	 * @param string $content File content
-	 * @param string $extension File extension (without dot)
+	 * @param string $content File content.
+	 * @param string $extension File extension (without dot).
 	 * @return string Path to the created file
 	 */
 	protected function createTempFile( string $content, string $extension = 'txt' ): string {
@@ -211,7 +210,7 @@ abstract class TestCase extends \WP_UnitTestCase {
 		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- Test helper, not production code
 		file_put_contents( $temp_file, $content );
 
-		// Store for cleanup
+		// Store for cleanup.
 		if ( ! isset( $this->temp_files ) ) {
 			$this->temp_files = array();
 		}

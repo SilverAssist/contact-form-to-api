@@ -28,6 +28,12 @@
 	},
 	"minimum-stability": "stable",
 	"prefer-stable": true,
+	"repositories": [
+		{
+			"type": "path",
+			"url": "/Users/miguel/Projects/wp-coding-standards"
+		}
+	],
 	"require": {
 		"php": ">=8.2",
 		"composer/installers": "^2.3",
@@ -35,6 +41,8 @@
 		"silverassist/wp-settings-hub": "^1.2"
 	},
 	"require-dev": {
+		"silverassist/coding-standards": "^1.0",
+		"silverassist/wp-coding-standards": "^1.0",
 		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
 		"miguelcolmenares/cf7-stubs": "^6.1",
 		"php-stubs/wordpress-stubs": "^6.6",

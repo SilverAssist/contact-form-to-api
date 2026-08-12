@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Unit Tests for Core Plugin Class
  *
@@ -59,7 +58,7 @@ class PluginTest extends TestCase {
 	 */
 	public function testTextDomainIsLiteralString(): void {
 		// Text domain should be 'contact-form-to-api' used as literal string
-		// This test documents the expected text domain value
+		// This test documents the expected text domain value.
 		$expected_text_domain = 'contact-form-to-api';
 		$this->assertIsString( $expected_text_domain );
 	}
@@ -139,7 +138,7 @@ class PluginTest extends TestCase {
 	 * @return void
 	 */
 	public function testNamespaceAutoloading(): void {
-		// Test that classes in our namespace can be loaded
+		// Test that classes in our namespace can be loaded.
 		$core_classes = array(
 			'SilverAssist\\ContactFormToAPI\\Core\\Plugin',
 		);
@@ -158,14 +157,14 @@ class PluginTest extends TestCase {
 	 * @return void
 	 */
 	public function testMinimumRequirements(): void {
-		// Test PHP version
+		// Test PHP version.
 		$this->assertEquals(
 			'8.2',
 			CF7_API_MIN_PHP_VERSION,
 			'PHP version should be 8.2 or higher'
 		);
 
-		// Test required PHP extensions
+		// Test required PHP extensions.
 		$required_extensions = array( 'json', 'curl' );
 		foreach ( $required_extensions as $extension ) {
 			$this->assertTrue(
@@ -200,7 +199,7 @@ class PluginTest extends TestCase {
 		if ( defined( 'CF7_API_DIR' ) ) {
 			$plugin_dir = CF7_API_DIR;
 
-			// Test essential directories exist
+			// Test essential directories exist.
 			$required_dirs = array(
 				'includes',
 				'assets',
@@ -215,7 +214,7 @@ class PluginTest extends TestCase {
 				);
 			}
 
-			// Test essential files exist
+			// Test essential files exist.
 			$required_files = array(
 				'composer.json',
 				'README.md',

@@ -33,17 +33,17 @@ class IntegrationView {
 	 * Render the complete integration panel
 	 *
 	 * @since 1.1.0
-	 * @param WPCF7_ContactForm                     $post              Contact form object
-	 * @param array<string, mixed>                 $wpcf7_api_data    API configuration data
-	 * @param array<string, mixed>                 $wpcf7_api_data_map Field mapping data
-	 * @param string                               $wpcf7_api_data_template XML template
-	 * @param string                               $wpcf7_api_json_data_template JSON template
-	 * @param array<string, mixed>                 $retry_config      Retry configuration
-	 * @param array<int, WPCF7_FormTag>                   $mail_tags         Available mail tags
-	 * @param array<int, array<string, mixed>>     $recent_logs       Recent API logs
-	 * @param array<string, int|float>             $statistics        API statistics
-	 * @param array<string, mixed>                 $debug_info        Legacy debug information
-	 * @param array<int, array<string, string>>    $custom_headers    Custom HTTP headers
+	 * @param WPCF7_ContactForm                 $post              Contact form object.
+	 * @param array<string, mixed>              $wpcf7_api_data    API configuration data.
+	 * @param array<string, mixed>              $wpcf7_api_data_map Field mapping data.
+	 * @param string                            $wpcf7_api_data_template XML template.
+	 * @param string                            $wpcf7_api_json_data_template JSON template.
+	 * @param array<string, mixed>              $retry_config      Retry configuration.
+	 * @param array<int, WPCF7_FormTag>         $mail_tags         Available mail tags.
+	 * @param array<int, array<string, mixed>>  $recent_logs       Recent API logs.
+	 * @param array<string, int|float>          $statistics        API statistics.
+	 * @param array<string, mixed>              $debug_info        Legacy debug information.
+	 * @param array<int, array<string, string>> $custom_headers    Custom HTTP headers.
 	 * @return void
 	 */
 	public static function render_panel(
@@ -101,7 +101,7 @@ class IntegrationView {
 	 * Render base fields (send to API and base URL)
 	 *
 	 * @since 1.1.0
-	 * @param array<string, mixed> $wpcf7_api_data API configuration data
+	 * @param array<string, mixed> $wpcf7_api_data API configuration data.
 	 * @return void
 	 */
 	private static function render_base_fields( array $wpcf7_api_data ): void {
@@ -127,7 +127,7 @@ class IntegrationView {
 	 * Render input type selector
 	 *
 	 * @since 1.1.0
-	 * @param array<string, mixed> $wpcf7_api_data API configuration data
+	 * @param array<string, mixed> $wpcf7_api_data API configuration data.
 	 * @return void
 	 */
 	private static function render_input_type_field( array $wpcf7_api_data ): void {
@@ -155,7 +155,7 @@ class IntegrationView {
 	 * Render HTTP method selector
 	 *
 	 * @since 1.1.0
-	 * @param array<string, mixed> $wpcf7_api_data API configuration data
+	 * @param array<string, mixed> $wpcf7_api_data API configuration data.
 	 * @return void
 	 */
 	private static function render_method_field( array $wpcf7_api_data ): void {
@@ -176,7 +176,7 @@ class IntegrationView {
 	 * Render retry configuration section
 	 *
 	 * @since 1.1.0
-	 * @param array<string, mixed> $retry_config Retry configuration
+	 * @param array<string, mixed> $retry_config Retry configuration.
 	 * @return void
 	 */
 	private static function render_retry_config( array $retry_config ): void {
@@ -216,7 +216,7 @@ class IntegrationView {
 	 * Render authentication/custom headers section
 	 *
 	 * @since 1.1.2
-	 * @param array<int, array<string, string>> $custom_headers Custom HTTP headers
+	 * @param array<int, array<string, string>> $custom_headers Custom HTTP headers.
 	 * @return void
 	 */
 	private static function render_authentication_section( array $custom_headers ): void {
@@ -311,8 +311,8 @@ class IntegrationView {
 	 * Render parameters mapping section
 	 *
 	 * @since 1.1.0
-	 * @param array<int, WPCF7_FormTag>   $mail_tags           Available mail tags
-	 * @param array<string, mixed> $wpcf7_api_data_map  Field mapping data
+	 * @param array<int, WPCF7_FormTag> $mail_tags           Available mail tags.
+	 * @param array<string, mixed>      $wpcf7_api_data_map  Field mapping data.
 	 * @return void
 	 */
 	private static function render_params_mapping( array $mail_tags, array $wpcf7_api_data_map ): void {
@@ -360,9 +360,9 @@ class IntegrationView {
 	 * Render XML template section
 	 *
 	 * @since 1.1.0
-	 * @param array<int, WPCF7_FormTag> $mail_tags       Available mail tags
-	 * @param string             $template        Current template content
-	 * @param string             $xml_placeholder Placeholder text
+	 * @param array<int, WPCF7_FormTag> $mail_tags       Available mail tags.
+	 * @param string                    $template        Current template content.
+	 * @param string                    $xml_placeholder Placeholder text.
 	 * @return void
 	 */
 	private static function render_xml_template( array $mail_tags, string $template, string $xml_placeholder ): void {
@@ -388,9 +388,9 @@ class IntegrationView {
 	 * Render JSON template section
 	 *
 	 * @since 1.1.0
-	 * @param array<int, WPCF7_FormTag> $mail_tags        Available mail tags
-	 * @param string             $template         Current template content
-	 * @param string             $json_placeholder Placeholder text
+	 * @param array<int, WPCF7_FormTag> $mail_tags        Available mail tags.
+	 * @param string                    $template         Current template content.
+	 * @param string                    $json_placeholder Placeholder text.
 	 * @return void
 	 */
 	private static function render_json_template( array $mail_tags, string $template, string $json_placeholder ): void {
@@ -422,13 +422,13 @@ class IntegrationView {
 	 * Render debug and statistics section
 	 *
 	 * @since 1.1.0
-	 * @param array<int, array<string, mixed>> $recent_logs Recent API logs
-	 * @param array<string, int|float>         $statistics  API statistics
-	 * @param array<string, mixed>             $debug_info  Legacy debug information
+	 * @param array<int, array<string, mixed>> $recent_logs Recent API logs.
+	 * @param array<string, int|float>         $statistics  API statistics.
+	 * @param array<string, mixed>             $debug_info  Legacy debug information.
 	 * @return void
 	 */
 	private static function render_debug_section( array $recent_logs, array $statistics, array $debug_info ): void {
-		// Check if logging is enabled globally
+		// Check if logging is enabled globally.
 		$logging_enabled = Settings::instance()->get( 'logging_enabled', false );
 
 		?>
@@ -463,7 +463,7 @@ class IntegrationView {
 	 * Render statistics table
 	 *
 	 * @since 1.1.0
-	 * @param array<string, int|float> $statistics API statistics
+	 * @param array<string, int|float> $statistics API statistics.
 	 * @return void
 	 */
 	private static function render_statistics( array $statistics ): void {
@@ -506,7 +506,7 @@ class IntegrationView {
 	 * Render recent logs table
 	 *
 	 * @since 1.1.0
-	 * @param array<int, array<string, mixed>> $recent_logs Recent API logs
+	 * @param array<int, array<string, mixed>> $recent_logs Recent API logs.
 	 * @return void
 	 */
 	private static function render_recent_logs( array $recent_logs ): void {
@@ -559,7 +559,7 @@ class IntegrationView {
 	 * Render legacy debug information
 	 *
 	 * @since 1.1.0
-	 * @param array<string, mixed> $debug_info Legacy debug information
+	 * @param array<string, mixed> $debug_info Legacy debug information.
 	 * @return void
 	 */
 	private static function render_legacy_debug( array $debug_info ): void {

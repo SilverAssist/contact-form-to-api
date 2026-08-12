@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Contact Form 7 Specific Test Case
  *
@@ -67,7 +66,7 @@ abstract class CF7TestCase extends TestCase {
 	/**
 	 * Create a mock Contact Form 7 form object
 	 *
-	 * @param array $form_config Optional form configuration
+	 * @param array $form_config Optional form configuration.
 	 * @return object Mock CF7 form object
 	 */
 	protected function createMockCF7Form( array $form_config = array() ): object {
@@ -124,7 +123,7 @@ abstract class CF7TestCase extends TestCase {
 	/**
 	 * Create mock form submission data
 	 *
-	 * @param array $override_data Data to override defaults
+	 * @param array $override_data Data to override defaults.
 	 * @return array Mock submission data
 	 */
 	protected function createMockSubmissionData( array $override_data = array() ): array {
@@ -134,7 +133,7 @@ abstract class CF7TestCase extends TestCase {
 	/**
 	 * Mock Contact Form 7 submission object
 	 *
-	 * @param array $submission_data Form data
+	 * @param array $submission_data Form data.
 	 * @return object Mock submission object
 	 */
 	protected function createMockCF7Submission( array $submission_data = array() ): object {
@@ -152,9 +151,9 @@ abstract class CF7TestCase extends TestCase {
 	/**
 	 * Assert that API data matches expected CF7 field mapping
 	 *
-	 * @param array $expected_mapping Expected field mapping
-	 * @param array $actual_api_data  Actual API data sent
-	 * @param string $message         Optional assertion message
+	 * @param array  $expected_mapping Expected field mapping.
+	 * @param array  $actual_api_data  Actual API data sent.
+	 * @param string $message         Optional assertion message.
 	 * @return void
 	 */
 	protected function assertCF7ApiMapping( array $expected_mapping, array $actual_api_data, string $message = '' ): void {
@@ -178,7 +177,7 @@ abstract class CF7TestCase extends TestCase {
 	/**
 	 * Create test API configuration
 	 *
-	 * @param array $config_override Configuration overrides
+	 * @param array $config_override Configuration overrides.
 	 * @return array API configuration
 	 */
 	protected function createTestApiConfig( array $config_override = array() ): array {
@@ -210,13 +209,13 @@ abstract class CF7TestCase extends TestCase {
 	/**
 	 * Assert that CF7 mail tags are properly processed
 	 *
-	 * @param string $template_with_tags Template containing mail tags
-	 * @param string $processed_content  Processed content
-	 * @param array  $form_data         Form data for processing
+	 * @param string $template_with_tags Template containing mail tags.
+	 * @param string $processed_content  Processed content.
+	 * @param array  $form_data         Form data for processing.
 	 * @return void
 	 */
 	protected function assertCF7MailTagsProcessed( string $template_with_tags, string $processed_content, array $form_data ): void {
-		// Check that mail tags have been replaced
+		// Check that mail tags have been replaced.
 		$this->assertStringNotContainsString(
 			'[your-name]',
 			$processed_content,
@@ -229,7 +228,7 @@ abstract class CF7TestCase extends TestCase {
 			'Mail tag [your-email] was not processed'
 		);
 
-		// Check that actual values are present
+		// Check that actual values are present.
 		foreach ( $form_data as $value ) {
 			if ( ! empty( $value ) && is_string( $value ) ) {
 				$this->assertStringContainsString(
@@ -244,7 +243,7 @@ abstract class CF7TestCase extends TestCase {
 	/**
 	 * Mock successful API response
 	 *
-	 * @param array $response_data Response data
+	 * @param array $response_data Response data.
 	 * @return array Mock response
 	 */
 	protected function mockSuccessfulApiResponse( array $response_data = array() ): array {
@@ -264,8 +263,8 @@ abstract class CF7TestCase extends TestCase {
 	/**
 	 * Mock failed API response
 	 *
-	 * @param string $error_message Error message
-	 * @param int    $status_code   HTTP status code
+	 * @param string $error_message Error message.
+	 * @param int    $status_code   HTTP status code.
 	 * @return array Mock response
 	 */
 	protected function mockFailedApiResponse( string $error_message = 'API Error', int $status_code = 400 ): array {

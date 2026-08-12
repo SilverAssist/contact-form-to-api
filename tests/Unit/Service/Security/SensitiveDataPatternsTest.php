@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Unit Tests for SensitiveDataPatterns Class
  *
@@ -183,7 +182,7 @@ class SensitiveDataPatternsTest extends TestCase {
 	 * @return void
 	 */
 	public function testIsSensitivePartialMatches(): void {
-		// Should match if pattern is contained in field name
+		// Should match if pattern is contained in field name.
 		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'user_password_hash' ) );
 		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'my_secret_value' ) );
 		$this->assertTrue( SensitiveDataPatterns::is_sensitive( 'access_token_expires' ) );
@@ -261,7 +260,7 @@ class SensitiveDataPatternsTest extends TestCase {
 	 * @return void
 	 */
 	public function testPatternsMatchExportServiceRequirements(): void {
-		// These are the patterns that were originally in ExportService
+		// These are the patterns that were originally in ExportService.
 		$original_patterns = array(
 			'password',
 			'passwd',
@@ -272,7 +271,7 @@ class SensitiveDataPatternsTest extends TestCase {
 			'token',
 			'auth',
 			'authorization',
-			'bearer', // ExportService had this extra pattern
+			'bearer', // ExportService had this extra pattern.
 			'ssn',
 			'social_security',
 			'credit_card',
@@ -302,19 +301,19 @@ class SensitiveDataPatternsTest extends TestCase {
 		// Test camelCase field names with lowercase default patterns.
 		// The fix ensures pattern comparison is case-insensitive on BOTH sides.
 
-		// "userPassword" contains "password" (default pattern).
+		// userPassword contains the default pattern password.
 		$this->assertTrue(
 			SensitiveDataPatterns::is_sensitive( 'userPassword' ),
 			'CamelCase field "userPassword" should match pattern "password"'
 		);
 
-		// "accessToken" contains "token" (default pattern).
+		// accessToken contains the default pattern token.
 		$this->assertTrue(
 			SensitiveDataPatterns::is_sensitive( 'accessToken' ),
 			'CamelCase field "accessToken" should match pattern "token"'
 		);
 
-		// "apiSecretKey" contains "secret" (default pattern).
+		// apiSecretKey contains the default pattern secret.
 		$this->assertTrue(
 			SensitiveDataPatterns::is_sensitive( 'apiSecretKey' ),
 			'CamelCase field "apiSecretKey" should match pattern "secret"'
@@ -373,10 +372,10 @@ class SensitiveDataPatternsTest extends TestCase {
 
 		// Add custom patterns with mixed case (as a user might enter them).
 		$custom_patterns = array(
-			'primaryPhone',  // CamelCase
-			'primaryEmail',  // CamelCase
-			'SSN_Number',    // Mixed case with underscore
-			'CreditScore',   // PascalCase
+			'primaryPhone',  // CamelCase.
+			'primaryEmail',  // CamelCase.
+			'SSN_Number',    // Mixed case with underscore.
+			'CreditScore',   // PascalCase.
 		);
 		$settings->set( 'sensitive_patterns', $custom_patterns );
 

@@ -95,7 +95,7 @@ class DashboardWidget implements LoadableInterface {
 	 * @return bool
 	 */
 	public function should_load(): bool {
-		// Only load in admin and for users with manage_options capability
+		// Only load in admin and for users with manage_options capability.
 		return \is_admin() && \current_user_can( 'manage_options' );
 	}
 
@@ -151,7 +151,7 @@ class DashboardWidget implements LoadableInterface {
 	 * @return void
 	 */
 	public function enqueue_assets( string $hook ): void {
-		// Only enqueue on dashboard page
+		// Only enqueue on dashboard page.
 		if ( 'index.php' !== $hook ) {
 			return;
 		}

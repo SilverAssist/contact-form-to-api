@@ -87,14 +87,14 @@ class Statistics {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param int                               $total               Total count.
-	 * @param int                               $success             Success count.
-	 * @param int                               $error               Error count.
-	 * @param int                               $client_error        Client error count.
-	 * @param int                               $server_error        Server error count.
-	 * @param int                               $pending             Pending count.
-	 * @param float                             $avg_execution_time  Average execution time.
-	 * @param array<int, array<string, mixed>>  $recent_logs         Recent logs.
+	 * @param int                              $total               Total count.
+	 * @param int                              $success             Success count.
+	 * @param int                              $error               Error count.
+	 * @param int                              $client_error        Client error count.
+	 * @param int                              $server_error        Server error count.
+	 * @param int                              $pending             Pending count.
+	 * @param float                            $avg_execution_time  Average execution time.
+	 * @param array<int, array<string, mixed>> $recent_logs         Recent logs.
 	 */
 	public function __construct(
 		int $total = 0,
@@ -260,8 +260,8 @@ class Statistics {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param array<string, mixed>              $stats       Statistics from query.
-	 * @param array<int, array<string, mixed>>  $recent_logs Recent logs.
+	 * @param array<string, mixed>             $stats       Statistics from query.
+	 * @param array<int, array<string, mixed>> $recent_logs Recent logs.
 	 * @return Statistics Statistics instance.
 	 */
 	public static function from_query( array $stats, array $recent_logs = array() ): Statistics {

@@ -288,6 +288,7 @@ class FormSettingsTest extends TestCase {
 	 * Test different HTTP methods
 	 *
 	 * @dataProvider httpMethodProvider
+	 * @param string $method HTTP method under test.
 	 */
 	public function testHttpMethods( string $method ): void {
 		$settings = new FormSettings(
@@ -319,6 +320,7 @@ class FormSettingsTest extends TestCase {
 	 * Test different input types
 	 *
 	 * @dataProvider inputTypeProvider
+	 * @param string $input_type Input type under test.
 	 */
 	public function testInputTypes( string $input_type ): void {
 		$settings = new FormSettings(
