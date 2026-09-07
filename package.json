@@ -29,10 +29,10 @@
   },
   "homepage": "https://github.com/SilverAssist/contact-form-to-api#readme",
   "devDependencies": {
-    "cssnano": "^9.0.1",
+    "cssnano": "^9.0.2",
     "grunt": "^1.6.3",
     "grunt-contrib-uglify": "^5.2.2",
-    "postcss": "^8.5.25",
+    "postcss": "^8.5.28",
     "postcss-cli": "^11.0.1"
   },
   "overrides": {
